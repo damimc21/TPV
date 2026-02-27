@@ -1,0 +1,26 @@
+# Entornos virtuales
+venv/
+env/
+
+# Archivos temporales
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.DS_Store
+
+# Base de datos local
+db.sqlite3
+
+# Configuración sensible
+*.env
+.env
+
+# Archivos de logs
+*.log
+
+# Archivos generados
+/staticfiles/
+
+# Base de datos (por ahora no lo quiero)
+tpv.sql
