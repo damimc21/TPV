@@ -1,0 +1,32 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Historial de Cierres" %}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div class="page-head__left">
+        <a href="{% url 'ui:caja' %}" class="btn btn--ghost btn--mini">
+            ↩️ {% trans "Volver" %}
+        </a>
+        <h1 class="h1">{% trans "Historial de Cierres" %}</h1>
+    </div>
+</div>
+
+<div class="tpv-container">
+    <div class="card card--full">
+        <div class="card__header">
+            <h2 class="card__title">{% trans "Cierres Realizados" %}</h2>
+        </div>
+        <div class="card__body">
+            <p class="card__desc">
+                {% trans "Consulta los cierres por turno y por día, revisando totales y diferencias." %}
+            </p>
+            <div class="empty-state">
+                <div class="empty-state__icon">📋</div>
+                <h3 class="empty-state__title">{% trans "Sin cierres registrados" %}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

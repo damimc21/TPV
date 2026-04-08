@@ -1,0 +1,32 @@
+{% load i18n %}
+
+<footer class="statusbar">
+    <div class="statusbar__item">
+        <span class="muted">{% trans "Terminal" %}:</span>
+        <strong id="terminal">{{ terminal_id|default:"1" }}</strong>
+    </div>
+
+    <div class="statusbar__item">
+        <strong id="jornadaFecha">{{ fecha_jornada|date:"d/m/Y" }}</strong>
+    </div>
+
+    <div class="statusbar__item">
+        <strong id="turnoActual">{% trans "Turno" %} {{ turno_numero|default:"1" }}</strong>
+    </div>
+
+    <div class="statusbar__item">
+        <strong id="mesaActual">{% trans "Mesa" %} {{ numero }}</strong>
+    </div>
+
+    <div class="statusbar__spacer"></div>
+
+    <div class="statusbar__item">
+        <span class="muted">{% trans "Hora" %}:</span>
+        <strong id="clock">--:--:--</strong>
+    </div>
+
+    <div class="statusbar__item">
+        <span class="muted">{% trans "Empleado" %}:</span>
+        <strong id="empleadoActual">{{ request.user.username|upper }}</strong>
+    </div>
+</footer>

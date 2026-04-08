@@ -1,0 +1,36 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Catálogo" %}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1 class="h1">{% trans "Catálogo" %}</h1>
+</div>
+
+<section class="grid">
+
+  <!-- Card: Departamentos y Artículos -->
+  <a class="card" href="{% url 'ui:catalogo_articulos' %}">
+    <div class="card__icon"><img src="{% static 'ui/img/iconos/tags.svg' %}" alt="Categorias"></div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Departamentos y Artículos" %}</h2>
+      <p class="card__desc">{% trans "Crea y gestiona departamentos, productos, precios e impresoras asociadas." %}</p>
+    </div>
+    <div class="card__cta">{% trans "Entrar" %} →</div>
+  </a>
+
+  <!-- Card: Comentarios, Suplementos y Perfiles -->
+  <a class="card" href="{% url 'ui:catalogo_modificadores' %}">
+    <div class="card__icon"><img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" alt="Modificadores"></div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Comentarios, Suplementos y Perfiles" %}</h2>
+      <p class="card__desc">
+        {% trans "Configura comentarios y suplementos para tus productos y usa los perfiles para asociarlos." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Entrar" %} →</div>
+  </a>
+
+</section>
+{% endblock %}

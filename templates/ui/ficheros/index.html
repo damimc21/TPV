@@ -1,0 +1,19 @@
+{% load i18n static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% trans "Ficheros" %}</title>
+  <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
+</head>
+<body>
+  <div class="app">
+    <main class="main">
+      <h1 class="h1">{% trans "Ficheros" %}</h1>
+      <p class="hint">{% trans "Sección en construcción." %}</p>
+      <a class="meta meta--button" href="{% url 'ui:index' %}">{% trans "Volver" %}</a>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,26 +1,39 @@
-# Entornos virtuales
+
+ Entornos virtuales
 venv/
 env/
 
-# Archivos temporales
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Sistema
 *.DS_Store
 
-# Base de datos local
+# Django
 db.sqlite3
-
-# Configuración sensible
-*.env
-.env
-
-# Archivos de logs
-*.log
-
-# Archivos generados
 /staticfiles/
 
-# Base de datos (por ahora no lo quiero)
+# Configuración sensible
+.env
+*.env
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Tests / coverage
+.coverage
+htmlcov/
+
+# Base de datos (por ahora no la quiero en git)
 tpv.sql

@@ -1,0 +1,138 @@
+/* Calculadora numérica: pantalla, teclas y barra de acciones */
+
+.mesa__calc {
+    grid-area: calc;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    min-height: 0;
+    overflow: hidden;
+    background: rgba(0, 0, 0, .04);
+}
+
+.calc__barra {
+    height: 52px; /* Sincronizado con el ticket */
+    display: flex;
+    gap: 8px; /* Más aire entre botones */
+    padding: 10px; /* Padding interno de la barra para que los botones respiren dentro */
+    background: rgba(0, 0, 0, .25); /* Mismo fondo que el ticket header */
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+}
+
+.calc__barraBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    color: var(--text);
+    font-size: .80rem; /* Fuente más legible */
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: all .12s;
+    white-space: nowrap;
+}
+
+.calc__barraBtn:hover {
+    background: rgba(255, 255, 255, .10);
+}
+
+.calc__pantalla {
+    display: flex;
+    flex-direction: column;
+    margin: 0 10px 8px 10px;
+    padding: 8px 12px 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(0, 0, 0, .35);
+}
+
+.calc__historial {
+    color: var(--muted);
+    font-size: .8rem;
+    text-align: right;
+    min-height: 1.2rem;
+    margin-bottom: 2px;
+}
+
+.calc__display {
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-family: inherit;
+    outline: none;
+}
+
+.calc__teclas {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    flex: 1;
+    padding: 0 10px 10px 10px;
+}
+
+.calc__tecla {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    color: var(--text);
+    font-size: .92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .1s;
+}
+
+.calc__tecla:hover {
+    background: rgba(255, 255, 255, .14);
+}
+
+.calc__tecla:active {
+    transform: scale(.95);
+}
+
+.calc__tecla--op {
+    background: rgba(120, 160, 255, .14);
+    border-color: rgba(120, 160, 255, .30);
+    color: rgba(150, 190, 255, 1);
+}
+
+.calc__tecla--op:hover {
+    background: rgba(120, 160, 255, .22);
+}
+
+.calc__tecla--borrar {
+    background: rgba(231, 76, 60, .14);
+    border-color: rgba(231, 76, 60, .30);
+    color: rgba(255, 120, 100, 1);
+}
+
+.calc__tecla--borrar:hover {
+    background: rgba(231, 76, 60, .22);
+}
+
+.calc__tecla--enter {
+    background: rgba(46, 204, 113, .18);
+    border-color: rgba(46, 204, 113, .40);
+    color: rgba(100, 240, 160, 1);
+}
+
+.calc__tecla--enter:hover {
+    background: rgba(46, 204, 113, .28);
+}

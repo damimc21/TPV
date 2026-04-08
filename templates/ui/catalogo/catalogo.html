@@ -1,0 +1,706 @@
+{% extends "ui/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Catálogo - Departamentos y Productos" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo.css' %}?v=11">
+<style>
+  /* Prevent any content from being visible until JS resolves the active tab */
+  .catalogo-app.is-resolving .tab-view { display: none !important; }
+  .catalogo-app.is-resolving .catalogo-actions { visibility: hidden; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="catalogo-app is-resolving">
+
+  <header class="catalogo-header">
+    <div class="catalogo-tabs">
+      <a href="{% url 'ui:catalogo' %}" class="tab-btn catalogo-back-btn" title="{% trans 'Volver al Catálogo' %}">
+        <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="Volver">
+      </a>
+
+      <button class="tab-btn" data-tab="departamentos">
+        <img src="{% static 'ui/img/iconos/folders.svg' %}" alt=""> {% trans "Departamentos" %}
+      </button>
+      <button class="tab-btn" data-tab="productos">
+        <img src="{% static 'ui/img/iconos/package-search.svg' %}" alt=""> {% trans "Productos" %}
+      </button>
+    </div>
+
+    <div class="catalogo-actions">
+      <button id="btnNuevo" class="btn btn--primary"></button>
+    </div>
+  </header>
+
+  <main class="catalogo-content">
+
+    <div class="catalogo-filters">
+      <div class="search-wrapper">
+        <img src="{% static 'ui/img/iconos/package-search.svg' %}" class="search-icon" alt="">
+        <input type="text" id="searchInput" class="form-control" autocomplete="off"
+          placeholder="{% trans 'Buscar por nombre o ID...' %}">
+      </div>
+
+      <div class="filter-button-wrapper">
+        <button type="button" id="btnToggleFilters" class="btn btn--ghost btn--filter-toggle">
+          <img src="{% static 'ui/img/iconos/funnel.svg' %}" alt="">
+          {% trans "Filtros" %}
+        </button>
+
+        <div id="filterPopover" class="filter-popover">
+          <div class="filter-group hidden" id="filterDeptoContainer">
+            <label>{% trans "Departamento" %}</label>
+            <div class="custom-select" id="customFilterDepto">
+              <div class="custom-select-trigger" id="deptoTrigger">
+                <span>{% trans "-- Todos los Deptos --" %}</span>
+                <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
+              </div>
+              <div class="custom-select-options" id="deptoOptions">
+                <div class="custom-option is-selected" data-value="">{% trans "-- Todos los Deptos --" %}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label>{% trans "Ordenar por" %}</label>
+            <div class="custom-select" id="customSortField">
+              <div class="custom-select-trigger" id="sortFieldTrigger">
+                <span>{% trans 'ID' %}</span>
+                <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
+              </div>
+              <div class="custom-select-options" id="sortFieldOptions">
+                <div class="custom-option is-selected" data-value="id">{% trans 'ID' %}</div>
+                <div class="custom-option" data-value="nombre">{% trans 'Nombre' %}</div>
+                <div class="custom-option" data-value="precio">{% trans 'Precio' %}</div>
+                <div class="custom-option" data-value="activo">{% trans 'Estado' %}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label>{% trans "Ordenar" %}</label>
+            <button type="button" id="sortDirBtn" class="btn-sort-option" title="Cambiar dirección">
+              <img src="{% static 'ui/img/iconos/move-up.svg' %}" alt="Asc">
+              <span id="sortDirText">{% trans "Ascendente" %}</span>
+            </button>
+          </div>
+
+          <div class="filter-popover-footer">
+            <button type="button" id="btnClearFilters" class="btn--clear-filters">
+              {% trans "Limpiar" %}
+            </button>
+            <button type="button" id="btnApplyFilters" class="btn--apply-filters">{% trans "Listo" %}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-departamentos" class="tab-view hidden">
+      <div class="table-container">
+        <table class="catalogo-table">
+          <thead>
+            <tr>
+              <th>{% trans "ID" %}</th>
+              <th>{% trans "Nombre" %}</th>
+              <th>{% trans "Activo" %}</th>
+              <th class="col-actions">{% trans "Acciones" %}</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-departamentos">
+            <tr>
+              <td colspan="4" class="text-center text-muted">{% trans "Cargando..." %}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-productos" class="tab-view hidden">
+      <div class="table-container">
+        <table class="catalogo-table">
+          <thead>
+            <tr>
+              <th>{% trans "ID" %}</th>
+              <th>{% trans "Producto" %}</th>
+              <th>{% trans "Departamento" %}</th>
+              <th class="text-right">{% trans "Precio" %}</th>
+              <th>{% trans "Activo" %}</th>
+              <th class="col-actions">{% trans "Acciones" %}</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-productos"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL DEPARTAMENTO -->
+<div id="modalDepartamento" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal__header">
+      <h3 id="modalDeptoTitle">{% trans "Nuevo Departamento" %}</h3>
+      <button class="modal__close" type="button" onclick="closeModal('modalDepartamento')">×</button>
+    </div>
+
+    <div class="modal__body">
+      <form id="formDepartamento">
+        <input type="hidden" id="depto_id">
+
+        <div class="form-group">
+          <label class="form-label" for="depto_nombre">{% trans "Nombre del Departamento" %}</label>
+          <input type="text" id="depto_nombre" class="form-control" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label class="form-switch">
+            <div class="switch">
+              <input type="checkbox" id="depto_activo" checked>
+              <span class="slider"></span>
+            </div>
+            <span>{% trans "Visible en TPV (Activo)" %}</span>
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal__footer">
+      <button type="button" class="btn btn--ghost" onclick="closeModal('modalDepartamento')">
+        {% trans "Cancelar"%}
+      </button>
+      <button type="button" class="btn btn--primary" id="btnGuardarDepto">
+        {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div id="modalProducto" class="modal-overlay hidden" style="backdrop-filter: blur(8px);">
+  <div class="modal modal--w850">
+    <div class="modal__header">
+      <h3 id="modalProdTitle">{% trans "Nuevo Producto" %}</h3>
+      <button class="modal__close" type="button" onclick="closeModal('modalProducto')">×</button>
+    </div>
+
+    <div class="modal__body p-0">
+      <div class="modal__layout-split">
+        <!-- Formulario (Izquierda) -->
+        <div class="modal__column modal__column--form">
+          <form id="formProducto">
+            <input type="hidden" id="prod_id">
+
+            <!-- Fila 1: Nombre + Precio + Activo -->
+            <div class="form-row mb-1">
+              <div class="form-group col-6">
+                <label class="form-label text-mini" for="prod_nombre">{% trans "Nombre" %}</label>
+                <input type="text" id="prod_nombre" class="form-control form-control--compact" required autocomplete="off" maxlength="25">
+              </div>
+              <div class="form-group col-6">
+                <!-- Contenedor con padding para evitar que ESTADO se salga del borde -->
+                <div style="display: flex; gap: 10px; align-items: flex-end; justify-content: space-between; padding-right: 5px;">
+                  <div style="flex: 1;">
+                    <label class="form-label text-mini" for="prod_precio">{% trans "P.V.P (€)" %}</label>
+                    <input type="text" inputmode="decimal" id="prod_precio" class="form-control form-control--compact" required placeholder="0.00">
+                  </div>
+                  <div style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 4px;">
+                    <label class="form-label text-mini" style="margin-bottom: 0; cursor: pointer; font-size: 0.65rem; opacity: 0.8;" for="prod_activo">{% trans "Estado" %}</label>
+                    <label class="switch switch--sm">
+                      <input type="checkbox" id="prod_activo" checked>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila 2: Departamento + Impresora -->
+            <div class="form-row mb-1">
+              <div class="form-group col-6">
+                <label class="form-label text-mini" for="prod_departamento">{% trans "Departamento" %}</label>
+                <select id="prod_departamento" class="form-control form-control--compact" required></select>
+              </div>
+              <div class="form-group col-6">
+                <label class="form-label text-mini" for="prod_impresora">{% trans "Impresora" %}</label>
+                <select id="prod_impresora" class="form-control form-control--compact">
+                  <option value="">{% trans "-- Ninguna --" %}</option>
+                  <option value="cocina">{% trans "Cocina" %}</option>
+                  <option value="barra">{% trans "Barra" %}</option>
+                  <option value="terraza">{% trans "Terraza" %}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Fila 3: Nombres alternativos -->
+            <div class="form-row mb-1">
+              <div class="form-group col-6">
+                <label class="form-label text-mini" for="prod_nombre_factura">{% trans "Nombre en factura" %}</label>
+                <input type="text" id="prod_nombre_factura" class="form-control form-control--compact" placeholder="Opcional">
+              </div>
+              <div class="form-group col-6">
+                <label class="form-label text-mini" for="prod_nombre_comanda">{% trans "Nombre en comanda" %}</label>
+                <input type="text" id="prod_nombre_comanda" class="form-control form-control--compact" placeholder="Opcional">
+              </div>
+            </div>
+
+            <!-- Fila 4: Configuración (Fase 2) -->
+            <div class="appearance-strip mb-1">
+              <span class="appearance-strip__title">{% trans "Configuración" %}</span>
+              <div class="appearance-strip__controls">
+                <div class="appearance-row">
+                  <div class="appearance-chip">
+                    <label class="switch switch--sm" style="margin-right: 8px;">
+                      <input type="checkbox" id="prod_es_configurable">
+                      <span class="slider"></span>
+                    </label>
+                    <span class="appearance-chip__label">{% trans "Producto Configurable" %}</span>
+                  </div>
+                  <div class="appearance-strip__sep"></div>
+                  <button type="button" id="btnEditConfigTemplate" class="appearance-chip__btn appearance-chip__btn--primary hidden" onclick="openConfigTemplateManager()">
+                    <img src="{% static 'ui/img/iconos/settings.svg' %}" alt=""> {% trans "Editar Plantilla" %}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila 4: Apariencia — strip compacto horizontal -->
+            <div class="appearance-strip">
+              <span class="appearance-strip__title">{% trans "Apariencia" %}</span>
+
+              <div class="appearance-strip__controls">
+                <!-- Fila Colores -->
+                <div class="appearance-row">
+                  <!-- Fondo -->
+                  <div class="appearance-chip">
+                    <span class="appearance-chip__label">{% trans "Fondo" %}</span>
+                    <div class="color-picker-component" id="picker_color_boton">
+                      <button type="button" class="color-swatch-btn" id="trigger_color_boton">
+                        <span class="color-dot" style="background-color:#2ecc71;"></span>
+                      </button>
+                      <div class="color-picker-popover hidden">
+                        <div class="popover-header">
+                          <span>{% trans "Color de Fondo" %}</span>
+                          <button type="button" class="popover-close-btn">&times;</button>
+                        </div>
+                        <input type="hidden" id="prod_color_boton" value="#2ecc71">
+                        <div class="color-palette" data-target="prod_color_boton">
+                          <!-- Neutros -->
+                          <div class="swatch is-active" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                          <div class="swatch" style="background-color: #dfe4ea;" data-color="#dfe4ea"></div>
+                          <div class="swatch" style="background-color: #747d8c;" data-color="#747d8c"></div>
+                          <div class="swatch" style="background-color: #000000;" data-color="#000000"></div>
+                          <!-- Verdes -->
+                          <div class="swatch" style="background-color: #b9f6ca;" data-color="#b9f6ca"></div>
+                          <div class="swatch" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
+                          <div class="swatch" style="background-color: #27ae60;" data-color="#27ae60"></div>
+                          <div class="swatch" style="background-color: #1b5e20;" data-color="#1b5e20"></div>
+                          <!-- Azules -->
+                          <div class="swatch" style="background-color: #d1eaff;" data-color="#d1eaff"></div>
+                          <div class="swatch" style="background-color: #3498db;" data-color="#3498db"></div>
+                          <div class="swatch" style="background-color: #2980b9;" data-color="#2980b9"></div>
+                          <div class="swatch" style="background-color: #191970;" data-color="#191970"></div>
+                          <!-- Amarillos -->
+                          <div class="swatch" style="background-color: #fff9c4;" data-color="#fff9c4"></div>
+                          <div class="swatch" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
+                          <div class="swatch" style="background-color: #f39c12;" data-color="#f39c12"></div>
+                          <div class="swatch" style="background-color: #f57f17;" data-color="#f57f17"></div>
+                          <!-- Rojos -->
+                          <div class="swatch" style="background-color: #ffcdd2;" data-color="#ffcdd2"></div>
+                          <div class="swatch" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+                          <div class="swatch" style="background-color: #c0392b;" data-color="#c0392b"></div>
+                          <div class="swatch" style="background-color: #b71c1c;" data-color="#b71c1c"></div>
+                          <!-- Rosas -->
+                          <div class="swatch" style="background-color: #fce4ec;" data-color="#fce4ec"></div>
+                          <div class="swatch" style="background-color: #f06292;" data-color="#f06292"></div>
+                          <div class="swatch" style="background-color: #e91e63;" data-color="#e91e63"></div>
+                          <div class="swatch" style="background-color: #ad1457;" data-color="#ad1457"></div>
+                          <!-- Naranjas -->
+                          <div class="swatch" style="background-color: #ffe0b2;" data-color="#ffe0b2"></div>
+                          <div class="swatch" style="background-color: #e67e22;" data-color="#e67e22"></div>
+                          <div class="swatch" style="background-color: #d35400;" data-color="#d35400"></div>
+                          <div class="swatch" style="background-color: #e65100;" data-color="#e65100"></div>
+                          <!-- Marrones -->
+                          <div class="swatch" style="background-color: #d7ccc8;" data-color="#d7ccc8"></div>
+                          <div class="swatch" style="background-color: #a1887f;" data-color="#a1887f"></div>
+                          <div class="swatch" style="background-color: #795548;" data-color="#795548"></div>
+                          <div class="swatch" style="background-color: #3e2723;" data-color="#3e2723"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="button" class="appearance-chip__btn appearance-chip__btn--ghost" 
+                      onclick="resetColor('prod_color_boton', '#2ecc71')" title="{% trans 'Restablecer fondo' %}">
+                      <img src="{% static 'ui/img/iconos/brush-cleaning.svg' %}" alt="">
+                    </button>
+                  </div>
+
+                  <div class="appearance-strip__sep"></div>
+
+                  <!-- Texto -->
+                  <div class="appearance-chip">
+                    <span class="appearance-chip__label">{% trans "Texto" %}</span>
+                    <div class="color-picker-component" id="picker_color_texto">
+                      <button type="button" class="color-swatch-btn" id="trigger_color_texto">
+                        <span class="color-dot" style="background-color:#ffffff;"></span>
+                      </button>
+                      <div class="color-picker-popover hidden">
+                        <div class="popover-header">
+                          <span>{% trans "Color de Texto" %}</span>
+                          <button type="button" class="popover-close-btn">&times;</button>
+                        </div>
+                        <input type="hidden" id="prod_color_texto" value="#ffffff">
+                        <div class="color-palette" data-target="prod_color_texto">
+                          <!-- Neutros -->
+                          <div class="swatch is-active" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                          <div class="swatch" style="background-color: #dfe4ea;" data-color="#dfe4ea"></div>
+                          <div class="swatch" style="background-color: #747d8c;" data-color="#747d8c"></div>
+                          <div class="swatch" style="background-color: #000000;" data-color="#000000"></div>
+                          <!-- Verdes -->
+                          <div class="swatch" style="background-color: #b9f6ca;" data-color="#b9f6ca"></div>
+                          <div class="swatch" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
+                          <div class="swatch" style="background-color: #27ae60;" data-color="#27ae60"></div>
+                          <div class="swatch" style="background-color: #1b5e20;" data-color="#1b5e20"></div>
+                          <!-- Azules -->
+                          <div class="swatch" style="background-color: #d1eaff;" data-color="#d1eaff"></div>
+                          <div class="swatch" style="background-color: #3498db;" data-color="#3498db"></div>
+                          <div class="swatch" style="background-color: #2980b9;" data-color="#2980b9"></div>
+                          <div class="swatch" style="background-color: #191970;" data-color="#191970"></div>
+                          <!-- Amarillos -->
+                          <div class="swatch" style="background-color: #fff9c4;" data-color="#fff9c4"></div>
+                          <div class="swatch" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
+                          <div class="swatch" style="background-color: #f39c12;" data-color="#f39c12"></div>
+                          <div class="swatch" style="background-color: #f57f17;" data-color="#f57f17"></div>
+                          <!-- Rojos -->
+                          <div class="swatch" style="background-color: #ffcdd2;" data-color="#ffcdd2"></div>
+                          <div class="swatch" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+                          <div class="swatch" style="background-color: #c0392b;" data-color="#c0392b"></div>
+                          <div class="swatch" style="background-color: #b71c1c;" data-color="#b71c1c"></div>
+                          <!-- Rosas -->
+                          <div class="swatch" style="background-color: #fce4ec;" data-color="#fce4ec"></div>
+                          <div class="swatch" style="background-color: #f06292;" data-color="#f06292"></div>
+                          <div class="swatch" style="background-color: #e91e63;" data-color="#e91e63"></div>
+                          <div class="swatch" style="background-color: #ad1457;" data-color="#ad1457"></div>
+                          <!-- Naranjas -->
+                          <div class="swatch" style="background-color: #ffe0b2;" data-color="#ffe0b2"></div>
+                          <div class="swatch" style="background-color: #e67e22;" data-color="#e67e22"></div>
+                          <div class="swatch" style="background-color: #d35400;" data-color="#d35400"></div>
+                          <div class="swatch" style="background-color: #e65100;" data-color="#e65100"></div>
+                          <!-- Marrones -->
+                          <div class="swatch" style="background-color: #d7ccc8;" data-color="#d7ccc8"></div>
+                          <div class="swatch" style="background-color: #a1887f;" data-color="#a1887f"></div>
+                          <div class="swatch" style="background-color: #795548;" data-color="#795548"></div>
+                          <div class="swatch" style="background-color: #3e2723;" data-color="#3e2723"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="button" class="appearance-chip__btn appearance-chip__btn--ghost" 
+                      onclick="resetColor('prod_color_texto', '#ffffff')" title="{% trans 'Restablecer texto' %}">
+                      <img src="{% static 'ui/img/iconos/brush-cleaning.svg' %}" alt="">
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Fila Icono -->
+                <div class="appearance-row">
+                  <!-- Icono -->
+                  <div class="appearance-chip">
+                    <span class="appearance-chip__label" style="width: 40px;">{% trans "Icono" %}</span>
+                    <input type="hidden" id="prod_icono_boton">
+                    <div id="iconPreview" class="icon-preview-mini"></div>
+                    <button type="button" class="appearance-chip__btn" onclick="openModalIconos()" title="{% trans 'Elegir icono' %}">
+                      {% trans "Elegir" %}
+                    </button>
+                    <button type="button" class="appearance-chip__btn appearance-chip__btn--ghost" id="btnClearProductIcon"
+                      onclick="document.getElementById('prod_icono_boton').value='';document.getElementById('iconPreview').innerHTML='';updateLivePreview();"
+                      title="{% trans 'Borrar icono' %}">✕</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Previsualizador (Derecha) -->
+        <div class="modal__column modal__column--preview">
+          <div class="preview-tpv-container">
+            <span class="preview-label">{% trans "Vista en TPV" %}</span>
+            <div id="tpvLivePreview" class="preview-mockup">
+              <!-- El contenido se genera via JS -->
+            </div>
+            <p class="text-mini color-muted mt-1 text-center">{% trans "Así se verá en el TPV" %}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal__footer">
+      <button class="btn btn--ghost" type="button" onclick="closeModal('modalProducto')">{% trans "Cancelar" %}</button>
+      <button class="btn btn--primary" type="button" id="btnGuardarProducto">{% trans "Guardar" %}</button>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ICONOS -->
+<div id="modalIconos" class="modal-overlay hidden">
+  <div class="modal modal--w600">
+    <div class="modal__header">
+      <h3>{% trans "Seleccionar Icono" %}</h3>
+      <button type="button" class="modal__close" onclick="closeModal('modalIconos')">&times;</button>
+    </div>
+
+    <div class="modal__body" style="padding: 0;">
+      <div id="iconosGrid" class="iconos-grid">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DIALOG (Alert/Confirm) -->
+<div id="modalDialog" class="modal-overlay hidden">
+  <div class="modal modal--confirm">
+    <div class="modal__body modal__body--center">
+      <div id="dialogIcon" class="modal-dialog-icon">
+        <img src="{% static 'ui/img/iconos/info.svg' %}" alt="">
+      </div>
+      <h3 id="dialogTitle" class="mb-2">{% trans "Aviso" %}</h3>
+      <p id="dialogMessage" class="modal-dialog-text">{% trans "¿Estás seguro?" %}</p>
+    </div>
+    <div class="modal__footer">
+      <button type="button" id="btnDialogCancel" class="btn btn--ghost">{% trans "Cancelar" %}</button>
+      <button type="button" id="btnDialogConfirm" class="btn btn--primary">{% trans "Aceptar" %}</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GESTOR DE PLANTILLA (FASE 2) -->
+<div id="modalConfigTemplate" class="modal-overlay hidden" style="z-index: 10001;">
+  <div class="modal modal--w850">
+    <div class="modal__header">
+      <h3 id="configTemplateTitle">{% trans "Plantilla de Configuración" %}</h3>
+      <button class="modal__close" type="button" onclick="closeModal('modalConfigTemplate')">×</button>
+    </div>
+    <div class="modal__body">
+
+         
+         <div class="config-manager-layout">
+             <aside class="config-sidebar">
+                 <div class="sidebar-header">
+                     <div class="sidebar-title-wrap">
+                         <span class="text-mini font-bold text-gradient">{% trans "FORMATOS" %}</span>
+                         <span class="text-tiny text-muted">{% trans "(Ej: Media/Entera)" %}</span>
+                     </div>
+                     <button type="button" class="btn btn--primary btn--compact" onclick="addConfigFormat()">
+                        <img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Añadir" %}
+                     </button>
+                 </div>
+                 <div id="configFormatsList" class="config-items-list hide-scrollbar">
+                     <!-- Formatos inyectados -->
+                 </div>
+             </aside>
+
+             <!-- Main: Grupos -->
+             <main class="config-main hide-scrollbar">
+                 <div class="sidebar-header">
+                    <div class="sidebar-title-wrap">
+                        <span class="text-mini font-bold text-gradient">{% trans "GRUPOS DE OPCIONES" %}</span>
+                    </div>
+                    <button type="button" class="btn btn--primary btn--compact" onclick="addConfigGroup()">
+                        <img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Añadir Grupo" %}
+                    </button>
+                 </div>
+                 <div id="configGroupsList" class="config-groups-container">
+                     <!-- Grupos y Opciones inyectados -->
+                 </div>
+             </main>
+         </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" type="button" onclick="closeModal('modalConfigTemplate')">{% trans "Cerrar" %}</button>
+      <button class="btn btn--primary" type="button" onclick="saveConfigTemplate()">{% trans "Guardar Cambios" %}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Importar Perfiles en Grupos -->
+<div id="modalImportProfile" class="modal-overlay hidden" style="z-index: 20000; background: rgba(0,0,0,0.8);">
+    <div class="modal modal--w500" style="background: #18191a; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.6);">
+        <div class="modal__header" style="padding: 24px 30px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div class="flex items-center">
+                <button id="btnImportBack" class="btn-back-minimal hidden" onclick="showImportProfiles()" title="{% trans 'Volver' %}">
+                    <img src="/static/ui/img/iconos/move-left.svg" alt="" style="width:22px; filter: brightness(0) invert(1);">
+                </button>
+                <h2 id="importModalTitle" class="modal__title" style="font-size: 1.35rem; font-weight: 700; color: #fff; margin-left: 15px;">{% trans "Importar Perfil" %}</h2>
+            </div>
+            <button class="modal__close" type="button" onclick="closeModal('modalImportProfile')" style="top: 24px; right: 28px; font-size: 1.5rem; opacity: 0.6; color: #fff;">×</button>
+        </div>
+        
+        <div class="modal__body" style="padding: 30px;">
+            <!-- Vista de Perfiles -->
+            <div id="importProfilesView" class="flex flex-column gap-5">
+                <div class="form-group mb-0">
+                    <label class="text-xs uppercase font-bold text-muted mb-2 block" style="letter-spacing: 0.05em; opacity: 0.7;">{% trans "Buscar perfil..." %}</label>
+                    <input type="text" id="importProfileSearch" class="form-control" style="background: #242526; border-color: rgba(255,255,255,0.1); height: 46px; border-radius: 8px; color:#fff;" placeholder="{% trans 'Ej. Cafés, Tostadas...' %}" oninput="filterImportProfiles(this.value)">
+                </div>
+
+                <div id="profilesListsWrap" class="flex flex-column gap-5">
+                    <div>
+                        <h4 class="text-xs uppercase text-muted mb-3 font-bold" style="letter-spacing: 0.05em; opacity: 0.5;">{% trans "Suplementos" %}</h4>
+                        <div id="importListSuplementos" class="flex flex-column gap-2"></div>
+                    </div>
+                    <div>
+                        <h4 class="text-xs uppercase text-muted mb-3 font-bold" style="letter-spacing: 0.05em; opacity: 0.5;">{% trans "Comentarios" %}</h4>
+                        <div id="importListComentarios" class="flex flex-column gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista de Items -->
+            <div id="importItemsView" class="hidden">
+                <div id="selectAllImportWrap" class="mb-4">
+                    <div class="select-all-banner">
+                        <span class="text-sm font-bold" style="color: rgba(255,255,255,0.7);">{% trans "¿Importar todo el perfil?" %}</span>
+                        <div class="chip-todos-minimal">
+                            <label class="custom-checkbox-solid">
+                                <input type="checkbox" id="chkImportAll" checked onchange="toggleSelectAllImport(this.checked)">
+                            </label>
+                            {% trans "TODOS" %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-xs uppercase text-muted mb-3 font-bold" style="letter-spacing: 0.05em; opacity: 0.5; margin-top: 10px;">
+                    {% trans "Elementos en el perfil" %}
+                </div>
+                
+                <div id="importItemsList" class="flex flex-column gap-1" style="max-height: 380px; overflow-y: auto; padding-right: 8px; margin-bottom: 20px;">
+                    <!-- Items inyectados -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div id="importFooter" class="modal__footer" style="padding: 24px 30px; background: #242526; border-top: 1px solid rgba(255,255,255,0.05);">
+            <!-- Footer para vista de perfiles -->
+            <div id="footerProfiles" class="flex items-center justify-end w-full" style="gap: 12px;">
+                <button type="button" class="btn btn--subtle m-0" style="padding: 0 32px; height: 48px; border-radius: 10px; font-weight: 600;" onclick="closeModal('modalImportProfile')">{% trans "Cancelar" %}</button>
+            </div>
+            <!-- Footer para vista de items -->
+            <div id="footerItems" class="flex items-center justify-end w-full hidden" style="gap: 16px;">
+                <button type="button" class="btn btn--subtle m-0" style="padding: 0 32px; height: 48px; border-radius: 10px; font-weight: 600;" onclick="showImportProfiles()">{% trans "Cancelar" %}</button>
+                <button type="button" class="btn btn--primary m-0" style="padding: 0 32px; height: 48px; border-radius: 10px; font-weight: 700; font-size: 0.95rem;" onclick="confirmImportItems()">{% trans "Importar Seleccionados" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-back-minimal {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    padding: 0;
+}
+.btn-back-minimal:hover {
+    transform: translateX(-3px);
+}
+
+.profile-import-item {
+    background: #242526;
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+.profile-import-item:hover {
+    background: #2c2d2e;
+    border-color: rgba(255,255,255,0.15);
+}
+
+.import-item-card {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.import-item-card:hover {
+    background: rgba(255,255,255,0.03);
+}
+.import-item-card.is-selected {
+    background: rgba(255,255,255,0.02);
+}
+
+.select-all-banner {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chip-todos-minimal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2ecc71;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.custom-checkbox-wrap {
+    display: flex;
+    align-items: center;
+}
+.custom-checkbox-solid input {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    background: transparent;
+    outline: none;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.custom-checkbox-solid input:checked {
+    background: #2ecc71;
+    border-color: #2ecc71;
+}
+.custom-checkbox-solid input:checked::after {
+    content: '✓';
+    position: absolute;
+    color: #18191a;
+    font-size: 14px;
+    font-weight: 900;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/catalogo/catalogo.js' %}?v=6"></script>
+{% endblock %}

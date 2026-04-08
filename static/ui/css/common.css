@@ -1,0 +1,441 @@
+/* ============================================================
+   VARIABLES Y TEMAS (DRY / Custom Properties)
+   ============================================================ */
+:root {
+  --bg: #0b1020;
+  --panel: rgba(255, 255, 255, .06);
+  --panel2: rgba(255, 255, 255, .09);
+  --text: rgba(255, 255, 255, .92);
+  --muted: rgba(255, 255, 255, .62);
+  --border: rgba(255, 255, 255, .12);
+
+  --danger: #ff3b30;
+
+  --radius: 16px;
+  --shadow2: 0 8px 22px rgba(0, 0, 0, .28);
+}
+
+/* Tema Claro */
+:root[data-theme="light"] {
+  --bg: #f5f7fb;
+  --panel: rgba(0, 0, 0, .04);
+  --panel2: rgba(0, 0, 0, .07);
+  --text: rgba(0, 0, 0, .88);
+  --muted: rgba(0, 0, 0, .55);
+  --border: rgba(0, 0, 0, .10);
+  --shadow2: 0 8px 22px rgba(0, 0, 0, .10);
+}
+
+/* ============================================================
+   ESTILOS GLOBALES Y RESET
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  /* Bloqueo global de selección de texto para evitar el resaltado azul al tocar mucho o arrastrar */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  /* Fondo degradado moderno */
+  background:
+    radial-gradient(1200px 600px at 20% 0%, rgba(120, 80, 255, .25), transparent 55%),
+    radial-gradient(900px 500px at 80% 20%, rgba(0, 255, 170, .12), transparent 55%),
+    linear-gradient(180deg, #0a0f1e, #070b14);
+}
+
+[data-theme="light"] body {
+  background:
+    radial-gradient(1200px 600px at 20% 0%, rgba(120, 80, 255, .14), transparent 55%),
+    radial-gradient(900px 500px at 80% 20%, rgba(0, 150, 255, .10), transparent 55%),
+    linear-gradient(180deg, #ffffff, #f3f6ff);
+}
+
+/* Re-activar la selección nativa únicamente para los campos donde el usuario debe escribir */
+input, textarea {
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Pero obligar a que las "pantallas" numéricas del TPV (que son <input> estéticos) NO se puedan subrayar */
+input[readonly], 
+.calc__display, 
+#calcDisplay, 
+#modalCantidadCustomDisplay, 
+#modalMesaDisplay,
+#modalDescuentoDisplay {
+  -webkit-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  pointer-events: none !important; /* La única forma 100% real de bloquear selección dentro de un <input> */
+}
+
+/* Prevenir que el navegador permita "arrastrar" imágenes o enlaces creando fantasmas sucios */
+img, a {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+/* ============================================================
+   LAYOUT (ESTRUCTURA PRINCIPAL)
+   ============================================================ */
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* Contenedor principal con scroll */
+.main {
+  flex: 1;
+  padding: 18px 18px 14px;
+  overflow: auto;
+}
+
+/* Vista sin barra lateral (ej. TPV) */
+.main--sinlateral {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   CABECERA DE PÁGINA
+   ============================================================ */
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: .2px;
+  font-weight: 900;
+}
+
+.page-head__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hint {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+}
+
+/* ============================================================
+   GRID Y TARJETAS (CARDS)
+   ============================================================ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, .07);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow2);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  min-height: 155px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover {
+  background: rgba(255, 255, 255, .10);
+  transform: translateY(-1px);
+}
+
+.card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .12);
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .card__icon {
+  background: rgba(0, 0, 0, .06);
+  border-color: rgba(0, 0, 0, .10);
+}
+
+.card__icon img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+  transition: transform 0.3s ease;
+}
+
+[data-theme="light"] .card__icon img {
+  filter: none;
+  opacity: 0.8;
+}
+
+.card:hover .card__icon img {
+  transform: scale(1.1);
+  filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+}
+
+.card__body {
+  margin-top: 12px;
+}
+
+.card__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.card__desc {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 650;
+}
+
+.card__cta {
+  margin-top: auto;
+  color: rgba(255, 255, 255, .85);
+  font-weight: 900;
+  font-size: 13px;
+  padding-top: 14px;
+}
+
+[data-theme="light"] .card__cta {
+  color: rgba(0, 0, 0, .75);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Adaptabilidad (Responsive) */
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06);
+  color: inherit;
+  cursor: pointer;
+}
+
+.btn--ghost {
+  background: transparent;
+}
+
+.btn--mini {
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 0.95em;
+}
+
+/* Botón éxito (verde) */
+.btn--success {
+  background: rgba(46, 204, 113, 0.22);
+  border: 1px solid rgba(46, 204, 113, 0.55);
+  color: #eafff3;
+  font-weight: 700;
+}
+
+.btn--success:hover {
+  background: rgba(46, 204, 113, 0.28);
+  border-color: rgba(46, 204, 113, 0.7);
+}
+
+/* Botón peligro (rojo) */
+.btn--danger {
+  background: rgba(231, 76, 60, 0.18);
+  border: 1px solid rgba(231, 76, 60, 0.55);
+  color: #ffecec;
+  font-weight: 700;
+}
+
+.btn--danger:hover {
+  background: rgba(231, 76, 60, 0.24);
+  border-color: rgba(231, 76, 60, 0.7);
+}
+
+.btn--danger:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* Botón Primario (Alias para compatibilidad) */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .12);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.btn-primary:hover {
+  background: rgba(255, 255, 255, .18);
+}
+
+/* ============================================================
+   BARRAS DE DESPLAZAMIENTO (SCROLLBARS)
+   ============================================================ */
+
+/* Estilo para Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .22) rgba(255, 255, 255, .06);
+}
+
+/* Chromium / WebKit */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, .05);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .18);
+  border-radius: 999px;
+  border: 3px solid rgba(0, 0, 0, .15);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, .28);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+.hidden { display: none !important; }
+
+.main--padding-14 {
+  padding: 14px !important;
+}
+
+.mt-14 { margin-top: 14px !important; }
+
+.text-danger { color: #ff6b6b !important; }
+
+/* ============================================================
+   MODALES GENÉRICOS (ALERTAS / CONFIRMACIONES)
+   ============================================================ */
+.modal-overlay-generic {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+.modal-overlay-generic--high { z-index: 11000; }
+
+.modal-container-generic {
+  background: #1e293b;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  text-align: center;
+  padding: 25px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+.modal-container-generic--confirm { max-width: 450px; }
+.modal-container-generic--alert { max-width: 400px; }
+
+.modal-container-generic h2 { margin-top: 0 !important; color: var(--text) !important; font-size: 1.6rem !important; font-weight: 700 !important; }
+.modal-container-generic p { margin: 15px 0 !important; font-size: 1.15rem !important; color: #cbd5e1 !important; line-height: 1.4 !important; }
+.modal-footer-generic { display: flex !important; gap: 12px !important; justify-content: center !important; margin-top: 25px !important; }
+
+.modal-btn-generic { flex: 1; padding: 12px; font-size: 1rem; border-radius: 8px; }
+.modal-btn-generic--primary { background: rgba(120, 160, 255, 0.15) !important; border-color: rgba(120, 160, 255, 0.3) !important; }
+.modal-btn-generic--danger { background: rgba(239, 68, 68, 0.15) !important; border-color: rgba(239, 68, 68, 0.35) !important; color: #f87171 !important; }
+.modal-btn-generic--danger:hover { background: rgba(239, 68, 68, 0.25) !important; }
+.modal-btn-generic--fixed-width { flex: none !important; width: 120px !important; }
+
+/* Modal de confirmación de salida */
+.modal-container-generic--salida { max-width: 380px; }
+.modal-salida__desc { font-size: 0.95rem !important; opacity: 0.7; }
+
+/* Botón Volver a mesas (cabecera TPV) */
+.btn--volver-mesas {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn--volver-mesas svg {
+  opacity: 0.7;
+}
+.btn--volver-mesas:hover svg {
+  opacity: 1;
+}
+

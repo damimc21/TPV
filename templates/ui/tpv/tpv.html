@@ -1,0 +1,114 @@
+{% load i18n static %}
+{% get_current_language as CURRENT_LANGUAGE %}
+<!doctype html>
+<html lang="{{ CURRENT_LANGUAGE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script>
+    (function () {
+      var saved = localStorage.getItem("tpv_theme");
+      document.documentElement.setAttribute("data-theme", saved || "dark");
+    })();
+  </script>
+
+  <title>{% trans "TPV" %}</title>
+  <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/css/tpv/tpv.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/css/tpv/tpv_modal.css' %}">
+</head>
+
+<body class="tpvScreen">
+  <div id="tpvMapMount" class="tpvMount"></div>
+
+  <!-- Modal obligatorio de apertura -->
+  <div id="modalCajaObligatorio" class="modal-overlay hidden">
+    <div class="modal-content professional-modal">
+      <div id="panelCaja">
+        <h2 class="modal-header">
+            {% if not dia_abierto %}
+                {% trans "Apertura de Día" %}
+            {% else %}
+                {% trans "Apertura de Turno" %}
+            {% endif %}
+        </h2>
+
+        <div class="control-grid">
+            <div class="control-row">
+                <span class="control-label">{% trans "Nº de Terminal" %}</span>
+                <div class="control-input">1</div>
+            </div>
+            <div class="control-row">
+                <span class="control-label">{% trans "Fecha" %}</span>
+                <div class="control-input">{{ fecha_hoy }}</div>
+            </div>
+            <div class="control-row">
+                <span class="control-label">{% trans "Turno" %}</span>
+                <div class="control-input">{{ next_turno }}</div>
+            </div>
+        </div>
+
+        {% if not dia_abierto %}
+        <div class="modal-actions">
+          <button id="btnAbrirDiaTPV" class="btn btn--primary btn--full">
+            {% trans "ABRIR DÍA" %}
+          </button>
+        </div>
+        {% else %}
+        <div class="tpv-modal__fondo-info">
+            <div class="tpv-modal__fondo-card" id="fondoCard">
+              <!-- Vista de lectura -->
+              <div id="fondoView" class="tpv-modal__fondo-view">
+                <span class="tpv-modal__fondo-label">
+                    {% trans "Fondo de caja predeterminado" %}
+                </span>
+                <div class="tpv-modal__fondo-display">
+                  <strong id="displayFondo" class="tpv-modal__fondo-valor">{{ fondo_caja_predeterminado }} €</strong>
+                  <button type="button" id="btnEditFondo" class="tpv-modal__edit-btn" title="{% trans 'Modificar' %}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Modo edición -->
+              <div id="fondoEdit" class="tpv-modal__fondo-edit hidden">
+                <span class="tpv-modal__fondo-label">{% trans "Fondo de caja (€)" %}</span>
+                <div class="tpv-modal__edit-controls">
+                  <input type="number" id="inputFondo" class="tpv-modal__edit-input" step="0.01" min="0" value="{{ fondo_caja_predeterminado }}">
+                  <div class="tpv-modal__edit-actions">
+                    <button type="button" id="btnSaveFondo" class="tpv-modal__action-btn tpv-modal__action-btn--confirm">✓</button>
+                    <button type="button" id="btnCancelFondo" class="tpv-modal__action-btn tpv-modal__action-btn--cancel">✕</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="efectivoInicialTPV" value="{{ fondo_caja_predeterminado }}">
+        </div>
+        <div class="modal-actions">
+          <button id="btnAbrirTurnoTPV" class="btn btn--primary btn--full">
+            {% trans "ABRIR TURNO" %}
+          </button>
+        </div>
+        {% endif %}
+      
+        <div class="tpv-modal__back">
+            <a href="{% url 'ui:index' %}" class="btn btn--ghost tpv-modal__back-btn">
+              {% trans "VOLVER" %}
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variables Django → JS -->
+  <script>
+    window.ACTIVE_MAP_ID = "{{ active_map_id|default:'null' }}";
+    window.TPV_DIA_ABIERTO = "{{ dia_abierto|yesno:'true,false' }}" === "true";
+    window.TPV_SESION_ABIERTA = "{{ sesion_abierta|yesno:'true,false' }}" === "true";
+    window.TPV_API_DIA_ABRIR = "{% url 'ui:api_dia_abrir' %}";
+    window.TPV_API_CAJA_ABRIR = "{% url 'ui:api_caja_abrir' %}";
+  </script>
+  <script src="{% static 'ui/js/tpv/tpv_modal.js' %}"></script>
+  <script src="{% static 'ui/js/tpv/tpv_map.js' %}"></script>
+</body>
+</html>

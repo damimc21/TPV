@@ -1,0 +1,279 @@
+/* Modales de cliente: opciones, formulario, y buscador */
+
+/* Sección de opciones */
+
+.modal-container-generic--cliente-opciones {
+    max-width: 500px;
+}
+
+.modal-header-generic {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+.modal-header-generic h2 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.cliente-opciones-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.cliente-opcion-btn {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    color: var(--text);
+    width: 100%;
+}
+
+.cliente-opcion-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #3b82f6;
+    transform: translateX(4px);
+}
+
+.cliente-opcion-icon {
+    font-size: 1.8rem;
+    min-width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(37, 99, 235, 0.1);
+    border-radius: 10px;
+    color: #3b82f6;
+}
+
+.cliente-opcion-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.cliente-opcion-text strong {
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.cliente-opcion-text span {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+/* Formulario de cliente (Ocasional / Nuevo) */
+
+.modal-container-generic--formulario {
+    max-width: 620px;
+}
+
+.modal-container-generic--formulario .modal-header-generic {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+.cliente-form-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px 14px;
+    padding: 0;
+}
+
+.form-group {
+    grid-column: span 3;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.form-group.span-full {
+    grid-column: span 6;
+}
+
+.cliente-form-grid .form-group:nth-last-child(-n+3) {
+    grid-column: span 2;
+}
+
+.form-group label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    opacity: 0.8;
+}
+
+.required-mark {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.form-group input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: var(--text);
+    font-size: 0.95rem;
+    height: 36px;
+    transition: all 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.04);
+}
+
+.invalid-field {
+    border-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+    animation: shake-red 0.4s ease-in-out;
+}
+
+@keyframes shake-red {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+}
+
+.modal-container-generic--formulario .modal-footer-generic {
+    margin-top: 14px;
+    padding-top: 10px;
+}
+
+/* Buscador de clientes */
+
+.modal-container-generic--buscador {
+    max-width: 800px;
+    min-height: 600px;
+}
+
+.buscador-controles {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.buscador-main {
+    position: relative;
+    width: 100%;
+}
+
+.buscador-main input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 14px 20px 14px 50px;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.buscador-main .search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+    font-size: 1.2rem;
+}
+
+.buscador-filtros {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 8px;
+    border-radius: 12px;
+}
+
+.btn-filtro-abc {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.abecedario-scroll {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.abc-item {
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.abc-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.buscador-resultados {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    height: 350px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+}
+
+.resultado-cliente-item {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.resultado-cliente-item:last-child {
+    border-bottom: none;
+}
+
+.resultado-cliente-item:hover {
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.modal-btn-generic {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.modal-btn-generic--save {
+    background: #2563eb;
+    color: white;
+    min-width: 140px;
+}
+
+.modal-btn-generic--save:hover {
+    background: #1d4ed8;
+}

@@ -1,0 +1,93 @@
+{% load i18n %}
+
+<header class="topbar">
+    <div class="topbar__left">
+        <div class="menu-wrap">
+            <button class="icon-btn" id="btnMenu" aria-label="Menú">☰</button>
+
+            <!-- Dropdown del botón ☰ -->
+            <div class="dropdown" id="menuDropdown" aria-hidden="true">
+                <div class="dropdown__section">
+                    <div class="dropdown__title">{% trans "Tema" %}</div>
+                    <button class="dropdown__item" data-set-theme="dark" type="button">{% trans "Modo oscuro" %}</button>
+                    <button class="dropdown__item" data-set-theme="light" type="button">{% trans "Modo claro" %}</button>
+                </div>
+
+                <div class="dropdown__sep"></div>
+
+                <div class="dropdown__section">
+                    <div class="dropdown__title">{% trans "Idioma" %}</div>
+
+                    <button class="dropdown__item {% if CURRENT_LANGUAGE == 'es' %}is-selected{% endif %}"
+                        data-set-lang="es" type="button">
+                        {% trans "ES Español" %}
+                    </button>
+
+                    <button class="dropdown__item {% if CURRENT_LANGUAGE == 'en' %}is-selected{% endif %}"
+                        data-set-lang="en" type="button">
+                        {% trans "EN Inglés" %}
+                    </button>
+                </div>
+
+                <div class="dropdown__sep"></div>
+
+                <div class="dropdown__section">
+                    {% if user.is_authenticated %}
+                    <!-- Logout por POST (evita errores) -->
+                    <form method="post" action="{% url 'ui:logout' %}" class="topbar__logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown__item dropdown__item--full">
+                            ⏻ {% trans "Cerrar sesión" %}
+                        </button>
+                    </form>
+                    {% else %}
+                    <a class="dropdown__item" href="{% url 'ui:login' %}">🔐 {% trans "Iniciar sesión" %}</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="brand">
+            <a href="{% url 'ui:index' %}" class="brand__link">
+                <span class="brand__name">{% trans "TPV Hostelería" %}</span>
+            </a>
+            <span class="pill pill--danger" id="envPill">{% trans "DEMO" %}</span>
+        </div>
+    </div>
+
+    <div class="topbar__right">
+        {% if user.is_authenticated %}
+        <div class="userMenu" id="userMenu">
+            <button class="meta meta--button" id="btnUsuario" type="button">
+                <span class="meta__label">{% trans "Usuario" %}</span>
+                <span class="meta__value">{{ user.get_username }}</span>
+            </button>
+
+            <div class="userMenu__dropdown" id="userDropdown" aria-hidden="true">
+                <a class="userMenu__item"
+                    href="{% url 'ui:login' %}?switch=1&next={{ request.get_full_path|urlencode }}">
+                    🔁 {% trans "Cambiar usuario" %}
+                </a>
+
+                <!-- Logout por POST (correcto) -->
+                <form class="userMenu__form" method="post" action="{% url 'ui:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="userMenu__item userMenu__item--danger">
+                        ⏻ {% trans "Cerrar sesión" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <a class="meta meta--button" href="{% url 'ui:login' %}?next={{ request.get_full_path|urlencode }}">
+            <span class="meta__label">{% trans "Usuario" %}</span>
+            <span class="meta__value">{% trans "Iniciar sesión" %}</span>
+        </a>
+        {% endif %}
+
+        <div class="meta">
+            <span class="meta__label">{% trans "Hora" %}</span>
+            <span class="meta__value" id="clock">--:--:--</span>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,180 @@
+/* ============================================================
+   ESTILOS DEL TICKET DE VENTA (IMPRESIÓN)
+   Formato optimizado para impresoras térmicas (80mm) con estilo limpio.
+   ============================================================ */
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background: #f1f5f9;
+    color: #0f172a;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    margin: 0;
+}
+
+/* Contenedor principal del ticket */
+.ticket {
+    width: 320px;
+    background: #fff;
+    padding: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+}
+
+/* ==========================================
+   1. CABECERA Y DATOS DEL NEGOCIO
+   ========================================== */
+.ticket-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #0f172a;
+}
+
+.business-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+/* Información del documento (Número, Fecha, Camarero) */
+.ticket-info {
+    margin-bottom: 20px;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.ticket-info p {
+    margin: 4px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ==========================================
+   2. DETALLE DE LÍNEAS (PRODUCTOS)
+   ========================================== */
+.ticket-lines {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.ticket-lines th {
+    border-bottom: 1px solid #0f172a;
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+
+.ticket-lines td {
+    padding: 6px 0;
+    vertical-align: top;
+}
+
+/* Columnas específicas */
+.col-qty {
+    width: 35px;
+    text-align: left;
+}
+
+.col-desc {
+    text-align: left;
+}
+
+.col-unit {
+    width: 65px;
+    text-align: right;
+}
+
+.col-total {
+    width: 75px;
+    text-align: right;
+}
+
+/* ==========================================
+   3. TOTALES Y DESGLOSE DE IMPUESTOS
+   ========================================== */
+.ticket-totals {
+    border-top: 1px solid #0f172a;
+    padding-top: 10px;
+    margin-bottom: 20px;
+}
+
+.tax-breakdown {
+    font-size: 13px;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.ticket-totals p,
+.ticket-footer p {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+}
+
+/* Resalte del Total Final */
+.grand-total {
+    font-size: 20px;
+    font-weight: 900;
+    margin-top: 5px;
+    border-top: 2px solid #0f172a;
+    border-bottom: 2px solid #0f172a;
+    padding: 8px 0;
+}
+
+.payment-status {
+    text-align: center;
+    font-weight: normal;
+    color: #0f172a;
+    margin-top: 5px;
+    font-size: 13px;
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+/* ==========================================
+   4. PIE DE TICKET Y AGRADECIMIENTO
+   ========================================== */
+.ticket-footer {
+    text-align: center;
+    font-size: 13px;
+    border-top: 1px dashed #64748b;
+    padding-top: 15px;
+}
+
+.thanks {
+    margin-top: 15px !important;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+    display: block !important;
+}
+
+/* Filas auxiliares del pie */
+.ticket-footer__row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ticket-footer__row--mt { margin-top: 5px; }
+.ticket-footer__row--mb { margin-bottom: 10px; }
+
+/* ==========================================
+   5. AJUSTES PARA IMPRESIÓN REAL
+   ========================================== */
+@media print {
+    body {
+        background: transparent;
+        padding: 0;
+    }
+
+    .ticket {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        max-width: 320px;
+        margin: 0;
+    }
+}

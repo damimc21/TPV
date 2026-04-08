@@ -1,0 +1,19 @@
+{
+  "name": "TPV Hostelería",
+  "short_name": "TPV",
+  "description": "Terminal Punto de Venta para hostelería",
+  "start_url": "/es/tpv/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "icons": [
+    {
+      "src": "/static/ui/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

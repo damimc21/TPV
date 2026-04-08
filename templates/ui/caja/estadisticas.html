@@ -1,0 +1,32 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Estadísticas TPV" %}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div class="page-head__left">
+        <a href="{% url 'ui:caja' %}" class="btn btn--ghost btn--mini">
+            ↩️ {% trans "Volver" %}
+        </a>
+        <h1 class="h1">{% trans "Estadísticas" %}</h1>
+    </div>
+</div>
+
+<div class="tpv-container">
+    <div class="card card--full">
+        <div class="card__header">
+            <h2 class="card__title">{% trans "Análisis de Datos" %}</h2>
+        </div>
+        <div class="card__body">
+            <p class="card__desc">
+                {% trans "Visualiza métricas clave, tendencias de venta y distribución de pagos." %}
+            </p>
+            <div class="empty-state">
+                <div class="empty-state__icon">📈</div>
+                <h3 class="empty-state__title">{% trans "Próximamente" %}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

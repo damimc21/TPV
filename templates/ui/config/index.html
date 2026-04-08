@@ -1,0 +1,43 @@
+{% extends "ui/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Configuración" %}{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <h1 class="h1">{% trans "Configuración" %}</h1>
+</div>
+
+<section class="grid">
+
+    <a class="card" href="{% url 'ui:maps_list' %}">
+        <div class="card__icon">🗺️</div>
+        <div class="card__body">
+            <h2 class="card__title">{% trans "Tus mapas TPV" %}</h2>
+            <p class="card__desc">{% trans "Gestiona, activa y organiza los mapas que has creado." %}</p>
+        </div>
+        <div class="card__cta">{% trans "Abrir" %} →</div>
+    </a>
+
+    <a class="card" href="{% url 'ui:map_editor' %}">
+        <div class="card__icon">➕</div>
+        <div class="card__body">
+            <h2 class="card__title">{% trans "Crear mapa TPV" %}</h2>
+            <p class="card__desc">{% trans "Crea un mapa nuevo usando el editor de mesas." %}</p>
+        </div>
+        <div class="card__cta">{% trans "Crear" %} →</div>
+    </a>
+
+    <a class="card" href="{% url 'ui:index' %}">
+        <div class="card__icon">↩️</div>
+        <div class="card__body">
+            <h2 class="card__title">{% trans "Volver" %}</h2>
+            <p class="card__desc">{% trans "Regresa al menú principal." %}</p>
+        </div>
+        <div class="card__cta">{% trans "Volver" %} →</div>
+    </a>
+
+</section>
+
+{% endblock %}

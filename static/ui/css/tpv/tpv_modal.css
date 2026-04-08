@@ -1,0 +1,306 @@
+/* ============================================================
+   ESTILOS DEL MODAL DE APERTURA (BLOQUEO TPV)
+   Versión definitiva: afinada para máxima precisión visual.
+   ============================================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.93);
+  backdrop-filter: blur(18px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Contenedor del modal: sólido y equilibrado */
+.professional-modal {
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.75rem 2.25rem;
+  border-radius: 24px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Título con línea divisoria refinada */
+.modal-header {
+  color: #f3f4f6;
+  font-size: 1.05rem;
+  margin: 0 0 1.25rem 0;
+  text-transform: uppercase;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 1.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Visibilidad aumentada */
+  padding-bottom: 1.25rem;
+}
+
+/* ==========================================
+   1. BLOQUE DE DATOS OPERATIVOS
+   ========================================== */
+.control-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.75rem;
+  align-items: center;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem; /* Máxima unión visual */
+  width: 100%;
+}
+
+.control-label {
+  color: #e5e7eb;
+  font-size: 0.8rem;
+  font-weight: 700;
+  width: 120px;
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.control-input {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: #f9fafb;
+  width: 135px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================
+   2. SECCIÓN FONDO DE CAJA
+   ========================================= */
+.tpv-modal__fondo-info {
+  margin-bottom: 1.75rem;
+}
+
+/* Tarjeta de fondo: se mantiene la estructura pero se hace interactiva */
+.tpv-modal__fondo-card {
+  background: rgba(16, 185, 129, 0.04);
+  border: 1px solid rgba(16, 185, 129, 0.12);
+  border-radius: 18px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tpv-modal__fondo-view,
+.tpv-modal__fondo-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tpv-modal__fondo-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.tpv-modal__fondo-label {
+  font-size: 0.65rem;
+  color: #9ca3af;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.tpv-modal__fondo-valor {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #10b981;
+  margin: 0;
+  line-height: 1;
+}
+
+.tpv-modal__edit-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #10b981;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.tpv-modal__edit-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.05);
+}
+
+/* Modo Edición Refinado Final */
+.tpv-modal__edit-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem; /* Más compacto y unido */
+}
+
+/* Ocultar flechas de control nativas */
+.tpv-modal__edit-input::-webkit-outer-spin-button,
+.tpv-modal__edit-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.tpv-modal__edit-input {
+  appearance: none;
+  -moz-appearance: textfield;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 10px;
+  color: #10b981;
+  width: 120px; /* Algo más estrecho para mayor integración */
+  height: 38px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 0 0.5rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.tpv-modal__edit-input:focus {
+  border-color: #10b981;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.tpv-modal__edit-actions {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.tpv-modal__action-btn {
+  width: 26px; /* Ajuste final de tamaño */
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.tpv-modal__action-btn--confirm {
+  background: #10b981;
+  color: white;
+}
+
+.tpv-modal__action-btn--confirm:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.tpv-modal__action-btn--cancel {
+  background: rgba(255, 255, 255, 0.03);
+  color: #6b7280;
+  border: 1px solid rgba(255, 255, 255, 0.12); /* Visibilidad aumentada */
+}
+
+.tpv-modal__action-btn--cancel:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #9ca3af;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================
+   3. ACCIONES Y BOTONES
+   ========================================== */
+.modal-actions {
+  margin-bottom: 0.35rem;
+}
+
+.modal-overlay .btn--primary {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  height: 48px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay .btn--primary:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.modal-overlay .btn--full {
+  width: 100%;
+}
+
+/* Botón Volver con contraste ajustado */
+.tpv-modal__back {
+  text-align: center;
+}
+
+.tpv-modal__back-btn {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #9ca3af !important;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.06) !important; /* Presencia aumentada */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Contraste mejorado */
+  border-radius: 12px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.tpv-modal__back-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #f3f4f6 !important;
+}
+
+/* Panel optimizado */
+#panelCaja {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  padding: 0;
+}

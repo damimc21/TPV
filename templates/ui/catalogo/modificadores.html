@@ -1,0 +1,450 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Modificadores" %} - {% trans "Catálogo" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="js-translations" data-seleccionar="{% trans 'Seleccionar' %}" class="hidden"></div>
+<div class="catalogo-app is-resolving">
+    <header class="catalogo-header">
+        <div class="catalogo-tabs">
+            <a href="{% url 'ui:catalogo' %}" class="tab-btn catalogo-back-btn"
+                title="{% trans 'Volver al Catálogo' %}">
+                <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="Volver">
+            </a>
+            <button class="tab-btn is-active" data-tab="comentarios"><img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" alt=""> {% trans "Comentarios" %}</button>
+            <button class="tab-btn" data-tab="suplementos"><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Suplementos" %}</button>
+        </div>
+        <div class="catalogo-actions">
+            <button id="btnNuevoPerfil" class="btn btn--ghost"><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Nuevo Perfil Comentarios" %}</button>
+            <button id="btnNuevoGeneral" class="btn btn--primary" disabled><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Nuevo Comentario" %}</button>
+        </div>
+    </header>
+
+    <main class="catalogo-content">
+        <!-- Barra de Búsqueda y Filtros -->
+        <div class="catalogo-filters">
+            <div class="search-wrapper">
+                <img src="{% static 'ui/img/iconos/package-search.svg' %}" class="search-icon" alt="">
+                <input type="text" id="searchInput" class="form-control" autocomplete="off"
+                    placeholder="{% trans 'Buscar por nombre o ID...' %}">
+            </div>
+
+            <div class="filter-button-wrapper">
+                <button type="button" id="btnToggleFilters" class="btn btn--ghost btn--filter-toggle">
+                    <img src="{% static 'ui/img/iconos/funnel.svg' %}" alt="">
+                    {% trans "Filtros" %}
+                </button>
+
+                <div id="filterPopover" class="filter-popover">
+                    <div class="filter-group hidden" id="filterPrimaryContainer">
+                        <label id="filterPrimaryLabel">{% trans "Filtro" %}</label>
+                        <div class="custom-select" id="customFilterPrimary">
+                            <div class="custom-select-trigger" id="primaryTrigger">
+                                <span>{% trans "Todos" %}</span>
+                                <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
+                            </div>
+                            <div class="custom-select-options" id="primaryOptions">
+                                <div class="custom-option is-selected" data-value="">{% trans "Todos" %}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group hidden" id="filterSecondaryContainer">
+                        <label id="filterSecondaryLabel">{% trans "Filtro secundario" %}</label>
+                        <div class="custom-select" id="customFilterSecondary">
+                            <div class="custom-select-trigger" id="secondaryTrigger">
+                                <span>{% trans "Todos" %}</span>
+                                <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
+                            </div>
+                            <div class="custom-select-options" id="secondaryOptions">
+                                <div class="custom-option is-selected" data-value="">{% trans "Todos" %}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>{% trans "Ordenar por" %}</label>
+                        <div class="custom-select" id="customSortField">
+                            <div class="custom-select-trigger" id="sortFieldTrigger">
+                                <span>{% trans 'ID' %}</span>
+                                <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
+                            </div>
+                            <div class="custom-select-options" id="sortFieldOptions">
+                                <div class="custom-option is-selected" data-value="id">{% trans 'ID' %}</div>
+                                <div class="custom-option" data-value="nombre">{% trans 'Nombre' %}</div>
+                                <div class="custom-option" data-value="activo">{% trans 'Estado' %}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>{% trans "Ordenar" %}</label>
+                        <button type="button" id="sortDirBtn" class="btn-sort-option" title="Cambiar dirección">
+                            <img src="{% static 'ui/img/iconos/move-up.svg' %}" alt="Asc">
+                            <span id="sortDirText">{% trans "Ascendente" %}</span>
+                        </button>
+                    </div>
+
+                    <div class="filter-popover-footer">
+                        <button type="button" id="btnClearFilters" class="btn--clear-filters">
+                            {% trans "Limpiar" %}
+                        </button>
+                        <button type="button" id="btnApplyFilters" class="btn--apply-filters">{% trans "Listo" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-comentarios" class="tab-view is-active">
+            <div class="catalogo-subtabs">
+                <button class="subtab-btn is-active" data-subtab="comentarios-perfiles">
+                    <img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt=""> {% trans "Perfiles" %}
+                </button>
+                <button class="subtab-btn" data-subtab="comentarios-lista"><img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" alt=""> {% trans "Comentarios" %}</button>
+            </div>
+
+            <div class="table-container">
+                <!-- Perfiles de Comentarios -->
+                <div id="subview-comentarios-perfiles" class="sub-view">
+                    <h3 class="catalogo-section-title">
+                        <img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt=""> {% trans "Perfiles de Comentarios" %}
+                    </h3>
+                    <table class="catalogo-table">
+                        <thead>
+                            <tr>
+                                <th>{% trans "ID" %}</th>
+                                <th>{% trans "Nombre" %}</th>
+                                <th>{% trans "Nº Comentarios" %}</th>
+                                <th class="col-activo">{% trans "Activo" %}</th>
+                                <th class="col-actions">{% trans "Acciones" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-perfiles-comentarios">
+                            <tr class="skeleton-row">
+                                <td>
+                                    <div class="skeleton-content skeleton-content--id"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--long"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--short skeleton-content--center"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--pill skeleton-content--center"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--actions"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Comentarios individuales -->
+                <div id="subview-comentarios-lista" class="sub-view hidden">
+                    <h3 class="catalogo-section-title">
+                        <img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" alt=""> {% trans "Comentarios" %}
+                    </h3>
+                    <table class="catalogo-table">
+                        <thead>
+                            <tr>
+                                <th>{% trans "ID" %}</th>
+                                <th>{% trans "Texto" %}</th>
+                                <th class="col-perfil">{% trans "Perfil" %}</th>
+                                <th class="col-activo">{% trans "Activo" %}</th>
+                                <th class="col-actions">{% trans "Acciones" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-comentarios">
+                            <tr class="skeleton-row">
+                                <td>
+                                    <div class="skeleton-content skeleton-content--id"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--long"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--long"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--pill skeleton-content--center"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--actions"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-suplementos" class="tab-view hidden">
+            <div class="catalogo-subtabs">
+                <button class="subtab-btn is-active" data-subtab="suplementos-perfiles"><img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt=""> {% trans "Perfiles" %}</button>
+                <button class="subtab-btn" data-subtab="suplementos-lista"><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Suplementos" %}</button>
+            </div>
+
+            <div class="table-container">
+                <!-- Perfiles de Suplementos -->
+                <div id="subview-suplementos-perfiles" class="sub-view">
+                    <h3 class="catalogo-section-title">
+                        <img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt=""> {% trans "Perfiles de Suplementos" %}
+                    </h3>
+                    <table class="catalogo-table">
+                        <thead>
+                            <tr>
+                                <th>{% trans "ID" %}</th>
+                                <th>{% trans "Nombre" %}</th>
+                                <th>{% trans "Nº Suplementos" %}</th>
+                                <th class="col-activo">{% trans "Activo" %}</th>
+                                <th class="col-actions">{% trans "Acciones" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-perfiles-suplementos">
+                            <tr class="skeleton-row">
+                                <td>
+                                    <div class="skeleton-content skeleton-content--id"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--long"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--short skeleton-content--center"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--pill skeleton-content--center"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--actions"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Suplementos individuales -->
+                <div id="subview-suplementos-lista" class="sub-view hidden">
+                    <h3 class="catalogo-section-title">
+                        <img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Suplementos" %}
+                    </h3>
+                    <table class="catalogo-table">
+                        <thead>
+                            <tr>
+                                <th>{% trans "ID" %}</th>
+                                <th>{% trans "Nombre" %}</th>
+                                <th>{% trans "Precio" %}</th>
+                                <th class="col-perfil">{% trans "Perfil" %}</th>
+                                <th class="col-activo">{% trans "Activo" %}</th>
+                                <th class="col-actions">{% trans "Acciones" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-suplementos">
+                            <tr class="skeleton-row">
+                                <td>
+                                    <div class="skeleton-content skeleton-content--id"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--long"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--short skeleton-content--center"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--long"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--pill skeleton-content--center"></div>
+                                </td>
+                                <td>
+                                    <div class="skeleton-content skeleton-content--actions"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ========== MODALES ========== -->
+
+<!-- Modal: Perfil de Comentarios -->
+<div id="modalPerfilComentario" class="modal-overlay hidden">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="modalPerfilComentarioTitle">{% trans "Nuevo Perfil de Comentarios" %}</h3>
+        </div>
+        <div class="modal__body">
+            <form id="formPerfilComentario">
+                <input type="hidden" id="perfil_comentario_id">
+                <div class="form-group">
+                    <label>{% trans "Nombre del Perfil" %}</label>
+                    <input type="text" id="perfil_comentario_nombre" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="switch-label">
+                        <input type="checkbox" id="perfil_comentario_activo" checked>
+                        {% trans "Activo" %}
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>{% trans "Asociar a Departamentos" %}</label>
+                    <div id="perfil_comentario_deptos" class="selectable-grid"></div>
+                </div>
+                <div class="form-group">
+                    <label>{% trans "Asociar a Productos" %}</label>
+                    <div id="perfil_comentario_prods" class="selectable-grid"></div>
+                </div>
+            </form>
+        </div>
+        <div class="modal__footer">
+            <button type="button" class="btn btn--ghost" onclick="closeModal('modalPerfilComentario')">
+                {% trans "Cancelar" %}
+            </button>
+            <button type="button" class="btn btn--primary" id="btnGuardarPerfilComentario">
+                {% trans "Guardar" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Comentario -->
+<div id="modalComentario" class="modal-overlay hidden">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="modalComentarioTitle">{% trans "Nuevo Comentario" %}</h3>
+        </div>
+        <div class="modal__body">
+            <form id="formComentario">
+                <input type="hidden" id="comentario_id">
+                <div class="form-group">
+                    <label>{% trans "Texto del Comentario" %}</label>
+                    <input type="text" id="comentario_texto" class="form-control" required>
+                </div>
+                <div id="comentario_perfil_container" class="form-group">
+                    <label>{% trans "Perfil" %}</label>
+                    <select id="comentario_perfil" class="form-control" required>
+                        <option value="">{% trans "Seleccionar" %}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="switch-label">
+                        <input type="checkbox" id="comentario_activo" checked>
+                        {% trans "Activo" %}
+                    </label>
+                </div>
+            </form>
+        </div>
+        <div class="modal__footer">
+            <button type="button" class="btn btn--ghost" onclick="closeModal('modalComentario')">
+                {% trans "Cancelar" %}
+            </button>
+            <button type="button" class="btn btn--primary" id="btnGuardarComentario">
+                {% trans "Guardar" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Perfil de Suplementos -->
+<div id="modalPerfilSuplemento" class="modal-overlay hidden">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="modalPerfilSuplementoTitle">{% trans "Nuevo Perfil de Suplementos" %}</h3>
+        </div>
+        <div class="modal__body">
+            <form id="formPerfilSuplemento">
+                <input type="hidden" id="perfil_suplemento_id">
+                <div class="form-group">
+                    <label>{% trans "Nombre del Perfil" %}</label>
+                    <input type="text" id="perfil_suplemento_nombre" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-switch">
+                        <div class="switch">
+                            <input type="checkbox" id="perfil_suplemento_activo" checked>
+                            <span class="slider"></span>
+                        </div>
+                        <span>{% trans "Perfil Activo" %}</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>{% trans "Asociar a Departamentos" %}</label>
+                    <div id="perfil_suplemento_deptos" class="selectable-grid"></div>
+                </div>
+                <div class="form-group">
+                    <label>{% trans "Asociar a Productos" %}</label>
+                    <div id="perfil_suplemento_prods" class="selectable-grid"></div>
+                </div>
+            </form>
+        </div>
+        <div class="modal__footer">
+            <button type="button" class="btn btn--ghost" onclick="closeModal('modalPerfilSuplemento')">
+                {% trans "Cancelar" %}
+            </button>
+            <button type="button" class="btn btn--primary" id="btnGuardarPerfilSuplemento">
+                {% trans "Guardar" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Suplemento -->
+<div id="modalSuplemento" class="modal-overlay hidden">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="modalSuplementoTitle">{% trans "Nuevo Suplemento" %}</h3>
+        </div>
+        <div class="modal__body">
+            <form id="formSuplemento">
+                <input type="hidden" id="suplemento_id">
+                <div class="form-group">
+                    <label>{% trans "Nombre del Suplemento" %}</label>
+                    <input type="text" id="suplemento_nombre" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>{% trans "Precio" %}</label>
+                    <input type="text" id="suplemento_precio" class="form-control" inputmode="decimal"
+                        placeholder="0.00" required>
+                </div>
+                <div id="suplemento_perfil_container" class="form-group">
+                    <label>{% trans "Perfil" %}</label>
+                    <select id="suplemento_perfil" class="form-control" required>
+                        <option value="">{% trans "Seleccionar" %}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-switch">
+                        <div class="switch">
+                            <input type="checkbox" id="suplemento_activo" checked>
+                            <span class="slider"></span>
+                        </div>
+                        <span>{% trans "Activo" %}</span>
+                    </label>
+                </div>
+            </form>
+        </div>
+        <div class="modal__footer">
+            <button type="button" class="btn btn--ghost" onclick="closeModal('modalSuplemento')">
+                {% trans "Cancelar" %}
+            </button>
+            <button type="button" class="btn btn--primary" id="btnGuardarSuplemento">
+                {% trans "Guardar" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/catalogo/modificadores.js' %}?v=21"></script>
+{% endblock %}

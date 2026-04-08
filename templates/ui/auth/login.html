@@ -1,0 +1,55 @@
+{% load i18n static %}
+{% get_current_language as CURRENT_LANGUAGE %}
+<!doctype html>
+<html lang="{{ CURRENT_LANGUAGE }}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script>
+        (function () {
+            const saved = localStorage.getItem("tpv_theme");
+            const theme = saved || "dark";
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <title>{% trans "Iniciar sesión" %}</title>
+    <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'ui/css/auth/login.css' %}">
+</head>
+
+<body class="loginPage">
+    <div class="loginWrap">
+        <h1 class="loginTitle">{% trans "Iniciar sesión" %}</h1>
+        <p class="loginSubtitle">{% trans "Accede con tu usuario para entrar al TPV." %}</p>
+
+        <form method="post" class="loginCard" autocomplete="off">
+            {% csrf_token %}
+
+            <label class="loginLabel">{% trans "Usuario" %}</label>
+            {{ form.username }}
+
+            <label class="loginLabel">{% trans "Contraseña" %}</label>
+            <div class="pwField">
+                {{ form.password }}
+                <button type="button" class="pwToggle" id="pwToggle" data-open="{% static 'ui/img/ojo_abierto.png' %}"
+                    data-closed="{% static 'ui/img/ojo_cerrado.png' %}">
+                    <img id="pwIcon" src="{% static 'ui/img/ojo_abierto.png' %}" alt="">
+                </button>
+            </div>
+            {% if form.errors %}
+            <div class="loginError">
+                {% trans "Usuario o contraseña incorrectos." %}
+            </div>
+            {% endif %}
+
+            <button class="loginBtn" type="submit">{% trans "Entrar" %}</button>
+            <a class="backBtn" href="{% url 'ui:index' %}">
+                ← {% trans "Volver al inicio" %}
+            </a>
+        </form>
+    </div>
+    <script src="{% static 'ui/js/auth/login.js' %}"></script>
+</body>
+
+</html>

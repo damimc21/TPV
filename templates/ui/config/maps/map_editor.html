@@ -1,0 +1,191 @@
+{% extends "ui/base_especial.html" %}
+{% load i18n static %}
+
+{% block extra_head %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+
+{% block title %}{% trans "Editor de mapas TPV" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/config/maps/map_editor.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="editor">
+
+    <!-- CABECERA DEL EDITOR -->
+    <section class="editor__head">
+        <div class="editorHead">
+            <!-- IZQUIERDA: nombre -->
+            <div class="editorHead__left">
+                <div class="editor__label">{% trans "Nombre del mapa" %}</div>
+
+                <div class="editor__nameRow">
+                    <div class="inputWrap">
+                        <input id="mapName" class="editor__input" type="text" placeholder="{% trans 'Ej: Salón' %}">
+                        <button class="inputWrap__clear hidden" id="btnNameCancel" type="button"
+                            aria-label="{% trans 'Cancelar cambios del nombre' %}">✕</button>
+                    </div>
+
+                    <!-- Botón de guardar -->
+                    <button class="iconAction" id="btnSave" type="button" title="{% trans 'Guardar' %}"
+                        aria-label="{% trans 'Guardar' %}">
+                        💾
+                    </button>
+
+                    <!-- Botón de eliminar -->
+                    <button class="iconAction iconAction--danger" id="btnDeleteMap" type="button"
+                        title="{% trans 'Eliminar mapa' %}" aria-label="{% trans 'Eliminar mapa' %}">
+                        🗑
+                    </button>
+                </div>
+
+                <div class="editor__metaRow">
+                    <span id="saveState" class="editor__hint"></span>
+
+                    <div class="editor__resInline">
+                        <span class="editor__labelSmall">{% trans "Resolución:" %}</span>
+
+                        <div class="picker picker--small" id="resPicker">
+                            <button class="picker__btn" id="btnResPicker" type="button">1920 × 1080 ▾</button>
+                            <div class="picker__drop" id="resPickerDrop" aria-hidden="true">
+                                <button class="picker__item" type="button" data-value="5120x1440">5120 × 1440
+                                    (32:9)</button>
+                                <button class="picker__item" type="button" data-value="2560x1080">2560 × 1080
+                                    (21:9)</button>
+                                <button class="picker__item" type="button" data-value="1920x1200">1920 × 1200
+                                    (16:10)</button>
+                                <button class="picker__item" type="button" data-value="1920x1080">1920 × 1080
+                                    (16:9)</button>
+                                <button class="picker__item" type="button" data-value="1280x1024">1280 × 1024
+                                    (5:4)</button>
+                                <button class="picker__item" type="button" data-value="1024x768">1024 × 768
+                                    (4:3)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DERECHA: acciones -->
+            <div class="editorHead__right">
+                <a class="btn btn--ghost" id="btnBack" href="{% url 'ui:config' %}">↩️ Volver</a>
+                <div class="editorHead__stack">
+                    <div class="picker" id="picker">
+                        <button class="picker__btn" id="mapPicker" type="button">📁 Mis mapas ▾</button>
+                        <button id="btnNewMap" class="btn btn-primary">➕ Crear nuevo mapa</button>
+                        <div class="picker__drop" id="pickerDrop" aria-hidden="true"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CUERPO (SIDEBAR + CANVAS) -->
+    <section class="editor__body">
+
+        <!-- PANEL IZQUIERDO -->
+        <aside class="editor__panel">
+
+            <!-- ═══ Herramientas ═══ -->
+            <div class="panel__section">
+                <div class="panel__heading">{% trans "Herramientas" %}</div>
+                <div class="panel__grid panel__grid--2">
+                    <button class="tool" type="button" id="btnPanMode" data-tip="{% trans 'Mover mapa' %}"
+                        data-shortcut="Espacio">
+                        <span class="tool__icon">👋</span>
+                    </button>
+                    <button class="tool is-active" type="button" data-tool="select" data-tip="{% trans 'Seleccionar' %}"
+                        data-shortcut="Espacio">
+                        <span class="tool__icon">🖱️</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel__sep"></div>
+
+            <!-- ═══ Objetos ═══ -->
+            <div class="panel__section">
+                <div class="panel__heading">{% trans "Objetos" %}</div>
+                <div class="panel__grid panel__grid--2">
+                    <button class="tool" type="button" data-tool="mesa_normal" draggable="true"
+                        data-tip="{% trans 'Mesa normal' %}">
+                        <span class="tool__icon">🪑</span>
+                    </button>
+                    <button class="tool" type="button" data-tool="mesa_grande" draggable="true"
+                        data-tip="{% trans 'Mesa grande' %}">
+                        <span class="tool__icon">🧩</span>
+                    </button>
+                    <button class="tool" type="button" data-tool="taburete" draggable="true"
+                        data-tip="{% trans 'Taburete' %}">
+                        <span class="tool__icon">🟠</span>
+                    </button>
+                    <button class="tool" type="button" data-tool="llevar" draggable="true"
+                        data-tip="{% trans 'Llevar' %}">
+                        <span class="tool__icon">👜</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel__sep"></div>
+
+            <!-- ═══ Decoración ═══ -->
+            <div class="panel__section">
+                <div class="panel__heading">{% trans "Decoración" %}</div>
+                <div class="panel__grid panel__grid--2">
+                    <button class="tool" type="button" data-tool="planta" draggable="true" data-tip="Planta">
+                        <span class="tool__icon">🌿</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel__sep"></div>
+
+            <!-- ═══ Acciones ═══ -->
+            <div class="panel__section">
+                <div class="panel__heading">{% trans "Acciones" %}</div>
+                <div class="panel__grid panel__grid--2">
+                    <button class="tool tool--action" id="btnRotateL" type="button"
+                        data-tip="{% trans 'Girar izquierda' %}" data-shortcut="Shift + R">
+                        <span class="tool__icon">↺</span>
+                    </button>
+                    <button class="tool tool--action" id="btnRotateR" type="button"
+                        data-tip="{% trans 'Girar derecha' %}" data-shortcut="R">
+                        <span class="tool__icon">↻</span>
+                    </button>
+                    <button class="tool tool--action" id="btnEditNumber" type="button"
+                        data-tip="{% trans 'Editar número' %}">
+                        <span class="tool__icon">✍️</span>
+                    </button>
+                    <button class="tool tool--danger" id="btnDelete" type="button" data-tip="{% trans 'Eliminar' %}"
+                        data-shortcut="Supr">
+                        <span class="tool__icon">🗑️</span>
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- CANVAS -->
+        <div class="editor__canvasWrap">
+            <div id="canvas" class="editor__canvas" aria-label="{% trans 'Lienzo del mapa' %}">
+                <div id="world" class="editor__world"></div>
+            </div>
+        </div>
+
+    </section>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script id="map-editor-config" type="application/json">
+{
+  "mapsListUrl": "{% url 'ui:maps_list' %}",
+  "editorUrl": "{% url 'ui:map_editor' %}"
+}
+</script>
+<script type="module" src="{% static 'ui/js/config/maps/editor/map_editor.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% load i18n static %}
+{% get_current_language as CURRENT_LANGUAGE %}
+<!doctype html>
+<html lang="{{ CURRENT_LANGUAGE }}" autocomplete="off">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0a0e1a">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="{% static 'ui/img/icon-512.png' %}">
+    <title>{% block title %}TPV{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'ui/css/componentes/topbar.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="app">
+
+        {% include "ui/componentes/topbar.html" %}
+
+        <main class="main main--sinlateral">
+            {% block content %}{% endblock %}
+        </main>
+
+        {% block footer %}{% endblock %}
+
+        <form id="langForm" action="{% url 'set_language' %}" method="post" class="hidden">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <input type="hidden" name="language" id="langInput">
+        </form>
+    </div>
+
+    <script src="{% static 'ui/js/common.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

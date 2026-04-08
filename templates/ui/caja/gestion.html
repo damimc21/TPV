@@ -1,0 +1,183 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Gestión de Caja" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/caja/gestion.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="caja-container">
+    <!-- CABECERA CENTRADA -->
+    <div class="caja-header-layout">
+        <a href="{% url 'ui:caja' %}" class="btn-back-absolute">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <span>{% trans "Atrás" %}</span>
+        </a>
+        <div class="caja-header-centered">
+            <h1 class="h1">{% trans "Gestión de Caja" %}</h1>
+        </div>
+    </div>
+
+    <!-- BLOQUE DE ESTADO UNIFICADO -->
+    <div class="status-summary-bar">
+        <div class="status-summary__item">
+            <span class="status-summary__label">{% trans "Estado del día" %}</span>
+            {% if dia_actual %}
+            <span class="badge badge--success">{% trans "Jornada Abierta" %}</span>
+            {% else %}
+            <span class="badge badge--danger">{% trans "Jornada Cerrada" %}</span>
+            {% endif %}
+        </div>
+        
+        <div class="status-summary__sep"></div>
+
+        <div class="status-summary__item">
+            <span class="status-summary__label">{% trans "Turno actual" %}</span>
+            {% if sesion_actual %}
+            <span class="status-summary__value text-emerald">{% trans "Activo" %}</span>
+            {% else %}
+            <span class="status-summary__value muted">{% trans "Sin turno" %}</span>
+            {% endif %}
+        </div>
+
+        <div class="status-summary__sep"></div>
+
+        <div class="status-summary__item status-summary__item--fondo">
+            <form method="POST" class="fondo-inline-form">
+                {% csrf_token %}
+                <span class="status-summary__label">{% trans "Fondo predeterminado" %}</span>
+                <div class="fondo-input-wrapper">
+                    <div class="fondo-edit-trigger">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </div>
+                    <input type="number" name="fondo_caja" value="{{ fondo_caja_predeterminado }}" step="0.01" class="no-spinners">
+                    <span>€</span>
+                    <button type="submit" title="{% trans 'Guardar ajuste' %}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TARJETA ÚNICA DE SESIÓN -->
+    <div class="main-caja-card">
+        <div class="card card--gestion">
+            <div class="card__header card__header--centered">
+                <h2 class="card__title">{% trans "Sesión de caja" %}</h2>
+            </div>
+            
+            <div class="card__body">
+                <!-- SECCIÓN 1: CABECERA DE DÍA -->
+                <div class="timeline-day-info">
+                    <div class="timeline-day__header">
+                        <div class="timeline-day__icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                        <div class="timeline-day__text">
+                            {% if dia_actual %}
+                                <span class="timeline-day__date">{{ dia_actual.fecha_apertura|date:"d/m/Y" }}</span>
+                                <span class="timeline-day__meta">{% trans "Abre" %}: <strong>{{ dia_actual.fecha_apertura|date:"H:i" }}</strong> · {% trans "Usuario" %}: <strong>{{ dia_actual.abierta_por.username }}</strong></span>
+                            {% else %}
+                                <span class="timeline-day__date">{{ fecha_hoy|date:"d/m/Y" }}</span>
+                                <span class="timeline-day__meta muted">{% trans "Esperando jornada" %}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if dia_actual %}
+                        <div class="timeline-day__total-box">
+                            <span class="day-total-label">{% trans "Recuento Total Día" %}</span>
+                            <span class="day-total-amount">{{ total_dia }} €</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: LISTADO DE TURNOS -->
+                <div class="timeline-sessions mt-1">
+                    <h3 class="section-title">{% trans "Historial de turnos" %}</h3>
+                    <div class="sessions-list">
+                        {% for item in sesiones_del_dia %}
+                        <div class="session-row {% if not item.sesion.fecha_cierre %}session-row--active{% endif %}">
+                            <div class="session-row__main">
+                                <div class="session-row__title">
+                                    <strong>{% trans "Turno" %} {{ forloop.counter }}</strong>
+                                    {% if not item.sesion.fecha_cierre %}
+                                    <span class="session-badge-active">{% trans "En curso" %}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="session-row__details">
+                                    <span>{% trans "Abre" %}: <strong>{{ item.sesion.fecha_apertura|date:"H:i" }}</strong> ({{ item.sesion.abierta_por.username }})</span>
+                                    {% if item.sesion.fecha_cierre %}
+                                    <span class="session-row__sep">|</span>
+                                    <span>{% trans "Cierre" %}: <strong>{{ item.sesion.fecha_cierre|date:"H:i" }}</strong> ({{ item.sesion.cerrada_por.username }})</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="session-row__side">
+                                <span class="session-row__total-label">{% trans "Total turno" %}:</span>
+                                <span class="session-row__amount">{{ item.total }} €</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-sessions">
+                            {% trans "Sin turnos hoy." %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCIONES DE CAJA -->
+    <div class="caja-actions-main-area mt-2">
+        <div class="caja-actions-grid-squares">
+            {% if not dia_actual %}
+                <!-- Abrir Jornada -->
+                <button id="btn-abrir-dia" class="btn-square btn-square--primary">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/><line x1="12" y1="13" x2="12" y2="19"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+                    <span>{% trans "Abrir jornada" %}</span>
+                </button>
+            {% else %}
+                {% if not sesion_actual %}
+                    <!-- Abrir Turno -->
+                    <input type="hidden" id="efectivo-inicial" value="{{ fondo_caja_predeterminado }}">
+                    <button id="btn-abrir-caja" class="btn-square btn-square--primary">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                        <span>{% trans "Abrir turno" %}</span>
+                    </button>
+                    <!-- Cerrar Jornada (Solo si no hay turno abierto) -->
+                    <button id="btn-cerrar-dia" class="btn-square btn-square--danger">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+                        <span>{% trans "Cerrar jornada" %}</span>
+                    </button>
+                {% else %}
+                    <!-- Cerrar Turno (Arqueo) -->
+                    <input type="hidden" id="efectivo-final" value="0.00"> <!-- Mocked for now -->
+                    <input type="hidden" id="observaciones" value="">
+                    <button id="btn-cerrar-caja" class="btn-square btn-square--success">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span>{% trans "Cerrar turno" %}</span>
+                    </button>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Variables Django → JS -->
+<script>
+    window.CAJA_API_DIA_ABRIR = "{% url 'ui:api_dia_abrir' %}";
+    window.CAJA_API_DIA_CERRAR = "{% url 'ui:api_dia_cerrar' %}";
+    window.CAJA_API_CAJA_ABRIR = "{% url 'ui:api_caja_abrir' %}";
+    window.CAJA_API_CAJA_CERRAR = "{% url 'ui:api_caja_cerrar' %}";
+    window.CAJA_I18N = {
+        confirmCerrarDia: "{% trans '¿Estás seguro de cerrar el día?' %}",
+        errorEfectivoReal: "{% trans 'Introduce el efectivo real' %}"
+    };
+</script>
+<script src="{% static 'ui/js/caja/gestion.js' %}"></script>
+{% endblock %}

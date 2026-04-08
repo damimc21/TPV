@@ -1,0 +1,61 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Caja y cierres" %}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1 class="h1">{% trans "Caja y cierres" %}</h1>
+</div>
+
+<section class="grid">
+  <!-- Card: Gestión -->
+  <a class="card" href="{% url 'ui:caja_gestion' %}">
+    <div class="card__icon">🔑</div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Gestión" %}</h2>
+      <p class="card__desc">
+        {% trans "Abrir/Cerrar día y sesión de caja (arqueo)." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Entrar" %} →</div>
+  </a>
+
+  <!-- Card: Cierres -->
+  <a class="card" href="{% url 'ui:caja_cierres' %}">
+    <div class="card__icon">📋</div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Cierres" %}</h2>
+      <p class="card__desc">
+        {% trans "Consulta y revisa cierres por turno o día." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Gestionar" %} →</div>
+  </a>
+
+  <!-- Card: Reaperturas -->
+  <a class="card" href="{% url 'ui:caja_reaperturas' %}">
+    <div class="card__icon">🔄</div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Reaperturas" %}</h2>
+      <p class="card__desc">
+        {% trans "Reapertura de caja" %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Gestionar" %} →</div>
+  </a>
+
+
+  <!-- Card: Estadísticas -->
+  <a class="card" href="{% url 'ui:caja_estadisticas' %}">
+    <div class="card__icon">📈</div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Estadísticas" %}</h2>
+      <p class="card__desc">
+        {% trans "Visualiza métricas clave y evolución de ventas." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Gestionar" %} →</div>
+  </a>
+</section>
+{% endblock %}

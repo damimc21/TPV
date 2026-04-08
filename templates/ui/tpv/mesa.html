@@ -1,0 +1,713 @@
+{% extends "ui/base_sinlateral.html" %}
+{% load i18n static %}
+
+{% block title %}{% blocktrans %}Mesa {{ numero }}{% endblocktrans %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_layout.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_calculadora.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_productos.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_modales.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_cobro.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_dividir.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_clientes.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_configurable.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/componentes/footer.css' %}">
+{% endblock %}
+{% block content %}
+<div class="mesa mesa--loading">
+
+  <!-- ═══ TICKET (arriba izq) ═══ -->
+  <section class="mesa__ticket">
+
+    <div class="ticket__headerTop">
+      <h2>{% blocktrans %}Mesa {{ numero }}{% endblocktrans %}</h2>
+      <div class="ticket__undoRedo">
+        <button type="button" class="btn btn--ghost btn--mini btn--undoredo" id="btnUndoComanda" disabled
+          title="Deshacer">↩</button>
+        <button type="button" class="btn btn--ghost btn--mini btn--undoredo" id="btnRedoComanda" disabled
+          title="Rehacer">↪</button>
+      </div>
+      <a class="btn btn--ghost btn--mini btn--volver-mesas" href="{% url 'ui:tpv' %}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        {% trans "Mesas" %}
+      </a>
+    </div>
+
+    <div class="ticket__cabecera">
+      <span class="ticket__col--qty">Uds</span>
+      <span class="ticket__col--name">{% trans "Descripción" %}</span>
+      <span class="ticket__col--precio">{% trans "Precio" %}</span>
+      <span class="ticket__col--total">{% trans "Total" %}</span>
+      <span class="ticket__col--actions-placeholder"></span>
+      <span class="ticket__col--delete-placeholder"></span>
+    </div>
+    <div class="ticket__lista" id="listaComandas">
+      <div class="ticket__vacia">{% trans "Sin líneas" %}</div>
+    </div>
+    <div class="ticket__footer">
+      <div class="ticket__infoLeft">
+        <span>{% trans "Ticket" %}: —</span>
+        <span>{% trans "Artículos" %}: 0</span>
+      </div>
+      <div id="ticketCurrentClient" class="ticket__currentClient hidden">
+          <div class="client-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span class="client-label">{% trans "CLIENTE" %}</span>
+          </div>
+          <span class="client-name"></span>
+          <button type="button" class="btn-remove-client" id="btnRemoveClient" title="{% trans 'Quitar cliente' %}">&times;</button>
+      </div>
+      <div class="ticket__subtotal">
+        <span class="ticket__subtotalLabel">{% trans "Subtotal" %}:</span>
+        <span class="ticket__subtotalValor" id="totalComanda">0,00 €</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CALCULADORA (arriba centro) ═══ -->
+  <div class="mesa__calc">
+
+    <!-- Barra de botones integrada -->
+    <div class="calc__barra">
+      <button class="calc__barraBtn" type="button" id="btnMesa">
+        🪑
+        {% trans "Mesa" %}
+      </button>
+      <button class="calc__barraBtn" type="button" id="btnTraspasar">
+        ↔️
+        {% trans "Traspasar" %}
+      </button>
+    </div>
+
+    <!-- Display + teclado numérico -->
+    <div class="calc__pantalla">
+      <div class="calc__historial" id="calcHistorial"></div>
+      <input class="calc__display" id="calcDisplay" type="text" value="0" readonly>
+    </div>
+    <div class="calc__teclas">
+      <button class="calc__tecla" type="button" data-calc="7">7</button>
+      <button class="calc__tecla" type="button" data-calc="8">8</button>
+      <button class="calc__tecla" type="button" data-calc="9">9</button>
+      <button class="calc__tecla calc__tecla--borrar" type="button" data-calc="back">←</button>
+      <button class="calc__tecla calc__tecla--borrar" type="button" data-calc="C">C</button>
+      <button class="calc__tecla" type="button" data-calc="4">4</button>
+      <button class="calc__tecla" type="button" data-calc="5">5</button>
+      <button class="calc__tecla" type="button" data-calc="6">6</button>
+      <button class="calc__tecla calc__tecla--op" type="button" data-calc="+">+</button>
+      <button class="calc__tecla calc__tecla--op" type="button" data-calc="×">×</button>
+      <button class="calc__tecla" type="button" data-calc="1">1</button>
+      <button class="calc__tecla" type="button" data-calc="2">2</button>
+      <button class="calc__tecla" type="button" data-calc="3">3</button>
+      <button class="calc__tecla calc__tecla--op" type="button" data-calc="-">−</button>
+      <button class="calc__tecla calc__tecla--op" type="button" data-calc="÷">÷</button>
+      <button class="calc__tecla" type="button" data-calc="0">0</button>
+      <button class="calc__tecla" type="button" data-calc="00">00</button>
+      <button class="calc__tecla" type="button" data-calc=".">.</button>
+      <button class="calc__tecla calc__tecla--op" type="button" data-calc="%">%</button>
+      <button class="calc__tecla calc__tecla--enter" type="button" data-calc="=">=</button>
+    </div>
+
+  </div>
+
+  <!-- ═══ ACCIONES TPV (derecha, altura completa) ═══ -->
+  <div class="mesa__acciones">
+    <button class="accion accion--cobrar" type="button" id="btnCobrar">
+      💰 {% trans "Total" %}
+    </button>
+    <button class="accion accion--comprobante" type="button" id="btnComprobante">
+      🧾 {% trans "Comprobante" %}
+    </button>
+
+    <div class="acciones__fila acciones__fila--mt">
+      <button class="accion" type="button" id="btnReimprimir">
+        🖨️
+        {% trans "Reimpr." %}
+      </button>
+      <button class="accion" type="button" id="btnFactura">
+        📄
+        {% trans "Factura" %}
+      </button>
+    </div>
+    <div class="acciones__fila">
+      <button class="accion" type="button" id="btnDescuento">
+        🏷️
+        {% trans "Dto." %}
+      </button>
+      <button class="accion" type="button" id="btnInvita">
+        🎁
+        {% trans "Invitar" %}
+      </button>
+    </div>
+    <button class="accion accion--peligro" type="button" id="btnAnularLinea">
+      ✂️
+      {% trans "Anular" %}
+    </button>
+    <div class="acciones__sep"></div>
+    <button class="accion accion--peligro" type="button" id="btnBorrarComanda">
+      🗑️
+      {% trans "Borrar comanda" %}
+    </button>
+    <div class="acciones__fila">
+      <button class="accion" type="button" id="btnSepararProductos">
+        🔀
+        {% trans "Separar" %}
+      </button>
+      <button class="accion" type="button" id="btnJuntarProductos">
+        🔗
+        {% trans "Juntar" %}
+      </button>
+    </div>
+    <div class="acciones__fila">
+      <button class="accion" type="button" id="btnCliente">
+        👤
+        {% trans "Cliente" %}
+      </button>
+      <button class="accion" id="btnNota">
+        📝
+        {% trans "Nota" %}
+      </button>
+    </div>
+    <div class="acciones__sep"></div>
+    <button class="accion" type="button" id="btnDividirCuenta">
+      ➗
+      {% trans "Dividir cuenta" %}
+    </button>
+    <div class="acciones__fila">
+      <button class="accion" type="button" id="btnCajon">
+        🗄️
+        {% trans "Cajón" %}
+      </button>
+      <button class="accion" type="button" id="btnOpciones">
+        ⚙️
+        {% trans "Opciones" %}
+      </button>
+    </div>
+    <div class="acciones__sep"></div>
+    <button class="accion" type="button" id="btnSalir">
+      🚪
+      {% trans "Salir" %}
+    </button>
+  </div>
+
+  <!-- ═══ INFERIOR: Departamentos + Productos ═══ -->
+  <div class="mesa__inferior">
+    <div class="mesa__deptos" id="listaDepartamentos">
+    </div>
+    <div class="mesa__productos" id="listaProductos">
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal Descuento -->
+<div id="modalDescuento" class="modal-mesa hidden">
+  <div class="modal-mesa__content modal-mesa__content--wide">
+    <div class="modal-mesa__header">
+      <h2 id="modalDescuentoTitle">{% trans "Aplicar Descuento" %}</h2>
+      <button type="button" class="modal-mesa__close" id="btnCerrarModalDescuento">&times;</button>
+    </div>
+    <div class="modal-mesa__body">
+      <div class="descuento-grid">
+        <div class="descuento-presets">
+          <button type="button" class="btn-descuento-preset" data-val="0">{% trans "Sin descuento" %}</button>
+          <button type="button" class="btn-descuento-preset" data-val="5">5%</button>
+          <button type="button" class="btn-descuento-preset" data-val="10">10%</button>
+          <button type="button" class="btn-descuento-preset" data-val="15">15%</button>
+          <button type="button" class="btn-descuento-preset" data-val="25">25%</button>
+          <button type="button" class="btn-descuento-preset" data-val="50">50%</button>
+        </div>
+
+        <div class="descuento-custom">
+          <div class="modal-mesa__display-container">
+            <input type="text" id="modalDescuentoDisplay" class="modal-mesa__display" readonly value="0">
+            <span class="modal-mesa__unit">%</span>
+          </div>
+          <div class="modal-mesa__keypad">
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="7">7</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="8">8</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="9">9</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="4">4</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="5">5</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="6">6</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="1">1</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="2">2</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="3">3</button>
+            <button type="button" class="modal-mesa__tecla modal-mesa__tecla--c" id="btnCModalDescuento">C</button>
+            <button type="button" class="modal-mesa__tecla btn-descuento-key" data-val="0">0</button>
+            <button type="button" class="modal-mesa__tecla modal-mesa__tecla--back"
+              id="btnBackModalDescuento">⌫</button>
+          </div>
+          <button type="button" class="modal-mesa__tecla modal-mesa__tecla--go modal-mesa__tecla--apply"
+            id="btnGoModalDescuento">{% trans "Aplicar" %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cantidad Custom (Oculto por defecto) -->
+<div id="modalCantidadCustom" class="modal-mesa hidden">
+  <div class="modal-mesa__content">
+    <div class="modal-mesa__header">
+      <h2>Establecer Cantidad</h2>
+      <button type="button" class="modal-mesa__close" id="btnCerrarModalCantidad">&times;</button>
+    </div>
+    <div class="modal-mesa__body">
+      <div class="modal-mesa__display-container">
+        <input type="text" id="modalCantidadCustomDisplay" class="modal-mesa__display" readonly value="">
+      </div>
+      <div class="modal-mesa__keypad">
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="7">7</button>
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="8">8</button>
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="9">9</button>
+
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="4">4</button>
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="5">5</button>
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="6">6</button>
+
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="1">1</button>
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="2">2</button>
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="3">3</button>
+
+        <button type="button" class="modal-mesa__tecla modal-mesa__tecla--c" id="btnCModalCantidad">C</button>
+        <button type="button" class="modal-mesa__tecla btn-qty-key" data-val="0">0</button>
+        <button type="button" class="modal-mesa__tecla modal-mesa__tecla--back" id="btnBackModalCantidad">⌫</button>
+        <button type="button" class="modal-mesa__tecla modal-mesa__tecla--go" id="btnGoModalCantidad">Aplicar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Mesa (Oculto por defecto) -->
+<div id="modalMesa" class="modal-mesa hidden">
+  <div class="modal-mesa__content">
+    <div class="modal-mesa__header">
+      <h2 id="modalMesaTitle">{% trans "Seleccionar Mesa" %}</h2>
+      <button type="button" class="modal-mesa__close" id="btnCerrarModalMesa">&times;</button>
+    </div>
+    <div class="modal-mesa__body">
+      <div class="modal-mesa__display-container">
+        <input type="text" id="modalMesaDisplay" class="modal-mesa__display" readonly value="">
+      </div>
+      <div class="modal-mesa__keypad">
+        <button type="button" class="modal-mesa__tecla" data-val="7">7</button>
+        <button type="button" class="modal-mesa__tecla" data-val="8">8</button>
+        <button type="button" class="modal-mesa__tecla" data-val="9">9</button>
+
+        <button type="button" class="modal-mesa__tecla" data-val="4">4</button>
+        <button type="button" class="modal-mesa__tecla" data-val="5">5</button>
+        <button type="button" class="modal-mesa__tecla" data-val="6">6</button>
+
+        <button type="button" class="modal-mesa__tecla" data-val="1">1</button>
+        <button type="button" class="modal-mesa__tecla" data-val="2">2</button>
+        <button type="button" class="modal-mesa__tecla" data-val="3">3</button>
+
+        <button type="button" class="modal-mesa__tecla modal-mesa__tecla--c" data-val="C">C</button>
+        <button type="button" class="modal-mesa__tecla" data-val="0">0</button>
+        <button type="button" class="modal-mesa__tecla modal-mesa__tecla--back" id="btnBackModalMesa">⌫</button>
+        <button type="button" class="modal-mesa__tecla modal-mesa__tecla--go" id="btnGoModalMesa">Ir a la mesa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL COBRO (Estilo BDP Amplio) ═══ -->
+<div id="modalCobro" class="modal hidden">
+  <div class="cobro-bdp">
+
+    <!-- Header: TOTAL DOCUMENTO -->
+    <div class="cobro-bdp__header">
+      <div class="cobro-bdp__header-center">
+        <div class="cobro-bdp__header-title">{% trans "TOTAL DOCUMENTO" %}</div>
+        <div class="cobro-bdp__header-valor" id="cobroTotal">0.00€</div>
+      </div>
+      <div class="cobro-bdp__header-right">
+        <button type="button" class="cobro-bdp__close-btn" id="btnCobrarCerrarX"
+          title="{% trans 'Cerrar' %}">&times;</button>
+      </div>
+    </div>
+
+    <div class="cobro-bdp__body">
+      <!-- Izquierda: Métodos de pago y Cambio -->
+      <div class="cobro-bdp__left">
+        <div class="cobro-bdp__metodos-list">
+          <div class="cobro-bdp__metodo-row">
+            <button type="button" class="cobro-bdp__btn-metodo cobro-metodo cobro-metodo--activo"
+              data-metodo="efectivo">{% trans "Efectivo" %}</button>
+            <input type="text" id="cobroEntregadoInput" class="cobro-bdp__input-entregado" readonly value="0">
+          </div>
+          <div class="cobro-bdp__metodo-row">
+            <button type="button" class="cobro-bdp__btn-metodo cobro-metodo" data-metodo="tarjeta">
+              {% trans "Tarjeta"%}
+            </button>
+            <input type="text" class="cobro-bdp__input-entregado" readonly disabled placeholder="—">
+          </div>
+        </div>
+
+        <div class="cobro-bdp__cambio-box" id="contenedorEfectivo">
+          <span class="cobro-bdp__cambio-label">{% trans "CAMBIO" %}</span>
+          <span class="cobro-bdp__cambio-valor" id="cobroCambioValor">0.00</span>
+        </div>
+      </div>
+
+      <!-- Derecha: Teclado Numérico -->
+      <div class="cobro-bdp__right">
+        <div class="cobro-bdp__right-content">
+          <div class="cobro-bdp__keypad" id="cobroKeypad">
+            <!-- Fila 1 -->
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="7">7</button>
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="8">8</button>
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="9">9</button>
+            <button type="button" class="cobro-bdp__key cobro-key cobro-bdp__key--action" id="btnBackCobroPay">⌫</button>
+
+            <!-- Fila 2 -->
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="4">4</button>
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="5">5</button>
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="6">6</button>
+            <button type="button" class="cobro-bdp__key cobro-key cobro-bdp__key--danger" data-key="C">C</button>
+
+            <!-- Fila 3 -->
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="1">1</button>
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="2">2</button>
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="3">3</button>
+            <button type="button" class="cobro-bdp__key cobro-key cobro-bdp__key--exacto"
+              id="btnCobroExacto">EXACTO</button>
+
+            <!-- Fila 4 -->
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="0">0</button>
+            <button type="button" class="cobro-bdp__key cobro-key" data-key="00">00</button>
+            <button type="button" class="cobro-bdp__key cobro-key" data-key=",">,</button>
+          </div>
+          <!-- Nueva Barra de Cliente debajo del teclado -->
+          <button type="button" class="cobro-bdp__cliente-bar" id="btnCobroCliente">
+            <span class="cliente-bar__label">{% trans "Cliente" %}:</span>
+            <span class="cliente-bar__nombre" id="cobroClienteNombre">{% trans "Ningún cliente seleccionado" %}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer: Acciones -->
+    <div class="cobro-bdp__footer">
+      <button type="button" class="cobro-bdp__action-btn cobro-bdp__action-btn--cancel" id="btnCobrarCancelar">
+        <span>←</span> {% trans "Salir" %}
+      </button>
+      <div class="cobro-bdp__footer-right">
+        <button type="button" class="cobro-bdp__action-btn cobro-bdp__action-btn--secondary" id="btnCobrarSinTicket">
+          {% trans "Cerrar Sin Imprimir" %}
+        </button>
+        <button type="button" class="cobro-bdp__action-btn cobro-bdp__action-btn--primary" id="btnCobrarConTicket">
+          {% trans "Cerrar Documento" %}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ MODAL GENÉRICO CONFIRMACIÓN ═══ -->
+<div id="modalConfirmarGenerico" class="modal-overlay-generic hidden">
+  <div class="modal-container-generic modal-container-generic--confirm">
+    <h2 id="confirmGenericoTitle">{% trans "Confirmación" %}</h2>
+    <p id="confirmGenericoMsg">{% trans "¿Desea realizar esta acción?" %}</p>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic" id="btnConfirmGenericoCancel">
+        {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--primary" id="btnConfirmGenericoOk">
+        {% trans "Aceptar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL GENÉRICO ALERTA ═══ -->
+<div id="modalAlertaGenerico" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic modal-container-generic--alert">
+    <h2 id="alertGenericoTitle">{% trans "Aviso" %}</h2>
+    <p id="alertGenericoMsg">{% trans "Mensaje de alerta" %}</p>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--fixed-width" id="btnAlertGenericoOk">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL CONFIRMAR SALIDA ═══ -->
+<div id="modalSalir" class="modal-overlay-generic hidden">
+  <div class="modal-container-generic modal-container-generic--salida">
+    <h2>{% trans "¿Quieres salir del TPV?" %}</h2>
+    <p class="modal-salida__desc">{% trans "Volverás al menú principal de la aplicación." %}</p>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic" id="btnSalirCancelar">
+        {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--danger" id="btnSalirConfirmar">
+        {% trans "Salir" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL OPCIONES TPV ═══ -->
+<div id="modalOpciones" class="modal-overlay-generic hidden">
+  <div class="modal-container-generic">
+    <div class="modal-header-generic">
+      <h2>{% trans "Opciones" %}</h2>
+      <button type="button" class="cobro-bdp__close-btn" id="btnCerrarOpciones" title="{% trans 'Cerrar' %}">&times;</button>
+    </div>
+    <div class="modal-body-generic" style="display: flex; flex-direction: column; gap: 15px; padding: 20px;">
+        
+        <!-- Bloque: Tema -->
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--muted); text-transform: uppercase;">{% trans "Tema Visual" %}</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button id="btnThemeDark" class="accion" onclick="setTPVTheme('dark')">🌙 Modo Oscuro</button>
+                <button id="btnThemeLight" class="accion" onclick="setTPVTheme('light')">☀️ Modo Claro</button>
+            </div>
+        </div>
+        
+        <!-- Bloque: Idioma -->
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--muted); text-transform: uppercase;">{% trans "Idioma del Sistema" %}</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button id="btnLangES" class="accion" onclick="setTPVLanguage('es')">🇪🇸 Español</button>
+                <button id="btnLangEN" class="accion" onclick="setTPVLanguage('en')">🇬🇧 Inglés</button>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL DIVIDIR CUENTA ═══ -->
+<div id="modalDividirCuenta" class="modal-overlay-generic hidden">
+  <div class="modal-split-container">
+    <div class="modal-split__header">
+      <h2>{% trans "Dividir Cuenta" %}</h2>
+      <button type="button" class="cobro-bdp__close-btn" id="btnCerrarSplit" title="{% trans 'Cerrar' %}">&times;</button>
+    </div>
+    <div class="modal-split__body">
+      <div id="splitItemsList" class="split-items">
+        <!-- Rellenado dinámicamente -->
+      </div>
+    </div>
+    <div class="modal-split__footer">
+      <div class="split-summary-block">
+        <div class="split-total-info">
+          <span>{% trans "TOTAL SELECCIONADO" %}</span>
+          <span class="split-total-val" id="splitTotalValor">0,00 €</span>
+        </div>
+        <div class="split-stats">
+          <div id="splitStatsLines">{% trans "Líneas" %}: <b>0</b></div>
+          <div id="splitStatsItems">{% trans "Artículos" %}: <b>0</b></div>
+        </div>
+      </div>
+      <div class="modal-split__actions">
+        <button type="button" class="btn-split btn-split--cancel" id="btnCancelarSplit">
+          {% trans "Cancelar" %}
+        </button>
+        <button type="button" class="btn-split btn-split--go" id="btnCobrarSplit" disabled>
+          {% trans "Cobrar" %}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ═══ MODAL PRODUCTO CONFIGURABLE ═══ -->
+<div id="modalConfigurable" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic modal-container-generic--configurable">
+    <div class="modal-header-generic">
+      <h2 id="configModalTitle">Configurar Producto</h2>
+      <button type="button" class="cobro-bdp__close-btn" onclick="cerrarModalConfigurable()">&times;</button>
+    </div>
+    <div class="modal-body-generic" id="configModalBody">
+      <!-- Generado dinámicamente -->
+    </div>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--cancel" onclick="cerrarModalConfigurable()">
+        Cancelar
+      </button>
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--save" id="btnConfigAnadir" onclick="confirmarConfigurable()">
+        Añadir
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL SELECCIONAR CLIENTE ═══ -->
+<div id="modalSeleccionarCliente" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic modal-container-generic--cliente-opciones">
+    <div class="modal-header-generic">
+      <h2>{% trans "Seleccionar Cliente" %}</h2>
+      <button type="button" class="cobro-bdp__close-btn" id="btnCerrarClienteOptions">&times;</button>
+    </div>
+    <div class="modal-body-generic">
+      <div class="cliente-opciones-grid">
+        <button type="button" class="cliente-opcion-btn" id="btnClienteOcasional">
+          <span class="cliente-opcion-icon">👤</span>
+          <div class="cliente-opcion-text">
+            <strong>{% trans "Cliente ocasional" %}</strong>
+            <span>{% trans "Sin datos registrados" %}</span>
+          </div>
+        </button>
+        <button type="button" class="cliente-opcion-btn" id="btnNuevoCliente">
+          <span class="cliente-opcion-icon">➕</span>
+          <div class="cliente-opcion-text">
+            <strong>{% trans "Nuevo cliente" %}</strong>
+            <span>{% trans "Registrar en el sistema" %}</span>
+          </div>
+        </button>
+        <button type="button" class="cliente-opcion-btn" id="btnBuscarCliente">
+          <span class="cliente-opcion-icon">🔍</span>
+          <div class="cliente-opcion-text">
+            <strong>{% trans "Buscar cliente" %}</strong>
+            <span>{% trans "Filtrar por nombre/DNI" %}</span>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic" id="btnCancelarClienteOptions">
+        {% trans "Cancelar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL CLIENTE OCASIONAL (Factura Rápida) ═══ -->
+<div id="modalClienteOcasional" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic modal-container-generic--formulario">
+    <div class="modal-header-generic">
+      <h2>{% trans "Datos de Facturación" %}</h2>
+      <button type="button" class="cobro-bdp__close-btn" id="btnCerrarOcasional">&times;</button>
+    </div>
+    <div class="modal-body-generic">
+      <form id="formClienteOcasional" class="cliente-form-grid" novalidate autocomplete="off">
+        <!-- Fila 1 -->
+        <div class="form-group span-full">
+          <label>{% trans "Nombre / Razón Social" %} <span class="required-mark">*</span></label>
+          <input type="text" name="nombre" required placeholder="{% trans 'Ej: Juan Pérez o Empresa SL' %}" autocomplete="off">
+        </div>
+        
+        <!-- Fila 2 -->
+        <div class="form-group">
+          <label>{% trans "NIF / CIF / NIE" %} <span class="required-mark">*</span></label>
+          <input type="text" name="nif" required placeholder="{% trans '12345678X' %}" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>{% trans "Teléfono" %}</label>
+          <input type="text" name="telefono" placeholder="{% trans 'Opcional' %}" autocomplete="off">
+        </div>
+
+        <!-- Fila 3 -->
+        <div class="form-group span-full">
+          <label>{% trans "Correo electrónico" %}</label>
+          <input type="email" name="email" placeholder="{% trans 'email@ejemplo.com (Opcional)' %}" autocomplete="off">
+        </div>
+        
+        <!-- Fila 4 -->
+        <div class="form-group span-full">
+          <label>{% trans "Domicilio Fiscal" %} <span class="required-mark">*</span></label>
+          <input type="text" name="direccion" required placeholder="{% trans 'Calle, número, piso...' %}" autocomplete="off">
+        </div>
+
+        <!-- Fila 5: Zona Postal Compacta -->
+        <div class="form-group">
+          <label>{% trans "Código Postal" %} <span class="required-mark">*</span></label>
+          <input type="text" name="cp" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>{% trans "Población / Ciudad" %} <span class="required-mark">*</span></label>
+          <input type="text" name="poblacion" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>{% trans "Provincia" %} <span class="required-mark">*</span></label>
+          <input type="text" name="provincia" required autocomplete="off">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer-generic" id="footerClienteForm">
+      <!-- Botones inyectados dinámicamente por JS según modo -->
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--cancel" id="btnCancelarOcasional">
+        {% trans "Cancelar" %}
+      </button>
+      <button type="submit" form="formClienteOcasional" class="accion modal-btn-generic modal-btn-generic--save">
+        {% trans "Aceptar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL BUSCAR CLIENTE ═══ -->
+<div id="modalBuscarClientes" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic modal-container-generic--buscador">
+    <div class="modal-header-generic">
+      <h2>{% trans "Buscador de Clientes" %}</h2>
+      <button type="button" class="cobro-bdp__close-btn" id="btnCerrarBuscarClientes">&times;</button>
+    </div>
+    <div class="modal-body-generic">
+      <div class="buscador-controles">
+        <div class="buscador-main">
+          <input type="text" id="inputBuscarCliente" placeholder="{% trans 'Buscar por nombre, NIF o teléfono...' %}" autocomplete="off">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="buscador-filtros">
+          <button type="button" class="btn-filtro-abc active" id="btnOrdenAbc">A-Z</button>
+          <div class="abecedario-scroll" id="listaAbc">
+            <!-- Generado por JS -->
+          </div>
+        </div>
+      </div>
+      <div class="buscador-resultados" id="listaResultadosClientes">
+        <!-- Resultados cargados vía API -->
+        <div class="buscador-cargando hidden">{% trans "Buscando..." %}</div>
+        <div class="buscador-vacio">{% trans "Escribe para buscar clientes" %}</div>
+      </div>
+    </div>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic" id="btnCerrarModalBuscar">
+        {% trans "Cerrar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block footer %}
+    {% include "ui/componentes/footer.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.MESA_NUMERO = "{{ numero }}";
+  window.TPV_TERMINAL_ID = "{{ terminal_id|default:'1' }}";
+  window.TPV_CONEXION = "{{ conexion|default:'LOCAL' }}";
+  window.TPV_CAJA_ESTADO = "{{ global_estado_caja|default:'—' }}";
+  window.TPV_JORNADA_ESTADO = "{{ global_estado_jornada|default:'—' }}";
+  window.TPV_INDEX_URL = "{% url 'ui:index' %}";
+</script>
+<script src="{% static 'ui/js/tpv/mesa_utils.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_estado.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_catalogo.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_ticket.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_calculadora.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_cobro.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_descuento.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_dividir.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_clientes.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_configurable.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_acciones.js' %}"></script>
+{% endblock %}

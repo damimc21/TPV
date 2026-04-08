@@ -1,0 +1,889 @@
+/* map_editor.css
+   Estilos específicos del editor de mapas (panel + canvas + acciones).
+*/
+
+/* =========================
+   1) Layout general
+   ========================= */
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.editor__head {
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.editor__body {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  min-height: calc(100vh - 190px);
+}
+
+/* =========================
+   2) Cabecera (nombre + acciones en la derecha)
+   ========================= */
+
+.editor__label {
+  font-size: .9rem;
+  opacity: .75;
+  margin-bottom: 6px;
+}
+
+.editor__nameRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.editor__hint {
+  margin-top: 0px;
+  color: #7ddc8a;
+  font-size: .9rem;
+  opacity: .7;
+}
+
+.editor__metaRow {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(420px, 50vw);
+}
+
+.editor__resInline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  white-space: nowrap;
+  position: relative;
+}
+
+
+.editor__selectInline option {
+  background: #0b0f16;
+  color: #e9eefc;
+}
+
+.editor__selectInline:hover {
+  background: rgba(255, 255, 255, .09);
+  border-color: rgba(255, 255, 255, .18);
+}
+
+.editor__selectInline:focus {
+  border-color: rgba(120, 160, 255, .55);
+  box-shadow: 0 0 0 2px rgba(120, 160, 255, .15);
+}
+
+/* Picker pequeño (para resolución) */
+.picker--small .picker__btn {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 14px;
+}
+
+#btnResPicker {
+  width: 130px;
+  /* Hace que no se mueva el layout con los cambios de tamaño en el seleccionador */
+}
+
+.picker--small .picker__drop {
+  top: 44px;
+  min-width: 180px;
+}
+
+/* Grid en cabecera: izquierda (nombre) / derecha (acciones) */
+.editorHead {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: start;
+}
+
+.editorHead__left {
+  min-width: 0;
+}
+
+.editorHead__right {
+  display: flex;
+  gap: 12px;
+  padding-right: 8px;
+  align-items: start;
+}
+
+/* Apilado: Mis mapas + Volver */
+.editorHead__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+/* =========================
+   3) Panel de herramientas (sidebar profesional)
+   ========================= */
+
+.editor__panel {
+  padding: 14px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .10);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 160px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+/* ─── Secciones ─── */
+.panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.panel__heading {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgba(255, 255, 255, .35);
+  padding: 2px 4px 0;
+  user-select: none;
+}
+
+.panel__sep {
+  height: 1px;
+  background: rgba(255, 255, 255, .08);
+  margin: 6px 0;
+}
+
+/* ─── Grid de botones ─── */
+.panel__grid {
+  display: grid;
+  gap: 6px;
+}
+
+.panel__grid--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ─── Botón herramienta ─── */
+.tool {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .04);
+  color: inherit;
+  cursor: pointer;
+  transition: background .14s, border-color .14s, transform .1s;
+}
+
+.tool:hover {
+  background: rgba(255, 255, 255, .10);
+  border-color: rgba(255, 255, 255, .22);
+  transform: scale(1.05);
+  z-index: 20;
+}
+
+.tool.is-active {
+  background: rgba(120, 160, 255, .15);
+  border-color: rgba(120, 160, 255, .4);
+  box-shadow: 0 0 0 1px rgba(120, 160, 255, .15);
+}
+
+.tool--danger {
+  border-color: rgba(255, 80, 80, .25);
+}
+
+.tool--danger:hover {
+  background: rgba(255, 80, 80, .12);
+  border-color: rgba(255, 80, 80, .45);
+}
+
+/* ─── Icono ─── */
+.tool__icon {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ─── Tooltip profesional (::before) ─── */
+.tool[data-tip]::before {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(10, 14, 22, .95);
+  border: 1px solid rgba(255, 255, 255, .14);
+  color: rgba(255, 255, 255, .95);
+  font-size: .85rem;
+  font-weight: 600;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s ease;
+  z-index: 500;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .5);
+}
+
+/* Si tiene shortcut: nombre  ·  atajo */
+.tool[data-shortcut]::before {
+  content: attr(data-tip) "   ·   " attr(data-shortcut);
+}
+
+.tool[data-tip]:hover::before {
+  opacity: 1;
+}
+
+/* =========================
+   4) Canvas y elementos
+   ========================= */
+
+.editor__canvasWrap {
+  position: relative;
+  border-radius: 20px;
+  height: 100%;
+  min-height: 560px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .08);
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .04), transparent 40%);
+  scrollbar-color: rgba(255, 255, 255, .18) rgba(255, 255, 255, .03);
+}
+
+.marquee {
+  position: absolute;
+  border: 1px dashed rgba(255, 255, 255, .55);
+  background: rgba(120, 160, 255, .14);
+  pointer-events: none;
+  border-radius: 10px;
+  display: none;
+  z-index: 99;
+}
+
+/* HTML usa #canvas con clase editor__canvas */
+.editor__canvas {
+  position: relative;
+  overflow: hidden;
+
+  width: 100%;
+  min-height: 560px;
+  /* como antes */
+  height: 100%;
+  /* para que rellene el wrap si tiene altura */
+}
+
+.editor__world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+
+  --itemScale: 1;
+
+  background:
+    radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px);
+  background-size: 22px 22px;
+
+  border: 1px solid rgba(255, 255, 255, .18);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .4) inset;
+}
+
+/* Elementos colocados */
+.mapItem {
+  position: absolute;
+  user-select: none;
+  touch-action: none;
+  cursor: grab;
+  box-sizing: border-box;
+}
+
+.mapItem.is-selected {
+  outline: 2px solid rgba(255, 255, 255, .35);
+  border-radius: 12px;
+}
+
+/* número centrado general */
+.item__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(calc(-1 * var(--rot, 0deg)));
+  font-size: calc(16px * var(--itemScale));
+  font-weight: 700;
+  opacity: .95;
+  pointer-events: none;
+  user-select: none;
+  color: rgba(255, 255, 255, .95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+
+/* Tipos de item */
+.item--mesa_normal {
+  width: calc(70px * var(--itemScale));
+  height: calc(70px * var(--itemScale));
+  border-radius: calc(14px * var(--itemScale));
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+
+.item--mesa_grande {
+  width: calc(140px * var(--itemScale));
+  height: calc(70px * var(--itemScale));
+  border-radius: calc(14px * var(--itemScale));
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+
+
+.item--taburete {
+  width: calc(54px * var(--itemScale));
+  height: calc(54px * var(--itemScale));
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+
+.item--llevar {
+  width: calc(58px * var(--itemScale));
+  height: calc(58px * var(--itemScale));
+  border-radius: calc(16px * var(--itemScale));
+  background: rgba(255, 255, 255, .08);
+  border: 1px dashed rgba(255, 255, 255, .22);
+}
+
+.item--planta {
+  width: calc(35px * var(--itemScale));
+  height: calc(35px * var(--itemScale));
+  background-image: url("/static/ui/img/map_icons/planta.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* =========================
+   5) Componentes UI (input X, botones, dropdown)
+   ========================= */
+
+.editor__input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(0, 0, 0, .08);
+  color: inherit;
+  outline: none;
+}
+
+/* Input con X dentro */
+.inputWrap {
+  position: relative;
+  width: min(420px, 50vw);
+  min-width: 260px;
+}
+
+.inputWrap .editor__input {
+  padding-right: 44px;
+}
+
+/* Cancelar (X) */
+.inputWrap__clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06);
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Botón icono (guardar) */
+.iconAction {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Botón guardar contextual */
+.iconAction[disabled] {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.iconAction--saved {
+  border-color: rgba(80, 255, 120, .35);
+  background: rgba(80, 255, 120, .10);
+}
+
+.iconAction:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  filter: grayscale(40%);
+}
+
+.iconAction:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Borrar */
+.iconAction--danger {
+  border-color: rgba(255, 80, 80, .35);
+}
+
+.iconAction--danger:hover {
+  background: rgba(255, 80, 80, .15);
+}
+
+
+/* Dropdown “Mis mapas” */
+.picker {
+  position: relative;
+}
+
+.picker__btn {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06);
+  color: inherit;
+  cursor: pointer;
+  transition: border-radius .15s ease;
+}
+
+/* Cuando el dropdown está abierto, el botón pierde las esquinas inferiores */
+.picker.is-drop-open .picker__btn {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: transparent;
+}
+
+.picker__drop {
+  position: absolute;
+  left: 0;
+  top: calc(100% - 1px);
+  min-width: 180px;
+  width: max-content;
+  max-height: 240px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .22) transparent;
+  border-radius: 0 0 12px 12px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-top: none;
+  background: rgba(18, 22, 35, .95);
+  backdrop-filter: blur(10px);
+  padding: 4px;
+  z-index: 50;
+
+  /* Animación: desenrollar de arriba a abajo */
+  clip-path: inset(0 0 100% 0 round 0 0 12px 12px);
+  opacity: 0;
+  transition:
+    clip-path .3s cubic-bezier(.4, 0, .2, 1),
+    opacity .25s ease;
+  pointer-events: none;
+}
+
+.picker__drop::-webkit-scrollbar {
+  width: 10px;
+}
+
+.picker__drop::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .18);
+  border-radius: 999px;
+}
+
+.picker__drop.is-open {
+  clip-path: inset(0 0 0 0 round 0 0 12px 12px);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.picker__item {
+  width: 100%;
+  text-align: left;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+}
+
+.picker__header {
+  display: block;
+  width: 100%;
+  padding: 5px 8px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, .10);
+  font-size: .75rem;
+  font-weight: 600;
+  color: rgba(180, 200, 255, .85);
+  text-decoration: none;
+  transition: color .14s;
+}
+
+.picker__header:hover {
+  color: rgba(200, 220, 255, 1);
+}
+
+.picker__item:hover {
+  background: rgba(255, 255, 255, .08);
+}
+
+/* Resolución debajo del nombre */
+.editor__labelSmall {
+  font-size: .85rem;
+  opacity: .75;
+  white-space: nowrap;
+}
+
+.editor__select:hover {
+  background: rgba(0, 0, 0, .45);
+}
+
+.editor__select:focus {
+  border-color: rgba(120, 160, 255, .5);
+  box-shadow: 0 0 0 2px rgba(120, 160, 255, .15);
+}
+
+/* --- FIX dropdown Resolución --- */
+#resPickerDrop {
+  white-space: normal;
+  /* rompe la herencia del nowrap */
+}
+
+/* asegura items en columna */
+#resPickerDrop .picker__item {
+  display: block;
+  width: 100%;
+}
+
+/* Resaltar el item activo (resolución actual) en el dropdown */
+#resPickerDrop .picker__item.is-active {
+  border-color: rgba(120, 160, 255, .45);
+  background: rgba(120, 160, 255, .12);
+}
+
+.picker__item.is-current {
+  font-weight: 600;
+  background: rgba(120, 160, 255, .08);
+  border-left: 3px solid rgba(120, 160, 255, .6);
+  padding-left: 11px;
+}
+
+#resPickerDrop .picker__item:hover {
+  background: rgba(255, 255, 255, .10);
+}
+
+/* opcional: que caiga alineado al botón (mejor en este caso) */
+.picker--small .picker__drop {
+  left: 0;
+  right: auto;
+}
+
+/* =========================
+   6) Drag & drop
+   ========================= */
+
+.tool[draggable="true"] {
+  cursor: grab;
+}
+
+.tool[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* =========================
+   7) Cursores personalizados para cada herramienta
+   ========================= */
+
+/* Cursores de pan */
+.editor__canvas.is-pan-ready {
+  cursor: grab;
+}
+
+.editor__canvas.is-panning {
+  cursor: grabbing;
+}
+
+
+/* =========================
+   8) Guías de alineación
+   ========================= */
+
+.align-guide-x,
+.align-guide-y {
+  position: absolute;
+  background: rgba(120, 160, 255, .8);
+  pointer-events: none;
+  z-index: 200;
+  display: none;
+}
+
+.align-guide-x {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+}
+
+.align-guide-y {
+  height: 1px;
+  left: 0;
+  right: 0;
+}
+
+
+/* Modo pan (mover mapa) */
+.editor__canvas.pan,
+.editor__world.pan {
+  cursor: grab;
+}
+
+.editor__canvas.pan:active,
+.editor__world.pan:active {
+  cursor: grabbing;
+}
+
+
+/* Etiquetas con dos líneas (ej: prefijo + número) */
+.item__label--split {
+  white-space: pre-line;
+  line-height: 1.05;
+  text-align: center;
+}
+
+
+/* =========================
+   9) Modales (reemplazo de alert/confirm/prompt)
+   ========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, .55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn .18s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-card {
+  background: rgba(18, 22, 30, .96);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 18px;
+  padding: 28px 32px 22px;
+  min-width: 340px;
+  max-width: min(460px, 90vw);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .5);
+  animation: modalSlideUp .2s ease;
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, .92);
+}
+
+.modal-message {
+  font-size: .95rem;
+  color: rgba(255, 255, 255, .75);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(0, 0, 0, .25);
+  color: #eee;
+  font-size: .95rem;
+  outline: none;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+}
+
+.modal-input:focus {
+  border-color: rgba(120, 160, 255, .55);
+  box-shadow: 0 0 0 2px rgba(120, 160, 255, .15);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  padding: 9px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06);
+  color: rgba(255, 255, 255, .9);
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+
+.modal-btn:hover {
+  background: rgba(255, 255, 255, .12);
+}
+
+.modal-btn--primary {
+  background: rgba(100, 140, 255, .2);
+  border-color: rgba(100, 140, 255, .4);
+  font-weight: 600;
+}
+
+.modal-btn--primary:hover {
+  background: rgba(100, 140, 255, .3);
+}
+
+.modal-btn--danger {
+  background: rgba(255, 70, 70, .15);
+  border-color: rgba(255, 70, 70, .35);
+}
+
+.modal-btn--danger:hover {
+  background: rgba(255, 70, 70, .25);
+}
+
+
+/* =========================
+   10) Ghost preview al arrastrar desde sidebar
+   ========================= */
+
+.drag-ghost {
+  position: absolute;
+  pointer-events: none;
+  z-index: 300;
+  opacity: .5;
+  transition: opacity .1s;
+}
+
+
+/* =========================
+   11) Menú contextual (clic derecho)
+   ========================= */
+
+.ctx-menu {
+  position: fixed;
+  z-index: 10000;
+  min-width: 180px;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(14, 18, 26, .95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+  animation: modalSlideUp .12s ease;
+}
+
+.ctx-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, .88);
+  font-size: .9rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ctx-menu__item:hover {
+  background: rgba(255, 255, 255, .1);
+}
+
+.ctx-menu__item--danger {
+  color: rgba(255, 100, 100, .9);
+}
+
+.ctx-menu__item--danger:hover {
+  background: rgba(255, 80, 80, .15);
+}
+
+.ctx-menu__item[disabled] {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.ctx-menu__item[disabled]:hover {
+  background: transparent;
+}
+
+.ctx-menu__sep {
+  height: 1px;
+  margin: 4px 8px;
+  background: rgba(255, 255, 255, .1);
+}

@@ -1,0 +1,170 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Ticket" %} #
+        {% if factura %}{{ factura.id }}{% elif comanda_provisional %}{{ comanda_provisional.id }}{% endif %}
+    </title>
+    <link rel="stylesheet" href="{% static 'ui/css/ticket.css' %}">
+</head>
+
+<body>
+
+    <div class="ticket">
+        <!-- Bloque 1: Empresa -->
+        <div class="ticket-header">
+            <h1 class="business-name">TPV Hostelería SL</h1>
+            <p>NIF: B-12345678</p>
+            <p>Calle Falsa 123, 28001 Madrid</p>
+            <p>Tel: 912 345 678</p>
+        </div>
+
+        <div class="ticket-info">
+            <p>
+                <span>{% trans "Tipo de documento" %}:</span>
+                <span>
+                    {% if comanda_provisional %}
+                        {% trans "COMPROBANTE DE VENTA" %}
+                    {% elif factura.estado == "pagada" %}
+                    {% trans "FACTURA SIMPLIFICADA" %}
+                    {% else %}
+                    {% trans "COMPROBANTE DE VENTA" %}
+                    {% endif %}
+                </span>
+            </p>
+            <p><span>{% trans "Fecha/Hora" %}:</span> <span>
+                {% if factura %}
+                    {{ factura.emitida_a|date:"d/m/Y H:i" }}
+                {% else %}
+                    {{ comanda_provisional.abierta_a|date:"d/m/Y H:i" }}
+                {% endif %}
+            </span></p>
+            <p><span>{% trans "Mesa" %}:</span> <span>
+                {% if factura %}
+                    {{ factura.comanda.mesa.nombre }}
+                {% else %}
+                    {{ comanda_provisional.mesa.nombre|default:"-" }}
+                {% endif %}
+            </span></p>
+            <p>
+                <span>{% trans "Atendido por" %}:</span>
+                <span>
+                    {% if factura.emitida_por %}
+                        {{ factura.emitida_por.first_name|default:factura.emitida_por.username }}
+                    {% elif comanda_provisional %}
+                        {{ comanda_provisional.usuario.first_name|default:comanda_provisional.usuario.username }}
+                    {% endif %}
+                </span>
+            </p>
+        </div>
+
+        <!-- Bloque 3: Líneas de productos -->
+        <table class="ticket-lines">
+            <thead>
+                <tr>
+                    <th class="col-qty">Cant.</th>
+                    <th class="col-desc">Artículo</th>
+                    <th class="col-unit">P.U.</th>
+                    <th class="col-total">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if factura %}
+                    {% for linea in factura.comanda.lineas.all %}
+                        {% if not linea.anulado %}
+                        <tr>
+                            <td class="col-qty">{{ linea.cantidad }}</td>
+                            <td class="col-desc">{{ linea.producto_nombre }}</td>
+                            <td class="col-unit">{{ linea.precio_unitario|floatformat:2 }}</td>
+                            <td class="col-total">{{ linea.total|floatformat:2 }} €</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% elif comanda_provisional %}
+                    {% for linea in comanda_provisional.lineas.all %}
+                        {% if not linea.anulado %}
+                        <tr>
+                            <td class="col-qty">{{ linea.cantidad }}</td>
+                            <td class="col-desc">{{ linea.producto_nombre }}</td>
+                            <td class="col-unit">{{ linea.precio_unitario|floatformat:2 }}</td>
+                            <td class="col-total">{{ linea.total|floatformat:2 }} €</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Bloque 4: Impuestos y Totales -->
+        <div class="ticket-totals">
+            <div class="tax-breakdown">
+                {% if factura %}
+                <p><span>{% trans "Base Imponible" %}:</span> <span>{{ factura.subtotal|floatformat:2 }} €</span></p>
+                <p><span>{% trans "IVA (10%)" %}:</span> <span>{{ factura.impuestos|floatformat:2 }} €</span></p>
+                {% else %}
+                {# Cálculo al vuelo para comprobante provisional (IVA 10% incluido) #}
+                <p><span>{% trans "Base Imponible" %}:</span> <span id="valBaseImponible">0,00 €</span></p>
+                <p><span>{% trans "IVA (10%)" %}:</span> <span id="valIVA">0,00 € (incl.)</span></p>
+                {% if comanda_provisional %}
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const totalStr = "{{ comanda_provisional.total_calculado|default:'0' }}";
+                        const total = parseFloat(totalStr.replace(',', '.'));
+                        const bi = (total / 1.10).toFixed(2);
+                        const iva = (total - bi).toFixed(2);
+                        document.getElementById('valBaseImponible').innerText = bi.replace('.', ',') + ' €';
+                        document.getElementById('valIVA').innerText = iva.replace('.', ',') + ' €';
+                    });
+                </script>
+                {% endif %}
+                {% endif %}
+            </div>
+
+            <p class="grand-total">
+                <span>{% trans "TOTAL" %}:</span>
+                <span>
+                    {% if factura %}
+                        {{ factura.total|floatformat:2 }}
+                    {% elif comanda_provisional %}
+                        {{ comanda_provisional.total_calculado|floatformat:2 }}
+                    {% endif %}
+                    €
+                </span>
+            </p>
+
+            {% if not factura or factura.estado != "pagada" %}
+            <p class="payment-status">{% trans "PENDIENTE DE COBRO" %}</p>
+            {% endif %}
+        </div>
+
+        <!-- Bloque 5: Pago y Pie -->
+        <div class="ticket-footer">
+            {% if factura %}
+            <p class="ticket-footer__row">
+                <strong>{% trans "MÉTODO DE PAGO" %}:</strong>
+                <span>{{ factura.tipo_pago|upper }}</span>
+            </p>
+
+            {% if factura.tipo_pago == "efectivo" %}
+            <p class="ticket-footer__row ticket-footer__row--mt">
+                <span>{% trans "Entrega" %}:</span>
+                <span>{{ factura.efectivo_entregado|floatformat:2 }} €</span>
+            </p>
+            <p class="ticket-footer__row ticket-footer__row--mb">
+                <span>{% trans "Cambio" %}:</span>
+                <span>{{ factura.cambio|floatformat:2 }} €</span>
+            </p>
+            {% endif %}
+            {% endif %}
+
+            <p class="thanks">{% trans "¡Gracias por su visita!" %}</p>
+        </div>
+    </div>
+
+    <script src="{% static 'ui/js/ticket.js' %}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,351 @@
+/* Modales genéricos: mesa, cantidad, descuento, confirm, alert, salir + overlay genérico */
+
+/* Bloqueo global de scroll en el fondo cuando hay un modal abierto */
+body:has(.modal:not(.hidden)),
+body:has(.modal-mesa:not(.hidden)),
+body:has(.modal-overlay-generic:not(.hidden)) {
+    overflow: hidden !important;
+    padding-right: 0px; /* Evitar saltos de layout si desaparece la scrollbar */
+}
+
+.modal-mesa {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10050;
+}
+
+.modal-mesa__content {
+    background: #0d121f;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-mesa__header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-mesa__header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.modal-mesa__close {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+.modal-mesa__close:hover {
+    color: var(--text);
+}
+
+.modal-mesa__body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-mesa__content--wide {
+    width: 480px !important;
+    background: rgba(30, 30, 35, 0.7) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-mesa__display-container {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.modal-mesa__display {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 2.22rem;
+    text-align: center;
+    font-family: inherit;
+    font-weight: 600;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    max-width: 110px;
+    letter-spacing: -1px;
+}
+
+.modal-mesa__unit {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--muted);
+    opacity: 0.5;
+}
+
+.modal-mesa__keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.modal-mesa__tecla {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 13px 0;
+    color: var(--text);
+    font-size: 1.15rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-mesa__tecla:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.modal-mesa__tecla:active {
+    transform: scale(0.96);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.modal-mesa__tecla--c {
+    color: #eea2a2;
+    background: rgba(238, 162, 162, 0.05);
+    border-color: rgba(238, 162, 162, 0.1);
+}
+
+.modal-mesa__tecla--c:hover {
+    background: rgba(238, 162, 162, 0.12);
+}
+
+.modal-mesa__tecla--back {
+    font-size: 1.3rem;
+    color: var(--muted);
+}
+
+.modal-mesa__tecla--go {
+    background: rgba(37, 99, 235, 0.85);
+    color: white;
+    font-weight: 700;
+    border: none;
+    grid-column: 1 / -1;
+    height: 50px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 10px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-mesa__tecla--go:hover {
+    background: rgba(37, 99, 235, 1);
+    transform: translateY(-1px);
+}
+
+.modal-mesa__tecla--go:active {
+    transform: translateY(1px);
+}
+
+/* Grid de descuento */
+
+.descuento-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 20px;
+    align-items: start;
+    padding: 10px 0;
+}
+
+.descuento-presets {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-descuento-preset {
+    padding: 10px 10px;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.btn-descuento-preset:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+#btnInvita {
+    background: rgba(255, 193, 7, 0.05);
+    color: #ffca28;
+    border-color: rgba(255, 193, 7, 0.2);
+}
+
+#btnInvita:hover {
+    background: rgba(255, 193, 7, 0.15);
+    border-color: rgba(255, 193, 7, 0.4);
+}
+
+/* Overlay genérico (confirm, alert, salir) */
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    z-index: 10050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.hidden {
+    display: none !important;
+}
+
+/* Overlay genérico para confirm/alert/salir */
+
+.modal-overlay-generic {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    z-index: 10050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay-generic--high {
+    z-index: 10060;
+}
+
+.modal-overlay-generic.hidden {
+    display: none !important;
+}
+
+.modal-container-generic {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    max-width: 400px;
+    width: 90vw;
+}
+
+.modal-container-generic h2 {
+    margin: 0 0 12px;
+    font-size: 1.2rem;
+}
+
+.modal-container-generic p {
+    color: var(--muted);
+    margin: 0 0 20px;
+    font-size: 0.95rem;
+}
+
+.modal-footer-generic {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-btn-generic--primary {
+    background: #2563eb;
+    color: white;
+    border: none;
+}
+
+.modal-btn-generic--primary:hover {
+    background: #1d4ed8;
+}
+
+.modal-btn-generic--danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.modal-btn-generic--danger:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+.modal-btn-generic--fixed-width {
+    min-width: 100px;
+}
+
+.modal-btn-generic--cancel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--muted);
+}
+
+.modal-salida__desc {
+    font-size: 0.9rem;
+}
+
+.modal-container-generic--confirm,
+.modal-container-generic--alert,
+.modal-container-generic--salida {
+    max-width: 420px;
+}
+
+.badge-dto {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: .66rem;
+    font-weight: 800;
+    background: rgba(255, 193, 7, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    margin-left: 6px;
+    vertical-align: middle;
+}

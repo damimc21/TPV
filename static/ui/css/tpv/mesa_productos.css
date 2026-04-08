@@ -1,0 +1,201 @@
+/* Departamentos y productos: columna lateral y cuadrícula */
+
+.mesa__deptos {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 5px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    background: rgba(0, 0, 0, .08);
+}
+
+.mesa__deptos::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mesa__deptos::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mesa__deptos::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background-clip: content-box;
+    border: 2px solid transparent;
+}
+
+.depto {
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--muted);
+    font-size: .84rem;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+    transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+}
+
+.depto.is-active {
+    background: rgba(120, 160, 255, .15);
+    border-color: rgba(120, 160, 255, .45);
+}
+
+/* Cuadrícula de productos */
+
+.mesa__productos {
+    overflow-y: auto;
+    padding: 6px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+    gap: 5px;
+    align-content: start;
+}
+
+.producto {
+    position: relative;
+    display: block;
+    padding: 0;
+    border-radius: 0;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+    min-height: 90px;
+    overflow: hidden;
+    transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+/* Efectos 100% seguros (al ser cuadrado, no existe el bug de bordes) */
+.producto:hover {
+    filter: brightness(1.15); /* Ilumina ligeramente */
+}
+
+.producto:active {
+    filter: brightness(0.85); /* Oscurece al hacer clic (efecto pulsado estático) */
+}
+
+/* ── Card with image ─────────────────────────────────── */
+.producto--con-imagen {
+    border: none;
+}
+
+.producto__img-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--panel);
+}
+
+.producto__img-wrapper img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1);
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0.2, 1);
+    
+    /* Prevenir que se pueda "arrastrar" la imagen nativamente y crear fantasmas */
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+.producto:hover .producto__img-wrapper img {
+    transform: scale(1.06); /* Zoom interior súper suave y sin "sangrar" */
+}
+
+/* ── Info strip (shared base) ────────────────────────── */
+.producto__info {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* ── Info strip: WITH image — absolute anchored to bottom ── */
+.producto--con-imagen .producto__info {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 2;
+    min-height: 36px; /* Ajustado para invadir menos la foto */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 15, 20, 0.92);
+    padding: 3px 6px; /* Menor padding vertical */
+    box-sizing: border-box;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* ── Info strip: WITHOUT image ───────────────────────── */
+.producto__info--sin-imagen {
+    padding: 12px 8px;
+    gap: 6px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ── Name ─────────────────────────────────────────────── */
+.producto__nombre {
+    line-height: 1.15; /* Comprime el alto de línea sin apretar demasiado */
+    font-size: .74rem; /* Ligeramente más pequeño para optimizar espacio */
+    font-weight: 700;
+    width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Vuelve a las 2 líneas en tarjetas fotográficas para aprovechar el espacio que dejó el precio */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    padding: 0 2px;
+}
+
+/* ── Price Pill (NUEVO DISEÑO INDEPENDIENTE SUPERIOR) ── */
+.producto__precio-pill {
+    position: absolute;
+    top: 4px;
+    right: 4px; /* Más ceñida a la esquina */
+    z-index: 3;
+    background: rgba(10, 10, 15, 0.94);
+    color: #fff;
+    font-size: 0.65rem; /* Menor intrusión visual */
+    font-weight: 800;
+    padding: 2px 5px; /* Pastilla más esbelta */
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    pointer-events: none; /* No entorpece clics/hovers */
+}
+
+/* ── Price (Tarjetas Base Sin Imagen) ────────────────── */
+.producto__precio {
+    color: var(--muted);
+    font-size: .65rem;
+    font-weight: 600;
+    line-height: 1;
+    flex-shrink: 0;
+}

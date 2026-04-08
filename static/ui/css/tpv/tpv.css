@@ -1,0 +1,83 @@
+/* ============================================================
+   ESTILOS DE LA PANTALLA PRINCIPAL DEL TPV (MAPA)
+   Define la visualización del mapa de mesas y sus elementos.
+   ============================================================ */
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body.tpvScreen {
+  overflow: hidden;
+}
+
+.tpvMount {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,.25);
+}
+
+/* “Escenario” del mapa: permite escalado dinámico */
+.tpvWorld {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+}
+
+/* ==========================================
+   1. ELEMENTOS DEL MAPA (MESA, TABURETE, ETC)
+   ========================================== */
+.tpvItem {
+  position: absolute;
+  user-select: none;
+}
+
+/* Etiqueta con el número de la mesa */
+.tpvLabel{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:18px;
+  line-height:1;
+}
+
+/* ==========================================
+   2. TIPOS DE ELEMENTOS Y ESTÉTICA
+   ========================================== */
+.tpvItem.mesa_normal{
+  width:70px; height:70px; border-radius:14px;
+  background: rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.18);
+}
+
+.tpvItem.mesa_grande{
+  width:140px; height:70px; border-radius:14px;
+  background: rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.18);
+}
+
+.tpvItem.taburete{
+  width:54px; height:54px; border-radius:999px;
+  background: rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.18);
+}
+
+.tpvItem.llevar{
+  width:58px; height:58px; border-radius:16px;
+  background: rgba(255,255,255,.08);
+  border:1px dashed rgba(255,255,255,.22);
+}
+
+.tpvItem.planta{
+  width:35px; height:35px;
+  background-image: url("/static/ui/img/map_icons/planta.png");
+  background-size: 100%;
+  background-repeat:no-repeat;
+}
