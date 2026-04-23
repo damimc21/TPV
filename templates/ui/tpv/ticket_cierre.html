@@ -1,0 +1,210 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ tipo_cierre }} #{{ doc_id }}</title>
+    <link rel="stylesheet" href="{% static 'ui/css/tpv/ticket_cierre.css' %}">
+</head>
+
+<body>
+
+    <div class="z-report">
+        <!-- 1) CABECERA EMPRESA -->
+        <div class="header text-center">
+            <h1>BAR RESTAURANTE DEMO</h1>
+            <p>DEMO HOSTELERÍA S.L.</p>
+            <p>B-12345678</p>
+            <p>AV. PRINCIPAL 45, MADRID</p>
+            <p>TEL: 912 345 678</p>
+        </div>
+
+        <div class="divider thick"></div>
+
+        <!-- 2) IDENTIFICACIÓN DEL CIERRE -->
+        <div class="text-center bold" style="font-size: 1.1rem;">
+            CIERRE {% if tipo_cierre == "JORNADA" %}Z DE JORNADA{% else %}DE TURNO{% endif %}
+        </div>
+        
+        <div class="divider"></div>
+
+        <div class="row">
+            <span>Nº CIERRE:</span>
+            <span class="bold">#{{ doc_id }}</span>
+        </div>
+        <div class="row">
+            <span>CAJA:</span>
+            <span>PRINCIPAL 01</span>
+        </div>
+        <div class="row">
+            <span>TERMINAL:</span>
+            <span>TPV-01</span>
+        </div>
+        <div class="row">
+            <span>FECHA NEGOCIO:</span>
+            <span>{{ fecha_negocio|date:"d/m/Y" }}</span>
+        </div>
+        <div class="row">
+            <span>APERTURA:</span>
+            <span>{{ apertura|date:"H:i:s" }}</span>
+        </div>
+        <div class="row">
+            <span>CIERRE:</span>
+            <span>{{ cierre|date:"H:i:s" }}</span>
+        </div>
+        <div class="row">
+            <span>IMPRESIÓN:</span>
+            <span>{% now "d/m/Y H:i" %}</span>
+        </div>
+        <div class="row">
+            <span>USUARIO:</span>
+            <span>{{ responsable.first_name|default:responsable.username|upper }}</span>
+        </div>
+
+        <!-- 3) AUDITORÍA VENTAS -->
+        <div class="section-title">AUDITORÍA VENTAS</div>
+        <div class="row">
+            <span>TOTAL TICKETS:</span>
+            <span>{{ total_tickets }}</span>
+        </div>
+        <div class="row">
+            <span>BASE IMPONIBLE:</span>
+            <span>{{ subtotal|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>IMPUESTOS (IVA):</span>
+            <span>{{ impuestos|floatformat:2 }} €</span>
+        </div>
+        <div class="row bold" style="font-size: 1rem; margin-top: 4px;">
+            <span>TOTAL VENTAS:</span>
+            <span>{{ total_ventas|floatformat:2 }} €</span>
+        </div>
+
+        {% if dinero_descuentos > 0 or dinero_invitaciones > 0 %}
+        <div class="row" style="margin-top:4px; font-size: 0.75rem; color: #555;">
+            <span>DESCUENTOS/INVIT.:</span>
+            <span>-{{ dinero_descuentos|add:dinero_invitaciones|floatformat:2 }} €</span>
+        </div>
+        {% endif %}
+
+        <!-- 4) DESGLOSE POR MEDIOS DE PAGO -->
+        <div class="section-title">DESGLOSE PAGOS</div>
+        <div class="row">
+            <span>EFECTIVO (SISTEMA):</span>
+            <span>{{ efectivo_ventas|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>TARJETA (SISTEMA):</span>
+            <span>{{ tarjeta_ventas|floatformat:2 }} €</span>
+        </div>
+        <div class="row bold">
+            <span>TOTAL COBRADO:</span>
+            <span>{{ total_cobrado|floatformat:2 }} €</span>
+        </div>
+
+        <!-- 5) MOVIMIENTOS DE CAJA -->
+        <div class="section-title">MOVIMIENTOS CAJA</div>
+        <div class="row">
+            <span>FONDO INICIAL:</span>
+            <span>{{ fondo_inicial|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>(+) ENTRADAS EXTRAS:</span>
+            <span>{{ entradas|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>(-) SALIDAS (GASTOS):</span>
+            <span>- {{ salidas|floatformat:2 }} €</span>
+        </div>
+
+        <!-- 6) CUADRE DE CAJA / ARQUEO -->
+        <div class="section-title">CUADRE DE CAJA</div>
+        
+        <div class="row">
+            <span>EFECTIVO:</span>
+            <span class="bold">{{ efectivo_real|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>TARJETA:</span>
+            <span>{{ tarjeta_ventas|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>ENTRADAS:</span>
+            <span>{{ entradas|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>SALIDAS:</span>
+            <span>{{ salidas|floatformat:2 }} €</span>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="row bold">
+            <span>DA UN TOTAL:</span>
+            <span>{{ total_bruto_arqueo|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>(-) FONDO DE CAJA:</span>
+            <span>- {{ fondo_inicial|floatformat:2 }} €</span>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="row bold" style="font-size: 0.95rem;">
+            <span>TOTAL REAL:</span>
+            <span>{{ total_real_neto|floatformat:2 }} €</span>
+        </div>
+        <div class="row">
+            <span>Z:</span>
+            <span>{{ total_ventas|floatformat:2 }} €</span>
+        </div>
+
+        <!-- 7) RESULTADO FINAL DEL CIERRE -->
+        <div class="result-box">
+            <h2 class="bold">
+                {% if descuadre == 0 %}CUADRADA
+                {% elif descuadre > 0 %}SOBRANTE
+                {% else %}FALTANTE{% endif %}
+            </h2>
+            <div class="amount">
+                {% if descuadre > 0 %}+{% endif %}{{ descuadre|floatformat:2 }} €
+            </div>
+        </div>
+
+        <!-- 8) DETALLE TURNOS (Solo en Z) -->
+        {% if tipo_cierre == "JORNADA" %}
+        <div class="divider"></div>
+        <div class="section-title" style="font-size: 0.8rem;">RECUENTO TURNOS</div>
+        {% for s in sesiones %}
+        <div class="row" style="font-size: 0.75rem;">
+            <span>T{{ forloop.counter }} ({{ s.obj.abierta_por.username|upper }}):</span>
+            <span>{{ s.total|floatformat:2 }} €</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- 9) VALIDACIÓN -->
+        <div class="divider thick"></div>
+        <div style="margin-top: 20px; font-size: 0.8rem;">
+            <p class="bold">RESPONSABLE CIERRE:</p>
+            <div style="height: 60px; border-bottom: 1px solid #000; margin-bottom: 5px;"></div>
+            <p class="text-center">{{ responsable.first_name|default:responsable.username|upper }}</p>
+            
+            <p class="bold" style="margin-top: 20px;">OBSERVACIONES:</p>
+            <div style="height: 40px; border-bottom: 1px dotted #000;"></div>
+            <div style="height: 40px; border-bottom: 1px dotted #000;"></div>
+        </div>
+
+        <!-- 10) PIE TÉCNICO -->
+        <div class="divider"></div>
+        <div class="text-center" style="font-size: 0.7rem; color: #333; margin-top: 10px;">
+            SOFTWARE TPV HOSTELERÍA v2.4<br>
+            DOC-ID: {{ tipo_cierre|slice:":1" }}{{ doc_id }}<br>
+            www.tpvhosteleria.demo
+        </div>
+    </div>
+
+</body>
+</html>
+

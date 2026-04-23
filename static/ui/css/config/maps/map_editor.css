@@ -658,7 +658,7 @@
   background: rgba(120, 160, 255, .8);
   pointer-events: none;
   z-index: 200;
-  display: none;
+  display: block;
 }
 
 .align-guide-x {

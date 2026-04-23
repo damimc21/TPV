@@ -4,6 +4,7 @@
  */
 (function () {
   'use strict';
+  const Notify = window.Notify;
 
   // Identificar si el estado ya es válido desde variables de servidor
   const diaAbierto = window.TPV_DIA_ABIERTO === true;
@@ -49,7 +50,7 @@
       if (data.ok) {
         location.reload();
       } else {
-        alert(data.error);
+                Notify.error(data.error);
       }
     });
   }
@@ -109,7 +110,7 @@
     btnSaveFondo.addEventListener('click', () => {
       let nuevoValor = parseFloat(inputFondo.value);
       if (isNaN(nuevoValor) || nuevoValor < 0) {
-        alert("Por favor, introduce un importe válido.");
+            Notify.info("Por favor, introduce un importe válido.");
         return;
       }
       
@@ -138,7 +139,7 @@
       if (data.ok) {
         modal.classList.add('hidden');
       } else {
-        alert(data.error);
+            Notify.error(data.error);
       }
     });
   }

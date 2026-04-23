@@ -5,14 +5,68 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo.css' %}?v=11">
-<style>
-  /* Prevent any content from being visible until JS resolves the active tab */
-  .catalogo-app.is-resolving .tab-view { display: none !important; }
-  .catalogo-app.is-resolving .catalogo-actions { visibility: hidden; }
-</style>
+<link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo_extras.css' %}?v=1">
 {% endblock %}
 
 {% block content %}
+{% trans "Nuevo Departamento" as t_js_new_department %}
+{% trans "Nuevo Producto" as t_js_new_product %}
+{% trans "-- Todos los Deptos --" as t_js_all_departments %}
+{% trans "ID" as t_js_sort_id %}
+{% trans "Error al cargar datos." as t_js_departments_error %}
+{% trans "Cargando departamentos..." as t_js_departments_loading %}
+{% trans "No se encontraron departamentos." as t_js_departments_empty %}
+{% trans "Error al guardar el departamento" as t_js_department_save_error %}
+{% trans "¿Seguro que deseas eliminar este departamento? No contiene productos." as t_js_department_confirm_delete %}
+{% trans "Eliminar Departamento" as t_js_department_delete_title %}
+{% trans "Error al eliminar" as t_js_department_delete_error %}
+{% trans "Error al cargar productos." as t_js_products_error %}
+{% trans "Cargando productos..." as t_js_products_loading %}
+{% trans "No se encontraron productos." as t_js_products_empty %}
+{% trans "El importe del producto es 0. ¿Estás seguro?" as t_js_product_zero_confirm %}
+{% trans "Precio en 0" as t_js_product_zero_title %}
+{% trans "No ha seleccionado ninguna impresora (factura/comanda). ¿Está seguro?" as t_js_product_no_printer_confirm %}
+{% trans "Sin impresora" as t_js_product_no_printer_title %}
+{% trans "Error al guardar el producto" as t_js_product_save_error %}
+{% trans "Error al guardar" as t_js_product_save_error_title %}
+{% trans "¿Seguro que deseas eliminar este producto?" as t_js_product_confirm_delete %}
+{% trans "Eliminar producto" as t_js_product_delete_title %}
+{% trans "Error al eliminar producto" as t_js_product_delete_error %}
+{% trans "Primero guarda el producto para poder editar su plantilla." as t_js_config_save_first %}
+{% trans "Plantilla guardada correctamente." as t_js_template_saved %}
+{% trans "Error al guardar la plantilla." as t_js_template_save_error %}
+
+<script id="catalogo-js-i18n" type="application/json" data-js-i18n>
+{
+  "catalogo.newDepartment": "{{ t_js_new_department|escapejs }}",
+  "catalogo.newProduct": "{{ t_js_new_product|escapejs }}",
+  "catalogo.allDepartments": "{{ t_js_all_departments|escapejs }}",
+  "catalogo.sort.id": "{{ t_js_sort_id|escapejs }}",
+  "catalogo.departments.loadError": "{{ t_js_departments_error|escapejs }}",
+  "catalogo.departments.loading": "{{ t_js_departments_loading|escapejs }}",
+  "catalogo.departments.empty": "{{ t_js_departments_empty|escapejs }}",
+  "catalogo.department.saveError": "{{ t_js_department_save_error|escapejs }}",
+  "catalogo.department.confirmDelete": "{{ t_js_department_confirm_delete|escapejs }}",
+  "catalogo.department.deleteTitle": "{{ t_js_department_delete_title|escapejs }}",
+  "catalogo.department.deleteError": "{{ t_js_department_delete_error|escapejs }}",
+  "catalogo.products.loadError": "{{ t_js_products_error|escapejs }}",
+  "catalogo.products.loading": "{{ t_js_products_loading|escapejs }}",
+  "catalogo.products.empty": "{{ t_js_products_empty|escapejs }}",
+  "catalogo.product.zeroPriceConfirm": "{{ t_js_product_zero_confirm|escapejs }}",
+  "catalogo.product.zeroPriceTitle": "{{ t_js_product_zero_title|escapejs }}",
+  "catalogo.product.noPrinterConfirm": "{{ t_js_product_no_printer_confirm|escapejs }}",
+  "catalogo.product.noPrinterTitle": "{{ t_js_product_no_printer_title|escapejs }}",
+  "catalogo.product.saveError": "{{ t_js_product_save_error|escapejs }}",
+  "catalogo.product.saveErrorTitle": "{{ t_js_product_save_error_title|escapejs }}",
+  "catalogo.product.confirmDelete": "{{ t_js_product_confirm_delete|escapejs }}",
+  "catalogo.product.deleteTitle": "{{ t_js_product_delete_title|escapejs }}",
+  "catalogo.product.deleteError": "{{ t_js_product_delete_error|escapejs }}",
+  "catalogo.config.saveProductFirst": "{{ t_js_config_save_first|escapejs }}",
+  "catalogo.template.saved": "{{ t_js_template_saved|escapejs }}",
+  "catalogo.template.saveError": "{{ t_js_template_save_error|escapejs }}"
+}
+</script>
+
 <div class="catalogo-app is-resolving">
 
   <header class="catalogo-header">
@@ -330,7 +384,7 @@
                         </div>
                       </div>
                     </div>
-                    <button type="button" class="appearance-chip__btn appearance-chip__btn--ghost" 
+                    <button type="button" class="appearance-chip__btn appearance-chip__btn--ghost"
                       onclick="resetColor('prod_color_boton', '#2ecc71')" title="{% trans 'Restablecer fondo' %}">
                       <img src="{% static 'ui/img/iconos/brush-cleaning.svg' %}" alt="">
                     </button>
@@ -395,7 +449,7 @@
                         </div>
                       </div>
                     </div>
-                    <button type="button" class="appearance-chip__btn appearance-chip__btn--ghost" 
+                    <button type="button" class="appearance-chip__btn appearance-chip__btn--ghost"
                       onclick="resetColor('prod_color_texto', '#ffffff')" title="{% trans 'Restablecer texto' %}">
                       <img src="{% static 'ui/img/iconos/brush-cleaning.svg' %}" alt="">
                     </button>
@@ -485,7 +539,7 @@
     </div>
     <div class="modal__body">
 
-         
+
          <div class="config-manager-layout">
              <aside class="config-sidebar">
                  <div class="sidebar-header">
@@ -537,7 +591,7 @@
             </div>
             <button class="modal__close" type="button" onclick="closeModal('modalImportProfile')" style="top: 24px; right: 28px; font-size: 1.5rem; opacity: 0.6; color: #fff;">×</button>
         </div>
-        
+
         <div class="modal__body" style="padding: 30px;">
             <!-- Vista de Perfiles -->
             <div id="importProfilesView" class="flex flex-column gap-5">
@@ -555,6 +609,10 @@
                         <h4 class="text-xs uppercase text-muted mb-3 font-bold" style="letter-spacing: 0.05em; opacity: 0.5;">{% trans "Comentarios" %}</h4>
                         <div id="importListComentarios" class="flex flex-column gap-2"></div>
                     </div>
+                    <div>
+                        <h4 class="text-xs uppercase text-muted mb-3 font-bold" style="letter-spacing: 0.05em; opacity: 0.5;">{% trans "Especiales" %}</h4>
+                        <div id="importListEspeciales" class="flex flex-column gap-2"></div>
+                    </div>
                 </div>
             </div>
 
@@ -571,11 +629,11 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="text-xs uppercase text-muted mb-3 font-bold" style="letter-spacing: 0.05em; opacity: 0.5; margin-top: 10px;">
                     {% trans "Elementos en el perfil" %}
                 </div>
-                
+
                 <div id="importItemsList" class="flex flex-column gap-1" style="max-height: 380px; overflow-y: auto; padding-right: 8px; margin-bottom: 20px;">
                     <!-- Items inyectados -->
                 </div>
@@ -597,110 +655,8 @@
     </div>
 </div>
 
-<style>
-.btn-back-minimal {
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s;
-    padding: 0;
-}
-.btn-back-minimal:hover {
-    transform: translateX(-3px);
-}
-
-.profile-import-item {
-    background: #242526;
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 8px;
-    padding: 12px 16px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s;
-}
-.profile-import-item:hover {
-    background: #2c2d2e;
-    border-color: rgba(255,255,255,0.15);
-}
-
-.import-item-card {
-    display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    gap: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.import-item-card:hover {
-    background: rgba(255,255,255,0.03);
-}
-.import-item-card.is-selected {
-    background: rgba(255,255,255,0.02);
-}
-
-.select-all-banner {
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 8px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.chip-todos-minimal {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #2ecc71;
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-
-.custom-checkbox-wrap {
-    display: flex;
-    align-items: center;
-}
-.custom-checkbox-solid input {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 6px;
-    background: transparent;
-    outline: none;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.custom-checkbox-solid input:checked {
-    background: #2ecc71;
-    border-color: #2ecc71;
-}
-.custom-checkbox-solid input:checked::after {
-    content: '✓';
-    position: absolute;
-    color: #18191a;
-    font-size: 14px;
-    font-weight: 900;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-</style>
-
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'ui/js/catalogo/catalogo.js' %}?v=6"></script>
+<script src="{% static 'ui/js/catalogo/catalogo.js' %}?v=7"></script>
 {% endblock %}

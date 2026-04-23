@@ -1,0 +1,118 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Auditoría" %} | Ficheros{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+  <div class="page-head__left">
+    <a class="fich-back-link" href="{% url 'ui:ficheros' %}">
+      <span>←</span><span>{% trans "Volver a Ficheros" %}</span>
+    </a>
+  </div>
+  <h1 class="h1">{% trans "Auditoría" %}</h1>
+  <div class="page-head__right">
+    <div class="fich-export fich-export--down">
+      <button class="btn btn--ghost fich-export__toggle" onclick="toggleExportMenu(event, this)">
+        <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="16" class="svg-icon" alt="">
+        Exportar
+      </button>
+      <div class="fich-export__menu hidden">
+        <button class="fich-export__item" onclick="exportarAuditoriaFormato(event, 'pdf')">PDF</button>
+        <button class="fich-export__item" onclick="exportarAuditoriaFormato(event, 'csv')">CSV</button>
+        <button class="fich-export__item" onclick="exportarAuditoriaFormato(event, 'xlsx')">Excel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fich-layout">
+  <div class="fich-card fich-card--compact">
+    <div class="fich-card__body">
+      <div class="fich-audit-filters">
+        <div class="fich-audit-row fich-audit-row--primary">
+          <input type="text" class="fich-filter-input fich-audit-search" id="auditSearch" placeholder="Buscar evento..." oninput="cargarAuditoria()">
+          <div class="fich-custom-select" id="auditUsuarioSelect">
+            <button type="button" class="fich-custom-select__trigger" id="auditUsuarioTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span id="auditUsuarioLabel">Todos los usuarios</span>
+              <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
+            </button>
+            <div class="fich-custom-select__menu hidden" id="auditUsuarioOptions" role="listbox">
+              <button type="button" class="fich-custom-select__option is-selected" data-value="">Todos los usuarios</button>
+            </div>
+          </div>
+          <input type="hidden" id="auditUsuario" value="">
+          <div class="fich-custom-select" id="auditEventoSelect">
+            <button type="button" class="fich-custom-select__trigger" id="auditEventoTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span id="auditEventoLabel">Todos los eventos</span>
+              <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
+            </button>
+            <div class="fich-custom-select__menu hidden" id="auditEventoOptions" role="listbox">
+              <button type="button" class="fich-custom-select__option is-selected" data-value="">Todos los eventos</button>
+            </div>
+          </div>
+          <input type="hidden" id="auditEvento" value="">
+        </div>
+
+        <div class="fich-audit-row fich-audit-row--secondary">
+          <div class="fich-audit-dates">
+            <label class="fich-date-label">
+              <span>Desde</span>
+              <div class="fich-date-wrapper">
+                <input type="text" id="auditDesde" class="fich-date-input fich-date-input-mask" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="dd/mm/aaaa" value="dd/mm/aaaa" aria-label="Fecha desde">
+                <input type="date" id="auditDesdePicker" class="fich-date-native-picker" tabindex="-1">
+                <button type="button" class="fich-date-picker-btn" data-input="auditDesde" aria-label="Abrir calendario desde"></button>
+              </div>
+            </label>
+            <label class="fich-date-label">
+              <span>Hasta</span>
+              <div class="fich-date-wrapper">
+                <input type="text" id="auditHasta" class="fich-date-input fich-date-input-mask" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="dd/mm/aaaa" value="dd/mm/aaaa" aria-label="Fecha hasta">
+                <input type="date" id="auditHastaPicker" class="fich-date-native-picker" tabindex="-1">
+                <button type="button" class="fich-date-picker-btn" data-input="auditHasta" aria-label="Abrir calendario hasta"></button>
+              </div>
+            </label>
+          </div>
+
+          <div class="fich-date-presets">
+            <button class="btn btn--mini btn--ghost fich-preset-btn is-active" data-preset="todo" aria-pressed="true" onclick="setAuditPreset('todo')">Todo</button>
+            <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="hoy" aria-pressed="false" onclick="setAuditPreset('hoy')">Hoy</button>
+            <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="semana" aria-pressed="false" onclick="setAuditPreset('semana')">Semana</button>
+            <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="mes" aria-pressed="false" onclick="setAuditPreset('mes')">Mes</button>
+            <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="anio" aria-pressed="false" onclick="setAuditPreset('anio')">Año</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fich-card">
+    <div class="fich-card__body fich-card__body--table">
+      <table class="fich-table" id="auditTable">
+        <thead>
+          <tr>
+            <th style="width:160px">Fecha</th>
+            <th style="width:130px">Usuario</th>
+            <th>Evento</th>
+            <th>Detalles</th>
+          </tr>
+        </thead>
+        <tbody id="auditBody">
+          <tr><td colspan="4" class="fich-empty-cell">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="fich-card__footer fich-pagination" id="auditPagination"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/ficheros/date-field.js' %}"></script>
+<script src="{% static 'ui/js/ficheros/auditoria.js' %}"></script>
+{% endblock %}
+

@@ -1,6 +1,7 @@
 // Modal de descuento (porcentaje personalizado o preset)
 
 function abrirModalDescuento() {
+    const Notify = window.Notify;
     const modal = document.getElementById("modalDescuento");
     const display = document.getElementById("modalDescuentoDisplay");
     const title = document.getElementById("modalDescuentoTitle");
@@ -53,7 +54,7 @@ function abrirModalDescuento() {
     btnGo.onclick = async () => {
         const desc = parseInt(display.value, 10);
         if (isNaN(desc) || desc < 0 || desc > 100) {
-            await showAlert("Descuento no válido (0-100)");
+            await Notify.info("Descuento no válido (0-100)");
             return;
         }
 

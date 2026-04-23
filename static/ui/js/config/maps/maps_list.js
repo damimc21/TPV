@@ -1,7 +1,7 @@
 /* maps.js (BD/API)
    Pantalla: "Tus mapas TPV"
    - Lista mapas guardados en BD (API)
-   - Activar un mapa (API) y redirigir al TPV
+   - Activar un mapa (API) y refrescar UI
    - Editar (link al editor)
 */
 
@@ -9,31 +9,38 @@
   "use strict";
 
   const $ = (sel, root = document) => root.querySelector(sel);
+  const Notify = window.Notify;
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
     }[c]));
   }
 
   function basePath() {
-    // si estás en /es/... devuelve "/es", si no, devuelve ""
     const m = window.location.pathname.match(/^\/([a-z]{2})(\/|$)/i);
     return m ? `/${m[1]}` : "";
   }
+
   const BASE = basePath();
 
   function getCSRFToken() {
-    return document.cookie
-      .split("; ")
-      .find(r => r.startsWith("csrftoken="))
-      ?.split("=")[1] || "";
+    return (
+      document.cookie
+        .split("; ")
+        .find((r) => r.startsWith("csrftoken="))
+        ?.split("=")[1] || ""
+    );
   }
 
   async function apiListMaps() {
     const res = await fetch(`${BASE}/api/maps/`, { method: "GET" });
     if (!res.ok) throw new Error(await res.text());
-    return await res.json(); // { maps: [...] }
+    return await res.json();
   }
 
   async function apiActivateMap(mapId) {
@@ -76,13 +83,12 @@
     }
 
     const maps = payload.maps || [];
-
     if (!maps.length) {
       grid.innerHTML = `
         <article class="card">
           <div class="card__icon">🗂️</div>
           <div class="card__body">
-            <h2 class="card__title">Aún no hay mapas</h2>
+            <h2 class="card__title">Aun no hay mapas</h2>
             <p class="card__desc">Crea tu primer mapa para empezar a usar el TPV por mesas.</p>
           </div>
           <div class="card__cta">
@@ -93,9 +99,8 @@
       return;
     }
 
-    grid.innerHTML = maps.map(m => {
-      const isActive = !!m.is_active;
-
+    grid.innerHTML = maps.map((m) => {
+      const isActive = Boolean(m.is_active);
       return `
         <article class="card" data-id="${escapeHtml(m.id)}">
           <div class="card__icon">${isActive ? "✅" : "🗺️"}</div>
@@ -119,7 +124,7 @@
       `;
     }).join("");
 
-    grid.querySelectorAll(".card[data-id]").forEach(card => {
+    grid.querySelectorAll(".card[data-id]").forEach((card) => {
       const id = card.getAttribute("data-id");
 
       card.addEventListener("click", async (e) => {
@@ -130,34 +135,35 @@
         e.stopPropagation();
 
         const action = btn.getAttribute("data-action");
-
         try {
           btn.disabled = true;
 
           if (action === "activate") {
             await apiActivateMap(id);
-            // ✅ quedarte en esta página y refrescar UI
             await render();
             return;
           }
 
           if (action === "delete") {
             const name = card.querySelector(".card__title")?.textContent?.trim() || "este mapa";
-            const ok = confirm(`¿Estás seguro de que quieres eliminar "${name}"?\nEsta acción no se puede deshacer.`);
-            if (!ok) { btn.disabled = false; return; }
+            const ok = await Notify.confirmDanger(
+              `¿Estas seguro de que quieres eliminar "${name}"?\nEsta accion no se puede deshacer.`,
+              { title: "Eliminar mapa", variant: "danger" }
+            );
+            if (!ok) {
+              btn.disabled = false;
+              return;
+            }
 
             await apiDeleteMap(id);
-            // ✅ refrescar UI
             await render();
             return;
           }
 
-          // si llega aquí, acción desconocida
           btn.disabled = false;
-
         } catch (err) {
           console.error(err);
-          alert("No se pudo completar la acción");
+          await Notify.error("No se pudo completar la accion");
           btn.disabled = false;
         }
       });

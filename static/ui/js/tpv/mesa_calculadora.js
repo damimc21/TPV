@@ -119,7 +119,7 @@ function initCalculator() {
             if (res.ok) {
                 const data = await res.json();
                 if (data && data.mesa && data.mesa.numero) {
-                    window.location.href = `/es/tpv/mesa/${data.mesa.numero}/`;
+                    window.location.href = getTpvUrl(`mesa/${data.mesa.numero}/`);
                 }
             } else {
                 throw new Error("HTTP " + res.status);
@@ -253,7 +253,7 @@ function initCalculator() {
                         const checkData = await checkRes.json();
                         if (checkData.comanda) {
                             cerrarModalMesa();
-                            if (!await showConfirm("La mesa tiene productos dentro ¿Quieres juntar las mesas?")) {
+                            if (!await window.Notify.confirm("La mesa tiene productos dentro ¿Quieres juntar las mesas?", { title: "Confirmar" })) {
                                 return;
                             }
                         }

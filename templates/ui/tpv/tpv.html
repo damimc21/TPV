@@ -5,12 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <script>
-    (function () {
-      var saved = localStorage.getItem("tpv_theme");
-      document.documentElement.setAttribute("data-theme", saved || "dark");
-    })();
-  </script>
+  <script src="{% static 'ui/js/theme_bootstrap.js' %}"></script>
 
   <title>{% trans "TPV" %}</title>
   <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
@@ -100,14 +95,16 @@
     </div>
   </div>
 
-  <!-- Variables Django → JS -->
-  <script>
-    window.ACTIVE_MAP_ID = "{{ active_map_id|default:'null' }}";
-    window.TPV_DIA_ABIERTO = "{{ dia_abierto|yesno:'true,false' }}" === "true";
-    window.TPV_SESION_ABIERTA = "{{ sesion_abierta|yesno:'true,false' }}" === "true";
-    window.TPV_API_DIA_ABRIR = "{% url 'ui:api_dia_abrir' %}";
-    window.TPV_API_CAJA_ABRIR = "{% url 'ui:api_caja_abrir' %}";
+  <script id="tpv-home-config" type="application/json">
+    {
+      "activeMapId": {{ active_map_id|default:"null" }},
+      "diaAbierto": {{ dia_abierto|yesno:"true,false" }},
+      "sesionAbierta": {{ sesion_abierta|yesno:"true,false" }},
+      "apiDiaAbrir": "{% url 'ui:api_dia_abrir' %}",
+      "apiCajaAbrir": "{% url 'ui:api_caja_abrir' %}"
+    }
   </script>
+  <script src="{% static 'ui/js/tpv/tpv_bootstrap.js' %}"></script>
   <script src="{% static 'ui/js/tpv/tpv_modal.js' %}"></script>
   <script src="{% static 'ui/js/tpv/tpv_map.js' %}"></script>
 </body>

@@ -1,18 +1,20 @@
 {% extends "ui/base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "TPV - Menú principal" %}{% endblock %}
 
 {% block content %}
 
-<div class="page-head">
+<div class="page-head page-head--center-title">
     <h1 class="h1">{% trans "Menú principal" %}</h1>
 </div>
 
 <section class="grid">
 
     <a class="card" href="{% url 'ui:tpv' %}">
-        <div class="card__icon">🖥️</div>
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/computer.svg' %}" alt="">
+        </div>
         <div class="card__body">
             <h2 class="card__title">{% trans "TPV" %}</h2>
             <p class="card__desc">{% trans "Abrir aplicación de TPV." %}</p>
@@ -21,7 +23,9 @@
     </a>
 
     <a class="card" href="{% url 'ui:ficheros' %}">
-        <div class="card__icon">🗂️</div>
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/folders.svg' %}" alt="">
+        </div>
         <div class="card__body">
             <h2 class="card__title">{% trans "Ficheros" %}</h2>
             <p class="card__desc">{% trans "Gestión interna, exportaciones, importaciones, informes." %}</p>
@@ -30,7 +34,9 @@
     </a>
 
     <a class="card" href="{% url 'ui:catalogo' %}">
-        <div class="card__icon">📚</div>
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/package-search.svg' %}" alt="">
+        </div>
         <div class="card__body">
             <h2 class="card__title">{% trans "Catálogo" %}</h2>
             <p class="card__desc">{% trans "Artículos, departamentos, comentarios, suplementos." %}</p>
@@ -39,7 +45,9 @@
     </a>
 
     <a class="card" href="{% url 'ui:stock' %}">
-        <div class="card__icon">📊</div>
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/chart-no-axes-combined.svg' %}" alt="">
+        </div>
         <div class="card__body">
             <h2 class="card__title">{% trans "Stock" %}</h2>
             <p class="card__desc">{% trans "Inventario, entradas/salidas, mínimos, alertas." %}</p>
@@ -48,7 +56,9 @@
     </a>
 
     <a class="card" href="{% url 'ui:caja' %}">
-        <div class="card__icon">💶</div>
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" alt="">
+        </div>
         <div class="card__body">
             <h2 class="card__title">{% trans "Caja y cierres" %}</h2>
             <p class="card__desc">{% trans "Apertura/cierre, arqueo, informes, recuentos." %}</p>
@@ -57,7 +67,9 @@
     </a>
 
     <a class="card" href="{% url 'ui:albaranes_facturas' %}">
-        <div class="card__icon">🧾</div>
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt="">
+        </div>
         <div class="card__body">
             <h2 class="card__title">{% trans "Albaranes y Facturas" %}</h2>
             <p class="card__desc">{% trans "Gestión de documentos, series, listados y búsqueda." %}</p>
@@ -66,7 +78,9 @@
     </a>
 
     <a class="card" href="{% url 'ui:config' %}">
-        <div class="card__icon">⚙️</div>
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/cog.svg' %}" alt="">
+        </div>
         <div class="card__body">
             <h2 class="card__title">{% trans "Configuración" %}</h2>
             <p class="card__desc">{% trans "Impresoras, impuestos, usuarios, terminales, seguridad." %}</p>
@@ -75,7 +89,9 @@
     </a>
 
     <a class="card" href="{% url 'ui:ayuda' %}">
-        <div class="card__icon">❓</div>
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/message-circle-question-mark.svg' %}" alt="">
+        </div>
         <div class="card__body">
             <h2 class="card__title">{% trans "Ayuda" %}</h2>
             <p class="card__desc">{% trans "Atajos, soporte, guía rápida y resolución de problemas." %}</p>

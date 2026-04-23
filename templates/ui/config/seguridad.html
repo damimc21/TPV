@@ -1,0 +1,142 @@
+{% extends "ui/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Seguridad de acceso" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/config/seguridad.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+    <div class="page-head__left">
+        <a class="sec-auth-back-link" href="{% url 'ui:config' %}">
+            <span aria-hidden="true">←</span>
+            <span>{% trans "Volver a Configuración" %}</span>
+        </a>
+    </div>
+    <h1 class="h1">{% trans "Seguridad de acceso" %}</h1>
+    <div class="page-head__right"></div>
+</div>
+
+<section class="sec-auth">
+    <div class="sec-auth__card">
+        {% if saved %}
+        <div class="sec-auth__notice">{% trans "Configuración guardada correctamente." %}</div>
+        {% endif %}
+
+        <form method="post" class="sec-auth__form" id="authSecurityForm">
+            {% csrf_token %}
+            <input type="hidden" name="throttle_rules_json" id="throttleRulesJson">
+            <input type="hidden" name="user_lock_mode" id="userLockModeInput" value="{{ cfg.user_lock_mode }}">
+
+            <section class="sec-block" id="throttleBlock">
+                <label class="sec-check sec-check--main">
+                    <input type="checkbox" id="enabledSwitch" name="enabled" value="1" {% if cfg.enabled %}checked{% endif %}>
+                    <span class="sec-check__box" aria-hidden="true"></span>
+                    <span class="sec-check__label">{% trans "Activar protección de login" %}</span>
+                </label>
+
+                <fieldset class="sec-block__panel" id="throttleFieldset">
+                    <p class="sec-auth__intro">
+                        {% trans "Define escalones de protección. Cada fila aplica un bloqueo al alcanzar su número de intentos fallidos." %}
+                    </p>
+
+                    <div class="sec-rules" id="throttleRules">
+                        {% for rule in cfg.throttle_rules %}
+                        <div class="sec-rule-row" data-rule-row>
+                            <div class="sec-rule-row__head">
+                                <strong class="sec-rule-row__title" data-rule-title></strong>
+                                <button type="button" class="sec-rule-remove" data-rule-remove>{% trans "Eliminar" %}</button>
+                            </div>
+                            <div class="sec-rule-row__grid">
+                                <label class="sec-field">
+                                    <span>{% trans "Intentos por ciclo" %}</span>
+                                    <input type="number" min="1" max="50" step="1" value="{{ rule.attempts }}" data-rule-attempts>
+                                </label>
+                                <label class="sec-field">
+                                    <span>{% trans "Bloqueo (segundos)" %}</span>
+                                    <input type="number" min="10" max="7200" step="1" value="{{ rule.seconds }}" data-rule-seconds>
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="sec-rules__actions">
+                        <button type="button" class="btn btn--ghost btn--mini sec-add-rule" id="addThrottleRule">
+                            + {% trans "Añadir" %}
+                        </button>
+                    </div>
+                </fieldset>
+            </section>
+
+            <section class="sec-block" id="userLockBlock">
+                <label class="sec-check sec-check--main" id="userLockEnableWrap">
+                    <input type="checkbox" id="userLockEnabled" {% if cfg.user_lock_mode != 'none' %}checked{% endif %}>
+                    <span class="sec-check__box" aria-hidden="true"></span>
+                    <span class="sec-check__label">{% trans "Activar bloqueo de usuario" %}</span>
+                </label>
+
+                <fieldset class="sec-block__panel" id="userLockFieldset">
+                    <div class="sec-auth__grid sec-auth__grid--two">
+                        <label class="sec-field">
+                            <span>{% trans "Bloquear usuario a partir de (fallos)" %}</span>
+                            <input type="number" name="user_lock_attempts" min="1" max="9999" step="1" value="{{ cfg.user_lock_attempts }}">
+                        </label>
+
+                        <label class="sec-field" id="userLockDurationWrap">
+                            <span>{% trans "Duración bloqueo usuario (segundos)" %}</span>
+                            <input type="number" name="user_lock_seconds" min="60" max="86400" step="1" value="{{ cfg.user_lock_seconds }}">
+                        </label>
+                    </div>
+
+                    <p class="sec-auth__hint" id="userLockMinHint"></p>
+
+                    <label class="sec-check sec-check--sub" id="userLockPermanentWrap">
+                        <input type="checkbox" id="userLockPermanent" {% if cfg.user_lock_mode == 'permanent' %}checked{% endif %}>
+                        <span class="sec-check__box" aria-hidden="true"></span>
+                        <span class="sec-check__label">{% trans "Bloqueo permanente (hasta desbloqueo manual o admin)" %}</span>
+                    </label>
+
+                    <p class="sec-auth__hint" id="userLockPermanentHint">
+                        {% trans "En modo permanente, el usuario queda bloqueado hasta desbloqueo manual o de administrador." %}
+                    </p>
+                </fieldset>
+            </section>
+
+            <div class="sec-auth__actions">
+                <button type="button" class="btn btn--ghost sec-auth__action-secondary" id="secSecondaryAction"
+                        data-label-reset="{% trans 'Restablecer' %}"
+                        data-label-cancel="{% trans 'Cancelar cambios' %}">
+                    {% trans "Restablecer" %}
+                </button>
+                <button type="submit" class="btn btn-primary" id="secSaveBtn">{% trans "Guardar seguridad" %}</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<template id="throttleRuleTemplate">
+    <div class="sec-rule-row" data-rule-row>
+        <div class="sec-rule-row__head">
+            <strong class="sec-rule-row__title" data-rule-title></strong>
+            <button type="button" class="sec-rule-remove" data-rule-remove>{% trans "Eliminar" %}</button>
+        </div>
+        <div class="sec-rule-row__grid">
+            <label class="sec-field">
+                <span>{% trans "Intentos por ciclo" %}</span>
+                <input type="number" min="1" max="50" step="1" value="5" data-rule-attempts>
+            </label>
+            <label class="sec-field">
+                <span>{% trans "Bloqueo (segundos)" %}</span>
+                <input type="number" min="10" max="7200" step="1" value="300" data-rule-seconds>
+            </label>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/config/seguridad.js' %}"></script>
+{% endblock %}

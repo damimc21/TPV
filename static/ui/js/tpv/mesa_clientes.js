@@ -178,17 +178,17 @@ function initModalClienteOpciones() {
                             detail: { id: cliente.id, nombre: cliente.nombre, flow: flow, data: cliente }
                         }));
                     } else {
-                        showAlert(gettext("Cliente registrado correctamente"));
+                        window.Notify.success(gettext("Cliente registrado correctamente"));
                     }
                     hideAll();
                     formOcasional.reset();
                 } else {
-                    showAlert(gettext("Error al registrar cliente"));
+                    window.Notify.error(gettext("Error al registrar cliente"));
                 }
             })
             .catch(err => {
                 console.error(err);
-                showAlert(gettext("Error de conexión"));
+                window.Notify.error(gettext("Error de conexión"));
             });
         } else {
             window.dispatchEvent(new CustomEvent("clienteSeleccionado", {

@@ -1,0 +1,40 @@
+{% load i18n %}
+{% trans "Aceptar" as t_accept %}
+{% trans "Cancelar" as t_cancel %}
+{% trans "Cerrar" as t_close %}
+{% trans "Guardar" as t_save %}
+{% trans "Eliminar" as t_delete %}
+{% trans "Editar" as t_edit %}
+{% trans "Cargando..." as t_loading %}
+{% trans "Error" as t_error %}
+{% trans "Aviso" as t_notice %}
+{% trans "Atención" as t_warning %}
+{% trans "Correcto" as t_success %}
+{% trans "Confirmación" as t_confirmation %}
+{% trans "Sí" as t_yes %}
+{% trans "No" as t_no %}
+{% trans "Sin resultados" as t_no_results %}
+{% trans "Ascendente" as t_sort_asc %}
+{% trans "Descendente" as t_sort_desc %}
+
+<script id="js-i18n-common" type="application/json" data-js-i18n>
+{
+  "common.accept": "{{ t_accept|escapejs }}",
+  "common.cancel": "{{ t_cancel|escapejs }}",
+  "common.close": "{{ t_close|escapejs }}",
+  "common.save": "{{ t_save|escapejs }}",
+  "common.delete": "{{ t_delete|escapejs }}",
+  "common.edit": "{{ t_edit|escapejs }}",
+  "common.loading": "{{ t_loading|escapejs }}",
+  "common.error": "{{ t_error|escapejs }}",
+  "common.notice": "{{ t_notice|escapejs }}",
+  "common.warning": "{{ t_warning|escapejs }}",
+  "common.success": "{{ t_success|escapejs }}",
+  "common.confirmation": "{{ t_confirmation|escapejs }}",
+  "common.yes": "{{ t_yes|escapejs }}",
+  "common.no": "{{ t_no|escapejs }}",
+  "common.noResults": "{{ t_no_results|escapejs }}",
+  "common.sortAsc": "{{ t_sort_asc|escapejs }}",
+  "common.sortDesc": "{{ t_sort_desc|escapejs }}"
+}
+</script>

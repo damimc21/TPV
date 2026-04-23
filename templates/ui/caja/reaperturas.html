@@ -3,30 +3,115 @@
 
 {% block title %}{% trans "Reaperturas" %}{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/caja/gestion.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/caja/reaperturas.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="page-head">
-    <div class="page-head__left">
-        <a href="{% url 'ui:caja' %}" class="btn btn--ghost btn--mini">
-            ↩️ {% trans "Volver" %}
-        </a>
-        <h1 class="h1">{% trans "Reaperturas" %}</h1>
+<div class="caja-container">
+    <!-- CABECERA -->
+    <div class="caja-header-layout">
+        <div class="caja-header-centered">
+            <h1 class="h1">{% trans "Herramientas de Reapertura" %}</h1>
+        </div>
+    </div>
+
+    <!-- SELECTOR DE TABS -->
+    <div class="cierres-tabs">
+        <button class="tab-btn active" data-tab="jornadas">{% trans "Jornadas Cerradas" %}</button>
+        <button class="tab-btn" data-tab="turnos">{% trans "Turnos Cerrados" %}</button>
+    </div>
+
+    <!-- CONTENIDO: JORNADAS -->
+    <div id="jornadas" class="tab-content active">
+        <div class="cierres-table-container">
+            <table class="cierres-table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Fecha" %}</th>
+                        <th>{% trans "Responsable Cierre" %}</th>
+                        <th style="text-align: center;">{% trans "Acción" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dia in dias %}
+                    <tr>
+                        <td><strong>{{ dia.fecha_apertura|date:"d/m/Y" }}</strong></td>
+                        <td>{{ dia.cerrado_por.username }}</td>
+                        <td style="text-align: center;">
+                            <button class="btn-reabrir" onclick="reabrirDia({{ dia.id }})">
+                                🔓 {% trans "Reabrir Jornada" %}
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 4rem; opacity: 0.3;">
+                            {% trans "No hay jornadas cerradas recientemente." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- CONTENIDO: TURNOS -->
+    <div id="turnos" class="tab-content">
+        <div class="cierres-table-container">
+            <table class="cierres-table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Fecha / Turno" %}</th>
+                        <th>{% trans "Responsable Cierre" %}</th>
+                        <th style="text-align: center;">{% trans "Acción" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sesion in sesiones %}
+                    <tr>
+                        <td>
+                            <strong>{{ sesion.fecha_apertura|date:"d/m/Y" }}</strong><br>
+                            <small>{{ sesion.fecha_apertura|date:"H:i" }} - {{ sesion.fecha_cierre|date:"H:i" }}</small>
+                        </td>
+                        <td>{{ sesion.cerrada_por.username }}</td>
+                        <td style="text-align: center;">
+                            <button class="btn-reabrir" onclick="reabrirTurno({{ sesion.id }})">
+                                🔓 {% trans "Reabrir Turno" %}
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 4rem; opacity: 0.3;">
+                            {% trans "No hay turnos cerrados recientemente." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<div class="tpv-container">
-    <div class="card card--full">
-        <div class="card__header">
-            <h2 class="card__title">{% trans "Reaperturas" %}</h2>
-        </div>
-        <div class="card__body">
-            <p class="card__desc">
-                {% trans "Reapertura de caja" %}
-            </p>
-            <div class="empty-state">
-                <div class="empty-state__icon">📋</div>
-                <h3 class="empty-state__title">{% trans "Sin reaperturas registradas" %}</h3>
-            </div>
-        </div>
-    </div>
-</div>
+<script id="reaperturas-config" type="application/json">
+{
+  "csrfToken": "{{ csrf_token }}",
+  "diaReabrirUrlTemplate": "{% url 'ui:api_dia_reabrir' dia_id=0 %}",
+  "turnoReabrirUrlTemplate": "{% url 'ui:api_caja_reabrir' sesion_id=0 %}",
+  "confirmReopenDay": "{% trans '¿Estás seguro de que quieres reabrir esta jornada? Esto permitirá volver a operar en esta fecha.'|escapejs %}",
+  "confirmReopenShift": "{% trans '¿Estás seguro de que quieres reabrir este turno? Se borrarán los datos del arqueo previo para permitir una nueva entrada.'|escapejs %}",
+  "reopenDaySuccess": "{% trans 'Jornada reabierta correctamente.'|escapejs %}",
+  "reopenShiftSuccess": "{% trans 'Turno reabierto correctamente.'|escapejs %}",
+  "reopenDayError": "{% trans 'Error al reabrir la jornada.'|escapejs %}",
+  "reopenShiftError": "{% trans 'Error al reabrir el turno.'|escapejs %}",
+  "reopenDayConnectionError": "{% trans 'Error de conexión al reabrir la jornada.'|escapejs %}",
+  "reopenShiftConnectionError": "{% trans 'Error de conexión al reabrir el turno.'|escapejs %}",
+  "successTitle": "{% trans 'Éxito'|escapejs %}",
+  "warningTitle": "{% trans 'Atención'|escapejs %}",
+  "errorTitle": "{% trans 'Error'|escapejs %}"
+}
+</script>
+<script src="{% static 'ui/js/caja/reaperturas.js' %}"></script>
 {% endblock %}

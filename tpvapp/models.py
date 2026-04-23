@@ -48,7 +48,7 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     activo = models.BooleanField(default=True)
     eliminado = models.BooleanField(default=False)
-    
+
     nombre_factura = models.CharField(max_length=100, blank=True, null=True)
     nombre_comanda = models.CharField(max_length=100, blank=True, null=True)
     impresora = models.CharField(max_length=50, blank=True, null=True)
@@ -252,13 +252,13 @@ class Cliente(models.Model):
     nif = models.CharField(max_length=20, blank=True, null=True, verbose_name="NIF/CIF/NIE")
     email = models.EmailField(blank=True, null=True, verbose_name="Correo Electrónico")
     telefono = models.CharField(max_length=20, blank=True, null=True, verbose_name="Teléfono")
-    
+
     # Dirección desglosada
     direccion = models.CharField(max_length=255, blank=True, null=True, verbose_name="Domicilio Fiscal")
     codigo_postal = models.CharField(max_length=10, blank=True, null=True, verbose_name="Código Postal")
     poblacion = models.CharField(max_length=100, blank=True, null=True, verbose_name="Población / Ciudad")
     provincia = models.CharField(max_length=100, blank=True, null=True, verbose_name="Provincia")
-    
+
     activo = models.BooleanField(default=True)
     fecha_registro = models.DateTimeField(default=timezone.now)
 
@@ -290,7 +290,7 @@ class Mesa(models.Model):
 
     class Meta:
         db_table = "mesas"
-    
+
     def save(self, *args, **kwargs):
         # Si no se pasa nombre, lo generamos automáticamente.
         if not self.nombre:
@@ -500,7 +500,7 @@ class DiaContable(models.Model):
     cerrado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="dias_cerrados"
     )
-    
+
     class Meta:
         db_table = "dias_contables"
         ordering = ["-fecha_apertura"]
@@ -516,23 +516,23 @@ class DiaContable(models.Model):
 class SesionCaja(models.Model):
     """Representa un turno de caja (ej: Mañana, Tarde) dentro de un Día Contable."""
     dia = models.ForeignKey(DiaContable, on_delete=models.CASCADE, related_name="sesiones", null=True, blank=True)
-    
+
     abierta_por = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="sesiones_abiertas"
     )
     cerrada_por = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="sesiones_cerradas"
     )
-    
+
     fecha_apertura = models.DateTimeField(default=timezone.now)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
-    
+
     efectivo_inicial = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    
+
     # Totales del sistema al momento de cerrar
     total_ventas_efectivo = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total_ventas_tarjeta = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    
+
     # Arqueo final
     efectivo_final_real = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     observaciones = models.TextField(blank=True, default="")
@@ -554,7 +554,7 @@ class MovimientoCaja(models.Model):
     """Entradas o salidas de efectivo manuales."""
     sesion = models.ForeignKey(SesionCaja, on_delete=models.CASCADE, related_name="movimientos")
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    
+
     tipo = models.CharField(max_length=10, choices=[("entrada", "Entrada"), ("salida", "Salida")])
     importe = models.DecimalField(max_digits=10, decimal_places=2)
     concepto = models.CharField(max_length=255)
@@ -582,3 +582,230 @@ class ConfiguracionTPV(models.Model):
 
     def __str__(self):
         return self.clave
+
+# =========================
+# 8) CONFIGURACION HARDWARE / IMPRESORAS
+# =========================
+
+class Impresora(models.Model):
+    TIPO_BARRA = 'barra'
+    TIPO_COCINA = 'cocina'
+    TIPO_CAJA = 'caja'
+    TIPO_OTRA = 'otra'
+
+    TIPOS = [
+        (TIPO_BARRA, 'Barra'),
+        (TIPO_COCINA, 'Cocina'),
+        (TIPO_CAJA, 'Caja / Tickets'),
+        (TIPO_OTRA, 'Otra'),
+    ]
+
+    nombre = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=20, choices=TIPOS, default=TIPO_CAJA)
+    ip_o_puerto = models.CharField(max_length=100, blank=True, null=True, help_text="IP (ej: 192.168.1.50) o Puerto (ej: COM1, USB0)")
+    papel_mm = models.IntegerField(default=80, help_text="Ancho de papel en mm (58 o 80)")
+    activa = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "impresoras"
+        verbose_name = "Impresora"
+        verbose_name_plural = "Impresoras"
+
+    def __str__(self):
+        return f"{self.nombre} ({self.get_tipo_display()})"
+
+
+# =========================
+# 9) GESTIÓN DE STOCK / INVENTARIO
+# =========================
+
+class CategoriaInventario(models.Model):
+    """Categoría para agrupar artículos de inventario (Cafetería, Cocina, Bebidas...)"""
+    nombre = models.CharField(max_length=100)
+    orden = models.IntegerField(default=0)
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "categorias_inventario"
+        ordering = ['orden', 'nombre']
+        verbose_name = "Categoría de Inventario"
+        verbose_name_plural = "Categorías de Inventario"
+
+    def __str__(self):
+        return self.nombre
+
+
+class ArticuloInventario(models.Model):
+    """Artículo de inventario (materia prima / ingrediente) que se controla de forma independiente."""
+    UNIDADES = [
+        ('ud', 'Unidades'),
+        ('pack', 'Packs'),
+        ('caja', 'Cajas'),
+        ('kg', 'Kilos'),
+        ('g', 'Gramos'),
+        ('l', 'Litros'),
+        ('ml', 'Mililitros'),
+    ]
+
+    nombre = models.CharField(max_length=150)
+    categoria = models.ForeignKey(
+        CategoriaInventario, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='articulos'
+    )
+    unidad = models.CharField(max_length=5, choices=UNIDADES, default='ud')
+
+    # Stock
+    stock_actual = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    stock_minimo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    # Vínculo opcional a Producto (para descuento automático al vender)
+    producto_vinculado = models.OneToOneField(
+        Producto, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='articulo_inventario'
+    )
+    auto_descontar = models.BooleanField(
+        default=False,
+        verbose_name="Descontar al vender",
+        help_text="Si está activo, se descuenta stock automáticamente al vender el producto vinculado"
+    )
+    cantidad_por_venta = models.DecimalField(
+        max_digits=10, decimal_places=2, default=1,
+        verbose_name="Cantidad por venta",
+        help_text="Unidades que se descuentan por cada venta del producto vinculado"
+    )
+
+    # Info adicional
+    proveedor = models.CharField(max_length=150, blank=True, default='')
+    precio_compra = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0,
+        verbose_name="Precio de compra por unidad"
+    )
+    notas = models.TextField(blank=True, default='')
+
+    activo = models.BooleanField(default=True)
+    fecha_creacion = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = "articulos_inventario"
+        ordering = ['categoria__orden', 'nombre']
+        verbose_name = "Artículo de Inventario"
+        verbose_name_plural = "Artículos de Inventario"
+
+    def __str__(self):
+        return f"{self.nombre} ({self.get_unidad_display()})"
+
+
+class MovimientoStock(models.Model):
+    TIPO_ENTRADA = "entrada"
+    TIPO_SALIDA = "salida"
+    TIPO_VENTA = "venta"
+    TIPO_AJUSTE = "ajuste"
+    TIPO_ANULACION = "anulad"
+
+    TIPOS = [
+        (TIPO_ENTRADA, "Entrada (Compra/Reposición)"),
+        (TIPO_SALIDA, "Salida (Mermas/Roturas)"),
+        (TIPO_VENTA, "Venta (Automático)"),
+        (TIPO_AJUSTE, "Ajuste de Inventario"),
+        (TIPO_ANULACION, "Anulación de Venta"),
+    ]
+
+    # FK a Producto (legacy / descuento directo por venta)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True, related_name="movimientos_stock")
+    # FK a ArticuloInventario (nuevo sistema de inventario)
+    articulo = models.ForeignKey(ArticuloInventario, on_delete=models.CASCADE, null=True, blank=True, related_name="movimientos")
+
+    tipo = models.CharField(max_length=10, choices=TIPOS)
+    cantidad = models.DecimalField(max_digits=10, decimal_places=2)
+    anterior = models.DecimalField(max_digits=10, decimal_places=2) # Stock antes del movimiento
+    nuevo = models.DecimalField(max_digits=10, decimal_places=2)    # Stock después del movimiento
+
+    fecha = models.DateTimeField(default=timezone.now)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    motivo = models.CharField(max_length=255, blank=True, null=True)
+
+    # Opcional: enlace a la línea de comanda que originó el movimiento (si es tipo venta)
+    linea_comanda = models.ForeignKey('LineaComanda', on_delete=models.SET_NULL, null=True, blank=True, related_name="movimientos_stock")
+
+    class Meta:
+        db_table = "movimientos_stock"
+        ordering = ["-fecha"]
+
+    def __str__(self):
+        nombre = self.articulo.nombre if self.articulo else (self.producto.nombre if self.producto else "?")
+        return f"{self.get_tipo_display()} - {nombre}: {self.cantidad}"
+
+
+# =========================
+# 10) LOGS DEL SISTEMA
+# =========================
+
+class LogSistema(models.Model):
+    """Registro técnico de eventos del servidor: errores, advertencias, info."""
+    NIVELES = [
+        ('INFO', 'Información'),
+        ('WARN', 'Advertencia'),
+        ('ERROR', 'Error'),
+        ('CRITICAL', 'Crítico'),
+    ]
+
+    nivel = models.CharField(max_length=10, choices=NIVELES, default='INFO')
+    origen = models.CharField(max_length=100, help_text="Módulo o sección que generó el log")
+    mensaje = models.TextField()
+    traza = models.TextField(blank=True, default='', help_text="Stack trace (si aplica)")
+    fecha = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = "logs_sistema"
+        ordering = ["-fecha"]
+        verbose_name = "Log del Sistema"
+        verbose_name_plural = "Logs del Sistema"
+
+    def __str__(self):
+        return f"[{self.nivel}] {self.origen}: {self.mensaje[:80]}"
+
+
+# =========================
+# 11) BACKUPS
+# =========================
+
+class BackupRegistro(models.Model):
+    """Registro de backups creados (manuales o automáticos)."""
+    TIPO_MANUAL = 'manual'
+    TIPO_AUTO = 'auto'
+    TIPOS = [
+        (TIPO_MANUAL, 'Manual'),
+        (TIPO_AUTO, 'Automático'),
+    ]
+
+    nombre_archivo = models.CharField(max_length=255)
+    ruta = models.CharField(max_length=500, help_text="Ruta relativa dentro de media/backups/")
+    tamano_bytes = models.BigIntegerField(default=0)
+    tipo = models.CharField(max_length=10, choices=TIPOS, default=TIPO_MANUAL)
+    fecha = models.DateTimeField(default=timezone.now)
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="backups_creados"
+    )
+    notas = models.TextField(blank=True, default='')
+
+    class Meta:
+        db_table = "backup_registros"
+        ordering = ["-fecha"]
+        verbose_name = "Backup"
+        verbose_name_plural = "Backups"
+
+    def __str__(self):
+        return f"{self.nombre_archivo} ({self.get_tipo_display()}) - {self.fecha.strftime('%d/%m/%Y %H:%M')}"
+
+    @property
+    def tamano_legible(self):
+        """Devuelve el tamaño en formato legible (KB, MB, GB)."""
+        b = self.tamano_bytes
+        if b < 1024:
+            return f"{b} B"
+        elif b < 1024 ** 2:
+            return f"{b / 1024:.1f} KB"
+        elif b < 1024 ** 3:
+            return f"{b / 1024 ** 2:.1f} MB"
+        return f"{b / 1024 ** 3:.2f} GB"

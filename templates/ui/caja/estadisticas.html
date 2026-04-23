@@ -3,30 +3,114 @@
 
 {% block title %}{% trans "Estadísticas TPV" %}{% endblock %}
 
-{% block content %}
-<div class="page-head">
-    <div class="page-head__left">
-        <a href="{% url 'ui:caja' %}" class="btn btn--ghost btn--mini">
-            ↩️ {% trans "Volver" %}
-        </a>
-        <h1 class="h1">{% trans "Estadísticas" %}</h1>
-    </div>
-</div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/caja/gestion.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/caja/estadisticas.css' %}">
+{% endblock %}
 
-<div class="tpv-container">
-    <div class="card card--full">
-        <div class="card__header">
-            <h2 class="card__title">{% trans "Análisis de Datos" %}</h2>
+{% block content %}
+<div class="caja-container">
+    <!-- Header -->
+    <div class="caja-header-layout">
+        <div class="caja-header-centered">
+            <h1 class="h1">{% trans "Estadísticas de Negocio" %}</h1>
         </div>
-        <div class="card__body">
-            <p class="card__desc">
-                {% trans "Visualiza métricas clave, tendencias de venta y distribución de pagos." %}
-            </p>
-            <div class="empty-state">
-                <div class="empty-state__icon">📈</div>
-                <h3 class="empty-state__title">{% trans "Próximamente" %}</h3>
+    </div>
+
+    <!-- Metrics Overview -->
+    <div class="stats-grid">
+        <div class="metric-card">
+            <span class="metric-card__label">{% trans "Ventas Hoy" %}</span>
+            <span class="metric-card__value">{{ total_hoy|floatformat:2 }}€</span>
+            <span class="metric-card__sub">{{ tickets_hoy }} {% trans "Tickets emitidos" %}</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-card__label">{% trans "Ticket Medio" %}</span>
+            <span class="metric-card__value">{{ media_hoy|floatformat:2 }}€</span>
+            <span class="metric-card__sub">{% trans "Promedio por cliente" %}</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-card__label">{% trans "Ventas Mes" %}</span>
+            <span class="metric-card__value">{{ total_mes|floatformat:2 }}€</span>
+            <span class="metric-card__sub">{% trans "Acumulado mensual" %}</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-card__label">{% trans "Estado" %}</span>
+            <span class="metric-card__value" style="color: #10b981;">{% trans "Operativo" %}</span>
+            <span class="metric-card__sub">{% trans "Datos actualizados" %}</span>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <!-- Tendencia 14 Días -->
+        <div class="chart-card chart-card--wide">
+            <h3 class="chart-card__title">
+                <div class="card__icon">
+                    <img src="{% static 'ui/img/iconos/chart-no-axes-combined.svg' %}" alt="">
+                </div>
+                {% trans "Tendencia de Ventas (Últimos 14 días)" %}
+            </h3>
+            <div class="chart-container">
+                <canvas id="chartTendencia"></canvas>
+            </div>
+        </div>
+
+        <!-- Métodos de Pago -->
+        <div class="chart-card">
+            <h3 class="chart-card__title">
+                <div class="card__icon">
+                    <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" alt="">
+                </div>
+                {% trans "Distribución de Cobros (Hoy)" %}
+            </h3>
+            <div class="chart-container">
+                <canvas id="chartPagos"></canvas>
+            </div>
+        </div>
+
+        <!-- Ventas por Categoría -->
+        <div class="chart-card">
+            <h3 class="chart-card__title">
+                <div class="card__icon">
+                    <img src="{% static 'ui/img/iconos/folders.svg' %}" alt="">
+                </div>
+                {% trans "Ventas por Categoría (Hoy)" %}
+            </h3>
+            <div class="chart-container">
+                <canvas id="chartCategorias"></canvas>
+            </div>
+        </div>
+
+        <!-- Top 5 Productos -->
+        <div class="chart-card">
+            <h3 class="chart-card__title">
+                <div class="card__icon">
+                    <img src="{% static 'ui/img/iconos/bolt.svg' %}" alt="">
+                </div>
+                {% trans "Top 5 Productos (Mes)" %}
+            </h3>
+            <div class="chart-container">
+                <canvas id="chartProductos"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="estadisticas-config" type="application/json">
+{
+  "chartTendencia": {{ chart_tendencia|safe }},
+  "chartPagos": {{ chart_pagos|safe }},
+  "chartCategorias": {{ chart_categorias|safe }},
+  "chartProductos": {{ chart_productos|safe }},
+  "labels": {
+    "salesEuro": "{% trans 'Ventas (€)'|escapejs %}",
+    "units": "{% trans 'Unidades'|escapejs %}"
+  }
+}
+</script>
+<script src="{% static 'ui/js/caja/estadisticas.js' %}"></script>
 {% endblock %}
+

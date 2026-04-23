@@ -9,12 +9,8 @@
 
 {% block content %}
 <div class="caja-container">
-    <!-- CABECERA CENTRADA -->
+    <!-- CABECERA -->
     <div class="caja-header-layout">
-        <a href="{% url 'ui:caja' %}" class="btn-back-absolute">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            <span>{% trans "Atrás" %}</span>
-        </a>
         <div class="caja-header-centered">
             <h1 class="h1">{% trans "Gestión de Caja" %}</h1>
         </div>
@@ -89,7 +85,7 @@
                         {% if dia_actual %}
                         <div class="timeline-day__total-box">
                             <span class="day-total-label">{% trans "Recuento Total Día" %}</span>
-                            <span class="day-total-amount">{{ total_dia }} €</span>
+                            <span class="day-total-amount">{{ total_dia|floatformat:2 }} €</span>
                         </div>
                         {% endif %}
                     </div>
@@ -117,8 +113,15 @@
                                 </div>
                             </div>
                             <div class="session-row__side">
-                                <span class="session-row__total-label">{% trans "Total turno" %}:</span>
-                                <span class="session-row__amount">{{ item.total }} €</span>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <span class="session-row__total-label">{% trans "Total turno" %}:</span>
+                                    <span class="session-row__amount">{{ item.total|floatformat:2 }} €</span>
+                                </div>
+                                <div class="session-row__actions">
+                                    <a href="{% url 'ui:ticket_cierre_turno' item.sesion.id %}" target="_blank" class="btn-icon-print" title="{% trans 'Imprimir reporte de turno' %}">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         {% empty %}
@@ -149,35 +152,113 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
                         <span>{% trans "Abrir turno" %}</span>
                     </button>
-                    <!-- Cerrar Jornada (Solo si no hay turno abierto) -->
-                    <button id="btn-cerrar-dia" class="btn-square btn-square--danger">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
-                        <span>{% trans "Cerrar jornada" %}</span>
-                    </button>
                 {% else %}
+                    <!-- Entradas y Salidas -->
+                    <button id="btn-mov-entrada" class="btn-square" style="background: rgba(46, 204, 113, 0.1); border-color: rgba(46, 204, 113, 0.3); color: #2ecc71;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>{% trans "Entrar Dinero" %}</span>
+                    </button>
+                    <button id="btn-mov-salida" class="btn-square btn-square--danger">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>{% trans "Registrar Gasto" %}</span>
+                    </button>
+
                     <!-- Cerrar Turno (Arqueo) -->
-                    <input type="hidden" id="efectivo-final" value="0.00"> <!-- Mocked for now -->
-                    <input type="hidden" id="observaciones" value="">
-                    <button id="btn-cerrar-caja" class="btn-square btn-square--success">
+                    <button id="btn-cerrar-caja" class="btn-square btn-square--warning">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                         <span>{% trans "Cerrar turno" %}</span>
                     </button>
                 {% endif %}
+                
+                <!-- Cerrar Jornada (Siempre disponible si hay día abierto) -->
+                <button id="btn-cerrar-dia" class="btn-square btn-square--danger">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+                    <span>{% trans "Cerrar jornada" %}</span>
+                </button>
             {% endif %}
         </div>
     </div>
 </div>
+{% endblock %}
 
-<!-- Variables Django → JS -->
-<script>
-    window.CAJA_API_DIA_ABRIR = "{% url 'ui:api_dia_abrir' %}";
-    window.CAJA_API_DIA_CERRAR = "{% url 'ui:api_dia_cerrar' %}";
-    window.CAJA_API_CAJA_ABRIR = "{% url 'ui:api_caja_abrir' %}";
-    window.CAJA_API_CAJA_CERRAR = "{% url 'ui:api_caja_cerrar' %}";
-    window.CAJA_I18N = {
-        confirmCerrarDia: "{% trans '¿Estás seguro de cerrar el día?' %}",
-        errorEfectivoReal: "{% trans 'Introduce el efectivo real' %}"
-    };
+{% block footer %}
+<!-- MODAL DIALOG (Alert/Confirm Básico) -->
+<div id="modalDialog" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic modal-container-generic--confirm">
+    <h2 id="dialogTitle">{% trans "Aviso" %}</h2>
+    <p id="dialogMessage">{% trans "¿Estás seguro?" %}</p>
+    <div class="modal-footer-generic">
+      <button type="button" id="btnDialogCancel" class="modal-btn-generic modal-btn-generic--danger">{% trans "Cancelar" %}</button>
+      <button type="button" id="btnDialogConfirm" class="modal-btn-generic modal-btn-generic--primary">{% trans "Aceptar" %}</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CERRAR TURNO (ARQUEO) --><div id="modalCerrarTurno" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic">
+    <div style="color: #3b82f6; margin-bottom: 0.5rem;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+    </div>
+    <h2>{% trans "Arqueo de Turno" %}</h2>
+    <p>{% trans "Verifica el efectivo físico en el cajón." %}</p>
+    
+    <div style="text-align: left; margin-top: 1.5rem;">
+        <label class="modal-label-generic">{% trans "Efectivo Contado (€)" %}</label>
+        <input type="number" id="efectivo-final" class="modal-input-generic" step="0.01" min="0" placeholder="0.00" required autocomplete="off">
+    </div>
+    
+    <div class="modal-footer-generic">
+      <button type="button" id="btnCerrarTurnoCancel" class="modal-btn-generic modal-btn-generic--danger">{% trans "Cancelar" %}</button>
+      <button type="button" id="btnCerrarTurnoConfirm" class="modal-btn-generic modal-btn-generic--primary">{% trans "Confirmar Cierre" %}</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MOVIMIENTOS CAJA -->
+<div id="modalMovimiento" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic">
+    <div style="color: #3b82f6; margin-bottom: 0.5rem;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/></svg>
+    </div>
+    <h2 id="modalMovTitle">{% trans "Movimiento de Caja" %}</h2>
+    <p>{% trans "Registra un ingreso o gasto manual." %}</p>
+    
+    <input type="hidden" id="movTipo">
+    
+    <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+        <div>
+            <label class="modal-label-generic">{% trans "Concepto / Motivo" %}</label>
+            <input type="text" id="movConcepto" class="modal-input-generic" required autocomplete="off">
+        </div>
+
+        <div>
+            <label class="modal-label-generic">{% trans "Importe (€)" %}</label>
+            <input type="number" id="movImporte" class="modal-input-generic" step="0.01" min="0.01" placeholder="0.00" required autocomplete="off">
+        </div>
+    </div>
+    
+    <div class="modal-footer-generic">
+      <button type="button" id="btnMovCancel" class="modal-btn-generic modal-btn-generic--danger">{% trans "Volver" %}</button>
+      <button type="button" id="btnMovConfirm" class="modal-btn-generic modal-btn-generic--primary">{% trans "Guardar" %}</button>
+    </div>
+  </div>
+</div>
+
+{% trans "¿Estás seguro de cerrar el día?" as t_confirm_cerrar_dia %}
+{% trans "Introduce el efectivo real" as t_error_efectivo_real %}
+
+<script id="caja-gestion-config" type="application/json">
+{
+  "apiDiaAbrir": "{% url 'ui:api_dia_abrir' %}",
+  "apiDiaCerrar": "{% url 'ui:api_dia_cerrar' %}",
+  "apiCajaAbrir": "{% url 'ui:api_caja_abrir' %}",
+  "apiCajaCerrar": "{% url 'ui:api_caja_cerrar' %}",
+  "apiCajaMovimiento": "{% url 'ui:api_caja_movimiento' %}",
+  "i18n": {
+    "confirmCerrarDia": "{{ t_confirm_cerrar_dia|escapejs }}",
+    "errorEfectivoReal": "{{ t_error_efectivo_real|escapejs }}"
+  }
+}
 </script>
 <script src="{% static 'ui/js/caja/gestion.js' %}"></script>
 {% endblock %}

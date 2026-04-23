@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 
 <aside class="sidebar">
     <nav class="nav">
@@ -6,43 +6,57 @@
         {% if user.is_authenticated %}
 
         <a class="nav__item" href="{% url 'ui:tpv' %}">
-            <span class="nav__icon">🖥️</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/computer.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "TPV" %}</span>
         </a>
 
         <a class="nav__item {% if request.resolver_match.url_name == 'ficheros' %}is-active{% endif %}"
             href="{% url 'ui:ficheros' %}">
-            <span class="nav__icon">🗂️</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/folders.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "Ficheros" %}</span>
         </a>
 
         <a class="nav__item {% if 'catalogo' in request.resolver_match.url_name %}is-active{% endif %}"
             href="{% url 'ui:catalogo' %}">
-            <span class="nav__icon">📚</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/package-search.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "Catálogo" %}</span>
         </a>
 
         <a class="nav__item {% if request.resolver_match.url_name == 'stock' %}is-active{% endif %}"
             href="{% url 'ui:stock' %}">
-            <span class="nav__icon">📊</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/chart-no-axes-combined.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "Stock" %}</span>
         </a>
 
         <a class="nav__item {% if request.resolver_match.url_name == 'caja' %}is-active{% endif %}"
             href="{% url 'ui:caja' %}">
-            <span class="nav__icon">💶</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "Caja y cierres" %}</span>
         </a>
 
         <a class="nav__item {% if request.resolver_match.url_name == 'albaranes_facturas' %}is-active{% endif %}"
             href="{% url 'ui:albaranes_facturas' %}">
-            <span class="nav__icon">🧾</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "Albaranes y Facturas" %}</span>
         </a>
 
         <a class="nav__item {% if request.resolver_match.url_name == 'config' %}is-active{% endif %}"
             href="{% url 'ui:config' %}">
-            <span class="nav__icon">⚙️</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/cog.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "Configuración" %}</span>
         </a>
 
@@ -51,14 +65,18 @@
         {% else %}
 
         <a class="nav__item" href="{% url 'ui:login' %}">
-            <span class="nav__icon">🔐</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/lock-keyhole.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "Iniciar sesión" %}</span>
         </a>
 
         {% endif %}
 
         <a class="nav__item" href="{% url 'ui:ayuda' %}">
-            <span class="nav__icon">❓</span>
+            <span class="nav__icon">
+                <img src="{% static 'ui/img/iconos/message-circle-question-mark.svg' %}" alt="">
+            </span>
             <span class="nav__text">{% trans "Ayuda" %}</span>
         </a>
     </nav>

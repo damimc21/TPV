@@ -37,3 +37,12 @@ htmlcov/
 
 # Base de datos (por ahora no la quiero en git)
 tpv.sql
+
+# Basura local / artefactos temporales
+backups/
+tmp_codex_write_test.txt
+output.txt
+test_undo.py
+test_undo.js
+static/ui/img/productos/Refrescos/Tips for Users of Assistive Technology.pdf
+docs/manual_proyecto.md

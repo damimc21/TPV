@@ -3,7 +3,7 @@
   Lógica de la pantalla de login (mostrar/ocultar contraseña, etc).
 */
 
-(function setupPasswordToggle(){
+(function setupPasswordToggle() {
   const toggle = document.getElementById("pwToggle");
   if (!toggle) return;
 
@@ -21,7 +21,7 @@
   });
 })();
 
-(function setupAutocompleteOff(){
+(function setupAutocompleteOff() {
   const username = document.querySelector('input[name="username"]');
   const password = document.querySelector('input[name="password"]');
   if (username) username.setAttribute("autocomplete", "off");

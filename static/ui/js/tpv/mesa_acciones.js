@@ -1,6 +1,7 @@
 // Punto de entrada: inicializa módulos y conecta los botones principales
 
 document.addEventListener("DOMContentLoaded", () => {
+    const Notify = window.Notify;
     // Arrancar módulos
     initCalculator();
     initModalCobro();
@@ -10,22 +11,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Botón Salir ---
     const btnSalirPrincipal = document.getElementById("btnSalir");
-    const modalSalir = document.getElementById("modalSalir");
-    const btnSalirCancelar = document.getElementById("btnSalirCancelar");
-    const btnSalirConfirmar = document.getElementById("btnSalirConfirmar");
+    const btnOpciones = document.getElementById("btnOpciones");
+    const modalOpciones = document.getElementById("modalOpciones");
+    const btnCerrarOpciones = document.getElementById("btnCerrarOpciones");
 
-    if (btnSalirPrincipal && modalSalir) {
-        btnSalirPrincipal.addEventListener("click", () => {
-            modalSalir.classList.remove("hidden");
-        });
-    }
-    if (btnSalirCancelar && modalSalir) {
-        btnSalirCancelar.addEventListener("click", () => {
-            modalSalir.classList.add("hidden");
-        });
-    }
-    if (btnSalirConfirmar) {
-        btnSalirConfirmar.addEventListener("click", () => {
+    if (btnSalirPrincipal) {
+        btnSalirPrincipal.addEventListener("click", async () => {
+            const confirmed = await Notify.confirm(
+                gettext("Volverás al menú principal de la aplicación."),
+                {
+                    title: gettext("¿Quieres salir del TPV?"),
+                    okText: gettext("Salir"),
+                    cancelText: gettext("Cancelar"),
+                }
+            );
+            if (!confirmed) return;
             window.location.href = window.TPV_INDEX_URL || "/";
         });
     }
@@ -64,12 +64,44 @@ document.addEventListener("DOMContentLoaded", () => {
         const btnEN = document.getElementById('btnLangEN');
         if (btnES) btnES.classList.toggle('is-active', lang.startsWith('es'));
         if (btnEN) btnEN.classList.toggle('is-active', lang.startsWith('en'));
+
+        // Modificadores acumulables
+        const toggleAcum = document.getElementById('toggleModifAcumulable');
+        if (toggleAcum) {
+            toggleAcum.checked = (localStorage.getItem('tpv_modif_acumulable') === '1');
+        }
+    }
+
+    function getCookie(name) {
+        const cookies = document.cookie ? document.cookie.split(";") : [];
+        for (const raw of cookies) {
+            const cookie = raw.trim();
+            if (cookie.startsWith(name + "=")) {
+                return decodeURIComponent(cookie.slice(name.length + 1));
+            }
+        }
+        return "";
+    }
+
+    function logUiEvent(evento, detalle, nivel = "INFO", origen = "ui.tpv") {
+        fetch("/api/ficheros/logs/ui-evento/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({ evento, detalle, nivel, origen }),
+        }).catch(() => { });
     }
 
     function setTPVTheme(theme) {
+        const previous = localStorage.getItem('tpv_theme') || 'dark';
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('tpv_theme', theme);
         updateOptionsModalState();
+        if (theme && theme !== previous) {
+            logUiEvent("theme_change_tpv", `from=${previous} to=${theme}`);
+        }
     }
 
     function setTPVLanguage(lang) {
@@ -82,10 +114,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function setTPVModifAcumulable(checked) {
+        localStorage.setItem('tpv_modif_acumulable', checked ? '1' : '0');
+        logUiEvent(
+            "modif_acumulable_change",
+            `enabled=${checked ? "1" : "0"}`,
+            "INFO",
+            "ui.tpv.options"
+        );
+    }
+
     // Exponer al window para los onclick de HTML
     window.updateOptionsModalState = updateOptionsModalState;
     window.setTPVTheme = setTPVTheme;
     window.setTPVLanguage = setTPVLanguage;
+    window.setTPVModifAcumulable = setTPVModifAcumulable;
 
     // --- Footer dinámico ---
     const elTerminal = document.getElementById("terminal");
@@ -200,10 +243,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (tpvState.lineas.filter(l => !l.anulado).length === 0) return;
             await sincronizarComanda();
             if (!tpvState.comandaId) {
-                showAlert(gettext("No hay comanda activa para esta mesa."));
+                Notify.info(gettext("No hay comanda activa para esta mesa."));
                 return;
             }
-            window.open(`/es/tpv/comprobante/${tpvState.comandaId}/`, "_blank");
+            window.open(getTpvUrl(`comprobante/${tpvState.comandaId}/`), "_blank");
         });
     }
 
@@ -214,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const response = await fetch("/api/facturas/ultima/");
                 if (!response.ok) {
-                    showAlert(gettext("No se encontró ningún ticket anterior para reimprimir."));
+                    Notify.info(gettext("No se encontró ningún ticket anterior para reimprimir."));
                     return;
                 }
                 const data = await response.json();
@@ -222,11 +265,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const tpvIndex = parts.indexOf('tpv');
                 const ticketUrl = (tpvIndex !== -1)
                     ? `${window.location.origin}${parts.slice(0, tpvIndex + 1).join('/')}/ticket/${data.id}/`
-                    : `/es/tpv/ticket/${data.id}/`;
+                    : getTpvUrl(`ticket/${data.id}/`);
                 window.open(ticketUrl, "_blank");
             } catch (err) {
                 console.error("Error al reimprimir:", err);
-                showAlert(gettext("Error al intentar reimprimir el último ticket."));
+                Notify.error(gettext("Error al intentar reimprimir el último ticket."));
             }
         });
     }
@@ -238,7 +281,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const lineasActivas = tpvState.lineas.filter(l => !l.anulado);
             if (lineasActivas.length === 0) return;
 
-            if (await showConfirm(gettext("¿Está seguro de que quiere borrar toda la comanda? Esta acción no se puede deshacer."))) {
+            if (await Notify.confirmDanger(gettext("¿Está seguro de que quiere borrar toda la comanda? Esta acción no se puede deshacer."), {
+                title: "Confirmar",
+            })) {
                 tpvState.lineas = [];
                 tpvState.historialInserciones = [];
                 limpiarSeleccionLineas();
@@ -257,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (objetivo.length === 0) {
                 const lineasActivas = tpvState.lineas.filter(l => !l.anulado);
                 if (lineasActivas.length === 0) return;
-                if (!await showConfirm(gettext("¿Desea separar todos los productos de la mesa?"))) return;
+                if (!await Notify.confirm(gettext("¿Desea separar todos los productos de la mesa?"), { title: "Confirmar" })) return;
                 objetivo = lineasActivas;
             }
 
@@ -304,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (objetivo.length === 0) {
                 const lineasActivas = tpvState.lineas.filter(l => !l.anulado);
                 if (lineasActivas.length === 0) return;
-                if (!await showConfirm(gettext("¿Desea juntar todos los productos de la mesa?"))) return;
+                if (!await Notify.confirm(gettext("¿Desea juntar todos los productos de la mesa?"), { title: "Confirmar" })) return;
                 objetivo = lineasActivas;
             }
 
@@ -312,7 +357,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const mapAgrupados = new Map();
 
             objetivo.forEach(linea => {
-                const clave = `${linea.producto_id}`;
+                // Generar una clave única basada en el producto + su configuración + su precio
+                const configStr = JSON.stringify(linea.configuracion_json || {});
+                const clave = `${linea.producto_id}_${configStr}_${linea.precio_unitario}`;
+
                 if (mapAgrupados.has(clave)) {
                     const lineaMadre = mapAgrupados.get(clave);
                     lineaMadre.cantidad += linea.cantidad;
@@ -345,7 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (seleccionadas.length === 0) {
                 const lineasActivas = tpvState.lineas.filter(l => !l.anulado);
                 if (lineasActivas.length === 0) return;
-                if (await showConfirm("¿Desea aplicar el descuento a toda la mesa?")) {
+                if (await Notify.confirm("¿Desea aplicar el descuento a toda la mesa?", { title: "Confirmar" })) {
                     window.descuentoObjetivo = "toda-la-mesa";
                     abrirModalDescuento();
                 }
@@ -388,7 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 nuevoDescuento = 100;
             }
 
-            if (await showConfirm(msg)) {
+            if (await Notify.confirm(msg, { title: "Confirmar" })) {
                 objetivo.forEach(linea => {
                     linea.descuento = nuevoDescuento;
                     recalcularLinea(linea);
@@ -398,6 +446,62 @@ document.addEventListener("DOMContentLoaded", () => {
                 saveHistoryState();
                 await sincronizarComanda();
             }
+        });
+    }
+
+    // --- Suplemento / Comentario Sidebar ---
+    const btnSideComentario = document.getElementById("btnSideComentario");
+    const btnSideSuplemento = document.getElementById("btnSideSuplemento");
+
+    if (btnSideComentario) {
+        btnSideComentario.addEventListener("click", async () => {
+            const seleccionadas = getLineasSeleccionadasActivas();
+            if (seleccionadas.length === 0) {
+                if (typeof showAlerta === 'function') {
+                    showAlerta(gettext("Atención"), gettext("Seleccione primero un producto del ticket."));
+                } else {
+            Notify.info(gettext("Seleccione primero un producto del ticket."));
+                }
+                return;
+            }
+
+            // Validar si están "acumulados" (mismo producto) si hay varios
+            if (seleccionadas.length > 1) {
+                const firstId = seleccionadas[0].producto_id;
+                if (!seleccionadas.every(l => l.producto_id === firstId)) {
+                    showAlerta(gettext("Atención"), gettext("Para añadir comentarios a varios artículos, estos deben ser del mismo tipo."));
+                    return;
+                }
+            }
+
+            // Ahora abrimos el modal de selección de perfiles rápidos
+            abrirModificadoresRapido('comentario');
+        });
+    }
+
+    if (btnSideSuplemento) {
+        btnSideSuplemento.addEventListener("click", async () => {
+            const seleccionadas = getLineasSeleccionadasActivas();
+            if (seleccionadas.length === 0) {
+                if (typeof showAlerta === 'function') {
+                    showAlerta(gettext("Atención"), gettext("Seleccione primero un producto del ticket."));
+                } else {
+            Notify.info(gettext("Seleccione primero un producto del ticket."));
+                }
+                return;
+            }
+
+            // Validar si están "acumulados" (mismo producto) si hay varios
+            if (seleccionadas.length > 1) {
+                const firstId = seleccionadas[0].producto_id;
+                if (!seleccionadas.every(l => l.producto_id === firstId)) {
+                    showAlerta(gettext("Atención"), gettext("Para añadir suplementos a varios artículos, estos deben ser del mismo tipo."));
+                    return;
+                }
+            }
+
+            // Ahora abrimos el modal de selección de perfiles rápidos
+            abrirModificadoresRapido('suplemento');
         });
     }
 });

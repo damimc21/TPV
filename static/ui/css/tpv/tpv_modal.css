@@ -37,7 +37,8 @@
   font-weight: 700;
   text-align: center;
   letter-spacing: 1.5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Visibilidad aumentada */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  /* Visibilidad aumentada */
   padding-bottom: 1.25rem;
 }
 
@@ -56,7 +57,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem; /* Máxima unión visual */
+  gap: 0.65rem;
+  /* Máxima unión visual */
   width: 100%;
 }
 
@@ -159,7 +161,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem; /* Más compacto y unido */
+  gap: 0.8rem;
+  /* Más compacto y unido */
 }
 
 /* Ocultar flechas de control nativas */
@@ -176,7 +179,8 @@
   border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 10px;
   color: #10b981;
-  width: 120px; /* Algo más estrecho para mayor integración */
+  width: 120px;
+  /* Algo más estrecho para mayor integración */
   height: 38px;
   font-size: 1.05rem;
   font-weight: 800;
@@ -198,7 +202,8 @@
 }
 
 .tpv-modal__action-btn {
-  width: 26px; /* Ajuste final de tamaño */
+  width: 26px;
+  /* Ajuste final de tamaño */
   height: 26px;
   border-radius: 6px;
   border: none;
@@ -224,7 +229,8 @@
 .tpv-modal__action-btn--cancel {
   background: rgba(255, 255, 255, 0.03);
   color: #6b7280;
-  border: 1px solid rgba(255, 255, 255, 0.12); /* Visibilidad aumentada */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  /* Visibilidad aumentada */
 }
 
 .tpv-modal__action-btn--cancel:hover {
@@ -283,8 +289,10 @@
   font-weight: 800;
   color: #9ca3af !important;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.06) !important; /* Presencia aumentada */
-  border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Contraste mejorado */
+  background: rgba(255, 255, 255, 0.06) !important;
+  /* Presencia aumentada */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  /* Contraste mejorado */
   border-radius: 12px;
   transition: all 0.2s;
   text-transform: uppercase;

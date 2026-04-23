@@ -1,0 +1,68 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Exportar Datos" %} | Ficheros{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+  <div class="page-head__left">
+    <a class="fich-back-link" href="{% url 'ui:ficheros' %}">
+      <span>←</span><span>{% trans "Volver a Ficheros" %}</span>
+    </a>
+  </div>
+  <h1 class="h1">{% trans "Exportar Datos" %}</h1>
+</div>
+
+<div class="fich-layout">
+
+  <!-- Exportar Catálogo -->
+  <div class="fich-card">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/package-search.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Productos (Catálogo)</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Descarga todos los productos del catálogo en formato CSV compatible con la importación.</p>
+      <div class="fich-export-options">
+        <label class="fich-checkbox"><input type="checkbox" id="expProdActivos" checked> Solo activos</label>
+        <label class="fich-checkbox"><input type="checkbox" id="expProdEliminados"> Incluir eliminados</label>
+      </div>
+      <select class="fich-select" id="expProdDepto">
+        <option value="">Todos los departamentos</option>
+      </select>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--success" onclick="exportarProductos()">
+        <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="16" class="svg-icon" alt="">
+        Descargar CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Exportar Inventario -->
+  <div class="fich-card">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/warehouse.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Artículos de Inventario</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Descarga los artículos de inventario (materias primas, ingredientes) en formato CSV.</p>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--success" onclick="exportarInventario()">
+        <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="16" class="svg-icon" alt="">
+        Descargar CSV
+      </button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/ficheros/exportar.js' %}"></script>
+{% endblock %}

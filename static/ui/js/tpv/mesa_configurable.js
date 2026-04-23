@@ -31,6 +31,12 @@ async function abrirModalConfigurable(prod, lineaExistente = null) {
     modal._lineaExistente = lineaExistente;
     modal._configActual = lineaExistente ? JSON.parse(JSON.stringify(lineaExistente.configuracion_json)) : null;
 
+    // Inicializar lista de añadidos manuales (Comentarios libres / Comodines múltiples)
+    modal._manualAdditions = [];
+    if (modal._configActual && modal._configActual.manual_additions) {
+        modal._manualAdditions = [...modal._configActual.manual_additions];
+    }
+
     renderModalConfigurable(modal, prod, plantilla, modal._configActual);
     modal.classList.remove('hidden');
 }
@@ -58,9 +64,11 @@ function renderModalConfigurable(modal, prod, plantilla, configExistente) {
     const titulo = modal.querySelector('#configModalTitle');
     const body = modal.querySelector('#configModalBody');
     const btnAdd = modal.querySelector('#btnConfigAnadir');
+    const sidebarName = modal.querySelector('#configSidebarName');
 
-    titulo.textContent = configExistente ? `Editar: ${prod.nombre}` : prod.nombre;
-    btnAdd.textContent = configExistente ? 'Guardar' : 'Añadir';
+    if (titulo) titulo.textContent = configExistente ? `Editar: ${prod.nombre}` : 'Selecciona Opciones';
+    if (sidebarName) sidebarName.textContent = prod.nombre;
+    if (btnAdd) btnAdd.textContent = configExistente ? 'Guardar Cambios' : 'Añadir a comanda';
 
     let html = '';
 
@@ -93,7 +101,6 @@ function renderModalConfigurable(modal, prod, plantilla, configExistente) {
         plantilla.grupos.forEach(grupo => {
             const grupoConfig = configExistente?.grupos?.find(g => g.grupo_id === grupo.id);
             const seleccionadas = grupoConfig ? grupoConfig.opciones.map(o => o.opcion_id) : [];
-            const textoLibre = grupoConfig?.texto_libre || '';
 
             html += `<div class="config-section" data-grupo-id="${grupo.id}">
                 <div class="config-section__title">${grupo.nombre}
@@ -101,52 +108,60 @@ function renderModalConfigurable(modal, prod, plantilla, configExistente) {
                 </div>
                 <div class="config-chips" data-tipo="${grupo.tipo_seleccion}">`;
 
-            grupo.opciones.filter(o => o.activo).forEach(opcion => {
-                let selected = '';
-                if (configExistente) {
-                    selected = seleccionadas.includes(opcion.id) ? 'is-selected' : '';
+            (grupo.opciones || []).forEach(opcion => {
+                // Buscar si ya estaba seleccionada para sacar la cantidad inicial
+                let initialQty = 0;
+                if (configExistente && configExistente.grupos) {
+                    const gPrev = configExistente.grupos.find(gp => gp.grupo_id === grupo.id);
+                    if (gPrev && gPrev.opciones) {
+                        const oPrev = gPrev.opciones.find(op => op.opcion_id === opcion.id);
+                        if (oPrev) {
+                            initialQty = oPrev.cantidad || 1;
+                        }
+                    }
                 } else {
-                    // Si es nuevo, usamos el flag por_defecto
-                    selected = opcion.por_defecto ? 'is-selected' : '';
+                    // Si es un producto nuevo, aplicar la opción marcada por defecto
+                    if (opcion.por_defecto) {
+                        initialQty = 1;
+                    }
                 }
 
-                const precioStr = parseFloat(opcion.precio_base) > 0 ? `+${formatPrecio(opcion.precio_base)}` : '';
+                const isSelected = initialQty > 0;
+                const badgeHtml = `<span class="config-chip__badge" style="${isSelected && initialQty > 1 ? '' : 'display:none'}">x${initialQty}</span>`;
+                
+                // NO mostrar el botón de menos si la selección es ÚNICA y el grupo es OBLIGATORIO
+                const tipoNorm = (grupo.tipo_seleccion || '').toString().trim().toLowerCase();
+                const esUnica = (tipoNorm === 'unica' || tipoNorm === 'single' || tipoNorm === 'unico' || tipoNorm === 'u' || tipoNorm === 's' || tipoNorm === 'unicas');
+                const esObligatorio = !!grupo.obligatorio;
+                const showMinus = ! (esUnica && esObligatorio);
+                
+                const minusHtml = (isSelected && showMinus) 
+                    ? `<span class="config-chip__minus">−</span>` 
+                    : `<span class="config-chip__minus" style="display:none">−</span>`;
 
-                html += `<button type="button" class="config-chip ${selected}"
+                html += `<button type="button" class="config-chip ${isSelected ? 'is-selected' : ''}" 
                             data-opcion-id="${opcion.id}" data-grupo-id="${grupo.id}"
                             data-precio-base="${opcion.precio_base}"
-                            data-tipo="${grupo.tipo_seleccion}"
-                            data-obligatorio="${grupo.obligatorio ? '1' : '0'}">
-                            <span class="config-chip__name">${opcion.nombre}</span>
+                            data-tipo="${tipoNorm}"
+                            data-qty="${initialQty}"
+                            data-obligatorio="${esObligatorio ? '1' : '0'}">
+                            ${minusHtml}
+                            <span class="config-chip__name">${getDisplayModifierName(opcion.nombre)}</span>
                             <span class="config-chip__price"></span>
+                            ${badgeHtml}
                         </button>`;
             });
 
-            html += `</div>`;
-
-            // Campo de texto libre
-            if (grupo.permite_texto_libre) {
-                html += `<div class="config-texto-libre">
-                    <input type="text" class="config-input" placeholder="Comentario libre..."
-                        data-grupo-id="${grupo.id}" value="${textoLibre}" autocomplete="off">
-                </div>`;
-            }
-
-            html += `</div>`;
+            html += `</div></div>`;
         });
     }
 
-    // ── Precio Total ──
-    html += `<div class="config-total">
-        <span class="config-total__label">Total:</span>
-        <span class="config-total__value" id="configPrecioTotal">0,00 €</span>
-    </div>`;
-
     body.innerHTML = html;
 
-    // ── Bindings ──
+    // ── Bindings y Refresh inicial ──
     bindChipEvents(modal, prod, plantilla);
     recalcularPrecioConfigurable(modal, prod, plantilla);
+    renderConfigSummary(modal, prod, plantilla);
 }
 
 /**
@@ -156,51 +171,131 @@ function bindChipEvents(modal, prod, plantilla) {
     const body = modal.querySelector('#configModalBody');
 
     body.querySelectorAll('.config-chip:not(.config-chip--formato)').forEach(chip => {
-        chip.addEventListener('click', () => {
-            const container = chip.closest('.config-chips');
-            const tipo = (chip.dataset.tipo || container?.dataset.tipo || '').trim().toLowerCase();
-            const grupoId = chip.dataset.grupoId;
+        const minusBtn = chip.querySelector('.config-chip__minus');
+        const badge = chip.querySelector('.config-chip__badge');
+
+        const updateVisuals = () => {
+            const qty = parseInt(chip.dataset.qty) || 0;
+            const tipo = (chip.dataset.tipo || '').trim().toLowerCase();
+            const esUnica = (tipo === 'unica' || tipo === 'single' || tipo === 'unico' || tipo === 'u' || tipo === 's' || tipo === 'unicas');
             const esObligatorio = chip.dataset.obligatorio === '1';
-            const yaSeleccionado = chip.classList.contains('is-selected');
+            const hideMinus = (esUnica && esObligatorio);
 
-            const esUnica = (tipo === 'unica' || tipo === 'single' || tipo === 'unico');
-
-            if (esUnica) {
-                if (yaSeleccionado && esObligatorio) {
-                    return; // No permitir deseleccionar el único elemento obligatorio
-                }
-                
-                // Deseleccionar todos los demás del mismo grupo
-                body.querySelectorAll(`.config-chip[data-grupo-id="${grupoId}"]`).forEach(c => {
-                    c.classList.remove('is-selected');
-                });
-                
-                // Si ya estaba seleccionado y NO es obligatorio, lo quitamos (toggle).
-                // Si NO estaba seleccionado, lo ponemos.
-                if (yaSeleccionado && !esObligatorio) {
-                    chip.classList.remove('is-selected');
-                } else {
-                    chip.classList.add('is-selected');
+            if (qty > 0) {
+                chip.classList.add('is-selected');
+                if (minusBtn) minusBtn.style.display = hideMinus ? 'none' : '';
+                if (badge) {
+                    badge.style.display = qty > 1 ? '' : 'none';
+                    badge.textContent = `x${qty}`;
                 }
             } else {
-                chip.classList.toggle('is-selected');
+                chip.classList.remove('is-selected');
+                if (minusBtn) minusBtn.style.display = 'none';
+                if (badge) badge.style.display = 'none';
+            }
+        };
+
+        // Click en el chip (Incrementar)
+        chip.addEventListener('click', (e) => {
+            if (e.target.closest('.config-chip__minus')) return; // No procesar si pulsó el menos
+
+            const container = chip.closest('.config-chips');
+            const tipo = (chip.dataset.tipo || container?.dataset.tipo || '').trim().toLowerCase();
+            const esUnica = (tipo === 'unica' || tipo === 'single' || tipo === 'unico' || tipo === 'u' || tipo === 's' || tipo === 'unicas');
+            const isManualText = (chip.querySelector('.config-chip__name')?.textContent || '').includes('Comentario libre');
+            const isManualPrice = (chip.querySelector('.config-chip__name')?.textContent || '').includes('Comodín');
+
+            if (isManualText || isManualPrice) {
+                handleManualChipClick(chip, isManualText ? 'text' : 'price', modal, prod, plantilla);
+                return;
+            }
+
+            if (esUnica) {
+                const grpId = chip.dataset.grupoId;
+                body.querySelectorAll(`.config-chip[data-grupo-id="${grpId}"]`).forEach(c => {
+                    if (c !== chip) {
+                        c.dataset.qty = 0;
+                        c.classList.remove('is-selected');
+                        const mb = c.querySelector('.config-chip__minus');
+                        const bb = c.querySelector('.config-chip__badge');
+                        if (mb) mb.style.display = 'none';
+                        if (bb) bb.style.display = 'none';
+                    }
+                });
+                chip.dataset.qty = 1; // Solo se permite 1
+            } else {
+                let qty = parseInt(chip.dataset.qty) || 0;
+                chip.dataset.qty = qty + 1;
             }
             
-            // Quitar marca de error si se ha seleccionado algo
-            const grupoSection = chip.closest('.config-section');
-            if (grupoSection) grupoSection.classList.remove('config-section--error');
-
+            updateVisuals();
             recalcularPrecioConfigurable(modal, prod, plantilla);
+            renderConfigSummary(modal, prod, plantilla);
         });
+
+        // Click en el botón de menos (Decrementar)
+        if (minusBtn) {
+            minusBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                let qty = parseInt(chip.dataset.qty) || 0;
+
+                const tipo = (chip.dataset.tipo || '').trim().toLowerCase();
+                const esUnica = (tipo === 'unica' || tipo === 'single' || tipo === 'unico');
+                const esObligatorio = chip.dataset.obligatorio === '1';
+
+                // Si es única y obligatoria, no permitir bajar de 1
+                if (qty <= 1 && esUnica && esObligatorio) return;
+
+                if (qty > 0) {
+                    chip.dataset.qty = qty - 1;
+                    updateVisuals();
+                    recalcularPrecioConfigurable(modal, prod, plantilla);
+                    renderConfigSummary(modal, prod, plantilla);
+                }
+            });
+        }
     });
 
     body.querySelectorAll('.config-chip--formato').forEach(chip => {
         chip.addEventListener('click', () => {
             body.querySelectorAll('.config-chip--formato').forEach(c => c.classList.remove('is-selected'));
             chip.classList.add('is-selected');
+            
             recalcularPrecioConfigurable(modal, prod, plantilla);
+            renderConfigSummary(modal, prod, plantilla);
         });
     });
+}
+
+/**
+ * Maneja el clic en un chip de herramienta manual (Comodín o Comentario Libre).
+ */
+async function handleManualChipClick(chip, type, modal, prod, plantilla) {
+    const title = type === 'text' ? 'Escribir observación' : 'Indicar suplemento';
+    const result = await showManualInputModal(type, title);
+    
+    if (result !== null) {
+        if (type === 'price') {
+             // result es { precio, nombre }
+             if (result.precio || result.nombre) {
+                 modal._manualAdditions.push({ 
+                     type: 'price', 
+                     val: result.precio, 
+                     nombre: result.nombre || 'Personalizado' 
+                 });
+             }
+        } else {
+             // result es solo texto
+             if (result) {
+                 modal._manualAdditions.push({ 
+                     type: 'text', 
+                     val: result 
+                 });
+             }
+        }
+        recalcularPrecioConfigurable(modal, prod, plantilla);
+        renderConfigSummary(modal, prod, plantilla);
+    }
 }
 
 /**
@@ -212,14 +307,14 @@ function recalcularPrecioConfigurable(modal, prod, plantilla) {
 
     // Precio del formato
     const formatoChip = body.querySelector('.config-chip--formato.is-selected');
-    let factor = 1;
+    let fFactor = 1;
     if (formatoChip) {
         const pFijo = formatoChip.dataset.precioFijo;
-        factor = parseFloat(formatoChip.dataset.factor) || 1;
+        fFactor = parseFloat(formatoChip.dataset.factor) || 1;
         if (pFijo && pFijo !== 'null' && pFijo !== '') {
             total += parseFloat(pFijo);
         } else {
-            total += parseFloat(prod.precio) * factor;
+            total += parseFloat(prod.precio) * fFactor;
         }
     } else {
         total += parseFloat(prod.precio);
@@ -229,21 +324,21 @@ function recalcularPrecioConfigurable(modal, prod, plantilla) {
     const allOptionChips = body.querySelectorAll('.config-chip:not(.config-chip--formato)');
     
     allOptionChips.forEach(chip => {
+        const qty = parseInt(chip.dataset.qty) || 0;
         const opcionId = parseInt(chip.dataset.opcionId);
-        const precioBase = parseFloat(chip.dataset.precioBase) || 0;
-        const yaSeleccionado = chip.classList.contains('is-selected');
+        let precioBase = parseFloat(chip.dataset.precioBase) || 0;
 
-        // Buscar precio dinámico
+        // Buscar precio dinámico según formato
         let precioDinamic = precioBase;
         if (formatoId && plantilla.grupos) {
             for (const grupo of plantilla.grupos) {
-                const opcion = grupo.opciones.find(o => o.id === opcionId);
+                const opcion = (grupo.opciones || []).find(o => o.id === opcionId);
                 if (opcion) {
-                    const precioFormato = opcion.precios_formato?.find(pf => pf.formato === formatoId);
-                    if (precioFormato) {
-                        precioDinamic = parseFloat(precioFormato.precio);
+                    const pf = (opcion.precios_formato || []).find(p => p.formato === formatoId);
+                    if (pf) {
+                        precioDinamic = parseFloat(pf.precio);
                     } else {
-                        precioDinamic = precioBase * factor;
+                        precioDinamic = precioBase * fFactor;
                     }
                     break;
                 }
@@ -262,11 +357,20 @@ function recalcularPrecioConfigurable(modal, prod, plantilla) {
             }
         }
 
-        // Si está seleccionado, sumar al total
-        if (yaSeleccionado) {
-            total += precioDinamic;
+        // Si hay cantidad, sumar al total
+        if (qty > 0) {
+            total += precioDinamic * qty;
         }
     });
+
+    // Sumar añadidos manuales múltiples
+    if (modal._manualAdditions) {
+        modal._manualAdditions.forEach(item => {
+            if (item.type === 'price') {
+                total += parseFloat(item.val) || 0;
+            }
+        });
+    }
 
     const el = modal.querySelector('#configPrecioTotal');
     if (el) el.textContent = formatPrecio(total);
@@ -280,27 +384,31 @@ function construirConfigJSON(modal, prod, plantilla) {
     const body = modal.querySelector('#configModalBody');
     const config = { grupos: [] };
 
-    // Formato
+    // 1. Formato
     const formatoChip = body.querySelector('.config-chip--formato.is-selected');
+    let factor = 1;
+    let currentFormatoId = null;
+
     if (formatoChip) {
-        const formatoId = parseInt(formatoChip.dataset.formatoId);
-        const formato = plantilla.formatos.find(f => f.id === formatoId);
+        currentFormatoId = parseInt(formatoChip.dataset.formatoId);
+        const formato = plantilla.formatos.find(f => f.id === currentFormatoId);
         const precioFijo = formatoChip.dataset.precioFijo;
         let precioFormato;
+        
+        factor = parseFloat(formatoChip.dataset.factor) || 1;
+
         if (precioFijo && precioFijo !== 'null') {
             precioFormato = precioFijo;
         } else {
-            precioFormato = (parseFloat(prod.precio) * parseFloat(formatoChip.dataset.factor)).toFixed(2);
+            precioFormato = (parseFloat(prod.precio) * factor).toFixed(2);
         }
-        config.formato_id = formatoId;
+
+        config.formato_id = currentFormatoId;
         config.formato_nombre = formato ? formato.nombre : '';
         config.precio_formato = precioFormato;
     }
 
-    // Grupos
-    const factor = formatoChip ? parseFloat(formatoChip.dataset.factor) || 1 : 1;
-    const formatoId = formatoChip ? parseInt(formatoChip.dataset.formatoId) : null;
-
+    // 2. Grupos y Opciones estándar
     if (plantilla.grupos) {
         plantilla.grupos.forEach(grupo => {
             const grupoSection = body.querySelector(`.config-section[data-grupo-id="${grupo.id}"]`);
@@ -308,24 +416,34 @@ function construirConfigJSON(modal, prod, plantilla) {
 
             const opcionesSeleccionadas = [];
             grupoSection.querySelectorAll('.config-chip.is-selected:not(.config-chip--formato)').forEach(chip => {
+                const name = chip.querySelector('.config-chip__name').textContent;
+                const qty = parseInt(chip.dataset.qty) || 1;
+
+                // Ignorar botones de factoría manual (Comodín/Comentario) ya que se gestionan aparte
+                if (name.includes('Comentario libre') || name.includes('Comodín')) return;
+
                 const opcionId = parseInt(chip.dataset.opcionId);
                 const precioBase = parseFloat(chip.dataset.precioBase) || 0;
                 const opcionData = grupo.opciones.find(o => o.id === opcionId);
 
                 let precioFinal = precioBase;
-                if (formatoId && opcionData) {
-                    const pf = opcionData.precios_formato?.find(p => p.formato === formatoId);
+                if (currentFormatoId && opcionData) {
+                    const pf = (opcionData.precios_formato || []).find(p => p.formato === currentFormatoId);
                     if (pf) {
                         precioFinal = parseFloat(pf.precio);
                     } else {
-                        precioFinal = precioBase * factor;
+                        const factorObj = (plantilla.formatos || []).find(f => f.id === currentFormatoId);
+                        const factorValor = factorObj ? parseFloat(factorObj.factor) : 1;
+                        precioFinal = precioBase * factorValor;
                     }
                 }
 
                 opcionesSeleccionadas.push({
                     opcion_id: opcionId,
                     nombre: opcionData ? opcionData.nombre : '',
-                    precio: precioFinal.toFixed(2),
+                    precio: (precioFinal * qty).toFixed(2),
+                    precio_unitario: precioFinal.toFixed(2),
+                    cantidad: qty,
                     visible_comanda: opcionData ? opcionData.visible_comanda : true,
                     visible_factura: opcionData ? opcionData.visible_factura : true
                 });
@@ -344,6 +462,9 @@ function construirConfigJSON(modal, prod, plantilla) {
             }
         });
     }
+
+    // 3. Añadidos Manuales Múltiples
+    config.manual_additions = [...(modal._manualAdditions || [])];
 
     return config;
 }
@@ -425,9 +546,6 @@ async function confirmarConfigurable() {
     await sincronizarComanda();
 }
 
-/**
- * Cierra el modal de configuración.
- */
 function cerrarModalConfigurable() {
     const modal = document.getElementById('modalConfigurable');
     if (modal) {
@@ -437,5 +555,81 @@ function cerrarModalConfigurable() {
         modal._lineaExistente = null;
         modal._configActual = null;
         modal._precioCalculado = null;
+    }
+}
+
+/**
+ * Renderiza la lista de resumen en el sidebar izquierdo.
+ */
+function renderConfigSummary(modal, prod, plantilla) {
+    const list = modal.querySelector('#configSummaryList');
+    if (!list) return;
+
+    let html = '';
+    const body = modal.querySelector('#configModalBody');
+
+    // 1. Formato
+    const formatoChip = body.querySelector('.config-chip--formato.is-selected');
+    if (formatoChip) {
+        html += `<div class="config-summary-item">
+            <div class="config-summary-item__text">Formato: <b>${formatoChip.querySelector('.config-chip__name').textContent}</b></div>
+            <div class="config-summary-item__price"></div>
+        </div>`;
+    }
+
+    // 2. Opciones estándar seleccionadas
+    body.querySelectorAll('.config-chip.is-selected:not(.config-chip--formato)').forEach(chip => {
+        const name = chip.querySelector('.config-chip__name').textContent;
+        const qty = parseInt(chip.dataset.qty) || 1;
+        
+        // No mostramos los botones de factoría manual en el resumen
+        if (name.includes('Comentario libre') || name.includes('Comodín')) return;
+
+        // Calcular precio total para este item en el resumen
+        const priceLabel = chip.querySelector('.config-chip__price').textContent;
+        let linePriceHtml = '';
+        if (priceLabel && priceLabel.includes('+')) {
+            const unitPrice = parseFloat(priceLabel.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
+            const totalLinePrice = unitPrice * qty;
+            if (totalLinePrice > 0) {
+                linePriceHtml = `+${formatPrecio(totalLinePrice)}`;
+            }
+        }
+
+        html += `<div class="config-summary-item">
+            <div class="config-summary-item__text">
+                ${name} ${qty > 1 ? `<span class="badge-qty">x${qty}</span>` : ''}
+            </div>
+            <div class="config-summary-item__price">${linePriceHtml}</div>
+        </div>`;
+    });
+
+    // 3. Añadidos Manuales (Múltiples)
+    if (modal._manualAdditions) {
+        modal._manualAdditions.forEach((item, index) => {
+            const isPrice = item.type === 'price';
+            const text = isPrice ? `${item.nombre}` : `📝 ${item.val}`;
+            const priceHtml = isPrice ? `<span class="config-summary-item__price">+${formatPrecio(item.val)}</span>` : '';
+
+            html += `<div class="config-summary-item">
+                <div class="config-summary-item__text">${text}</div>
+                ${priceHtml}
+                <div class="config-summary-item__remove" onclick="removeManualAddition(${index})">&times;</div>
+            </div>`;
+        });
+    }
+
+    list.innerHTML = html || '<div style="color: var(--muted); font-size: 0.75rem; padding: 20px; text-align:center;">Sin selección</div>';
+}
+
+/**
+ * Elimina un añadido manual de la lista.
+ */
+function removeManualAddition(index) {
+    const modal = document.getElementById('modalConfigurable');
+    if (modal && modal._manualAdditions) {
+        modal._manualAdditions.splice(index, 1);
+        recalcularPrecioConfigurable(modal, modal._prod, modal._plantilla);
+        renderConfigSummary(modal, modal._prod, modal._plantilla);
     }
 }

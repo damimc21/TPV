@@ -1,0 +1,110 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Logs del Sistema" %} | Ficheros{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+  <div class="page-head__left">
+    <a class="fich-back-link" href="{% url 'ui:ficheros' %}">
+      <span>←</span><span>{% trans "Volver a Ficheros" %}</span>
+    </a>
+  </div>
+  <h1 class="h1">{% trans "Logs del Sistema" %}</h1>
+  <div class="page-head__right">
+    <button class="btn btn--ghost" onclick="exportarLogs()">
+      <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="16" class="svg-icon" alt="">
+      Exportar CSV
+    </button>
+    <button class="btn btn--danger btn--mini" onclick="limpiarLogsAntiguos()">Limpiar &gt;30 días</button>
+  </div>
+</div>
+
+<div class="fich-layout">
+  <div class="fich-card fich-card--compact">
+    <div class="fich-card__body">
+      <div class="fich-logs-filters">
+        <div class="fich-logs-row fich-logs-row--primary">
+          <input type="text" class="fich-filter-input" id="logSearch" placeholder="Buscar mensaje..." oninput="cargarLogs()">
+          <select class="fich-select" id="logNivel" onchange="cargarLogs()">
+            <option value="">Todos los niveles</option>
+            <option value="INFO">INFO</option>
+            <option value="WARN">WARN</option>
+            <option value="ERROR">ERROR</option>
+            <option value="CRITICAL">CRITICAL</option>
+          </select>
+          <select class="fich-select" id="logOrigen" onchange="cargarLogs()">
+            <option value="">Todos los origenes</option>
+          </select>
+        </div>
+
+        <div class="fich-logs-row fich-logs-row--secondary">
+          <div class="fich-logs-dates">
+            <label class="fich-date-label">
+              <span>Desde</span>
+              <div class="fich-date-wrapper">
+                <input type="text" id="logDesde" class="fich-date-input fich-date-input-mask" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="dd/mm/aaaa" value="dd/mm/aaaa" aria-label="Fecha desde">
+                <input type="date" id="logDesdePicker" class="fich-date-native-picker" tabindex="-1">
+                <button type="button" class="fich-date-picker-btn" data-input="logDesde" aria-label="Abrir calendario desde"></button>
+              </div>
+            </label>
+            <label class="fich-date-label">
+              <span>Hasta</span>
+              <div class="fich-date-wrapper">
+                <input type="text" id="logHasta" class="fich-date-input fich-date-input-mask" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="dd/mm/aaaa" value="dd/mm/aaaa" aria-label="Fecha hasta">
+                <input type="date" id="logHastaPicker" class="fich-date-native-picker" tabindex="-1">
+                <button type="button" class="fich-date-picker-btn" data-input="logHasta" aria-label="Abrir calendario hasta"></button>
+              </div>
+            </label>
+          </div>
+          <div class="fich-date-presets">
+            <button class="btn btn--mini btn--ghost fich-preset-btn is-active" data-preset="todo" aria-pressed="true" onclick="setLogPreset('todo')">Todo</button>
+            <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="hoy" aria-pressed="false" onclick="setLogPreset('hoy')">Hoy</button>
+            <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="semana" aria-pressed="false" onclick="setLogPreset('semana')">Semana</button>
+            <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="mes" aria-pressed="false" onclick="setLogPreset('mes')">Mes</button>
+            <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="anio" aria-pressed="false" onclick="setLogPreset('anio')">Año</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fich-card">
+    <div class="fich-card__body fich-card__body--table">
+      <table class="fich-table" id="logTable">
+        <thead>
+          <tr>
+            <th style="width:160px">Fecha</th>
+            <th style="width:80px">Nivel</th>
+            <th style="width:120px">Origen</th>
+            <th>Mensaje</th>
+          </tr>
+        </thead>
+        <tbody id="logBody">
+          <tr><td colspan="4" class="fich-empty-cell">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="fich-card__footer fich-pagination" id="logPagination"></div>
+  </div>
+</div>
+
+<div id="modalLogDetalle" class="modal-overlay-generic hidden">
+  <div class="modal-container-generic" style="max-width:700px; text-align:left;">
+    <h2 id="logDetalleTitle">Detalle del Log</h2>
+    <pre class="fich-log-trace" id="logDetalleTraza"></pre>
+    <div class="modal-footer-generic">
+      <button class="modal-btn-generic modal-btn-generic--danger" onclick="document.getElementById('modalLogDetalle').classList.add('hidden')">Cerrar</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/ficheros/date-field.js' %}"></script>
+<script src="{% static 'ui/js/ficheros/logs.js' %}"></script>
+{% endblock %}

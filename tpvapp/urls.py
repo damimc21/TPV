@@ -4,7 +4,8 @@ from .views import (
     DepartamentoViewSet, ProductoViewSet, MesaViewSet,
     ComandaViewSet, LineaComandaViewSet, FacturaViewSet, EventoAuditoriaViewSet,
     PerfilComentariosViewSet, ComentarioViewSet, PerfilSuplementosViewSet, SuplementoViewSet,
-    listar_iconos, ClienteViewSet, plantilla_configurable
+    listar_iconos, ClienteViewSet, plantilla_configurable, MovimientoStockViewSet,
+    CategoriaInventarioViewSet, ArticuloInventarioViewSet, plantillas_inventario, importar_plantilla_inventario, configuracion_update
 )
 
 router = DefaultRouter()
@@ -20,10 +21,15 @@ router.register(r"perfiles-comentarios", PerfilComentariosViewSet)
 router.register(r"comentarios", ComentarioViewSet)
 router.register(r"perfiles-suplementos", PerfilSuplementosViewSet)
 router.register(r"suplementos", SuplementoViewSet)
+router.register(r"movimientos-stock", MovimientoStockViewSet)
+router.register(r"categorias-inventario", CategoriaInventarioViewSet)
+router.register(r"articulos-inventario", ArticuloInventarioViewSet)
 
 urlpatterns = [
     path("catalogo/iconos/", listar_iconos, name="listar_iconos"),
     path("productos/<int:producto_id>/plantilla/", plantilla_configurable, name="plantilla_configurable"),
+    path("plantillas-inventario/", plantillas_inventario, name="plantillas_inventario"),
+    path("plantillas-inventario/importar/", importar_plantilla_inventario, name="importar_plantilla_inventario"),
+    path("configuracion/update/", configuracion_update, name="configuracion_update"),
     path("", include(router.urls)),
 ]
-

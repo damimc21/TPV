@@ -17,7 +17,7 @@ import {
     xFromAABBLeft, yFromAABBTop, worldPointFromEvent, normRect, rectsIntersect
 } from './geometry.js';
 import { computeSnap } from './snapping.js';
-import { showAlert, showConfirm, showPrompt } from './modal.js';
+import { showPrompt } from './modal.js';
 
 // ─────────────────────────────────────────────────────────────
 // DOM / Config
@@ -45,6 +45,7 @@ const cfgEl = $("#map-editor-config");
 const CFG = cfgEl
     ? JSON.parse(cfgEl.textContent)
     : { mapsListUrl: "/config/maps/", editorUrl: "/config/maps/create/" };
+const Notify = window.Notify;
 
 // Seguridad: si se carga en una página sin editor, no hacemos nada
 if (!canvas || !world || !mapName) {
@@ -326,19 +327,6 @@ function isNumeroUsed(prefix, numero, excludeId = null) {
     });
 }
 
-async function askNumeroRequired(prefix, current = "", opts = {}) {
-    const { excludeId = null, reserved = [] } = opts;
-    while (true) {
-        const r = await showPrompt(`Número para ${prefix}:`, current);
-        if (r === null) return null;
-        const n = normalizeNumero(r);
-        if (!n) { await showAlert("Introduce un número entero positivo."); continue; }
-        if (reserved.map(String).includes(String(n))) { await showAlert("Ese número ya está usado en esta selección. Elige otro."); continue; }
-        if (isNumeroUsed(prefix, n, excludeId)) { await showAlert(`${prefix} ${n} ya existe. Elige otro.`); continue; }
-        return n;
-    }
-}
-
 /** Devuelve el siguiente número libre para un prefijo, a partir de los items actuales */
 function nextFreeNumero(prefix) {
     const used = new Set();
@@ -350,6 +338,34 @@ function nextFreeNumero(prefix) {
     let num = 1;
     while (used.has(num)) num++;
     return num;
+}
+
+// Override: validacion por prompt comun (solo digitos, 1..999, sin aviso de entero).
+async function askNumeroRequired(prefix, current = "", opts = {}) {
+    const { excludeId = null, reserved = [] } = opts;
+    while (true) {
+        const r = await showPrompt(`Numero para ${prefix}:`, current, {
+            title: `Numero ${prefix}`,
+            placeholder: "1-999",
+            digitsOnly: true,
+            minValue: 1,
+            maxValue: 999,
+            maxLength: 3,
+            required: true,
+        });
+        if (r === null) return null;
+        const n = normalizeNumero(r);
+        if (!n) continue;
+        if (reserved.map(String).includes(String(n))) {
+            await Notify.info("Ese numero ya esta usado en esta seleccion. Elige otro.");
+            continue;
+        }
+        if (isNumeroUsed(prefix, n, excludeId)) {
+            await Notify.info(`${prefix} ${n} ya existe. Elige otro.`);
+            continue;
+        }
+        return n;
+    }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -536,9 +552,9 @@ function rotateSelected(direction = 1) {
 
 async function deleteSelected() {
     if (selectedIds.size === 0) return;
-    const ok = await showConfirm(
+    const ok = await Notify.confirmDanger(
         `¿Eliminar ${selectedIds.size} elemento(s) seleccionado(s)?`,
-        { title: "Eliminar elementos", okText: "Eliminar", danger: true }
+        { title: "Eliminar elementos", okText: "Eliminar" }
     );
     if (!ok) return;
     pushHistory();
@@ -853,7 +869,7 @@ async function setupPicker() {
 
                 item.addEventListener("click", async () => {
                     if (hasChanges()) {
-                        const wantsSave = await showConfirm(
+                        const wantsSave = await Notify.confirm(
                             "Tienes cambios sin guardar. ¿Quieres guardarlos antes de abrir otro mapa?",
                             { title: "Cambios sin guardar", okText: "Guardar" }
                         );
@@ -922,7 +938,7 @@ async function loadOrCreate() {
             return;
         } catch (err) {
             console.error("Error al cargar mapa:", err);
-            await showAlert("No se pudo cargar el mapa.");
+            await Notify.error("No se pudo cargar el mapa.");
         }
     }
 
@@ -936,7 +952,7 @@ async function loadOrCreate() {
 
 async function saveCurrentMap() {
     const name = mapName.value.trim();
-    if (!name) { await showAlert("Escribe un nombre para el mapa."); return false; }
+    if (!name) { await Notify.info("Escribe un nombre para el mapa."); return false; }
 
     const payload = {
         name,
@@ -969,16 +985,16 @@ async function saveCurrentMap() {
         return true;
     } catch (err) {
         console.error("Error al guardar:", err);
-        await showAlert("Error al guardar el mapa.");
+        await Notify.error("Error al guardar el mapa.");
         return false;
     }
 }
 
 async function deleteMap() {
     if (!map?.id) return;
-    const ok = await showConfirm(
+    const ok = await Notify.confirmDanger(
         "¿Seguro que quieres eliminar este mapa? Esta acción no se puede deshacer.",
-        { title: "Eliminar mapa", okText: "Eliminar", danger: true }
+        { title: "Eliminar mapa", okText: "Eliminar" }
     );
     if (!ok) return;
 
@@ -999,13 +1015,16 @@ async function deleteMap() {
         mapName.focus();
     } catch (err) {
         console.error("Error al borrar mapa:", err);
-        await showAlert("Error al borrar el mapa.");
+        await Notify.error("Error al borrar el mapa.");
     }
 }
 
-function confirmLeave() {
+async function confirmLeave() {
     if (!hasChanges()) return true;
-    return confirm("Tienes cambios sin guardar. ¿Quieres salir sin guardar?");
+    return await Notify.confirmDanger(
+        "Tienes cambios sin guardar. ¿Quieres salir sin guardar?",
+        { title: "Cambios sin guardar" }
+    );
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1332,7 +1351,7 @@ function setupEvents() {
     // Crear nuevo mapa
     btnNewMap?.addEventListener("click", async () => {
         if (hasChanges()) {
-            const wantsSave = await showConfirm(
+            const wantsSave = await Notify.confirm(
                 "Tienes cambios sin guardar. ¿Quieres guardarlos antes de crear un mapa nuevo?",
                 { title: "Cambios sin guardar", okText: "Guardar" }
             );
@@ -1356,16 +1375,11 @@ function setupEvents() {
     });
 
     // Volver
-    btnBack?.addEventListener("click", (e) => {
-        if (confirmLeave()) return;
+    btnBack?.addEventListener("click", async (e) => {
         e.preventDefault();
-    });
-
-    // Cerrar pestaña
-    window.addEventListener("beforeunload", (e) => {
-        if (!hasChanges()) return;
-        e.preventDefault();
-        e.returnValue = "";
+        const canLeave = await confirmLeave();
+        if (!canLeave) return;
+        if (btnBack.href) window.location.href = btnBack.href;
     });
 
     // Nombre: actualiza UI

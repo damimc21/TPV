@@ -4,14 +4,16 @@
 {% block title %}{% trans "Caja y cierres" %}{% endblock %}
 
 {% block content %}
-<div class="page-head">
+<div class="page-head page-head--center-title">
   <h1 class="h1">{% trans "Caja y cierres" %}</h1>
 </div>
 
 <section class="grid">
   <!-- Card: Gestión -->
   <a class="card" href="{% url 'ui:caja_gestion' %}">
-    <div class="card__icon">🔑</div>
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/key-round.svg' %}" alt="">
+    </div>
     <div class="card__body">
       <h2 class="card__title">{% trans "Gestión" %}</h2>
       <p class="card__desc">
@@ -23,7 +25,9 @@
 
   <!-- Card: Cierres -->
   <a class="card" href="{% url 'ui:caja_cierres' %}">
-    <div class="card__icon">📋</div>
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/lock-keyhole.svg' %}" alt="">
+    </div>
     <div class="card__body">
       <h2 class="card__title">{% trans "Cierres" %}</h2>
       <p class="card__desc">
@@ -35,7 +39,9 @@
 
   <!-- Card: Reaperturas -->
   <a class="card" href="{% url 'ui:caja_reaperturas' %}">
-    <div class="card__icon">🔄</div>
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/refresh-ccw.svg' %}" alt="">
+    </div>
     <div class="card__body">
       <h2 class="card__title">{% trans "Reaperturas" %}</h2>
       <p class="card__desc">
@@ -48,7 +54,9 @@
 
   <!-- Card: Estadísticas -->
   <a class="card" href="{% url 'ui:caja_estadisticas' %}">
-    <div class="card__icon">📈</div>
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/chart-no-axes-combined.svg' %}" alt="">
+    </div>
     <div class="card__body">
       <h2 class="card__title">{% trans "Estadísticas" %}</h2>
       <p class="card__desc">

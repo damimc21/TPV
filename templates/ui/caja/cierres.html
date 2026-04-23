@@ -3,30 +3,103 @@
 
 {% block title %}{% trans "Historial de Cierres" %}{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/caja/gestion.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="page-head">
-    <div class="page-head__left">
-        <a href="{% url 'ui:caja' %}" class="btn btn--ghost btn--mini">
-            ↩️ {% trans "Volver" %}
-        </a>
-        <h1 class="h1">{% trans "Historial de Cierres" %}</h1>
+<div class="caja-container">
+    <!-- CABECERA -->
+    <div class="caja-header-layout">
+        <div class="caja-header-centered">
+            <h1 class="h1">{% trans "Historial de Cierres" %}</h1>
+        </div>
+    </div>
+
+    <!-- SELECTOR DE TABS -->
+    <div class="cierres-tabs">
+        <button class="tab-btn active" data-tab="jornadas">{% trans "Cierres Z (Días)" %}</button>
+        <button class="tab-btn" data-tab="turnos">{% trans "Cierres de Turno" %}</button>
+    </div>
+
+    <!-- CONTENIDO: JORNADAS -->
+    <div id="jornadas" class="tab-content active">
+        <div class="cierres-table-container">
+            <table class="cierres-table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Fecha" %}</th>
+                        <th>{% trans "Horario" %}</th>
+                        <th>{% trans "Responsable" %}</th>
+                        <th style="text-align: right;">{% trans "Total Z" %}</th>
+                        <th style="text-align: center;">{% trans "Ticket" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in dias_lista %}
+                    <tr>
+                        <td><strong>{{ item.dia.fecha_apertura|date:"d/m/Y" }}</strong></td>
+                        <td>{{ item.dia.fecha_apertura|date:"H:i" }} - {{ item.dia.fecha_cierre|date:"H:i" }}</td>
+                        <td>{{ item.dia.cerrado_por.username }}</td>
+                        <td style="text-align: right;"><strong>{{ item.total_z|floatformat:2 }} €</strong></td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'ui:ticket_cierre_dia' item.dia.id %}" target="_blank" class="btn-icon-print" title="{% trans 'Imprimir reporte Z' %}">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 4rem; opacity: 0.3;">
+                            {% trans "No hay jornadas registradas." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- CONTENIDO: TURNOS -->
+    <div id="turnos" class="tab-content">
+        <div class="cierres-table-container">
+            <table class="cierres-table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Fecha" %}</th>
+                        <th>{% trans "Horario" %}</th>
+                        <th>{% trans "Responsable" %}</th>
+                        <th style="text-align: right;">{% trans "Ventas (Z)" %}</th>
+                        <th style="text-align: right;">{% trans "Real (Arqueo)" %}</th>
+                        <th style="text-align: center;">{% trans "Ticket" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in sesiones_lista %}
+                    <tr>
+                        <td>{{ item.sesion.fecha_apertura|date:"d/m/Y" }}</td>
+                        <td>{{ item.sesion.fecha_apertura|date:"H:i" }} - {{ item.sesion.fecha_cierre|date:"H:i" }}</td>
+                        <td>{{ item.sesion.cerrada_por.username }}</td>
+                        <td style="text-align: right;">{{ item.total_z|floatformat:2 }} €</td>
+                        <td style="text-align: right; color: #fff;"><strong>{{ item.sesion.efectivo_final_real|default:"0.00"|floatformat:2 }} €</strong></td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'ui:ticket_cierre_turno' item.sesion.id %}" target="_blank" class="btn-icon-print" title="{% trans 'Imprimir reporte de turno' %}">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 4rem; opacity: 0.3;">
+                            {% trans "No hay turnos registrados." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<div class="tpv-container">
-    <div class="card card--full">
-        <div class="card__header">
-            <h2 class="card__title">{% trans "Cierres Realizados" %}</h2>
-        </div>
-        <div class="card__body">
-            <p class="card__desc">
-                {% trans "Consulta los cierres por turno y por día, revisando totales y diferencias." %}
-            </p>
-            <div class="empty-state">
-                <div class="empty-state__icon">📋</div>
-                <h3 class="empty-state__title">{% trans "Sin cierres registrados" %}</h3>
-            </div>
-        </div>
-    </div>
-</div>
+<script src="{% static 'ui/js/caja/cierres_tabs.js' %}"></script>
 {% endblock %}

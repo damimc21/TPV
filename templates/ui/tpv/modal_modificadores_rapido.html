@@ -1,0 +1,20 @@
+{% load i18n %}
+<!-- ═══ MODAL MODIFICADORES RÁPIDOS (Sidebar) ═══ -->
+<div id="modalModificadoresRapido" class="modal-overlay-generic hidden">
+  <div class="modal-container-generic modal-container-generic--modificadores">
+    <div class="modal-header-generic">
+      <h2 id="modalModifRapidoTitle">{% trans "Añadir Modificadores" %}</h2>
+      <button type="button" class="cobro-bdp__close-btn" id="btnCerrarModifRapido">&times;</button>
+    </div>
+    <div class="modal-body-generic" id="modalModifRapidoBody">
+      <!-- El contenido se generará dinámicamente:
+           Se mostrarán las secciones de comentarios y suplementos asignados al producto
+           y al final un botón de "Manual" para cada uno. -->
+    </div>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--cancel" id="btnCancelarModifRapido">
+        {% trans "Cerrar" %}
+      </button>
+    </div>
+  </div>
+</div>

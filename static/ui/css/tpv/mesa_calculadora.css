@@ -12,11 +12,15 @@
 }
 
 .calc__barra {
-    height: 52px; /* Sincronizado con el ticket */
+    height: 52px;
+    /* Sincronizado con el ticket */
     display: flex;
-    gap: 8px; /* Más aire entre botones */
-    padding: 10px; /* Padding interno de la barra para que los botones respiren dentro */
-    background: rgba(0, 0, 0, .25); /* Mismo fondo que el ticket header */
+    gap: 8px;
+    /* Más aire entre botones */
+    padding: 10px;
+    /* Padding interno de la barra para que los botones respiren dentro */
+    background: rgba(0, 0, 0, .25);
+    /* Mismo fondo que el ticket header */
     border-bottom: 1px solid var(--border);
     margin-bottom: 8px;
 }
@@ -33,7 +37,8 @@
     border: 1px solid var(--border);
     background: var(--panel2);
     color: var(--text);
-    font-size: .80rem; /* Fuente más legible */
+    font-size: .80rem;
+    /* Fuente más legible */
     font-weight: 700;
     text-align: center;
     cursor: pointer;

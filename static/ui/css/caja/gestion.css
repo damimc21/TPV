@@ -379,6 +379,33 @@ html, body {
 .session-row__amount {
     font-weight: 800;
     font-size: 1rem;
+    color: #fff;
+}
+
+.session-row__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255,255,255,0.05);
+}
+
+.btn-icon-print {
+    color: var(--muted);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+}
+
+.btn-icon-print:hover {
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+    transform: scale(1.1);
 }
 
 .empty-sessions {
@@ -411,8 +438,8 @@ html, body {
 
 .caja-actions-grid-squares {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
     justify-content: center;
 }
 
@@ -465,13 +492,24 @@ html, body {
 .btn-square--success svg { color: #10b981; }
 
 .btn-square--danger {
-    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 .btn-square--danger:hover {
-    background: rgba(239, 68, 68, 0.15);
-    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
 }
 .btn-square--danger svg { color: #ef4444; }
+
+.btn-square--warning {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.btn-square--warning:hover {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+.btn-square--warning svg { color: #f59e0b; }
 
 /* RECUENTO TOTAL TURNO */
 .session-row__side {
@@ -519,6 +557,8 @@ html, body {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
+    z-index: 10;
 }
 
 /* Ajuste del contenedor para no ser tapado */
@@ -531,4 +571,94 @@ html, body {
     .caja-footer-persistent {
         left: 0;
     }
+}
+
+/* 8. HISTORIAL DE CIERRES (TABS Y TABLAS) */
+.cierres-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.5rem;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-weight: 800;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 8px;
+    position: relative;
+}
+
+.tab-btn:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.03);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+}
+
+.tab-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -0.6rem;
+    left: 1rem;
+    right: 1rem;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 -2px 10px rgba(59, 130, 246, 0.5);
+}
+
+.cierres-table-container {
+    overflow-x: auto;
+    background: rgba(0,0,0,0.2);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.cierres-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.cierres-table th {
+    text-align: left;
+    padding: 1rem;
+    color: var(--muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.cierres-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+    vertical-align: middle;
+}
+
+.cierres-table tr:hover td {
+    background: rgba(255,255,255,0.03);
+}
+
+.cierres-table tr:last-child td {
+    border-bottom: none;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.tab-content.active {
+    display: block;
 }

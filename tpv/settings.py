@@ -117,7 +117,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'tpvapp',
+    'tpvapp.apps.TpvappConfig',
     'ui',
 ]
 
@@ -130,6 +130,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ui.middleware.SystemErrorLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'tpv.urls'
@@ -211,7 +212,7 @@ LANGUAGES = [
 
 LOCALE_PATHS = [BASE_DIR / "locale"]
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 

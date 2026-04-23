@@ -15,12 +15,38 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+  function getCookie(name) {
+    const cookies = document.cookie ? document.cookie.split(";") : [];
+    for (const raw of cookies) {
+      const cookie = raw.trim();
+      if (cookie.startsWith(name + "=")) {
+        return decodeURIComponent(cookie.slice(name.length + 1));
+      }
+    }
+    return "";
+  }
+
+  function logUiEvent(evento, detalle, nivel = "INFO", origen = "ui.tema") {
+    fetch("/api/ficheros/logs/ui-evento/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: JSON.stringify({ evento, detalle, nivel, origen }),
+    }).catch(() => {});
+  }
+
   // ---------------------------
   // Tema (dark/light)
   // ---------------------------
   function setTheme(theme) {
+    const previous = document.documentElement.getAttribute("data-theme") || getSavedTheme();
     document.documentElement.setAttribute("data-theme", theme);
     try { localStorage.setItem("tpv_theme", theme); } catch (_) { }
+    if (theme && theme !== previous) {
+      logUiEvent("theme_change", `from=${previous} to=${theme}`);
+    }
   }
 
   function getSavedTheme() {

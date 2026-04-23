@@ -1,0 +1,114 @@
+.catalogo-app.is-resolving .tab-view {
+    display: none !important;
+}
+
+.catalogo-app.is-resolving .catalogo-actions {
+    visibility: hidden;
+}
+
+.btn-back-minimal {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    padding: 0;
+}
+
+.btn-back-minimal:hover {
+    transform: translateX(-3px);
+}
+
+.profile-import-item {
+    background: #242526;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.profile-import-item:hover {
+    background: #2c2d2e;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.import-item-card {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.import-item-card:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.import-item-card.is-selected {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.select-all-banner {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chip-todos-minimal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2ecc71;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.custom-checkbox-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.custom-checkbox-solid input {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    background: transparent;
+    outline: none;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.custom-checkbox-solid input:checked {
+    background: #2ecc71;
+    border-color: #2ecc71;
+}
+
+.custom-checkbox-solid input:checked::after {
+    content: '\2713';
+    position: absolute;
+    color: #18191a;
+    font-size: 14px;
+    font-weight: 900;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

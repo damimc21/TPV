@@ -1,0 +1,222 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Informes" %} | Ficheros{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+  <div class="page-head__left">
+    <a class="fich-back-link" href="{% url 'ui:ficheros' %}">
+      <span>←</span><span>{% trans "Volver a Ficheros" %}</span>
+    </a>
+  </div>
+  <h1 class="h1">{% trans "Informes" %}</h1>
+</div>
+
+<div class="fich-layout">
+
+  <!-- Rango de fechas global -->
+  <div class="fich-card fich-card--compact">
+    <div class="fich-card__body" style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <label class="fich-date-label">
+        <span>Desde</span>
+        <div class="fich-date-wrapper">
+          <input type="text" id="informeDesde" class="fich-date-input fich-date-input-mask" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="dd/mm/aaaa" value="dd/mm/aaaa" aria-label="Fecha desde">
+          <input type="date" id="informeDesdePicker" class="fich-date-native-picker" tabindex="-1">
+          <button type="button" class="fich-date-picker-btn" data-input="informeDesde" aria-label="Abrir calendario desde"></button>
+        </div>
+      </label>
+      <label class="fich-date-label">
+        <span>Hasta</span>
+        <div class="fich-date-wrapper">
+          <input type="text" id="informeHasta" class="fich-date-input fich-date-input-mask" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="dd/mm/aaaa" value="dd/mm/aaaa" aria-label="Fecha hasta">
+          <input type="date" id="informeHastaPicker" class="fich-date-native-picker" tabindex="-1">
+          <button type="button" class="fich-date-picker-btn" data-input="informeHasta" aria-label="Abrir calendario hasta"></button>
+        </div>
+      </label>
+      <div class="fich-date-presets">
+        <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="hoy" aria-pressed="false" onclick="setPreset('hoy')">Hoy</button>
+        <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="semana" aria-pressed="false" onclick="setPreset('semana')">Semana</button>
+        <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="mes" aria-pressed="false" onclick="setPreset('mes')">Mes</button>
+        <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="anio" aria-pressed="false" onclick="setPreset('anio')">Año</button>
+        <button class="btn btn--mini btn--ghost fich-preset-btn" data-preset="todo" aria-pressed="false" onclick="setPreset('todo')">Todo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informe: Ventas -->
+  <div class="fich-card fich-card--report">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Ventas Detalladas</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Todas las lineas de venta: producto, cantidad, precio, descuento, total, mesa, camarero y fecha.</p>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--outline" onclick="visualizarInforme('ventas', 'Ventas Detalladas')">Visualizar</button>
+      <div class="fich-export">
+        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
+        <div class="fich-export__menu hidden">
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'ventas', 'Ventas Detalladas', 'pdf')">PDF</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'ventas', 'Ventas Detalladas', 'csv')">CSV</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'ventas', 'Ventas Detalladas', 'xlsx')">Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informe: Fluctuaciones Stock -->
+  <div class="fich-card fich-card--report">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/chart-no-axes-combined.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Fluctuaciones de Stock</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Movimientos de inventario: tipo, articulo, cantidad, stock anterior/nuevo, motivo, usuario.</p>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--outline" onclick="visualizarInforme('stock', 'Fluctuaciones de Stock')">Visualizar</button>
+      <div class="fich-export">
+        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
+        <div class="fich-export__menu hidden">
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'stock', 'Fluctuaciones de Stock', 'pdf')">PDF</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'stock', 'Fluctuaciones de Stock', 'csv')">CSV</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'stock', 'Fluctuaciones de Stock', 'xlsx')">Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informe: Turnos y Jornadas -->
+  <div class="fich-card fich-card--report">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/key-round.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Turnos y Jornadas</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Sesiones de caja: apertura, cierre, fondo, efectivo real, arqueo, descuadre.</p>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--outline" onclick="visualizarInforme('turnos', 'Turnos y Jornadas')">Visualizar</button>
+      <div class="fich-export">
+        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
+        <div class="fich-export__menu hidden">
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'turnos', 'Turnos y Jornadas', 'pdf')">PDF</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'turnos', 'Turnos y Jornadas', 'csv')">CSV</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'turnos', 'Turnos y Jornadas', 'xlsx')">Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informe: Movimientos de Caja -->
+  <div class="fich-card fich-card--report">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/lock-keyhole-open.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Movimientos de Caja</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Entradas y salidas manuales de efectivo con concepto, importe, usuario y fecha.</p>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--outline" onclick="visualizarInforme('movimientos_caja', 'Movimientos de Caja')">Visualizar</button>
+      <div class="fich-export">
+        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
+        <div class="fich-export__menu hidden">
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'movimientos_caja', 'Movimientos de Caja', 'pdf')">PDF</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'movimientos_caja', 'Movimientos de Caja', 'csv')">CSV</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'movimientos_caja', 'Movimientos de Caja', 'xlsx')">Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informe: Clientes -->
+  <div class="fich-card fich-card--report">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/mail.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Clientes</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Listado completo de clientes con NIF, email, telefono, direccion fiscal.</p>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--outline" onclick="visualizarInforme('clientes', 'Clientes')">Visualizar</button>
+      <div class="fich-export">
+        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
+        <div class="fich-export__menu hidden">
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'clientes', 'Clientes', 'pdf')">PDF</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'clientes', 'Clientes', 'csv')">CSV</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'clientes', 'Clientes', 'xlsx')">Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informe: Rankings -->
+  <div class="fich-card fich-card--report">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/chart-no-axes-combined.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Rankings y Analisis</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Top productos, ranking camareros, horas punta, productos mas anulados, categorias destacadas.</p>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--outline" onclick="visualizarInforme('rankings', 'Rankings y Analisis')">Visualizar</button>
+      <div class="fich-export">
+        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
+        <div class="fich-export__menu hidden">
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'rankings', 'Rankings y Analisis', 'pdf')">PDF</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'rankings', 'Rankings y Analisis', 'csv')">CSV</button>
+          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'rankings', 'Rankings y Analisis', 'xlsx')">Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal para Previsualizar Informes -->
+<div class="modal hidden" id="modalPreviewInforme">
+  <div class="modal-box" style="width: 90%; max-width: 1200px; max-height: 90vh; display: flex; flex-direction: column;">
+    <div class="modal-head">
+      <h2 class="modal-title" id="previewInformeTitle">Previsualizacion de Informe</h2>
+      <button class="btn-icon" onclick="cerrarModalPreview()" aria-label="Cerrar vista previa">
+        <img src="{% static 'ui/img/iconos/x.svg' %}" alt="Cerrar">
+      </button>
+    </div>
+    <div class="modal-body" style="flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 0;">
+      <div id="previewSpinner" style="display: none; padding: 40px; text-align: center; color: var(--muted);">Cargando datos...</div>
+      <div class="fich-card__body--table preview-table-wrap">
+        <table class="fich-table" id="previewTable" style="display: none;">
+          <thead id="previewThead"></thead>
+          <tbody id="previewTbody"></tbody>
+        </table>
+        <div id="previewEmpty" style="display: none; padding: 40px; text-align: center; color: var(--muted);">No hay datos en el rango seleccionado.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn--ghost" onclick="cerrarModalPreview()">Cerrar</button>
+      <div class="fich-export">
+        <button class="btn btn--primary fich-export__toggle" id="btnPreviewExport" onclick="toggleExportMenu(event, this)">Exportar</button>
+        <div class="fich-export__menu hidden" id="previewExportMenu">
+          <button class="fich-export__item" id="btnPreviewExportPdf">PDF</button>
+          <button class="fich-export__item" id="btnPreviewExportCsv">CSV</button>
+          <button class="fich-export__item" id="btnPreviewExportXlsx">Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/ficheros/date-field.js' %}"></script>
+<script src="{% static 'ui/js/ficheros/informes.js' %}"></script>
+{% endblock %}

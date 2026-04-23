@@ -9,7 +9,7 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 0;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.8);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -180,7 +180,7 @@
 
 .cobro-bdp__input-entregado {
     width: 100px;
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.1);
     border: none;
     border-left: 1px solid var(--border);
     text-align: right;
@@ -278,7 +278,7 @@
 .cobro-bdp__key--action {
     font-size: 1rem;
     color: var(--muted);
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .cobro-bdp__key--danger {
@@ -415,15 +415,18 @@
     .cobro-bdp__body {
         grid-template-columns: 1fr;
     }
+
     .cobro-bdp {
         width: 100vw;
         height: 100vh;
         max-height: 100vh;
         border-radius: 0;
     }
+
     .cobro-bdp__footer {
         flex-direction: column-reverse;
     }
+
     .cobro-bdp__footer-right {
         display: flex;
         flex-direction: column;

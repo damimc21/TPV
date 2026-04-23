@@ -32,23 +32,20 @@
 }
 
 .config-chip {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     gap: 4px;
-    padding: 10px 8px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.04);
+    padding: 14px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .03);
+    border: 1px solid rgba(255, 255, 255, .1);
     color: var(--text);
-    font-size: 0.85rem;
-    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all .15s ease;
     user-select: none;
-    min-height: 54px; /* Altura minima para que el grid sea uniforme */
-    text-align: center;
+    -webkit-user-select: none;
 }
 
 .config-chip:hover {
@@ -59,6 +56,52 @@
 
 .config-chip:active {
     transform: scale(0.97);
+}
+
+.config-chip__badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #2ecc71;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    border: 2px solid #202028;
+    animation: popIn 0.2s ease;
+    pointer-events: none;
+}
+
+.config-chip__minus {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    background: #ef4444;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border: 1.5px solid #1a1a1a;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.1s ease;
+}
+
+.config-chip__minus:active {
+    transform: scale(0.9);
+}
+
+@keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
 .config-chip.is-selected {
@@ -208,12 +251,20 @@
 
 /* Reubicamos las propiedades base para que coexistan con el mask-image */
 #modalConfigurable .modal-body-generic {
-    padding: 20px 24px !important;
+    padding: 30px 40px !important; /* Más aire a los lados */
     flex: 1 !important;
     min-height: 0 !important;
     overflow-y: auto !important;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+}
+
+#modalConfigurable .modal-header-generic {
+    padding: 25px 40px 10px !important;
+}
+
+#modalConfigurable .modal-footer-generic {
+    padding: 20px 40px 25px !important;
 }
 
 #modalConfigurable .modal__footer {
@@ -227,25 +278,31 @@
     flex: 1;
 }
 
-/* Botón de editar en el ticket */
+/* Botón de configurar en el ticket */
 .ticket__config-badge {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: rgba(96, 165, 250, 0.8);
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 0.82rem;
+    color: #60a5fa;
     cursor: pointer;
-    padding: 2px 6px;
     border-radius: 4px;
     background: rgba(59, 130, 246, 0.1);
-    margin-left: 6px;
-    transition: all 0.15s;
+    margin-left: 8px;
+    transition: all 0.1s ease;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    vertical-align: middle;
 }
 
 .ticket__config-badge:hover {
     background: rgba(59, 130, 246, 0.2);
-    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.ticket__config-badge:active {
+    transform: scale(0.9);
 }
 
 /* Detalle de configuración bajo la línea */
@@ -259,12 +316,131 @@
 
 /* Ajuste de ancho para el modal configurable */
 .modal-container-generic--configurable {
-    max-width: 650px !important;
+    max-width: 950px !important;
     width: 95% !important;
-    max-height: 95vh !important;
+    max-height: 85vh !important;
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important; /* Split layout */
     overflow: hidden !important;
+    padding: 0 !important;
+}
+
+@media (max-width: 768px) {
+    .modal-container-generic--configurable {
+        flex-direction: column !important;
+        max-height: 98vh !important;
+    }
+}
+
+/* Sidebar de Resumen (Izquierda) */
+.config-sidebar {
+    width: 320px;
+    background: rgba(0, 0, 0, 0.15);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    padding: 35px 40px;
+}
+
+@media (max-width: 768px) {
+    .config-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 15px;
+    }
+}
+
+.config-sidebar__header {
+    margin-bottom: 20px;
+}
+
+.config-sidebar__name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.config-sidebar__summary-list {
+    flex: 1;
+    overflow-y: auto;
+    margin: 10px 0;
+    padding-right: 5px;
+}
+
+.config-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.config-summary-item__text {
+    flex: 1;
+    color: var(--text);
+    opacity: 0.9;
+}
+
+.badge-qty {
+    display: inline-block;
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+.config-summary-item__price {
+    font-weight: 700;
+    color: #2ecc71;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+.config-summary-item__remove {
+    margin-left: 8px;
+    color: #f87171;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.config-summary-item__remove:hover {
+    opacity: 1;
+}
+
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Área Principal (Derecha) */
+.config-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.config-main .modal-header-generic {
+    padding: 20px 24px 10px;
+}
+
+/* Ajustes de scroll para el main */
+.config-main .modal-body-generic {
+    padding: 10px 24px 20px !important;
 }
 
 .config-section__title {
@@ -288,8 +464,8 @@
 .config-chips {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 10px;
-    margin-top: 5px;
+    gap: 15px;
+    margin-top: 10px;
 }
 
 .config-chips--formato {
@@ -344,4 +520,52 @@
 [data-theme="light"] .config-input {
     background: rgba(0, 0, 0, 0.04);
     border-color: rgba(0, 0, 0, 0.1);
+}
+/* ═══ MODAL ENTRADA MANUAL ═══ */
+.modal-container-generic--manual-input {
+    width: 380px !important;
+    max-width: 90vw;
+}
+
+.modal-overlay-generic--extreme {
+    z-index: 99999 !important;
+}
+
+.manual-input-area {
+    padding: 10px 0;
+}
+
+.manual-textarea {
+    width: 100%;
+    min-height: 120px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    padding: 12px;
+    font-size: 1.1rem;
+    resize: none;
+    outline: none;
+}
+
+.manual-textarea:focus {
+    border-color: var(--accent);
+}
+
+.manual-input-area .modal-mesa__display-container {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.manual-input-area .modal-mesa__display {
+    font-size: 2.2rem !important;
+    font-weight: 800;
+    color: #64ffda;
+    text-align: right;
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
 }

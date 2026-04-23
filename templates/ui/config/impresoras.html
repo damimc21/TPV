@@ -1,0 +1,79 @@
+{% extends "ui/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Configurar Impresoras" %}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <a href="{% url 'ui:config' %}" class="btn btn--ghost" style="padding: 8px;">
+            <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="Volver" style="width: 24px; filter: brightness(0) invert(1);">
+        </a>
+        <h1 class="h1">{% trans "Gestión de Impresoras" %}</h1>
+    </div>
+    <div class="page-head__right">
+        <a href="/admin/tpvapp/impresora/add/" target="_blank" class="btn btn--primary">
+            <img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Añadir Impresora (Admin)" %}
+        </a>
+    </div>
+</div>
+
+<section class="mt-2">
+    <div class="card" style="margin-bottom: 24px; padding: 20px; background: rgba(0,0,0,0.2) !important; cursor: default;">
+        <h3 style="margin-top: 0;">{% trans "Simulación y Arquitectura de Impresión" %}</h3>
+        <p class="muted" style="line-height: 1.5; font-size: 0.95rem;">
+            Actualmente todas las comandas de cocina y los tickets de caja usan impresión simulada interactiva (modal del navegador o PDF).<br>
+            A través de las impresoras definidas aquí, la aplicación redirigirá en el backend cada artículo a su red local basada en IP (ej. 192.168.1.50) o a su puerto nativo USB. 
+            Recuerda que en el <strong>catálogo de productos</strong> puedes elegir qué impresora dispara cada producto, cruzándola con este listado.
+        </p>
+    </div>
+
+    <div class="grid">
+        {% for impresora in impresoras %}
+        <div class="card" style="cursor: default;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div class="card__icon" style="background: rgba(255, 255, 255, 0.05); border: none;">
+                    <img src="{% static 'ui/img/iconos/printer.svg' %}" alt="">
+                </div>
+                {% if impresora.activa %}
+                <span style="background: rgba(46, 204, 113, 0.15); color: #2ecc71; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">ACTIVA</span>
+                {% else %}
+                <span style="background: rgba(255, 255, 255, 0.05); color: #888; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">INACTIVA</span>
+                {% endif %}
+            </div>
+            
+            <div class="card__body">
+                <h2 class="card__title" style="font-size: 1.15rem; margin-bottom: 6px;">{{ impresora.nombre }}</h2>
+                <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span class="muted">{% trans "Tipo:" %}</span>
+                        <span style="font-weight: 600;">{{ impresora.get_tipo_display }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span class="muted">{% trans "Red / Puerto:" %}</span>
+                        <span style="font-weight: 600; color: #a2c0ff;">{{ impresora.ip_o_puerto|default:"Sin definir" }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span class="muted">{% trans "Ancho papel:" %}</span>
+                        <span style="font-weight: 600;">{{ impresora.papel_mm }} mm</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card__cta" style="margin-top: 20px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+                <a href="/admin/tpvapp/impresora/{{ impresora.id }}/change/" target="_blank" class="btn btn--subtle" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 8px;">
+                    {% trans "Editar (Admin)" %}
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: span 3; text-align: center; padding: 60px 20px; background: rgba(0,0,0,0.1); border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px;">
+            <img src="{% static 'ui/img/iconos/printer.svg' %}" alt="" style="width: 48px; opacity: 0.3; margin-bottom: 20px;">
+            <h3 style="margin-top: 0;">{% trans "No hay impresoras configuradas" %}</h3>
+            <p class="muted">{% trans "Las impresoras que registres aquí se cruzarán con los productos de tu catálogo para imprimir comandas automáticamente en cocina o barra." %}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</section>
+{% endblock %}

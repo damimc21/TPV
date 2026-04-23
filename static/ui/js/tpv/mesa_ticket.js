@@ -37,6 +37,32 @@ function updateUndoRedoButtons() {
     if (btnRedo) btnRedo.disabled = tpvState.historyIndex >= tpvState.historyStack.length - 1;
 }
 
+/**
+ * Función global para abrir el modal de configuración desde el ticket.
+ * Se usa onclick directo para máxima fiabilidad en actualizaciones rápidas de DOM.
+ */
+window.abrirConfigDesdeTicket = async function(lineaUid) {
+    const linea = tpvState.lineas.find(l => l._uid === lineaUid);
+    if (!linea) return;
+    
+    // Buscar el producto, asegurando que comparamos números
+    let prod = (tpvState.productos || []).find(p => Number(p.id) === Number(linea.producto_id));
+    
+    try {
+        if (!prod) {
+            const res = await fetch(`/api/productos/${linea.producto_id}/`, {
+                headers: { 'X-CSRFToken': getCSRFToken() }
+            });
+            prod = await res.json();
+        }
+        if (prod && typeof abrirModalConfigurable === 'function') {
+            abrirModalConfigurable(prod, linea);
+        }
+    } catch (err) {
+        console.error('Error al abrir configuración desde ticket:', err);
+    }
+};
+
 // Dibuja todas las líneas activas en el panel de ticket
 function renderTicket() {
     const contenedor = document.getElementById("listaComandas");
@@ -67,38 +93,59 @@ function renderTicket() {
         const div = document.createElement("div");
         div.className = "ticket__linea";
         if (estaLineaSeleccionada(linea)) div.classList.add("is-selected");
+        if (linea.id) div.classList.add("is-sent");
         div.dataset.uid = linea._uid;
 
-        // Botón dividir o juntar según contexto
+        // Botón dividir o juntar según contexto (se comentan los emojis por limpieza)
         let splitJoinIcon = '';
         if (linea.cantidad > 1) {
-            splitJoinIcon = '<span class="qty-splitjoin" title="Separar una unidad" data-action="split">🔀</span>';
+            // splitJoinIcon = '<span class="qty-splitjoin" title="Separar una unidad" data-action="split">🔀</span>';
         } else if (linea.cantidad === 1) {
             const tieneDuplicado = lineasActivas.some(l => l._uid !== linea._uid && l.producto_id === linea.producto_id);
             if (tieneDuplicado) {
-                splitJoinIcon = '<span class="qty-splitjoin" title="Juntar con otra línea" data-action="join">🔗</span>';
+                // splitJoinIcon = '<span class="qty-splitjoin" title="Juntar con otra línea" data-action="join">🔗</span>';
             }
         }
 
         const splitJoinBtnHtml = splitJoinIcon || '<span class="qty-splitjoin"></span>';
         const discountBadge = linea.descuento > 0 ? ` <span class="badge-dto">-${linea.descuento}%</span>` : '';
-        const editBadge = linea.configuracion_json ? ` <span class="ticket__config-badge" title="Editar configuración">⚙️ Editar</span>` : '';
+        
+        // El usuario prefiere quitar el botón de la tuerquita (editBadge) para evitar confusiones
+        const editBadge = '';
 
         let configDetailsHtml = '';
-        if (linea.configuracion_json && linea.configuracion_json.grupos) {
+        if (linea.configuracion_json) {
             const detalles = [];
-            linea.configuracion_json.grupos.forEach(g => {
-                if (g.opciones && g.opciones.length > 0) {
-                    // Mostramos solo lo que sea visible en factura para el cliente (vista TPV)
-                    const visibles = g.opciones.filter(o => o.visible_factura !== false);
-                    if (visibles.length > 0) {
-                        detalles.push(visibles.map(o => o.nombre).join(', '));
+            // Opciones de grupos
+            if (linea.configuracion_json.grupos) {
+                linea.configuracion_json.grupos.forEach(g => {
+                    if (g.opciones && g.opciones.length > 0) {
+                        const visibles = g.opciones.filter(o => o.visible_factura !== false);
+                        if (visibles.length > 0) {
+                            const modsMarkup = visibles.map(o => {
+                                const q = (o.cantidad && o.cantidad > 1) ? ` (x${o.cantidad})` : '';
+                                return getDisplayModifierName(o.nombre) + q;
+                            }).join(', ');
+                            detalles.push(modsMarkup);
+                        }
                     }
-                }
-                if (g.texto_libre) {
-                    detalles.push(`"${g.texto_libre}"`);
-                }
-            });
+                    if (g.texto_libre) {
+                        detalles.push(`"${g.texto_libre}"`);
+                    }
+                });
+            }
+            // Añadidos manuales múltiples
+            // Comentarios manuales
+            if (linea.configuracion_json.manual_additions) {
+                linea.configuracion_json.manual_additions.forEach(item => {
+                    if (item.type === 'price') {
+                        detalles.push(`<b>${getDisplayModifierName(item.nombre)}</b>`);
+                    } else {
+                        detalles.push(`${item.val}`);
+                    }
+                });
+            }
+
             if (detalles.length > 0) {
                 configDetailsHtml = `<div class="ticket__config-detail">${detalles.join(' · ')}</div>`;
             }
@@ -120,7 +167,15 @@ function renderTicket() {
             <span class="qty-delete" title="Eliminar línea">✕</span>
         `;
 
-        div.addEventListener("click", () => {
+        div.addEventListener("click", (e) => {
+            // No hacer nada si se clickea en controles internos
+            if (e.target.closest('.ticket__qty-controls') || 
+                e.target.closest('.qty-delete') || 
+                e.target.closest('.qty-splitjoin') ||
+                e.target.closest('.ticket__config-badge')) {
+                return;
+            }
+
             toggleLineaSeleccion(linea);
             renderTicket();
         });
@@ -131,25 +186,6 @@ function renderTicket() {
         const valSpan = div.querySelector(".qty-val");
         const btnDelete = div.querySelector(".qty-delete");
         const btnSplitJoin = div.querySelector(".qty-splitjoin");
-        const btnEditBadge = div.querySelector(".ticket__config-badge");
-
-        if (btnEditBadge) {
-            btnEditBadge.addEventListener("click", async (e) => {
-                e.stopPropagation(); // Evitar seleccionar la línea
-                if (typeof abrirModalConfigurable === 'function') {
-                    // Fetch full product object to open modal correctly
-                    try {
-                        const res = await fetch(`/api/productos/${linea.producto_id}/`, {
-                            headers: { 'X-CSRFToken': getCSRFToken() }
-                        });
-                        const prod = await res.json();
-                        abrirModalConfigurable(prod, linea);
-                    } catch (err) {
-                        console.error('Error fetching product for edit', err);
-                    }
-                }
-            });
-        }
 
         if (btnSplitJoin) {
             btnSplitJoin.addEventListener("click", async (e) => {

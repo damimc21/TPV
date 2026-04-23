@@ -2,7 +2,8 @@ from rest_framework import serializers
 from .models import (
     Departamento, Producto, Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria,
     PerfilComentarios, Comentario, PerfilSuplementos, Suplemento, Cliente,
-    PlantillaConfigurable, FormatoProducto, GrupoOpciones, OpcionGrupo, PrecioOpcionFormato
+    PlantillaConfigurable, FormatoProducto, GrupoOpciones, OpcionGrupo, PrecioOpcionFormato, MovimientoStock,
+    CategoriaInventario, ArticuloInventario
 )
 
 
@@ -13,9 +14,15 @@ class DepartamentoSerializer(serializers.ModelSerializer):
 
 
 class ProductoSerializer(serializers.ModelSerializer):
+    es_configurable = serializers.SerializerMethodField()
+    departamento_nombre = serializers.ReadOnlyField(source='departamento.nombre')
+
     class Meta:
         model = Producto
         fields = "__all__"
+
+    def get_es_configurable(self, obj):
+        return hasattr(obj, 'plantilla')
 
     def validate(self, data):
         nombre = data.get('nombre')
@@ -29,10 +36,10 @@ class ProductoSerializer(serializers.ModelSerializer):
             qs = Producto.objects.filter(nombre__iexact=nombre, departamento=departamento)
             if self.instance:
                 qs = qs.exclude(pk=self.instance.pk)
-            
+
             if qs.exists():
                 raise serializers.ValidationError({"nombre": "Ya existe un producto con ese nombre en este departamento."})
-                
+
         return data
 
 
@@ -53,12 +60,9 @@ class LineaComandaSerializer(serializers.ModelSerializer):
         model = LineaComanda
         fields = "__all__"
         read_only_fields = [
-            "precio_unitario",
-            "producto_nombre",
             "anulado",
             "anulado_a",
             "anulado_por",
-            "configuracion_json",
         ]
 
     def validate(self, attrs):
@@ -71,17 +75,13 @@ class LineaComandaSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        """
-        Rellena automáticamente precio_unitario y (si tu modelo lo tiene) producto_nombre.
-        Ignora lo que venga del cliente.
-        """
         producto = validated_data["producto"]
 
-        # Precio snapshot (muy importante para histórico)
-        validated_data["precio_unitario"] = producto.precio
+        # Si no vienen en el payload, usamos los del producto base como fallback
+        if "precio_unitario" not in validated_data:
+            validated_data["precio_unitario"] = producto.precio
 
-        # Si el modelo tiene un campo producto_nombre, lo rellenamos automáticamente (snapshot):
-        if "producto_nombre" in [f.name for f in LineaComanda._meta.fields]:
+        if "producto_nombre" not in validated_data:
             validated_data["producto_nombre"] = producto.nombre
 
         return super().create(validated_data)
@@ -109,6 +109,73 @@ class PagoSerializer(serializers.ModelSerializer):
 class EventoAuditoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventoAuditoria
+        fields = "__all__"
+
+
+class CategoriaInventarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CategoriaInventario
+        fields = "__all__"
+
+
+class ArticuloInventarioSerializer(serializers.ModelSerializer):
+    categoria_nombre = serializers.ReadOnlyField(source='categoria.nombre')
+    producto_vinculado_nombre = serializers.ReadOnlyField(source='producto_vinculado.nombre')
+    categoria_id = serializers.PrimaryKeyRelatedField(
+        source='categoria',
+        queryset=CategoriaInventario.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
+    producto_vinculado_id = serializers.PrimaryKeyRelatedField(
+        source='producto_vinculado',
+        queryset=Producto.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
+
+    class Meta:
+        model = ArticuloInventario
+        fields = "__all__"
+
+    def validate(self, attrs):
+        producto_vinculado = attrs.get(
+            'producto_vinculado',
+            self.instance.producto_vinculado if self.instance else None
+        )
+        auto_descontar = attrs.get(
+            'auto_descontar',
+            self.instance.auto_descontar if self.instance else False
+        )
+
+        if auto_descontar and not producto_vinculado:
+            raise serializers.ValidationError({
+                "producto_vinculado_id": "Elige un producto TPV para activar el descuento automatico."
+            })
+
+        if producto_vinculado:
+            qs = ArticuloInventario.objects.filter(producto_vinculado=producto_vinculado)
+            if self.instance:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise serializers.ValidationError({
+                    "producto_vinculado_id": "Este producto TPV ya esta vinculado a otro articulo de inventario."
+                })
+
+        # Simplificación del flujo: la venta siempre descuenta 1 unidad.
+        attrs['cantidad_por_venta'] = 1
+        return attrs
+
+
+class MovimientoStockSerializer(serializers.ModelSerializer):
+    producto_nombre = serializers.ReadOnlyField(source='producto.nombre')
+    articulo_nombre = serializers.ReadOnlyField(source='articulo.nombre')
+    usuario_nombre = serializers.ReadOnlyField(source='usuario.username')
+
+    class Meta:
+        model = MovimientoStock
         fields = "__all__"
 
 

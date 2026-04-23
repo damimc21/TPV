@@ -165,6 +165,16 @@
       </button>
     </div>
     <div class="acciones__fila">
+      <button class="accion" type="button" id="btnSideComentario">
+        💬
+        {% trans "Comentario" %}
+      </button>
+      <button class="accion" type="button" id="btnSideSuplemento">
+        ➕
+        {% trans "Suplemento" %}
+      </button>
+    </div>
+    <div class="acciones__fila">
       <button class="accion" type="button" id="btnCliente">
         👤
         {% trans "Cliente" %}
@@ -412,51 +422,6 @@
   </div>
 </div>
 
-<!-- ═══ MODAL GENÉRICO CONFIRMACIÓN ═══ -->
-<div id="modalConfirmarGenerico" class="modal-overlay-generic hidden">
-  <div class="modal-container-generic modal-container-generic--confirm">
-    <h2 id="confirmGenericoTitle">{% trans "Confirmación" %}</h2>
-    <p id="confirmGenericoMsg">{% trans "¿Desea realizar esta acción?" %}</p>
-    <div class="modal-footer-generic">
-      <button type="button" class="accion modal-btn-generic" id="btnConfirmGenericoCancel">
-        {% trans "Cancelar" %}
-      </button>
-      <button type="button" class="accion modal-btn-generic modal-btn-generic--primary" id="btnConfirmGenericoOk">
-        {% trans "Aceptar" %}
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL GENÉRICO ALERTA ═══ -->
-<div id="modalAlertaGenerico" class="modal-overlay-generic modal-overlay-generic--high hidden">
-  <div class="modal-container-generic modal-container-generic--alert">
-    <h2 id="alertGenericoTitle">{% trans "Aviso" %}</h2>
-    <p id="alertGenericoMsg">{% trans "Mensaje de alerta" %}</p>
-    <div class="modal-footer-generic">
-      <button type="button" class="accion modal-btn-generic modal-btn-generic--fixed-width" id="btnAlertGenericoOk">
-        OK
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL CONFIRMAR SALIDA ═══ -->
-<div id="modalSalir" class="modal-overlay-generic hidden">
-  <div class="modal-container-generic modal-container-generic--salida">
-    <h2>{% trans "¿Quieres salir del TPV?" %}</h2>
-    <p class="modal-salida__desc">{% trans "Volverás al menú principal de la aplicación." %}</p>
-    <div class="modal-footer-generic">
-      <button type="button" class="accion modal-btn-generic" id="btnSalirCancelar">
-        {% trans "Cancelar" %}
-      </button>
-      <button type="button" class="accion modal-btn-generic modal-btn-generic--danger" id="btnSalirConfirmar">
-        {% trans "Salir" %}
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- ═══ MODAL OPCIONES TPV ═══ -->
 <div id="modalOpciones" class="modal-overlay-generic hidden">
   <div class="modal-container-generic">
@@ -481,6 +446,21 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <button id="btnLangES" class="accion" onclick="setTPVLanguage('es')">🇪🇸 Español</button>
                 <button id="btnLangEN" class="accion" onclick="setTPVLanguage('en')">🇬🇧 Inglés</button>
+            </div>
+        </div>
+
+        <!-- Bloque: Modificadores -->
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--muted); text-transform: uppercase;">{% trans "Modificadores" %}</h3>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <div>
+                    <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);">{% trans "Comentarios / Suplementos acumulables" %}</div>
+                    <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">{% trans "Permite añadir varias veces el mismo comentario o suplemento (x2, x3...)" %}</div>
+                </div>
+                <label class="tpv-toggle" style="flex-shrink: 0;">
+                    <input type="checkbox" id="toggleModifAcumulable" onchange="setTPVModifAcumulable(this.checked)">
+                    <span class="tpv-toggle__slider"></span>
+                </label>
             </div>
         </div>
     </div>
@@ -527,23 +507,96 @@
 <!-- ═══ MODAL PRODUCTO CONFIGURABLE ═══ -->
 <div id="modalConfigurable" class="modal-overlay-generic modal-overlay-generic--high hidden">
   <div class="modal-container-generic modal-container-generic--configurable">
-    <div class="modal-header-generic">
-      <h2 id="configModalTitle">Configurar Producto</h2>
-      <button type="button" class="cobro-bdp__close-btn" onclick="cerrarModalConfigurable()">&times;</button>
+    
+    <!-- Sidebar Resumen (Izquierda) -->
+    <div class="config-sidebar">
+      <div class="config-sidebar__header">
+        <h2 id="configSidebarName" class="config-sidebar__name">Producto</h2>
+      </div>
+      <div id="configSummaryList" class="config-sidebar__summary-list">
+        <!-- Rellenado dinámicamente -->
+      </div>
+      <div class="config-total">
+        <span class="config-total__label">Total:</span>
+        <span class="config-total__value" id="configPrecioTotal">0,00 €</span>
+      </div>
     </div>
-    <div class="modal-body-generic" id="configModalBody">
-      <!-- Generado dinámicamente -->
+
+    <!-- Contenido Principal (Derecha) -->
+    <div class="config-main">
+      <div class="modal-header-generic">
+        <h2 id="configModalTitle">Selecciona Opciones</h2>
+        <button type="button" class="cobro-bdp__close-btn" onclick="cerrarModalConfigurable()">&times;</button>
+      </div>
+      <div class="modal-body-generic" id="configModalBody">
+        <!-- Generado dinámicamente -->
+      </div>
+      <div class="modal-footer-generic">
+        <button type="button" class="accion modal-btn-generic modal-btn-generic--cancel" onclick="cerrarModalConfigurable()">
+          {% trans "Cerrar" %}
+        </button>
+        <button type="button" class="accion modal-btn-generic modal-btn-generic--save" id="btnConfigAnadir" onclick="confirmarConfigurable()">
+          {% trans "Añadir a comanda" %}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ MODAL ENTRADA MANUAL (PARA HERRAMIENTAS) ═══ -->
+<div id="modalInputManual" class="modal-overlay-generic modal-overlay-generic--extreme hidden">
+  <div class="modal-container-generic modal-container-generic--manual-input">
+    <div class="modal-header-generic">
+      <h2 id="manualInputTitle">Entrada Manual</h2>
+      <button type="button" class="cobro-bdp__close-btn" id="btnCerrarManualInput">&times;</button>
+    </div>
+    <div class="modal-body-generic">
+      <!-- Área de visualización / Input -->
+      <div id="manualInputTextContainer" class="manual-input-area hidden">
+        <textarea id="manualInputTextArea" class="manual-textarea" placeholder="Escribe aquí tu comentario..." autocomplete="off"></textarea>
+      </div>
+      
+      <div id="manualInputPriceContainer" class="manual-input-area hidden">
+        <!-- Nombre del suplemento -->
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label style="color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Concepto / Suplemento</label>
+          <input type="text" id="manualInputPriceName" class="manual-textarea" style="min-height: 50px;" placeholder="¿Qué es? (Ejem: Extra de jamón)" autocomplete="off">
+        </div>
+
+        <label style="color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">Precio personalizado</label>
+        <div class="modal-mesa__display-container" style="margin-bottom: 15px;">
+          <input type="text" id="manualInputPriceDisplay" class="modal-mesa__display" readonly value="0,00">
+          <span class="modal-mesa__unit">€</span>
+        </div>
+        <div class="modal-mesa__keypad">
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="7">7</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="8">8</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="9">9</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="4">4</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="5">5</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="6">6</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="1">1</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="2">2</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="3">3</button>
+          <button type="button" class="modal-mesa__tecla modal-mesa__tecla--c" id="btnCManualInput">C</button>
+          <button type="button" class="modal-mesa__tecla manual-key" data-val="0">0</button>
+          <button type="button" class="modal-mesa__tecla modal-mesa__tecla--back" id="btnBackManualInput">⌫</button>
+        </div>
+      </div>
     </div>
     <div class="modal-footer-generic">
-      <button type="button" class="accion modal-btn-generic modal-btn-generic--cancel" onclick="cerrarModalConfigurable()">
+      <button type="button" class="accion modal-btn-generic" id="btnCancelarManualInput">
         Cancelar
       </button>
-      <button type="button" class="accion modal-btn-generic modal-btn-generic--save" id="btnConfigAnadir" onclick="confirmarConfigurable()">
-        Añadir
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--primary" id="btnAceptarManualInput">
+        Aceptar
       </button>
     </div>
   </div>
 </div>
+
+{% include "ui/tpv/modal_modificadores_rapido.html" %}
 
 <!-- ═══ MODAL SELECCIONAR CLIENTE ═══ -->
 <div id="modalSeleccionarCliente" class="modal-overlay-generic modal-overlay-generic--high hidden">
@@ -691,16 +744,19 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  window.MESA_NUMERO = "{{ numero }}";
-  window.TPV_TERMINAL_ID = "{{ terminal_id|default:'1' }}";
-  window.TPV_CONEXION = "{{ conexion|default:'LOCAL' }}";
-  window.TPV_CAJA_ESTADO = "{{ global_estado_caja|default:'—' }}";
-  window.TPV_JORNADA_ESTADO = "{{ global_estado_jornada|default:'—' }}";
-  window.TPV_INDEX_URL = "{% url 'ui:index' %}";
+<script id="tpv-mesa-config" type="application/json">
+{
+  "mesaNumero": "{{ numero|escapejs }}",
+  "terminalId": "{{ terminal_id|default:'1'|escapejs }}",
+  "conexion": "{{ conexion|default:'LOCAL'|escapejs }}",
+  "cajaEstado": "{{ global_estado_caja|default:'—'|escapejs }}",
+  "jornadaEstado": "{{ global_estado_jornada|default:'—'|escapejs }}",
+  "indexUrl": "{% url 'ui:index' %}"
+}
 </script>
 <script src="{% static 'ui/js/tpv/mesa_utils.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_estado.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_configurable.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_catalogo.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_ticket.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_calculadora.js' %}"></script>
@@ -708,6 +764,6 @@
 <script src="{% static 'ui/js/tpv/mesa_descuento.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_dividir.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_clientes.js' %}"></script>
-<script src="{% static 'ui/js/tpv/mesa_configurable.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_modificadores.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_acciones.js' %}"></script>
 {% endblock %}

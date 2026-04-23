@@ -1,6 +1,7 @@
 // Modal de cobro y procesamiento de pago
 
 function initModalCobro(forcedTotal = null, forcedLineas = null) {
+    const Notify = window.Notify;
     const modal = document.getElementById("modalCobro");
     const totalValorEl = document.getElementById("cobroTotal");
     const inputEntregado = document.getElementById("cobroEntregadoInput");
@@ -234,7 +235,7 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
         if (metodoActual === "efectivo" && entregadoStr) {
             const entregadoNum = parseFloat(entregadoStr);
             if (entregadoNum < totalMesa - 0.001) {
-                await showAlert("El importe entregado es inferior al total del documento.");
+                await Notify.info("El importe entregado es inferior al total del documento.");
                 isProcessing = false;
                 btnConTicket.disabled = false;
                 btnSinTicket.disabled = false;
@@ -279,10 +280,10 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
                 if (response.status === 400 && (data.detail?.includes("comanda") || data.detail?.includes("líneas"))) {
                     tpvState.lineas = [];
                     cerrarModal();
-                    window.location.href = "/es/tpv/";
+                    window.location.href = getTpvUrl();
                     return;
                 }
-                await showAlert(data.detail || "Error en el cobro.");
+                await Notify.error(data.detail || "Error en el cobro.");
                 return;
             }
 
@@ -292,7 +293,7 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
                 cerrarModal();
 
                 if (tpvState.lineas.filter(l => !l.anulado).length === 0) {
-                    window.location.href = "/es/tpv/";
+                    window.location.href = getTpvUrl();
                 } else {
                     const btnAbrirSplit = document.getElementById("btnDividirCuenta");
                     if (btnAbrirSplit) btnAbrirSplit.click();
@@ -301,7 +302,7 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
                 tpvState.lineas = [];
                 if (typeof renderTicket === "function") renderTicket();
                 cerrarModal();
-                window.location.href = "/es/tpv/";
+                window.location.href = getTpvUrl();
             }
 
             if (imprimirTicket && data && data.factura_id) {
@@ -317,12 +318,16 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
             }
 
             if (metodoActual === "efectivo" && data && data.cambio && parseFloat(data.cambio) > 0.001) {
-                await showAlert(`CAMBIO: ${parseFloat(data.cambio).toFixed(2).replace(".", ",")} €`);
+                await Notify.info(`CAMBIO: ${parseFloat(data.cambio).toFixed(2).replace(".", ",")} €`, {
+                    title: "Cambio",
+                });
             }
 
         } catch (error) {
             console.error("Error cobro:", error);
-            await showAlert("Error de conexión al procesar el pago.");
+            await Notify.error("Error de conexión al procesar el pago.", {
+                title: "Error",
+            });
         } finally {
             isProcessing = false;
             if (btnConTicket) btnConTicket.disabled = false;

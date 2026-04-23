@@ -1,0 +1,52 @@
+{% load i18n %}
+<!-- ═══ MODAL GENÉRICO CONFIRMACIÓN ═══ -->
+<div id="modalConfirmarGenerico" class="modal-overlay-generic hidden">
+  <div class="modal-container-generic modal-container-generic--confirm">
+    <h2 id="confirmGenericoTitle">{% trans "Confirmación" %}</h2>
+    <p id="confirmGenericoMsg">{% trans "¿Desea realizar esta acción?" %}</p>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic" id="btnConfirmGenericoCancel">
+        {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--primary" id="btnConfirmGenericoOk">
+        {% trans "Aceptar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL GENÉRICO ALERTA ═══ -->
+<div id="modalAlertaGenerico" class="modal-overlay-generic modal-overlay-generic--high hidden">
+  <div class="modal-container-generic modal-container-generic--alert">
+    <h2 id="alertGenericoTitle">{% trans "Aviso" %}</h2>
+    <p id="alertGenericoMsg">{% trans "Mensaje de alerta" %}</p>
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--fixed-width" id="btnAlertGenericoOk">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL GENÉRICO PROMPT ═══ -->
+<div id="modalPromptGenerico" class="modal-overlay-generic hidden">
+  <div class="modal-container-generic modal-container-generic--confirm">
+    <h2 id="promptGenericoTitle">{% trans "Confirmación" %}</h2>
+    <p id="promptGenericoMsg">{% trans "Introduce un valor" %}</p>
+    <input
+      id="promptGenericoInput"
+      class="modal-input-generic"
+      type="text"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <div class="modal-footer-generic">
+      <button type="button" class="accion modal-btn-generic" id="btnPromptGenericoCancel">
+        {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--primary" id="btnPromptGenericoOk">
+        {% trans "Aceptar" %}
+      </button>
+    </div>
+  </div>
+</div>

@@ -15,18 +15,25 @@ from django.http import JsonResponse
 from .models import (
     Departamento, Producto, Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria,
     PerfilComentarios, Comentario, PerfilSuplementos, Suplemento, Cliente,
-    PlantillaConfigurable, FormatoProducto, GrupoOpciones, OpcionGrupo, PrecioOpcionFormato
+    PlantillaConfigurable, FormatoProducto, GrupoOpciones, OpcionGrupo, PrecioOpcionFormato, MovimientoStock,
+    CategoriaInventario, ArticuloInventario
 )
 from .serializers import (
     DepartamentoSerializer, ProductoSerializer, MesaSerializer, ComandaSerializer,
     LineaComandaSerializer, FacturaSerializer, PagoSerializer, EventoAuditoriaSerializer,
     PerfilComentariosSerializer, ComentarioSerializer, PerfilSuplementosSerializer, SuplementoSerializer,
-    ClienteSerializer, PlantillaConfigurableSerializer
+    ClienteSerializer, PlantillaConfigurableSerializer, MovimientoStockSerializer,
+    CategoriaInventarioSerializer, ArticuloInventarioSerializer
 )
 from .services import actualizar_estado_mesa, imprimir_comprobante, emitir_factura, registrar_pago, registrar_evento
 from .permissions import IsManagerOrReadOnly
+from tpvapp.auditoria import log_info, log_warn, log_error
 
 # Create your views here.
+def _actor_username(user):
+    return user.username if getattr(user, "is_authenticated", False) else "anon"
+
+
 def _commit_borrador_a_comanda(mesa: Mesa, user, lineas_payload: list) -> Comanda:
     """
     Sincroniza el borrador (lineas_payload) con la comanda abierta:
@@ -108,6 +115,12 @@ def _commit_borrador_a_comanda(mesa: Mesa, user, lineas_payload: list) -> Comand
                         linea.precio_unitario = nuevo_precio
                         campos_update.append("precio_unitario")
 
+                # Actualizar nombre snapshot si viene (para cambios de formato en configurables)
+                nombre_override = l.get("producto_nombre")
+                if nombre_override and linea.producto_nombre != nombre_override:
+                    linea.producto_nombre = nombre_override
+                    campos_update.append("producto_nombre")
+
                 if campos_update:
                     linea.save(update_fields=campos_update)
 
@@ -115,7 +128,8 @@ def _commit_borrador_a_comanda(mesa: Mesa, user, lineas_payload: list) -> Comand
                 # CREATE nueva
                 if not producto_id:
                     continue
-                nuevas.append((int(producto_id), cantidad, anulado, descuento, config_json, precio_unitario_override))
+                nombre_payload = l.get("producto_nombre")
+                nuevas.append((int(producto_id), cantidad, anulado, descuento, config_json, precio_unitario_override, nombre_payload))
 
         # 4) DELETE: borrar las líneas actuales que no vienen en el payload
         ids_actuales = set(actuales_por_id.keys())
@@ -125,24 +139,25 @@ def _commit_borrador_a_comanda(mesa: Mesa, user, lineas_payload: list) -> Comand
 
         # 5) CREATE: crear nuevas líneas con snapshot
         if nuevas:
-            producto_ids = [pid for pid, _, _, _, _, _ in nuevas]
+            producto_ids = [pid for pid, _, _, _, _, _, _ in nuevas]
             productos = {p.id: p for p in Producto.objects.filter(id__in=producto_ids)}
 
             crear = []
-            for producto_id, cantidad, anulado, descuento, config_json, precio_override in nuevas:
+            for producto_id, cantidad, anulado, descuento, config_json, precio_override, nombre_override in nuevas:
                 producto = productos.get(producto_id)
                 if not producto:
                     continue
 
                 # Para productos configurables el frontend calcula el precio total
                 precio = Decimal(str(precio_override)) if precio_override is not None else producto.precio
+                nombre = nombre_override if nombre_override else producto.nombre
 
                 obj = LineaComanda(
                     comanda=comanda,
                     producto=producto,
                     cantidad=cantidad,
                     precio_unitario=precio,
-                    producto_nombre=producto.nombre,
+                    producto_nombre=nombre,
                     configuracion_json=config_json,
                 )
                 if hasattr(obj, "descuento"):
@@ -160,14 +175,43 @@ class DepartamentoViewSet(viewsets.ModelViewSet):
     serializer_class = DepartamentoSerializer
     permission_classes = [IsManagerOrReadOnly]
 
+    def perform_create(self, serializer):
+        depto = serializer.save()
+        actor = _actor_username(self.request.user)
+        log_info(
+            "catalogo.departamentos",
+            f"usuario={actor} accion=crear departamento_id={depto.id} nombre={depto.nombre}",
+        )
+
+    def perform_update(self, serializer):
+        before = serializer.instance.nombre
+        depto = serializer.save()
+        actor = _actor_username(self.request.user)
+        changed_fields = ",".join(sorted(serializer.validated_data.keys())) or "sin_campos"
+        log_info(
+            "catalogo.departamentos",
+            f"usuario={actor} accion=editar departamento_id={depto.id} nombre_antes={before} nombre_despues={depto.nombre} campos={changed_fields}",
+        )
+
     def perform_destroy(self, instance):
+        actor = _actor_username(self.request.user)
+        depto_id = instance.id
+        nombre = instance.nombre
         instance.delete()
+        log_warn(
+            "catalogo.departamentos",
+            f"usuario={actor} accion=eliminar departamento_id={depto_id} nombre={nombre}",
+        )
 
     def destroy(self, request, *args, **kwargs):
         departamento=self.get_object()
         if hasattr(departamento, "productos") and departamento.productos.exists():
+            log_warn(
+                "catalogo.departamentos",
+                f"usuario={_actor_username(request.user)} accion=eliminar_bloqueado departamento_id={departamento.id} motivo=productos_asociados",
+            )
             return Response(
-                {"detail": "No se puede eliminar el departamento porque tiene productos asociados."}, 
+                {"detail": "No se puede eliminar el departamento porque tiene productos asociados."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         return super().destroy(request, *args, **kwargs)
@@ -176,6 +220,35 @@ class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
     permission_classes = [IsManagerOrReadOnly]
+
+    def perform_create(self, serializer):
+        producto = serializer.save()
+        actor = _actor_username(self.request.user)
+        log_info(
+            "catalogo.productos",
+            f"usuario={actor} accion=crear producto_id={producto.id} nombre={producto.nombre} precio={producto.precio}",
+        )
+
+    def perform_update(self, serializer):
+        before_name = serializer.instance.nombre
+        before_price = serializer.instance.precio
+        producto = serializer.save()
+        actor = _actor_username(self.request.user)
+        changed_fields = ",".join(sorted(serializer.validated_data.keys())) or "sin_campos"
+        log_info(
+            "catalogo.productos",
+            f"usuario={actor} accion=editar producto_id={producto.id} nombre_antes={before_name} nombre_despues={producto.nombre} precio_antes={before_price} precio_despues={producto.precio} campos={changed_fields}",
+        )
+
+    def perform_destroy(self, instance):
+        actor = _actor_username(self.request.user)
+        producto_id = instance.id
+        nombre = instance.nombre
+        instance.delete()
+        log_warn(
+            "catalogo.productos",
+            f"usuario={actor} accion=eliminar producto_id={producto_id} nombre={nombre}",
+        )
 
 
 class ClienteViewSet(viewsets.ModelViewSet):
@@ -189,10 +262,38 @@ class ClienteViewSet(viewsets.ModelViewSet):
         if query:
             from django.db.models import Q
             qs = qs.filter(
-                Q(nombre__icontains=query) | 
+                Q(nombre__icontains=query) |
                 Q(nif__icontains=query)
             )
         return qs
+
+    def perform_create(self, serializer):
+        cliente = serializer.save()
+        actor = _actor_username(self.request.user)
+        log_info(
+            "clientes",
+            f"usuario={actor} accion=crear cliente_id={cliente.id} nombre={cliente.nombre}",
+        )
+
+    def perform_update(self, serializer):
+        before = serializer.instance.nombre
+        cliente = serializer.save()
+        actor = _actor_username(self.request.user)
+        changed_fields = ",".join(sorted(serializer.validated_data.keys())) or "sin_campos"
+        log_info(
+            "clientes",
+            f"usuario={actor} accion=editar cliente_id={cliente.id} nombre_antes={before} nombre_despues={cliente.nombre} campos={changed_fields}",
+        )
+
+    def perform_destroy(self, instance):
+        actor = _actor_username(self.request.user)
+        cliente_id = instance.id
+        nombre = instance.nombre
+        instance.delete()
+        log_warn(
+            "clientes",
+            f"usuario={actor} accion=eliminar cliente_id={cliente_id} nombre={nombre}",
+        )
 
 
 class ComandaViewSet(viewsets.ModelViewSet):
@@ -290,7 +391,7 @@ class MesaViewSet(viewsets.ModelViewSet):
     def asignar_cliente(self, request, pk=None):
         mesa = self.get_object()
         cliente_id = request.data.get("cliente_id")
-        
+
         comanda = Comanda.objects.filter(mesa=mesa, estado=Comanda.ESTADO_ABIERTA).first()
         if not comanda:
             # Si no hay comanda, creamos una para asignar el cliente (borrador inicial)
@@ -300,7 +401,7 @@ class MesaViewSet(viewsets.ModelViewSet):
                 abierta_a=timezone.now(),
                 estado=Comanda.ESTADO_ABIERTA
             )
-            
+
         if cliente_id:
             try:
                 # Comprobar si es un ID numérico o especial si hubiera
@@ -310,7 +411,7 @@ class MesaViewSet(viewsets.ModelViewSet):
                 return Response({"detail": "Cliente no encontrado"}, status=status.HTTP_404_NOT_FOUND)
         else:
             comanda.cliente = None
-            
+
         comanda.save(update_fields=["cliente"])
         return Response({"detail": "Cliente actualizado", "cliente_id": cliente_id})
 
@@ -451,12 +552,12 @@ class MesaViewSet(viewsets.ModelViewSet):
                         producto_id = l.get("producto")
                         cantidad_a_pagar = int(l.get("cantidad", 0))
                         if cantidad_a_pagar <= 0: continue
-                        
+
                         # Buscamos la línea en la comanda original (por ID primero)
                         linea_origen = None
                         if linea_id:
                             linea_origen = comanda_origen.lineas.filter(id=linea_id, anulado=False).first()
-                        
+
                         # Si no hay ID o no se encontró por ID, buscamos cualquier línea del mismo producto
                         if not linea_origen and producto_id:
                             linea_origen = comanda_origen.lineas.filter(producto_id=producto_id, anulado=False).first()
@@ -471,13 +572,13 @@ class MesaViewSet(viewsets.ModelViewSet):
                             if disponible_total < cantidad_a_pagar:
                                 registrar_evento(request.user, "ERROR_COBRO_SPLIT", f"Mesa {mesa.numero}: Stock insuficiente para producto {producto_id}.")
                                 return Response({"detail": f"No hay suficiente cantidad del producto {linea_origen.producto_nombre}."}, status=status.HTTP_400_BAD_REQUEST)
-                            
+
                             # Si llegamos aquí es que hay varias líneas que juntas suman lo necesario
                             # pero por simplicidad de este fix, vamos a forzar que la primera línea tenga suficiente o dar error descriptivo
                             # (En una versión Pro reasignaríamos cantidades entre líneas, pero aquí lo importante es que el cobro no falle)
                             # Actualizamos la línea origen para que "tenga" la cantidad necesaria para el trasvase (hack temporal seguro bajo atomic)
                             # NO, mejor no hackear. Vamos a repartir el descuento y crear la línea.
-                        
+
                         # Creamos la línea en la nueva comanda
                         LineaComanda.objects.create(
                             comanda=comanda,
@@ -530,7 +631,7 @@ class MesaViewSet(viewsets.ModelViewSet):
 
                 # 2) Emitir factura
                 factura = emitir_factura(comanda, request.user, tipo_pago=metodo_pago, allow_pagada=is_split)
-                
+
                 # Aseguramos que la factura también tenga el cliente
                 if cliente_id:
                     factura.cliente_id = cliente_id
@@ -704,6 +805,19 @@ class EventoAuditoriaViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
+class MovimientoStockViewSet(viewsets.ModelViewSet):
+    queryset = MovimientoStock.objects.all()
+    serializer_class = MovimientoStockSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        producto_id = self.request.query_params.get("producto")
+        if producto_id:
+            qs = qs.filter(producto_id=producto_id)
+        return qs
+
+
 # =========================
 # Comentarios y Suplementos
 # =========================
@@ -713,8 +827,31 @@ class PerfilComentariosViewSet(viewsets.ModelViewSet):
     serializer_class = PerfilComentariosSerializer
     permission_classes = [IsManagerOrReadOnly]
 
+    def perform_create(self, serializer):
+        perfil = serializer.save()
+        log_info(
+            "catalogo.perfiles_comentarios",
+            f"usuario={_actor_username(self.request.user)} accion=crear perfil_id={perfil.id} nombre={perfil.nombre}",
+        )
+
+    def perform_update(self, serializer):
+        before = serializer.instance.nombre
+        perfil = serializer.save()
+        changed_fields = ",".join(sorted(serializer.validated_data.keys())) or "sin_campos"
+        log_info(
+            "catalogo.perfiles_comentarios",
+            f"usuario={_actor_username(self.request.user)} accion=editar perfil_id={perfil.id} nombre_antes={before} nombre_despues={perfil.nombre} campos={changed_fields}",
+        )
+
     def perform_destroy(self, instance):
+        actor = _actor_username(self.request.user)
+        perfil_id = instance.id
+        nombre = instance.nombre
         instance.delete()
+        log_warn(
+            "catalogo.perfiles_comentarios",
+            f"usuario={actor} accion=eliminar perfil_id={perfil_id} nombre={nombre}",
+        )
 
 
 class ComentarioViewSet(viewsets.ModelViewSet):
@@ -722,8 +859,31 @@ class ComentarioViewSet(viewsets.ModelViewSet):
     serializer_class = ComentarioSerializer
     permission_classes = [IsManagerOrReadOnly]
 
+    def perform_create(self, serializer):
+        comentario = serializer.save()
+        log_info(
+            "catalogo.comentarios",
+            f"usuario={_actor_username(self.request.user)} accion=crear comentario_id={comentario.id} texto={comentario.texto}",
+        )
+
+    def perform_update(self, serializer):
+        before = serializer.instance.texto
+        comentario = serializer.save()
+        changed_fields = ",".join(sorted(serializer.validated_data.keys())) or "sin_campos"
+        log_info(
+            "catalogo.comentarios",
+            f"usuario={_actor_username(self.request.user)} accion=editar comentario_id={comentario.id} texto_antes={before} texto_despues={comentario.texto} campos={changed_fields}",
+        )
+
     def perform_destroy(self, instance):
+        actor = _actor_username(self.request.user)
+        comentario_id = instance.id
+        texto = instance.texto
         instance.delete()
+        log_warn(
+            "catalogo.comentarios",
+            f"usuario={actor} accion=eliminar comentario_id={comentario_id} texto={texto}",
+        )
 
 
 class PerfilSuplementosViewSet(viewsets.ModelViewSet):
@@ -731,8 +891,31 @@ class PerfilSuplementosViewSet(viewsets.ModelViewSet):
     serializer_class = PerfilSuplementosSerializer
     permission_classes = [IsManagerOrReadOnly]
 
+    def perform_create(self, serializer):
+        perfil = serializer.save()
+        log_info(
+            "catalogo.perfiles_suplementos",
+            f"usuario={_actor_username(self.request.user)} accion=crear perfil_id={perfil.id} nombre={perfil.nombre}",
+        )
+
+    def perform_update(self, serializer):
+        before = serializer.instance.nombre
+        perfil = serializer.save()
+        changed_fields = ",".join(sorted(serializer.validated_data.keys())) or "sin_campos"
+        log_info(
+            "catalogo.perfiles_suplementos",
+            f"usuario={_actor_username(self.request.user)} accion=editar perfil_id={perfil.id} nombre_antes={before} nombre_despues={perfil.nombre} campos={changed_fields}",
+        )
+
     def perform_destroy(self, instance):
+        actor = _actor_username(self.request.user)
+        perfil_id = instance.id
+        nombre = instance.nombre
         instance.delete()
+        log_warn(
+            "catalogo.perfiles_suplementos",
+            f"usuario={actor} accion=eliminar perfil_id={perfil_id} nombre={nombre}",
+        )
 
 
 class SuplementoViewSet(viewsets.ModelViewSet):
@@ -740,8 +923,31 @@ class SuplementoViewSet(viewsets.ModelViewSet):
     serializer_class = SuplementoSerializer
     permission_classes = [IsManagerOrReadOnly]
 
+    def perform_create(self, serializer):
+        suplemento = serializer.save()
+        log_info(
+            "catalogo.suplementos",
+            f"usuario={_actor_username(self.request.user)} accion=crear suplemento_id={suplemento.id} nombre={suplemento.nombre} precio={suplemento.precio}",
+        )
+
+    def perform_update(self, serializer):
+        before = serializer.instance.nombre
+        suplemento = serializer.save()
+        changed_fields = ",".join(sorted(serializer.validated_data.keys())) or "sin_campos"
+        log_info(
+            "catalogo.suplementos",
+            f"usuario={_actor_username(self.request.user)} accion=editar suplemento_id={suplemento.id} nombre_antes={before} nombre_despues={suplemento.nombre} precio={suplemento.precio} campos={changed_fields}",
+        )
+
     def perform_destroy(self, instance):
+        actor = _actor_username(self.request.user)
+        suplemento_id = instance.id
+        nombre = instance.nombre
         instance.delete()
+        log_warn(
+            "catalogo.suplementos",
+            f"usuario={actor} accion=eliminar suplemento_id={suplemento_id} nombre={nombre}",
+        )
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -759,15 +965,15 @@ def plantilla_configurable(request, producto_id):
     elif request.method == 'POST':
         with transaction.atomic():
             PlantillaConfigurable.objects.filter(producto_id=producto_id).delete()
-            
+
             data = request.data
             tiene_formatos = data.get('tiene_formatos', False)
-            
+
             plantilla = PlantillaConfigurable.objects.create(
                 producto_id=producto_id,
                 tiene_formatos=tiene_formatos
             )
-            
+
             formato_objs = []
             for f_data in data.get('formatos', []):
                 # Handle precio_fijo being optional/null/empty string
@@ -785,7 +991,7 @@ def plantilla_configurable(request, producto_id):
                     orden=f_data.get('orden', 0)
                 )
                 formato_objs.append(fmt)
-                
+
             for g_data in data.get('grupos', []):
                 grupo = GrupoOpciones.objects.create(
                     plantilla=plantilla,
@@ -794,12 +1000,12 @@ def plantilla_configurable(request, producto_id):
                     obligatorio=g_data.get('obligatorio', False),
                     orden=g_data.get('orden', 0)
                 )
-                
+
                 for o_data in g_data.get('opciones', []):
                     # For compatibility, cast precio_base
                     pb_val = o_data.get('precio_base', 0.0)
                     if not str(pb_val).strip(): pb_val = 0.0
-                        
+
                     opcion = OpcionGrupo.objects.create(
                         grupo=grupo,
                         nombre=o_data.get('nombre', 'Opción'),
@@ -809,7 +1015,7 @@ def plantilla_configurable(request, producto_id):
                         visible_factura=o_data.get('visible_factura', True),
                         orden=o_data.get('orden', 0)
                     )
-                    
+
                     precios_formatos = o_data.get('precios_formatos', {})
                     for i, fmt in enumerate(formato_objs):
                         # As we rebuilt formats linearly, index `str(i)` is correct relative to array
@@ -822,6 +1028,11 @@ def plantilla_configurable(request, producto_id):
                             )
 
             serializer = PlantillaConfigurableSerializer(plantilla)
+            actor = _actor_username(request.user)
+            log_info(
+                "catalogo.configurables",
+                f"usuario={actor} accion=guardar_plantilla producto_id={producto_id} formatos={len(data.get('formatos', []))} grupos={len(data.get('grupos', []))}",
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
@@ -846,7 +1057,7 @@ def listar_iconos(request):
                         })
                 if iconos_cat:
                     categorias[cat_name] = iconos_cat
-            
+
             # También archivos en la raíz
             elif item.is_file() and item.suffix.lower() in extensiones_validas:
                 if "General" not in categorias:
@@ -857,3 +1068,286 @@ def listar_iconos(request):
                 })
 
     return JsonResponse({"categorias": categorias})
+
+
+# =========================
+# INVENTARIO: Materias Primas / Ingredientes
+# =========================
+
+class CategoriaInventarioViewSet(viewsets.ModelViewSet):
+    queryset = CategoriaInventario.objects.all().order_by('orden', 'nombre')
+    serializer_class = CategoriaInventarioSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class ArticuloInventarioViewSet(viewsets.ModelViewSet):
+    queryset = ArticuloInventario.objects.all().order_by('categoria__orden', 'nombre')
+    serializer_class = ArticuloInventarioSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=True, methods=['post'])
+    def ajustar(self, request, pk=None):
+        """Movimiento manual de inventario no bloqueante."""
+        articulo = self.get_object()
+        operacion = str(request.data.get('operacion') or 'delta').lower()
+        tipo_payload = str(request.data.get('tipo') or '').lower()
+        motivo = request.data.get('motivo') or 'Ajuste manual'
+        actor = _actor_username(request.user)
+
+        try:
+            anterior = articulo.stock_actual
+            if operacion == 'recuento':
+                nuevo = Decimal(str(request.data.get('stock_final', request.data.get('cantidad', 0))))
+                delta = nuevo - anterior
+                tipo = MovimientoStock.TIPO_AJUSTE
+                if not request.data.get('motivo'):
+                    motivo = f"Recuento manual: {nuevo}"
+            else:
+                delta = Decimal(str(request.data.get('cantidad', 0)))
+                nuevo = anterior + delta
+                if tipo_payload in ('entrada', 'compra', 'recibir'):
+                    tipo = MovimientoStock.TIPO_ENTRADA
+                elif tipo_payload in ('salida', 'merma', 'rotura', 'anulacion'):
+                    tipo = MovimientoStock.TIPO_SALIDA
+                else:
+                    tipo = MovimientoStock.TIPO_ENTRADA if delta > 0 else MovimientoStock.TIPO_SALIDA
+        except Exception as exc:
+            log_error(
+                "stock.ajuste",
+                f"usuario={actor} accion=ajuste_invalido articulo_id={articulo.id} nombre={articulo.nombre}",
+                exc=exc,
+            )
+            return Response({"error": "Cantidad invalida"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if delta == 0:
+            log_warn(
+                "stock.ajuste",
+                f"usuario={actor} accion=ajuste_rechazado articulo_id={articulo.id} nombre={articulo.nombre} motivo=delta_cero",
+            )
+            return Response({"error": "El ajuste no puede ser 0"}, status=status.HTTP_400_BAD_REQUEST)
+
+        with transaction.atomic():
+            articulo.stock_actual = nuevo
+            articulo.save(update_fields=['stock_actual'])
+
+            MovimientoStock.objects.create(
+                articulo=articulo,
+                tipo=tipo,
+                cantidad=abs(delta),
+                anterior=anterior,
+                nuevo=nuevo,
+                usuario=request.user,
+                motivo=motivo
+            )
+
+        log_info(
+            "stock.ajuste",
+            f"usuario={actor} accion=ajustar articulo_id={articulo.id} nombre={articulo.nombre} tipo={tipo} anterior={anterior} nuevo={nuevo} motivo={motivo}",
+        )
+
+        return Response(self.get_serializer(articulo).data)
+
+    @action(detail=True, methods=['get'])
+    def historial(self, request, pk=None):
+        articulo = self.get_object()
+        movs = MovimientoStock.objects.filter(articulo=articulo).order_by('-fecha')[:50]
+        return Response(MovimientoStockSerializer(movs, many=True).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def plantillas_inventario(request):
+    """Devuelve las plantillas predefinidas para inicializar el inventario"""
+    plantillas = [
+        {
+            "id": "cafeteria",
+            "nombre": "Cafetería",
+            "subcategorias": [
+                {
+                    "id": "cafeteria-basicos",
+                    "nombre": "Básicos",
+                    "articulos": [
+                        {"nombre": "Café en grano", "unidad": "kg", "categoria": "Cafetería"},
+                        {"nombre": "Café descafeinado", "unidad": "kg", "categoria": "Cafetería"},
+                        {"nombre": "Colacao", "unidad": "kg", "categoria": "Cafetería"},
+                        {"nombre": "Azúcar", "unidad": "kg", "categoria": "Cafetería"},
+                        {"nombre": "Edulcorante", "unidad": "pack", "categoria": "Cafetería"},
+                    ],
+                },
+                {
+                    "id": "cafeteria-leches",
+                    "nombre": "Leches",
+                    "articulos": [
+                        {"nombre": "Leche entera", "unidad": "l", "categoria": "Cafetería"},
+                        {"nombre": "Leche desnatada", "unidad": "l", "categoria": "Cafetería"},
+                        {"nombre": "Leche sin lactosa", "unidad": "l", "categoria": "Cafetería"},
+                        {"nombre": "Bebida vegetal", "unidad": "l", "categoria": "Cafetería"},
+                    ],
+                },
+            ]
+        },
+        {
+            "id": "cocina",
+            "nombre": "Cocina",
+            "subcategorias": [
+                {
+                    "id": "cocina-desayunos",
+                    "nombre": "Desayunos",
+                    "articulos": [
+                        {"nombre": "Pan de molde", "unidad": "ud", "categoria": "Cocina"},
+                        {"nombre": "Pan barra", "unidad": "ud", "categoria": "Cocina"},
+                        {"nombre": "Mantequilla", "unidad": "ud", "categoria": "Cocina"},
+                        {"nombre": "Mermelada", "unidad": "ud", "categoria": "Cocina"},
+                        {"nombre": "Aceite oliva", "unidad": "l", "categoria": "Cocina"},
+                        {"nombre": "Jamón york", "unidad": "kg", "categoria": "Cocina"},
+                        {"nombre": "Queso lonchas", "unidad": "pack", "categoria": "Cocina"},
+                    ],
+                },
+                {
+                    "id": "cocina-basicos",
+                    "nombre": "Básicos de cocina",
+                    "articulos": [
+                        {"nombre": "Huevos", "unidad": "caja", "categoria": "Cocina"},
+                        {"nombre": "Sal", "unidad": "kg", "categoria": "Cocina"},
+                        {"nombre": "Pimienta", "unidad": "ud", "categoria": "Cocina"},
+                        {"nombre": "Harina", "unidad": "kg", "categoria": "Cocina"},
+                    ],
+                },
+            ]
+        },
+        {
+            "id": "bebidas",
+            "nombre": "Bebidas",
+            "subcategorias": [
+                {
+                    "id": "bebidas-refrescos",
+                    "nombre": "Refrescos",
+                    "articulos": [
+                        {"nombre": "Coca-Cola", "unidad": "ud", "categoria": "Bebidas"},
+                        {"nombre": "Coca-Cola Zero", "unidad": "ud", "categoria": "Bebidas"},
+                        {"nombre": "Fanta Naranja", "unidad": "ud", "categoria": "Bebidas"},
+                        {"nombre": "Fanta Limón", "unidad": "ud", "categoria": "Bebidas"},
+                        {"nombre": "Aquarius", "unidad": "ud", "categoria": "Bebidas"},
+                    ],
+                },
+                {
+                    "id": "bebidas-agua-zumos",
+                    "nombre": "Agua y zumos",
+                    "articulos": [
+                        {"nombre": "Agua mineral", "unidad": "ud", "categoria": "Bebidas"},
+                        {"nombre": "Agua con gas", "unidad": "ud", "categoria": "Bebidas"},
+                        {"nombre": "Zumo naranja", "unidad": "l", "categoria": "Bebidas"},
+                        {"nombre": "Zumo piña", "unidad": "l", "categoria": "Bebidas"},
+                    ],
+                },
+                {
+                    "id": "bebidas-cervezas",
+                    "nombre": "Cervezas",
+                    "articulos": [
+                        {"nombre": "Cerveza", "unidad": "ud", "categoria": "Bebidas"},
+                        {"nombre": "Cerveza sin alcohol", "unidad": "ud", "categoria": "Bebidas"},
+                        {"nombre": "Cerveza tostada", "unidad": "ud", "categoria": "Bebidas"},
+                    ],
+                },
+            ]
+        },
+        {
+            "id": "consumibles",
+            "nombre": "Limpieza y consumibles",
+            "subcategorias": [
+                {
+                    "id": "consumibles-sala",
+                    "nombre": "Sala",
+                    "articulos": [
+                        {"nombre": "Servilletas", "unidad": "pack", "categoria": "Consumibles"},
+                        {"nombre": "Manteles papel", "unidad": "pack", "categoria": "Consumibles"},
+                        {"nombre": "Pajitas", "unidad": "pack", "categoria": "Consumibles"},
+                    ],
+                },
+                {
+                    "id": "consumibles-limpieza",
+                    "nombre": "Limpieza",
+                    "articulos": [
+                        {"nombre": "Papel higiénico", "unidad": "pack", "categoria": "Consumibles"},
+                        {"nombre": "Lavavajillas", "unidad": "l", "categoria": "Consumibles"},
+                        {"nombre": "Bolsas basura", "unidad": "pack", "categoria": "Consumibles"},
+                        {"nombre": "Guantes desechables", "unidad": "caja", "categoria": "Consumibles"},
+                    ],
+                },
+            ]
+        }
+    ]
+    return Response(plantillas)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def importar_plantilla_inventario(request):
+    """Importa una lista de artículos predefinidos"""
+    articulos_data = request.data.get('articulos', [])
+    creados = 0
+    omitidos = 0
+    unidades_validas = {unidad for unidad, _ in ArticuloInventario.UNIDADES}
+
+    with transaction.atomic():
+        # Crear un mapa local de categorías para no duplicarlas
+        for art in articulos_data:
+            cat_nombre = art.get('categoria', 'General')
+            cat, _ = CategoriaInventario.objects.get_or_create(nombre=cat_nombre)
+            nombre = art.get('nombre', '').strip()
+            if not nombre:
+                omitidos += 1
+                continue
+
+            # Solo crearlo si no existe (por nombre)
+            if not ArticuloInventario.objects.filter(nombre__iexact=nombre).exists():
+                producto_vinculado_id = art.get('producto_vinculado_id') or None
+                if producto_vinculado_id and ArticuloInventario.objects.filter(producto_vinculado_id=producto_vinculado_id).exists():
+                    omitidos += 1
+                    continue
+
+                unidad = art.get('unidad', 'ud')
+                if unidad not in unidades_validas:
+                    unidad = 'ud'
+
+                ArticuloInventario.objects.create(
+                    nombre=nombre,
+                    unidad=unidad,
+                    categoria=cat,
+                    stock_actual=art.get('stock_actual') or 0,
+                    stock_minimo=art.get('stock_minimo') or 0,
+                    producto_vinculado_id=producto_vinculado_id,
+                    auto_descontar=bool(producto_vinculado_id and art.get('auto_descontar', False)),
+                    cantidad_por_venta=1,
+                )
+                creados += 1
+            else:
+                omitidos += 1
+
+    log_info(
+        "stock.plantillas",
+        f"usuario={_actor_username(request.user)} accion=importar_plantilla inventario_creados={creados} inventario_omitidos={omitidos}",
+    )
+    return Response({"status": "ok", "creados": creados, "omitidos": omitidos})
+
+from .models import ConfiguracionTPV
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def configuracion_update(request):
+    """Actualiza un valor de configuración global."""
+    clave = request.data.get('clave')
+    valor = request.data.get('valor')
+    
+    if not clave:
+        return JsonResponse({"error": "Falta clave requerida"}, status=400)
+        
+    with transaction.atomic():
+        conf, created = ConfiguracionTPV.objects.get_or_create(clave=clave)
+        valor_anterior = conf.valor
+        conf.valor = str(valor)
+        conf.save(update_fields=['valor'])
+
+    log_info(
+        "configuracion.global",
+        f"usuario={_actor_username(request.user)} accion=actualizar clave={clave} valor_anterior={valor_anterior} valor_nuevo={valor}",
+    )
+    return JsonResponse({"ok": True})

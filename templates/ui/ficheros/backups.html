@@ -1,0 +1,106 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Backups" %} | Ficheros{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+  <div class="page-head__left">
+    <a class="fich-back-link" href="{% url 'ui:ficheros' %}">
+      <span>←</span><span>{% trans "Volver a Ficheros" %}</span>
+    </a>
+  </div>
+  <h1 class="h1">{% trans "Backups" %}</h1>
+</div>
+
+<div class="fich-layout">
+
+  <!-- Acciones -->
+  <div class="fich-card">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/database-backup.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Crear Backup</h2>
+    </div>
+    <div class="fich-card__body">
+      <p class="fich-desc">Genera una copia de seguridad completa de la base de datos. Se almacena en el servidor y puedes descargarla.</p>
+      <div class="fich-backup-auto">
+        <h4>Autoguardado</h4>
+        <div class="fich-auto-row">
+          <select class="fich-select" id="autoBackupIntervalo" onchange="guardarAutoBackup()">
+            <option value="0" {% if auto_intervalo == "0" %}selected{% endif %}>Deshabilitado</option>
+            <option value="60" {% if auto_intervalo == "60" %}selected{% endif %}>Cada hora</option>
+            <option value="360" {% if auto_intervalo == "360" %}selected{% endif %}>Cada 6 horas</option>
+            <option value="720" {% if auto_intervalo == "720" %}selected{% endif %}>Cada 12 horas</option>
+            <option value="1440" {% if auto_intervalo == "1440" %}selected{% endif %}>Cada 24 horas</option>
+            <option value="10080" {% if auto_intervalo == "10080" %}selected{% endif %}>Semanal</option>
+          </select>
+          <span class="fich-auto-status" id="autoStatus"></span>
+        </div>
+      </div>
+    </div>
+    <div class="fich-card__footer">
+      <button class="btn btn--success" id="btnCrearBackup" onclick="crearBackup()">
+        <img src="{% static 'ui/img/iconos/database-backup.svg' %}" width="16" class="svg-icon" alt="">
+        Crear backup ahora
+      </button>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="fich-card">
+    <div class="fich-card__header">
+      <img src="{% static 'ui/img/iconos/file-clock.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="fich-card__title">Historial de Backups</h2>
+      <span class="fich-count-badge" id="backupCount">{{ backups|length }}</span>
+    </div>
+    <div class="fich-card__body fich-card__body--table">
+      {% if backups %}
+      <table class="fich-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Archivo</th>
+            <th>Tamaño</th>
+            <th>Tipo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="backupTableBody">
+          {% for b in backups %}
+          <tr>
+            <td>{{ b.fecha|date:"d/m/Y H:i" }}</td>
+            <td class="fich-cell-filename">{{ b.nombre_archivo }}</td>
+            <td>{{ b.tamano_legible }}</td>
+            <td><span class="fich-type-pill fich-type-pill--{{ b.tipo }}">{{ b.get_tipo_display }}</span></td>
+            <td>
+              <div class="fich-cell-actions">
+                <button class="btn btn--mini btn--ghost" onclick="descargarBackup('{{ b.nombre_archivo }}')" title="Descargar">
+                  <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="14" class="svg-icon" alt="">
+                </button>
+                <button class="btn btn--mini btn--danger" onclick="restaurarBackup('{{ b.nombre_archivo }}')" title="Restaurar">
+                  <img src="{% static 'ui/img/iconos/refresh-ccw.svg' %}" width="14" class="svg-icon" alt="">
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="fich-empty">
+        <p>No hay backups aún. Crea el primero.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/ficheros/backups.js' %}"></script>
+{% endblock %}

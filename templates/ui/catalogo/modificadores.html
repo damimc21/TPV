@@ -8,6 +8,30 @@
 {% endblock %}
 
 {% block content %}
+{% trans "Primero debes seleccionar un perfil para añadir esta herramienta." as t_mod_manual_must_select %}
+{% trans "Esta herramienta ya está creada en este perfil." as t_mod_manual_exists %}
+{% trans "Operación exitosa" as t_mod_manual_success_title %}
+{% trans "Has añadido correctamente la herramienta al perfil <strong style='color: #64ffda;'>{profile}</strong>." as t_mod_manual_success %}
+{% trans "Añadir comentario libre" as t_mod_manual_comment_title %}
+{% trans "Permite añadir observaciones personalizadas o notas manuales directamente desde el TPV." as t_mod_manual_comment_info %}
+{% trans "Añadir comodín" as t_mod_manual_price_title %}
+{% trans "Permite añadir suplementos especiales o fuera de carta con precios personalizados." as t_mod_manual_price_info %}
+{% trans "No existen perfiles disponibles. Crea uno para poder añadir esta herramienta." as t_mod_manual_no_profiles %}
+
+<script id="modificadores-js-i18n" type="application/json" data-js-i18n>
+{
+  "modifiers.manual.mustSelectProfile": "{{ t_mod_manual_must_select|escapejs }}",
+  "modifiers.manual.alreadyExists": "{{ t_mod_manual_exists|escapejs }}",
+  "modifiers.manual.successTitle": "{{ t_mod_manual_success_title|escapejs }}",
+  "modifiers.manual.addedToProfile": "{{ t_mod_manual_success|escapejs }}",
+  "modifiers.manual.commentTitle": "{{ t_mod_manual_comment_title|escapejs }}",
+  "modifiers.manual.commentInfo": "{{ t_mod_manual_comment_info|escapejs }}",
+  "modifiers.manual.priceTitle": "{{ t_mod_manual_price_title|escapejs }}",
+  "modifiers.manual.priceInfo": "{{ t_mod_manual_price_info|escapejs }}",
+  "modifiers.manual.noProfiles": "{{ t_mod_manual_no_profiles|escapejs }}"
+}
+</script>
+
 <div id="js-translations" data-seleccionar="{% trans 'Seleccionar' %}" class="hidden"></div>
 <div class="catalogo-app is-resolving">
     <header class="catalogo-header">
@@ -21,6 +45,12 @@
         </div>
         <div class="catalogo-actions">
             <button id="btnNuevoPerfil" class="btn btn--ghost"><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Nuevo Perfil Comentarios" %}</button>
+            <button id="btnComentarioLibre" class="btn btn--ghost hidden" style="border: 1px solid rgba(100, 255, 218, 0.3); color: #64ffda;">
+                <img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" alt=""> {% trans "Comentario Libre" %}
+            </button>
+            <button id="btnComodin" class="btn btn--ghost hidden" style="border: 1px solid rgba(100, 255, 218, 0.3); color: #64ffda;">
+                <img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Comodín" %}
+            </button>
             <button id="btnNuevoGeneral" class="btn btn--primary" disabled><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Nuevo Comentario" %}</button>
         </div>
     </header>
@@ -443,8 +473,62 @@
     </div>
 </div>
 
+<!-- Modal: Herramientas Manuales (Comentario/Suplemento) -->
+<div id="modalHerramientas" class="modal-overlay hidden" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+    <div class="modal" style="max-width: 480px; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; box-shadow: 0 40px 80px rgba(0,0,0,0.6); background: #121212; overflow: hidden;">
+        <div class="modal__header" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1.5rem 2rem;">
+            <h3 id="modalHerramientasTitle" style="color: #fff; font-weight: 700; font-size: 1.25rem; margin: 0;">{% trans "Añadir Comodín" %}</h3>
+        </div>
+        <div class="modal__body" style="padding: 2rem;">
+            <!-- Texto informativo simple y legible -->
+            <p id="herramientaInfo" style="color: rgba(255,255,255,0.7); line-height: 1.6; font-size: 1rem; margin-bottom: 2rem;">
+                <!-- Se llena vía JS -->
+            </p>
+
+            <div class="form-group mb-0">
+                <label style="display: block; margin-bottom: 1rem; color: rgba(255,255,255,0.5); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                    {% trans "Asociar al Perfil" %}
+                </label>
+                
+                <!-- Lista de perfiles directa -->
+                <div id="herramientaPerfilLista" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Se llena vía JS con elementos clicables -->
+                </div>
+            </div>
+        </div>
+        <div class="modal__footer" style="padding: 1.5rem 2rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 1rem; justify-content: flex-end; background: rgba(255,255,255,0.02);">
+            <button type="button" class="btn btn--subtle" onclick="closeModal('modalHerramientas')" style="height: 44px; padding: 0 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; border: none; background: rgba(255,255,255,0.05); color: #fff;">
+                {% trans "Cancelar" %}
+            </button>
+            <button type="button" class="btn btn--primary" id="btnConfirmarHerramienta" style="height: 44px; padding: 0 2rem; border-radius: 8px; font-weight: 700; font-size: 0.9rem; background: #64ffda; color: #0a192f; border: none;">
+                {% trans "Confirmar" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Diálogo Dinámico (Confirmar/Alerta) -->
+<div id="modalDialog" class="modal-overlay hidden" style="z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);">
+    <div class="modal" style="max-width: 400px; text-align: center; padding: 2rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border-radius: 20px;">
+        <div id="dialogIcon" class="mb-4" style="display: inline-flex; width: 64px; height: 64px; border-radius: 50%; align-items: center; justify-content: center; margin: 0 auto;">
+            <!-- Icono dinámico -->
+        </div>
+        <h3 id="dialogTitle" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff; font-weight: 800; letter-spacing: -0.02em;"></h3>
+        <div id="dialogMessage" style="color: rgba(255,255,255,0.6); line-height: 1.5; margin-bottom: 2rem; font-size: 1.05rem; font-weight: 400;"></div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 260px; margin: 1.5rem auto 0;">
+            <button id="btnDialogCancel" class="btn btn--subtle" style="height: 40px; border-radius: 10px; font-weight: 600; background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); font-size: 0.9rem; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                {% trans "Cancelar" %}
+            </button>
+            <button id="btnDialogConfirm" class="btn btn--primary" style="height: 40px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                {% trans "Aceptar" %}
+            </button>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'ui/js/catalogo/modificadores.js' %}?v=21"></script>
+<script src="{% static 'ui/js/catalogo/modificadores.js' %}?v=22"></script>
 {% endblock %}

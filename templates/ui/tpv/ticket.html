@@ -107,18 +107,6 @@
                 {# Cálculo al vuelo para comprobante provisional (IVA 10% incluido) #}
                 <p><span>{% trans "Base Imponible" %}:</span> <span id="valBaseImponible">0,00 €</span></p>
                 <p><span>{% trans "IVA (10%)" %}:</span> <span id="valIVA">0,00 € (incl.)</span></p>
-                {% if comanda_provisional %}
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const totalStr = "{{ comanda_provisional.total_calculado|default:'0' }}";
-                        const total = parseFloat(totalStr.replace(',', '.'));
-                        const bi = (total / 1.10).toFixed(2);
-                        const iva = (total - bi).toFixed(2);
-                        document.getElementById('valBaseImponible').innerText = bi.replace('.', ',') + ' €';
-                        document.getElementById('valIVA').innerText = iva.replace('.', ',') + ' €';
-                    });
-                </script>
-                {% endif %}
                 {% endif %}
             </div>
 
@@ -163,7 +151,13 @@
         </div>
     </div>
 
-    <script src="{% static 'ui/js/ticket.js' %}"></script>
+    <script id="ticket-config" type="application/json">
+      {
+        "totalProvisional": "{{ comanda_provisional.total_calculado|default:'0' }}",
+        "ivaRate": 0.10
+      }
+    </script>
+    <script src="{% static 'ui/js/tpv/ticket.js' %}"></script>
 
 </body>
 

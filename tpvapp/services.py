@@ -1,15 +1,21 @@
 from django.db.models import Q
 from django.utils import timezone
 from decimal import Decimal
-from .models import Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria, SesionCaja, Cliente
+from .models import Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria, SesionCaja, Cliente, MovimientoStock, ArticuloInventario
 from django.core.mail import send_mail
 from django.conf import settings
 import threading
+from tpvapp.auditoria import log_info
 
 
 
 def registrar_evento(usuario, evento: str, detalles: str = ""):
     EventoAuditoria.objects.create(usuario=usuario, evento=evento, detalles=detalles)
+    username = getattr(usuario, "username", None) or "sistema"
+    message = f"usuario={username} evento={evento}"
+    if detalles:
+        message += f" detalles={detalles}"
+    log_info("auditoria.evento", message)
 
 
 def actualizar_estado_mesa(mesa: Mesa):
@@ -51,6 +57,55 @@ def imprimir_comprobante(comanda: Comanda, usuario):
     actualizar_estado_mesa(comanda.mesa)
 
 
+def procesar_stock_comanda(comanda: Comanda, usuario):
+    """
+    Descuenta solo articulos de inventario vinculados y activados.
+
+    El inventario es voluntario y de apoyo: no bloquea ventas, permite
+    negativos para mantener trazabilidad y no aplica recetas ni configurables.
+    """
+    lineas = (
+        comanda.lineas
+        .filter(anulado=False, producto__isnull=False)
+        .select_related("producto", "producto__articulo_inventario")
+    )
+    if not lineas.exists():
+        return
+
+    for linea in lineas:
+        producto = linea.producto
+        try:
+            articulo = producto.articulo_inventario
+        except ArticuloInventario.DoesNotExist:
+            continue
+
+        if not articulo.auto_descontar:
+            continue
+
+        total_a_descontar = Decimal(linea.cantidad)
+
+        if total_a_descontar > 0:
+            stock_anterior = articulo.stock_actual
+            articulo.stock_actual -= total_a_descontar
+            articulo.save(update_fields=["stock_actual"])
+
+            MovimientoStock.objects.create(
+                articulo=articulo,
+                tipo=MovimientoStock.TIPO_VENTA,
+                cantidad=total_a_descontar,
+                anterior=stock_anterior,
+                nuevo=articulo.stock_actual,
+                usuario=usuario,
+                linea_comanda=linea,
+                motivo=f"Venta en Comanda #{comanda.id}"
+            )
+
+            if articulo.stock_actual < 0:
+                registrar_evento(
+                    usuario,
+                    "STOCK_NEGATIVO",
+                    f"articulo_id={articulo.id}, linea_id={linea.id}, stock={articulo.stock_actual}"
+                )
 def emitir_factura(comanda: Comanda, usuario, tipo_pago: str = "efectivo", tipo_factura: str = "Simplificada", allow_pagada: bool = False):
     if not allow_pagada and comanda.estado == Comanda.ESTADO_PAGADA:
         raise ValueError("La comanda ya está pagada.")
@@ -64,7 +119,7 @@ def emitir_factura(comanda: Comanda, usuario, tipo_pago: str = "efectivo", tipo_
     total = sum(l.total for l in lineas)
     subtotal = (total / Decimal("1.10")).quantize(Decimal("0.00"))  # Base Imponible
     impuestos = total - subtotal                                   # IVA (10%)
-    
+
     # Buscar sesión activa
     sesion = SesionCaja.objects.filter(fecha_cierre__isnull=True).first()
 
@@ -118,6 +173,12 @@ def registrar_pago(factura: Factura, usuario, cantidad, metodo_pago: str = "efec
             if comanda.mesa:
                 actualizar_estado_mesa(comanda.mesa)
 
+            # PROCESAR STOCK
+            try:
+                procesar_stock_comanda(comanda, usuario)
+            except Exception as e:
+                registrar_evento(usuario, "ERROR_STOCK", f"Error procesando stock comanda {comanda.id}: {str(e)}")
+
     registrar_evento(usuario, "PAGO_REGISTRADO", f"pago_id={pago.id}, factura_id={factura.id}, cantidad={cantidad}")
 
     # --- Envío automático de email (en segundo plano para no bloquear el cobro) ---
@@ -144,13 +205,13 @@ def enviar_factura_email(factura: Factura):
 
     cliente = factura.cliente
     subject = f"Factura {factura.id} - TPV"
-    
+
     # Construir cuerpo del mensaje
     mensaje = f"Hola {cliente.nombre},\n\n"
     mensaje += f"Adjuntamos el detalle de su factura emitida el {factura.emitida_a.strftime('%d/%m/%Y %H:%M')}.\n\n"
     mensaje += f"Total: {factura.total}€\n\n"
     mensaje += "Gracias por su visita.\n"
-    
+
     try:
         send_mail(
             subject,

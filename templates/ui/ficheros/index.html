@@ -1,19 +1,99 @@
-{% load i18n static %}
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{% trans "Ficheros" %}</title>
-  <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
-</head>
-<body>
-  <div class="app">
-    <main class="main">
-      <h1 class="h1">{% trans "Ficheros" %}</h1>
-      <p class="hint">{% trans "Sección en construcción." %}</p>
-      <a class="meta meta--button" href="{% url 'ui:index' %}">{% trans "Volver" %}</a>
-    </main>
-  </div>
-</body>
-</html>
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Ficheros" %}{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+  <h1 class="h1">{% trans "Ficheros" %}</h1>
+</div>
+
+<section class="grid">
+
+  <!-- Card: Importar Productos -->
+  <a class="card" href="{% url 'ui:ficheros_importar' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/clipboard-plus.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Importar Productos" %}</h2>
+      <p class="card__desc">
+        {% trans "Carga masiva de productos o inventario desde un fichero CSV." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Importar" %} →</div>
+  </a>
+
+  <!-- Card: Exportar Productos -->
+  <a class="card" href="{% url 'ui:ficheros_exportar' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/log-out.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Exportar Datos" %}</h2>
+      <p class="card__desc">
+        {% trans "Descarga catálogo, inventario o informes en formato CSV." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Exportar" %} →</div>
+  </a>
+
+  <!-- Card: Backups -->
+  <a class="card" href="{% url 'ui:ficheros_backups' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/database-backup.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Backups" %}</h2>
+      <p class="card__desc">
+        {% trans "Copias de seguridad manuales y automáticas. Descargar y restaurar." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Gestionar" %} →</div>
+  </a>
+
+  <!-- Card: Informes -->
+  <a class="card" href="{% url 'ui:ficheros_informes' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/chart-no-axes-combined.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Informes" %}</h2>
+      <p class="card__desc">
+        {% trans "Ventas, fluctuaciones de stock, turnos, rankings y más." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Generar" %} →</div>
+  </a>
+
+  <!-- Card: Auditoría -->
+  <a class="card" href="{% url 'ui:ficheros_auditoria' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/telescope.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Auditoría" %}</h2>
+      <p class="card__desc">
+        {% trans "Historial de todas las acciones realizadas por los usuarios." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Consultar" %} →</div>
+  </a>
+
+  <!-- Card: Logs del Sistema -->
+  <a class="card" href="{% url 'ui:ficheros_logs' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/file-clock.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Logs del Sistema" %}</h2>
+      <p class="card__desc">
+        {% trans "Registro técnico de errores, advertencias y eventos del servidor." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Revisar" %} →</div>
+  </a>
+
+</section>
+
+{% endblock %}

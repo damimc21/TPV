@@ -9,7 +9,9 @@ async function cargarCatalogoTPV() {
     try {
         const requests = [
             fetch('/api/departamentos/'),
-            fetch('/api/productos/')
+            fetch('/api/productos/'),
+            fetch('/api/perfiles-comentarios/'),
+            fetch('/api/perfiles-suplementos/')
         ];
 
         if (tpvState.mesaNumero) {
@@ -26,18 +28,26 @@ async function cargarCatalogoTPV() {
         }
 
         const responses = await Promise.all(requests);
-        const [resDeptos, resProds] = responses;
+        const [resDeptos, resProds, resPComents, resPSups] = responses;
 
         let resComanda = null;
-        if (responses.length > 2) resComanda = responses[2];
+        if (responses.length > 4) resComanda = responses[4];
 
         if (!resDeptos.ok || !resProds.ok) throw new Error("Error al cargar el catálogo.");
 
         let deptosData = await resDeptos.json();
         let prodsData = await resProds.json();
+        let pComentsData = resPComents.ok ? await resPComents.json() : [];
+        let pSupsData = resPSups.ok ? await resPSups.json() : [];
 
         tpvState.departamentos = deptosData.results ? deptosData.results : deptosData;
         tpvState.productos = prodsData.results ? prodsData.results : prodsData;
+        
+        const cResults = pComentsData.results ? pComentsData.results : pComentsData;
+        tpvState.perfilesComentarios = Array.isArray(cResults) ? cResults : [];
+        
+        const sResults = pSupsData.results ? pSupsData.results : pSupsData;
+        tpvState.perfilesSuplementos = Array.isArray(sResults) ? sResults : [];
 
         // Solo elementos activos
         tpvState.departamentos = tpvState.departamentos.filter(d => d.activo);
@@ -73,7 +83,8 @@ async function cargarCatalogoTPV() {
                         cantidad: Number(ld.cantidad),
                         precio_unitario: Number(ld.precio_unitario),
                         descuento: Number(ld.descuento || 0),
-                        anulado: ld.anulado
+                        anulado: ld.anulado,
+                        configuracion_json: ld.configuracion_json || null
                     };
                     recalcularLinea(l);
                     return l;
@@ -199,7 +210,7 @@ function renderProductosTPV() {
 // Añade un producto al ticket o abre configuración
 async function agregarLineaComanda(prod) {
     if (!tpvState.mesaNumero) {
-        alert("Error: No hay mesa activa conectada.");
+        window.Notify.error("Error: No hay mesa activa conectada.");
         return;
     }
 
@@ -274,9 +285,12 @@ async function sincronizarComanda() {
                 lineas: tpvState.lineas.map(l => ({
                     id: l.id || null,
                     producto: l.producto_id,
+                    producto_nombre: l.producto_nombre, // ¡Crucial para conservar el formato!
                     cantidad: l.cantidad,
+                    precio_unitario: l.precio_unitario, // ¡Vital para productos configurables!
                     descuento: l.descuento || 0,
-                    anulado: l.anulado
+                    anulado: l.anulado,
+                    configuracion_json: l.configuracion_json || null
                 }))
             };
 

@@ -50,10 +50,25 @@
 }
 
 .nav__icon {
-  width: 28px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
-  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.nav__icon img {
+  width: 20px;
+  height: 20px;
+  filter: invert(1);
+  opacity: 0.75;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nav__item:hover .nav__icon img,
+.nav__item.is-active .nav__icon img {
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 .nav__text {

@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.conf.urls.i18n import i18n_patterns
 from django.urls import path, include
 from django.views.static import serve
+from django.views.i18n import JavaScriptCatalog
 from django.conf import settings
 import os
 
@@ -31,6 +32,7 @@ def _static_ui(filename, content_type):
 
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),  # set_language
+    path("api/ficheros/", include("ui.ficheros_urls")), # Ficheros API
     path("api/", include("tpvapp.urls")),             # API fuera de i18n
     path("admin/", admin.site.urls),
     # PWA: service worker y manifest desde la raíz
@@ -40,5 +42,6 @@ urlpatterns = [
 
 # Todo lo “UI” traducible dentro de i18n_patterns
 urlpatterns += i18n_patterns(
+    path("jsi18n/", JavaScriptCatalog.as_view(domain="django"), name="javascript-catalog"),
     path("", include("ui.urls")),
 )
