@@ -1,5 +1,19 @@
-asgiref==3.11.1
+# ============================================================
+# Dependencias base (desarrollo y produccion)
+# Instalar con: pip install -r requirements.txt
+# ============================================================
+
+# --- Framework ---
 Django==6.0.2
 djangorestframework==3.16.1
+
+# --- Utilidades de Django (transitivas, fijadas para reproducibilidad) ---
+asgiref==3.11.1
 sqlparse==0.5.5
 tzdata==2025.3
+
+# --- Configuracion / entorno ---
+python-dotenv==1.0.1
+
+# --- Imagenes (requerido por ImageField, fotos de productos, etc.) ---
+Pillow==11.0.0

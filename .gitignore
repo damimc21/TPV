@@ -1,48 +1,89 @@
+# =====================================================
+# .gitignore - Proyecto TPV
+# =====================================================
 
- Entornos virtuales
+# --- Entornos virtuales ---
 venv/
+.venv/
 env/
 
-# Python
+# --- Python ---
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*.so
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# Sistema
-*.DS_Store
-
-# Django
+# --- Django ---
 db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
 /staticfiles/
+/media/
+*.mo
 
-# Configuración sensible
+# --- Configuracion sensible ---
 .env
-*.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+secrets.json
+secrets.yaml
+secrets.yml
 
-# Logs
+# --- Logs ---
 *.log
+logs/
 
-# IDE
+# --- IDEs y editores ---
 .vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*~
 
-# Build
+# --- Sistema operativo ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Build / distribucion ---
 build/
 dist/
-*.egg-info/
 
-# Tests / coverage
+# --- Tests / cobertura ---
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
 
-# Base de datos (por ahora no la quiero en git)
+# --- Frontend (por si en el futuro hay tooling JS) ---
+node_modules/
+.cache/
+.parcel-cache/
+
+# --- Terraform / infra ---
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+*.tfvars.json
+!example.tfvars
+
+# --- Base de datos / scripts de prototipo ---
 tpv.sql
 
-# Basura local / artefactos temporales
+# --- Backups locales y artefactos temporales ---
 backups/
-tmp_codex_write_test.txt
+_backup_limpieza_*/
 output.txt
-test_undo.py
-test_undo.js
-static/ui/img/productos/Refrescos/Tips for Users of Assistive Technology.pdf
-docs/manual_proyecto.md
+tmp_*
+tmp*/
