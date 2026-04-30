@@ -1,0 +1,22 @@
+# ============================================================
+# Dependencias adicionales para PRODUCCION (AWS / Docker)
+# Instalar con: pip install -r requirements.txt -r requirements-prod.txt
+# ============================================================
+
+# --- Servidor WSGI ---
+gunicorn==23.0.0
+
+# --- Servir estaticos sin nginx ---
+whitenoise==6.8.2
+
+# --- Base de datos MySQL (Amazon RDS) ---
+mysqlclient==2.2.6
+
+# --- AWS ---
+boto3==1.35.92
+
+# --- Almacenamiento de ficheros en S3 ---
+django-storages[s3]==1.14.4
+
+# --- Monitorizacion de errores (opcional, recomendado en prod) ---
+# sentry-sdk==2.19.2
