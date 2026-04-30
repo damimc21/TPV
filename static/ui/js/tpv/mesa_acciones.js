@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function logUiEvent(evento, detalle, nivel = "INFO", origen = "ui.tpv") {
         fetch("/api/ficheros/logs/ui-evento/", {
             method: "POST",
+            keepalive: true,
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRFToken": getCookie("csrftoken"),
@@ -108,6 +109,11 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.setItem('open_options_modal', '1');
         const form = document.getElementById('langForm');
         const input = document.getElementById('langInput');
+        const currentLang = (document.documentElement.lang || 'unknown').toLowerCase().split('-')[0];
+        const targetLang = (lang || '').toLowerCase();
+        if (targetLang && targetLang !== currentLang) {
+            logUiEvent("language_change_tpv", `from=${currentLang} to=${targetLang}`, "INFO", "ui.tpv");
+        }
         if (form && input) {
             input.value = lang;
             form.submit();

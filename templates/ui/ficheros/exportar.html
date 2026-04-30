@@ -4,7 +4,7 @@
 {% block title %}{% trans "Exportar Datos" %} | Ficheros{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=5">
 {% endblock %}
 
 {% block content %}
@@ -19,44 +19,82 @@
 
 <div class="fich-layout">
 
-  <!-- Exportar Catálogo -->
-  <div class="fich-card">
+  <div class="fich-card fich-card--export">
     <div class="fich-card__header">
       <img src="{% static 'ui/img/iconos/package-search.svg' %}" width="20" class="svg-icon" alt="">
       <h2 class="fich-card__title">Productos (Catálogo)</h2>
     </div>
     <div class="fich-card__body">
-      <p class="fich-desc">Descarga todos los productos del catálogo en formato CSV compatible con la importación.</p>
-      <div class="fich-export-options">
-        <label class="fich-checkbox"><input type="checkbox" id="expProdActivos" checked> Solo activos</label>
-        <label class="fich-checkbox"><input type="checkbox" id="expProdEliminados"> Incluir eliminados</label>
+      <p class="fich-desc">Exporta los productos del catálogo con filtros claros de estado, eliminación y departamento.</p>
+
+      <div class="fich-export-filter-grid">
+        <div class="fich-filter-block">
+          <div class="fich-filter-label">Estado</div>
+          <div class="fich-segmented" role="radiogroup" aria-label="Estado de productos">
+            <label class="fich-segmented__item">
+              <input type="radio" name="expProdEstado" value="active" checked>
+              <span>Activos</span>
+            </label>
+            <label class="fich-segmented__item">
+              <input type="radio" name="expProdEstado" value="inactive">
+              <span>Inactivos</span>
+            </label>
+            <label class="fich-segmented__item">
+              <input type="radio" name="expProdEstado" value="all">
+              <span>Todos</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="fich-filter-block">
+          <div class="fich-filter-label">Eliminados</div>
+          <div class="fich-segmented" role="radiogroup" aria-label="Productos eliminados">
+            <label class="fich-segmented__item">
+              <input type="radio" name="expProdEliminados" value="exclude" checked>
+              <span>Excluir</span>
+            </label>
+            <label class="fich-segmented__item">
+              <input type="radio" name="expProdEliminados" value="include">
+              <span>Incluir</span>
+            </label>
+            <label class="fich-segmented__item">
+              <input type="radio" name="expProdEliminados" value="only">
+              <span>Solo eliminados</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="fich-filter-block fich-filter-block--department">
+          <div class="fich-filter-label">Departamento</div>
+          <div class="fich-custom-select fich-custom-select--export" id="expProdDeptoSelect">
+            <button type="button" class="fich-custom-select__trigger" id="expProdDeptoTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span id="expProdDeptoLabel">Todos los departamentos</span>
+              <img src="{% static 'ui/img/iconos/a-arrow-down.svg' %}" alt="">
+            </button>
+            <div class="fich-custom-select__menu hidden" id="expProdDeptoOptions" role="listbox">
+              <button type="button" class="fich-custom-select__option is-selected" data-value="">Todos los departamentos</button>
+            </div>
+          </div>
+          <input type="hidden" id="expProdDepto" value="">
+        </div>
       </div>
-      <select class="fich-select" id="expProdDepto">
-        <option value="">Todos los departamentos</option>
-      </select>
+      <p class="fich-filter-summary" id="expProdSummary"></p>
     </div>
     <div class="fich-card__footer">
-      <button class="btn btn--success" onclick="exportarProductos()">
-        <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="16" class="svg-icon" alt="">
-        Descargar CSV
-      </button>
+      {% include "ui/componentes/export_menu.html" with export_handler="exportarProductosFormato" export_direction="down" export_button_class="btn--success" export_icon="ui/img/iconos/download.svg" export_pdf_label="PDF visual" export_csv_label="CSV completo" export_xlsx_label="Excel completo" %}
     </div>
   </div>
 
-  <!-- Exportar Inventario -->
-  <div class="fich-card">
+  <div class="fich-card fich-card--export">
     <div class="fich-card__header">
       <img src="{% static 'ui/img/iconos/warehouse.svg' %}" width="20" class="svg-icon" alt="">
       <h2 class="fich-card__title">Artículos de Inventario</h2>
     </div>
     <div class="fich-card__body">
-      <p class="fich-desc">Descarga los artículos de inventario (materias primas, ingredientes) en formato CSV.</p>
+      <p class="fich-desc">Exporta los artículos de inventario (materias primas, ingredientes) en CSV, Excel o PDF visual.</p>
     </div>
     <div class="fich-card__footer">
-      <button class="btn btn--success" onclick="exportarInventario()">
-        <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="16" class="svg-icon" alt="">
-        Descargar CSV
-      </button>
+      {% include "ui/componentes/export_menu.html" with export_handler="exportarInventarioFormato" export_direction="down" export_button_class="btn--success" export_icon="ui/img/iconos/download.svg" export_pdf_label="PDF visual" export_csv_label="CSV completo" export_xlsx_label="Excel completo" %}
     </div>
   </div>
 
@@ -64,5 +102,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'ui/js/ficheros/exportar.js' %}"></script>
+<script src="{% static 'ui/js/ficheros/exportar.js' %}?v=4"></script>
 {% endblock %}

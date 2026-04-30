@@ -4,7 +4,7 @@
 {% block title %}{% trans "Informes" %} | Ficheros{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
@@ -59,14 +59,7 @@
     </div>
     <div class="fich-card__footer">
       <button class="btn btn--outline" onclick="visualizarInforme('ventas', 'Ventas Detalladas')">Visualizar</button>
-      <div class="fich-export">
-        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
-        <div class="fich-export__menu hidden">
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'ventas', 'Ventas Detalladas', 'pdf')">PDF</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'ventas', 'Ventas Detalladas', 'csv')">CSV</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'ventas', 'Ventas Detalladas', 'xlsx')">Excel</button>
-        </div>
-      </div>
+      {% include "ui/componentes/export_menu.html" with export_handler="exportarInformeFormato" export_arg1="ventas" export_arg2="Ventas Detalladas" export_button_class="btn--success" %}
     </div>
   </div>
 
@@ -81,14 +74,7 @@
     </div>
     <div class="fich-card__footer">
       <button class="btn btn--outline" onclick="visualizarInforme('stock', 'Fluctuaciones de Stock')">Visualizar</button>
-      <div class="fich-export">
-        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
-        <div class="fich-export__menu hidden">
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'stock', 'Fluctuaciones de Stock', 'pdf')">PDF</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'stock', 'Fluctuaciones de Stock', 'csv')">CSV</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'stock', 'Fluctuaciones de Stock', 'xlsx')">Excel</button>
-        </div>
-      </div>
+      {% include "ui/componentes/export_menu.html" with export_handler="exportarInformeFormato" export_arg1="stock" export_arg2="Fluctuaciones de Stock" export_button_class="btn--success" %}
     </div>
   </div>
 
@@ -103,14 +89,7 @@
     </div>
     <div class="fich-card__footer">
       <button class="btn btn--outline" onclick="visualizarInforme('turnos', 'Turnos y Jornadas')">Visualizar</button>
-      <div class="fich-export">
-        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
-        <div class="fich-export__menu hidden">
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'turnos', 'Turnos y Jornadas', 'pdf')">PDF</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'turnos', 'Turnos y Jornadas', 'csv')">CSV</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'turnos', 'Turnos y Jornadas', 'xlsx')">Excel</button>
-        </div>
-      </div>
+      {% include "ui/componentes/export_menu.html" with export_handler="exportarInformeFormato" export_arg1="turnos" export_arg2="Turnos y Jornadas" export_button_class="btn--success" %}
     </div>
   </div>
 
@@ -125,14 +104,7 @@
     </div>
     <div class="fich-card__footer">
       <button class="btn btn--outline" onclick="visualizarInforme('movimientos_caja', 'Movimientos de Caja')">Visualizar</button>
-      <div class="fich-export">
-        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
-        <div class="fich-export__menu hidden">
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'movimientos_caja', 'Movimientos de Caja', 'pdf')">PDF</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'movimientos_caja', 'Movimientos de Caja', 'csv')">CSV</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'movimientos_caja', 'Movimientos de Caja', 'xlsx')">Excel</button>
-        </div>
-      </div>
+      {% include "ui/componentes/export_menu.html" with export_handler="exportarInformeFormato" export_arg1="movimientos_caja" export_arg2="Movimientos de Caja" export_button_class="btn--success" %}
     </div>
   </div>
 
@@ -147,14 +119,7 @@
     </div>
     <div class="fich-card__footer">
       <button class="btn btn--outline" onclick="visualizarInforme('clientes', 'Clientes')">Visualizar</button>
-      <div class="fich-export">
-        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
-        <div class="fich-export__menu hidden">
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'clientes', 'Clientes', 'pdf')">PDF</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'clientes', 'Clientes', 'csv')">CSV</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'clientes', 'Clientes', 'xlsx')">Excel</button>
-        </div>
-      </div>
+      {% include "ui/componentes/export_menu.html" with export_handler="exportarInformeFormato" export_arg1="clientes" export_arg2="Clientes" export_button_class="btn--success" %}
     </div>
   </div>
 
@@ -169,14 +134,7 @@
     </div>
     <div class="fich-card__footer">
       <button class="btn btn--outline" onclick="visualizarInforme('rankings', 'Rankings y Analisis')">Visualizar</button>
-      <div class="fich-export">
-        <button class="btn btn--success fich-export__toggle" onclick="toggleExportMenu(event, this)">Exportar</button>
-        <div class="fich-export__menu hidden">
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'rankings', 'Rankings y Analisis', 'pdf')">PDF</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'rankings', 'Rankings y Analisis', 'csv')">CSV</button>
-          <button class="fich-export__item" onclick="exportarInformeFormato(event, 'rankings', 'Rankings y Analisis', 'xlsx')">Excel</button>
-        </div>
-      </div>
+      {% include "ui/componentes/export_menu.html" with export_handler="exportarInformeFormato" export_arg1="rankings" export_arg2="Rankings y Analisis" export_button_class="btn--success" %}
     </div>
   </div>
 
@@ -203,14 +161,7 @@
     </div>
     <div class="modal-foot">
       <button class="btn btn--ghost" onclick="cerrarModalPreview()">Cerrar</button>
-      <div class="fich-export">
-        <button class="btn btn--primary fich-export__toggle" id="btnPreviewExport" onclick="toggleExportMenu(event, this)">Exportar</button>
-        <div class="fich-export__menu hidden" id="previewExportMenu">
-          <button class="fich-export__item" id="btnPreviewExportPdf">PDF</button>
-          <button class="fich-export__item" id="btnPreviewExportCsv">CSV</button>
-          <button class="fich-export__item" id="btnPreviewExportXlsx">Excel</button>
-        </div>
-      </div>
+      {% include "ui/componentes/export_menu.html" with export_id="previewExport" export_menu_id="previewExportMenu" export_handler="exportarInformeFormato" export_button_class="btn--primary" export_pdf_id="btnPreviewExportPdf" export_csv_id="btnPreviewExportCsv" export_xlsx_id="btnPreviewExportXlsx" %}
     </div>
   </div>
 </div>
@@ -218,5 +169,5 @@
 
 {% block extra_js %}
 <script src="{% static 'ui/js/ficheros/date-field.js' %}"></script>
-<script src="{% static 'ui/js/ficheros/informes.js' %}"></script>
+<script src="{% static 'ui/js/ficheros/informes.js' %}?v=2"></script>
 {% endblock %}

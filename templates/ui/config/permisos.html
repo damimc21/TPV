@@ -1,0 +1,111 @@
+{% extends "ui/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Permisos" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/config/permisos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+    <div class="page-head__left">
+        <a class="cfg-back-link" href="{% url 'ui:config' %}">
+            <span aria-hidden="true">←</span>
+            <span>{% trans "Volver a Configuracion" %}</span>
+        </a>
+    </div>
+    <h1 class="h1">{% trans "Gestion de Permisos" %}</h1>
+    <div class="page-head__right"></div>
+</div>
+
+<section class="cfg-perm">
+    {% if notice_ok %}
+    <div class="cfg-notice cfg-notice--ok">{{ notice_ok }}</div>
+    {% endif %}
+    {% if notice_error %}
+    <div class="cfg-notice cfg-notice--error">{{ notice_error }}</div>
+    {% endif %}
+
+    {% if missing_codes %}
+    <div class="cfg-notice cfg-notice--error">
+        {% trans "Faltan permisos en base de datos. Ejecuta migraciones para crear:" %}
+        {{ missing_codes|join:", " }}
+    </div>
+    {% endif %}
+
+    <div class="cfg-perm__panel">
+        <form method="get" class="cfg-perm__selector">
+            <label for="userSelect">{% trans "Usuario" %}</label>
+            <select id="userSelect" name="user" onchange="this.form.submit()">
+                {% for user_item in users %}
+                <option value="{{ user_item.id }}" {% if selected_user and selected_user.id == user_item.id %}selected{% endif %}>
+                    {{ user_item.username }}
+                    {% if user_item.is_superuser %} (superuser){% elif user_item.is_staff %} (staff){% endif %}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    {% if selected_user %}
+    <form method="post" class="cfg-perm__panel cfg-perm__form">
+        {% csrf_token %}
+        <input type="hidden" name="user_id" value="{{ selected_user.id }}">
+
+        <div class="cfg-perm__user-head">
+            <strong>{{ selected_user.username }}</strong>
+            {% if selected_user.is_superuser %}
+            <span class="cfg-badge">{% trans "Superusuario (acceso total)" %}</span>
+            {% elif selected_user.is_staff %}
+            <span class="cfg-badge cfg-badge--staff">{% trans "Staff (acceso total por compatibilidad)" %}</span>
+            {% endif %}
+        </div>
+
+        <section class="cfg-perm__block">
+            <h2>{% trans "Packs de permisos" %}</h2>
+            <p class="cfg-perm__hint">{% trans "Selecciona perfiles de alto nivel para asignar varios permisos de una vez." %}</p>
+            <div class="cfg-perm__packs">
+                {% for pack_key, pack in permission_packs %}
+                <label class="cfg-perm__pack">
+                    <input type="checkbox" name="pack" value="{{ pack_key }}" {% if pack_key in active_packs %}checked{% endif %}>
+                    <div>
+                        <strong>{{ pack.label }}</strong>
+                        <p>{{ pack.description }}</p>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="cfg-perm__block">
+            <h2>{% trans "Modo avanzado (granular)" %}</h2>
+            <p class="cfg-perm__hint">{% trans "Ajusta permisos individuales de forma detallada." %}</p>
+            <div class="cfg-perm__categories">
+                {% for category in permission_categories %}
+                <div class="cfg-perm__category">
+                    <h3>{{ category.label }}</h3>
+                    <div class="cfg-perm__items">
+                        {% for item in category.items %}
+                        <label class="cfg-check">
+                            <input type="checkbox" name="perm" value="{{ item.codename }}" {% if item.codename in active_codes %}checked{% endif %}>
+                            <span>{{ item.label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <div class="cfg-perm__actions">
+            <button class="btn btn--success" type="submit">{% trans "Guardar permisos" %}</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="cfg-perm__panel">
+        <p class="cfg-perm__hint">{% trans "No hay usuarios disponibles para asignar permisos." %}</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

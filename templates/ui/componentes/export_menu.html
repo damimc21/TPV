@@ -1,0 +1,24 @@
+{% load static %}
+<div
+  class="fich-export{% if export_direction %} fich-export--{{ export_direction }}{% endif %}"
+  {% if export_id %}id="{{ export_id }}"{% endif %}
+  data-export-menu
+  data-export-handler="{{ export_handler }}"
+  {% if export_arg1 %}data-export-arg-1="{{ export_arg1|escape }}"{% endif %}
+  {% if export_arg2 %}data-export-arg-2="{{ export_arg2|escape }}"{% endif %}
+  {% if export_arg3 %}data-export-arg-3="{{ export_arg3|escape }}"{% endif %}
+>
+  <button class="btn {{ export_button_class|default:'btn--success' }} fich-export__toggle" type="button" data-export-toggle aria-haspopup="menu" aria-expanded="false">
+    {% if export_icon %}
+      <img src="{% static export_icon %}" width="{{ export_icon_width|default:'16' }}" class="svg-icon" alt="">
+    {% endif %}
+    <span>{{ export_label|default:"Exportar" }}</span>
+  </button>
+  <div class="fich-export__menu hidden" {% if export_menu_id %}id="{{ export_menu_id }}"{% endif %} role="menu">
+    {% if not export_hide_pdf %}
+    <button type="button" class="fich-export__item" {% if export_pdf_id %}id="{{ export_pdf_id }}"{% endif %} data-export-format="pdf" role="menuitem">{{ export_pdf_label|default:"PDF" }}</button>
+    {% endif %}
+    <button type="button" class="fich-export__item" {% if export_csv_id %}id="{{ export_csv_id }}"{% endif %} data-export-format="csv" role="menuitem">{{ export_csv_label|default:"CSV" }}</button>
+    <button type="button" class="fich-export__item" {% if export_xlsx_id %}id="{{ export_xlsx_id }}"{% endif %} data-export-format="xlsx" role="menuitem">{{ export_xlsx_label|default:"Excel" }}</button>
+  </div>
+</div>

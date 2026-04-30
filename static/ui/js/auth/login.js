@@ -13,11 +13,42 @@
 
   const openIcon = "/static/ui/img/ojo_abierto.png";
   const closedIcon = "/static/ui/img/ojo_cerrado.png";
+  let lastSelection = {
+    start: input.value.length,
+    end: input.value.length,
+  };
+
+  function rememberSelection() {
+    if (document.activeElement !== input) return;
+    lastSelection = {
+      start: input.selectionStart ?? input.value.length,
+      end: input.selectionEnd ?? input.value.length,
+    };
+  }
+
+  ["input", "keyup", "click", "select", "focus"].forEach((eventName) => {
+    input.addEventListener(eventName, rememberSelection);
+  });
+
+  ["mousedown", "pointerdown", "touchstart"].forEach((eventName) => {
+    toggle.addEventListener(eventName, (event) => {
+      rememberSelection();
+      event.preventDefault();
+    });
+  });
 
   toggle.addEventListener("click", () => {
+    const cursorStart = lastSelection.start ?? input.value.length;
+    const cursorEnd = lastSelection.end ?? input.value.length;
     const isHidden = input.type === "password";
     input.type = isHidden ? "text" : "password";
     icon.src = isHidden ? closedIcon : openIcon;
+    input.focus();
+    requestAnimationFrame(() => {
+      input.focus();
+      input.setSelectionRange(cursorStart, cursorEnd);
+      rememberSelection();
+    });
   });
 })();
 

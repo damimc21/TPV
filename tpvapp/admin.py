@@ -2,7 +2,8 @@ from django.contrib import admin
 
 from .models import (
     Usuario, Departamento, Producto, Mesa, Comanda,
-    LineaComanda, Factura, Pago, EventoAuditoria, Cliente, Impresora
+    LineaComanda, Factura, Pago, EventoAuditoria, Cliente, Impresora,
+    Proveedor
 )
 
 admin.site.register(Usuario)
@@ -16,3 +17,4 @@ admin.site.register(Pago)
 admin.site.register(EventoAuditoria)
 admin.site.register(Cliente)
 admin.site.register(Impresora)
+admin.site.register(Proveedor)

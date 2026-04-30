@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 
@@ -14,10 +15,12 @@ from .models import (
     Mesa,
     MovimientoStock,
     Producto,
+    Proveedor,
 )
 from .serializers import ArticuloInventarioSerializer
 from .services import procesar_stock_comanda
 from .views import ArticuloInventarioViewSet
+from .views import ProveedorViewSet
 from .views import importar_plantilla_inventario
 
 
@@ -27,6 +30,12 @@ class InventarioTestMixin:
             username="tester",
             password="pass",
         )
+        stock_perm = Permission.objects.filter(
+            content_type__app_label="tpvapp",
+            codename="manage_stock",
+        ).first()
+        if stock_perm:
+            self.user.user_permissions.add(stock_perm)
         self.departamento = Departamento.objects.create(nombre="Barra")
         self.producto = Producto.objects.create(
             nombre="Coca Cola",
@@ -202,6 +211,88 @@ class ArticuloInventarioAjustarTests(InventarioTestMixin, TestCase):
         self.assertEqual(movimiento.tipo, MovimientoStock.TIPO_SALIDA)
         self.assertEqual(movimiento.cantidad, Decimal("3.00"))
         self.assertEqual(movimiento.nuevo, Decimal("-1.00"))
+
+
+class ProveedorViewSetTests(InventarioTestMixin, TestCase):
+    def test_eliminar_proveedor_con_articulos_exige_confirmacion(self):
+        proveedor = Proveedor.objects.create(nombre="Proveedor Central")
+        articulo = ArticuloInventario.objects.create(
+            nombre="Harina",
+            unidad="kg",
+            proveedor="Proveedor Central",
+            proveedor_ref=proveedor,
+        )
+
+        factory = APIRequestFactory()
+        view = ProveedorViewSet.as_view({"delete": "destroy"})
+        request = factory.delete(f"/api/proveedores/{proveedor.id}/")
+        force_authenticate(request, user=self.user)
+
+        response = view(request, pk=proveedor.id)
+
+        self.assertEqual(response.status_code, 409)
+        self.assertTrue(response.data["requires_confirmation"])
+        self.assertEqual(response.data["articulos_count"], 1)
+        self.assertTrue(Proveedor.objects.filter(pk=proveedor.pk).exists())
+        articulo.refresh_from_db()
+        self.assertEqual(articulo.proveedor_ref, proveedor)
+
+    def test_eliminar_proveedor_confirmado_desvincula_articulos_y_audita(self):
+        proveedor = Proveedor.objects.create(nombre="Proveedor Central")
+        articulo = ArticuloInventario.objects.create(
+            nombre="Harina",
+            unidad="kg",
+            proveedor="Proveedor Central",
+            proveedor_ref=proveedor,
+        )
+
+        factory = APIRequestFactory()
+        view = ProveedorViewSet.as_view({"delete": "destroy"})
+        request = factory.delete(f"/api/proveedores/{proveedor.id}/?confirm=1")
+        force_authenticate(request, user=self.user)
+
+        response = view(request, pk=proveedor.id)
+
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Proveedor.objects.filter(pk=proveedor.pk).exists())
+        articulo.refresh_from_db()
+        self.assertIsNone(articulo.proveedor_ref)
+        self.assertEqual(articulo.proveedor, "")
+        self.assertTrue(EventoAuditoria.objects.filter(evento="PROVEEDOR_ELIMINADO").exists())
+
+    def test_renombrar_proveedor_sincroniza_articulos_asociados(self):
+        proveedor = Proveedor.objects.create(nombre="Proveedor Central")
+        articulo = ArticuloInventario.objects.create(
+            nombre="Harina",
+            unidad="kg",
+            proveedor="Proveedor Central",
+            proveedor_ref=proveedor,
+        )
+
+        factory = APIRequestFactory()
+        view = ProveedorViewSet.as_view({"put": "update"})
+        request = factory.put(
+            f"/api/proveedores/{proveedor.id}/",
+            {
+                "nombre": "Proveedor Norte",
+                "contacto": "",
+                "telefono": "",
+                "email": "",
+                "nif": "",
+                "notas": "",
+                "activo": True,
+            },
+            format="json",
+        )
+        force_authenticate(request, user=self.user)
+
+        response = view(request, pk=proveedor.id)
+
+        self.assertEqual(response.status_code, 200)
+        articulo.refresh_from_db()
+        self.assertEqual(articulo.proveedor_ref_id, proveedor.id)
+        self.assertEqual(articulo.proveedor, "Proveedor Norte")
+        self.assertTrue(EventoAuditoria.objects.filter(evento="PROVEEDOR_ACTUALIZADO").exists())
 
 
 class ImportarPlantillaInventarioTests(InventarioTestMixin, TestCase):

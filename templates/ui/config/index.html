@@ -44,6 +44,28 @@
         <div class="card__cta">{% trans "Configurar" %} →</div>
     </a>
 
+    <a class="card" href="{% url 'ui:config_usuarios' %}">
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/user-round-cog.svg' %}" alt="">
+        </div>
+        <div class="card__body">
+            <h2 class="card__title">{% trans "Usuarios" %}</h2>
+            <p class="card__desc">{% trans "Crea, edita o elimina usuarios de la aplicacion." %}</p>
+        </div>
+        <div class="card__cta">{% trans "Gestionar" %} →</div>
+    </a>
+
+    <a class="card" href="{% url 'ui:config_permisos' %}">
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/key-round.svg' %}" alt="">
+        </div>
+        <div class="card__body">
+            <h2 class="card__title">{% trans "Permisos" %}</h2>
+            <p class="card__desc">{% trans "Asigna packs de permisos y permisos avanzados por usuario." %}</p>
+        </div>
+        <div class="card__cta">{% trans "Configurar" %} →</div>
+    </a>
+
     <a class="card" href="{% url 'ui:map_editor' %}">
         <div class="card__icon">
             <img src="{% static 'ui/img/iconos/map-plus.svg' %}" alt="">

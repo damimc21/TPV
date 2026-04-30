@@ -29,6 +29,8 @@ urlpatterns = [
     path("catalogo/articulos/", views.catalogo_articulos, name="catalogo_articulos"),
     path("catalogo/modificadores/", views.catalogo_modificadores, name="catalogo_modificadores"),
     path("stock/", views.stock, name="stock"),
+    path("stock/inventario/", views.stock_inventario, name="stock_inventario"),
+    path("stock/proveedores/", views.stock_proveedores, name="stock_proveedores"),
     path("caja/", views.caja, name="caja"),
     path("caja/gestion/", views.caja_gestion, name="caja_gestion"),
     path("caja/reaperturas/", views.caja_reaperturas, name="caja_reaperturas"),
@@ -47,6 +49,8 @@ urlpatterns = [
 
     path("albaranes-facturas/", views.albaranes_facturas, name="albaranes_facturas"),
     path("config/", views.config, name="config"),
+    path("config/usuarios/", views.config_usuarios, name="config_usuarios"),
+    path("config/permisos/", views.config_permisos, name="config_permisos"),
     path("config/seguridad/", views.config_seguridad, name="config_seguridad"),
     path("ayuda/", views.ayuda, name="ayuda"),
 

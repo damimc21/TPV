@@ -4,7 +4,7 @@
 {% block title %}{% trans "Backups" %} | Ficheros{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
@@ -30,14 +30,21 @@
       <div class="fich-backup-auto">
         <h4>Autoguardado</h4>
         <div class="fich-auto-row">
-          <select class="fich-select" id="autoBackupIntervalo" onchange="guardarAutoBackup()">
-            <option value="0" {% if auto_intervalo == "0" %}selected{% endif %}>Deshabilitado</option>
-            <option value="60" {% if auto_intervalo == "60" %}selected{% endif %}>Cada hora</option>
-            <option value="360" {% if auto_intervalo == "360" %}selected{% endif %}>Cada 6 horas</option>
-            <option value="720" {% if auto_intervalo == "720" %}selected{% endif %}>Cada 12 horas</option>
-            <option value="1440" {% if auto_intervalo == "1440" %}selected{% endif %}>Cada 24 horas</option>
-            <option value="10080" {% if auto_intervalo == "10080" %}selected{% endif %}>Semanal</option>
-          </select>
+          <div class="fich-custom-select" id="autoBackupSelect">
+            <button type="button" class="fich-custom-select__trigger" id="autoBackupTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span id="autoBackupLabel">Deshabilitado</span>
+              <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
+            </button>
+            <div class="fich-custom-select__menu hidden" id="autoBackupOptions" role="listbox">
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '0' %} is-selected{% endif %}" data-value="0">Deshabilitado</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '60' %} is-selected{% endif %}" data-value="60">Cada hora</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '360' %} is-selected{% endif %}" data-value="360">Cada 6 horas</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '720' %} is-selected{% endif %}" data-value="720">Cada 12 horas</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '1440' %} is-selected{% endif %}" data-value="1440">Cada 24 horas</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '10080' %} is-selected{% endif %}" data-value="10080">Semanal</button>
+            </div>
+          </div>
+          <input type="hidden" id="autoBackupIntervalo" value="{{ auto_intervalo }}">
           <span class="fich-auto-status" id="autoStatus"></span>
         </div>
       </div>
@@ -102,5 +109,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'ui/js/ficheros/backups.js' %}"></script>
+<script src="{% static 'ui/js/ficheros/backups.js' %}?v=2"></script>
 {% endblock %}

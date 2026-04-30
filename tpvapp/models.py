@@ -13,6 +13,23 @@ from django.utils import timezone
 class Usuario(AbstractUser):
     activo = models.BooleanField(default=True)
 
+    class Meta:
+        permissions = [
+            ("access_tpv", "Puede acceder al TPV"),
+            ("manage_orders", "Puede comandar y editar pedidos"),
+            ("process_payments", "Puede cobrar y registrar pagos"),
+            ("print_documents", "Puede emitir comprobantes y tickets"),
+            ("manage_cash", "Puede abrir/cerrar caja y jornada"),
+            ("reopen_cash_sessions", "Puede reabrir cierres de caja o jornada"),
+            ("view_cash_reports", "Puede consultar cierres y estadisticas de caja"),
+            ("manage_catalog", "Puede gestionar catalogo de productos"),
+            ("manage_stock", "Puede gestionar inventario y stock"),
+            ("manage_files", "Puede usar importaciones, exportaciones y backups"),
+            ("manage_configuration", "Puede modificar configuracion del sistema"),
+            ("manage_users", "Puede crear/editar/eliminar usuarios"),
+            ("manage_permissions", "Puede asignar permisos a usuarios"),
+        ]
+
     def __str__(self):
         return self.username
 
@@ -635,6 +652,27 @@ class CategoriaInventario(models.Model):
         return self.nombre
 
 
+class Proveedor(models.Model):
+    """Proveedor reutilizable para articulos de inventario."""
+    nombre = models.CharField(max_length=150, unique=True)
+    contacto = models.CharField(max_length=120, blank=True, default='')
+    telefono = models.CharField(max_length=40, blank=True, default='')
+    email = models.EmailField(blank=True, default='')
+    nif = models.CharField(max_length=30, blank=True, default='')
+    notas = models.TextField(blank=True, default='')
+    activo = models.BooleanField(default=True)
+    fecha_creacion = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = "proveedores"
+        ordering = ['nombre']
+        verbose_name = "Proveedor"
+        verbose_name_plural = "Proveedores"
+
+    def __str__(self):
+        return self.nombre
+
+
 class ArticuloInventario(models.Model):
     """Artículo de inventario (materia prima / ingrediente) que se controla de forma independiente."""
     UNIDADES = [
@@ -676,6 +714,10 @@ class ArticuloInventario(models.Model):
 
     # Info adicional
     proveedor = models.CharField(max_length=150, blank=True, default='')
+    proveedor_ref = models.ForeignKey(
+        Proveedor, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='articulos'
+    )
     precio_compra = models.DecimalField(
         max_digits=10, decimal_places=2, default=0,
         verbose_name="Precio de compra por unidad"

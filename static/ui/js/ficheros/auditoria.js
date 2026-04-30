@@ -205,19 +205,9 @@
     }
 
     function closeAllExportMenus() {
-        document.querySelectorAll('.fich-export__menu').forEach((menu) => menu.classList.add('hidden'));
+        if (window.FichExportMenu) window.FichExportMenu.closeAll();
+        else document.querySelectorAll('.fich-export__menu').forEach((menu) => menu.classList.add('hidden'));
     }
-
-    window.toggleExportMenu = (event, btn) => {
-        event.stopPropagation();
-        const wrapper = btn.closest('.fich-export');
-        if (!wrapper) return;
-        const menu = wrapper.querySelector('.fich-export__menu');
-        if (!menu) return;
-        const willOpen = menu.classList.contains('hidden');
-        closeAllExportMenus();
-        if (willOpen) menu.classList.remove('hidden');
-    };
 
     function buildAuditExportUrl(formato) {
         const { search, usuario, evento, desde, hasta } = getFiltrosAuditoria();

@@ -1,0 +1,79 @@
+/* Shared export dropdown */
+.fich-export {
+  position: relative;
+}
+
+.fich-export__toggle[aria-expanded="true"] {
+  border-color: rgba(46, 204, 113, 0.7);
+  box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.14);
+}
+
+.fich-export__menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  min-width: 150px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(10, 17, 33, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 4000;
+}
+
+.fich-export--down .fich-export__menu {
+  top: calc(100% + 8px);
+  bottom: auto;
+}
+
+.fich-export__menu.is-floating-layer {
+  position: fixed;
+  top: var(--floating-top);
+  left: var(--floating-left);
+  right: auto;
+  bottom: auto;
+  width: var(--floating-width);
+  max-width: calc(100vw - 24px);
+  max-height: var(--floating-max-height);
+  overflow: auto;
+  z-index: 4000;
+}
+
+.fich-export__item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: #e2e8f0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fich-export__item:hover,
+.fich-export__item:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .fich-export {
+    width: 100%;
+  }
+
+  .fich-export__toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .fich-export__menu {
+    left: 0;
+    right: 0;
+    min-width: 100%;
+  }
+}

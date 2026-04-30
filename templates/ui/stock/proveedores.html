@@ -1,0 +1,110 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Proveedores" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/stock/proveedores.css' %}?v=5">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title stock-providers-head">
+  <div class="page-head__left">
+    <a class="section-back-link" href="{% url 'ui:stock' %}">
+      <span aria-hidden="true">&larr;</span>
+      <span>{% trans "Volver a Stock" %}</span>
+    </a>
+  </div>
+  <h1 class="h1">{% trans "Proveedores" %}</h1>
+  <div class="page-head__right">
+    <button type="button" class="btn btn--success provider-new-btn" id="providerNewBtn">
+      <span aria-hidden="true">+</span>
+      <span>{% trans "Nuevo proveedor" %}</span>
+    </button>
+  </div>
+</div>
+
+<section class="stock-providers-shell">
+  <section class="provider-list-panel">
+    <div class="provider-list-panel__head">
+      <div>
+        <h2>{% trans "Listado" %}</h2>
+        <span id="providerStats">0</span>
+      </div>
+      <input type="search" id="providerSearch" class="provider-search" placeholder="{% trans 'Buscar por nombre, telefono o email' %}">
+    </div>
+
+    <div class="provider-list custom-scroll" id="providerList">
+      <div class="provider-empty">{% trans "Cargando..." %}</div>
+    </div>
+  </section>
+</section>
+
+<div class="modal-overlay-generic hidden" id="providerModal" aria-hidden="true">
+  <section class="provider-modal" role="dialog" aria-modal="true" aria-labelledby="providerFormTitle">
+    <button type="button" class="provider-modal__close" id="providerModalClose" aria-label="{% trans 'Cerrar' %}">&times;</button>
+
+    <div class="provider-modal__head">
+      <div>
+        <h2 id="providerFormTitle">{% trans "Nuevo proveedor" %}</h2>
+        <p>{% trans "Completa los datos principales del proveedor." %}</p>
+      </div>
+      <span id="providerFormMode" hidden>{% trans "Alta" %}</span>
+    </div>
+
+    <form class="provider-modal__form" id="providerForm">
+      <input type="hidden" id="providerId">
+
+      <div class="provider-impact hidden" id="providerImpact"></div>
+
+      <label class="provider-field provider-field--wide">
+        <span>{% trans "Nombre" %}</span>
+        <input type="text" id="providerName" autocomplete="off" placeholder="{% trans 'Ej. Distribuciones Garcia' %}" required>
+      </label>
+
+      <label class="provider-field">
+        <span>{% trans "Persona de contacto" %}</span>
+        <input type="text" id="providerContact" autocomplete="off" placeholder="{% trans 'Ej. Ana Perez' %}">
+      </label>
+
+      <label class="provider-field">
+        <span>{% trans "NIF/CIF" %}</span>
+        <input type="text" id="providerNif" autocomplete="off" placeholder="{% trans 'Ej. B12345678' %}">
+      </label>
+
+      <label class="provider-field">
+        <span>{% trans "Telefono" %}</span>
+        <input type="text" id="providerPhone" autocomplete="off" placeholder="{% trans 'Ej. 600 123 456' %}">
+      </label>
+
+      <label class="provider-field">
+        <span>{% trans "Email" %}</span>
+        <input type="email" id="providerEmail" autocomplete="off" placeholder="{% trans 'Ej. pedidos@proveedor.com' %}">
+      </label>
+
+      <label class="provider-field provider-field--wide">
+        <span>{% trans "Notas" %}</span>
+        <textarea id="providerNotes" placeholder="{% trans 'Ej. Horario de reparto, condiciones o referencias internas' %}"></textarea>
+      </label>
+
+      <label class="provider-status">
+        <input type="checkbox" id="providerActive" checked>
+        <span class="provider-status__toggle" aria-hidden="true"></span>
+        <span class="provider-status__text">
+          <strong>{% trans "Proveedor activo" %}</strong>
+          <small>{% trans "Se podra seleccionar en inventario." %}</small>
+        </span>
+      </label>
+
+      <div class="provider-modal__actions">
+        <button type="button" class="btn btn--ghost" id="providerCancelBtn">{% trans "Cancelar" %}</button>
+        <button type="submit" class="btn btn--success">{% trans "Guardar proveedor" %}</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/stock/proveedores.js' %}?v=5"></script>
+{% endblock %}

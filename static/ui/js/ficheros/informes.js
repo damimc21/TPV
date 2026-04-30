@@ -135,19 +135,9 @@
     }
 
     function closeAllExportMenus() {
-        document.querySelectorAll('.fich-export__menu').forEach((menu) => menu.classList.add('hidden'));
+        if (window.FichExportMenu) window.FichExportMenu.closeAll();
+        else document.querySelectorAll('.fich-export__menu').forEach((menu) => menu.classList.add('hidden'));
     }
-
-    window.toggleExportMenu = (event, btn) => {
-        event.stopPropagation();
-        const wrapper = btn.closest('.fich-export');
-        if (!wrapper) return;
-        const menu = wrapper.querySelector('.fich-export__menu');
-        if (!menu) return;
-        const willOpen = menu.classList.contains('hidden');
-        closeAllExportMenus();
-        if (willOpen) menu.classList.remove('hidden');
-    };
 
     window.descargarInforme = (tipo, formato = 'csv') => {
         const { desde, hasta } = getParams();
@@ -243,9 +233,7 @@
         const empty = document.getElementById('previewEmpty');
         const thead = document.getElementById('previewThead');
         const tbody = document.getElementById('previewTbody');
-        const btnPreviewPdf = document.getElementById('btnPreviewExportPdf');
-        const btnPreviewCsv = document.getElementById('btnPreviewExportCsv');
-        const btnPreviewXlsx = document.getElementById('btnPreviewExportXlsx');
+        const previewExport = document.getElementById('previewExport');
         const tableWrap = modal.querySelector('.fich-card__body--table');
 
         titleEl.textContent = titulo;
@@ -259,9 +247,10 @@
             tableWrap.scrollLeft = 0;
         }
 
-        btnPreviewPdf.onclick = (event) => window.exportarInformeFormato(event, tipo, titulo, 'pdf');
-        btnPreviewCsv.onclick = (event) => window.exportarInformeFormato(event, tipo, titulo, 'csv');
-        btnPreviewXlsx.onclick = (event) => window.exportarInformeFormato(event, tipo, titulo, 'xlsx');
+        if (previewExport) {
+            previewExport.setAttribute('data-export-arg-1', tipo);
+            previewExport.setAttribute('data-export-arg-2', titulo);
+        }
 
         modal.classList.remove('hidden');
 
@@ -304,7 +293,4 @@
         closeAllExportMenus();
     };
 
-    document.addEventListener('click', () => {
-        closeAllExportMenus();
-    });
 })();

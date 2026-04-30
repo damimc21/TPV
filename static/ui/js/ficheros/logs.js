@@ -215,18 +215,101 @@
         }
     };
 
-    window.exportarLogs = () => {
+    function buildLogsExportUrl(formato) {
         const { search, nivel, origen, desde, hasta } = getLogFilters();
 
-        let url = '/api/ficheros/logs/exportar/?format=csv';
+        let url = `/api/ficheros/logs/exportar/?format=${encodeURIComponent(formato)}`;
         if (search) url += `&q=${encodeURIComponent(search)}`;
         if (nivel) url += `&nivel=${nivel}`;
         if (origen) url += `&origen=${encodeURIComponent(origen)}`;
         if (desde) url += `&desde=${desde}`;
         if (hasta) url += `&hasta=${hasta}`;
 
-        window.location.href = url;
+        return url;
+    }
+
+    window.exportarLogs = () => {
+        window.location.href = buildLogsExportUrl('csv');
     };
+
+    window.exportarLogsFormato = async (event, formato) => {
+        event.stopPropagation();
+        if (formato === 'pdf') {
+            await descargarLogsPDF();
+            return;
+        }
+        window.location.href = buildLogsExportUrl(formato);
+    };
+
+    async function descargarLogsPDF() {
+        const url = buildLogsExportUrl('json');
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('Error al obtener logs');
+            const data = await resp.json();
+            const rows = data.rows || [];
+            if (!rows.length) {
+                await Notify.info('No hay logs para exportar con el filtro seleccionado.');
+                return;
+            }
+
+            const headers = data.headers || ['Fecha', 'Nivel', 'Origen', 'Mensaje', 'Traza'];
+            const tableHtml = buildPrintTable(headers, rows);
+            const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                await Notify.error('El navegador ha bloqueado la ventana de PDF.');
+                return;
+            }
+            const generatedAt = new Date().toLocaleString('es-ES');
+            printWindow.document.write(`
+                <!doctype html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Logs del sistema - TPV</title>
+                    <style>
+                        body { margin: 20px; font-family: Arial, sans-serif; color: #172033; }
+                        .head { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; border-bottom:3px solid #172033; padding-bottom:10px; }
+                        h1 { margin:0; font-size:24px; }
+                        .meta { color:#566174; font-size:12px; text-align:right; }
+                        table { width:100%; border-collapse:collapse; margin-top:18px; font-size:10px; }
+                        th { background:#eef2f7; text-align:left; text-transform:uppercase; font-size:9px; padding:7px; border-bottom:2px solid #c7d0dd; }
+                        td { padding:6px 7px; border-bottom:1px solid #d8dee8; vertical-align:top; word-break:break-word; }
+                        tr:nth-child(even) td { background:#fafbfc; }
+                        @media print {
+                            @page { margin: 10mm; size: landscape; }
+                            body { margin:0; }
+                        }
+                    </style>
+                </head>
+                <body onload="setTimeout(function(){ window.print(); window.close(); }, 500);">
+                    <div class="head">
+                        <h1>Logs del sistema</h1>
+                        <div class="meta">TPV Hosteleria<br>Generado: ${esc(generatedAt)}</div>
+                    </div>
+                    ${tableHtml}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        } catch (e) {
+            console.error(e);
+            await Notify.error('No se pudo generar el PDF.');
+        }
+    }
+
+    function buildPrintTable(headers, rows) {
+        let html = '<table><thead><tr>';
+        headers.forEach((h) => { html += `<th>${esc(h)}</th>`; });
+        html += '</tr></thead><tbody>';
+        rows.forEach((row) => {
+            html += '<tr>';
+            row.forEach((cell) => { html += `<td>${esc(cell ?? '')}</td>`; });
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+        return html;
+    }
 
     window.limpiarLogsAntiguos = async () => {
         const ok = await Notify.confirmDanger(

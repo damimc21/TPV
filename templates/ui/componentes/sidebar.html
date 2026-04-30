@@ -28,7 +28,7 @@
             <span class="nav__text">{% trans "Catálogo" %}</span>
         </a>
 
-        <a class="nav__item {% if request.resolver_match.url_name == 'stock' %}is-active{% endif %}"
+        <a class="nav__item {% if 'stock' in request.resolver_match.url_name %}is-active{% endif %}"
             href="{% url 'ui:stock' %}">
             <span class="nav__icon">
                 <img src="{% static 'ui/img/iconos/chart-no-axes-combined.svg' %}" alt="">

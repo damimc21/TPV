@@ -1,21 +1,22 @@
 from django.db.models import Q
 from django.utils import timezone
 from decimal import Decimal
-from .models import Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria, SesionCaja, Cliente, MovimientoStock, ArticuloInventario
+from .models import Mesa, Comanda, LineaComanda, Factura, Pago, SesionCaja, Cliente, MovimientoStock, ArticuloInventario
 from django.core.mail import send_mail
 from django.conf import settings
 import threading
-from tpvapp.auditoria import log_info
+from tpvapp.auditoria import registrar_evento_usuario
 
 
 
 def registrar_evento(usuario, evento: str, detalles: str = ""):
-    EventoAuditoria.objects.create(usuario=usuario, evento=evento, detalles=detalles)
-    username = getattr(usuario, "username", None) or "sistema"
-    message = f"usuario={username} evento={evento}"
-    if detalles:
-        message += f" detalles={detalles}"
-    log_info("auditoria.evento", message)
+    registrar_evento_usuario(
+        usuario,
+        evento,
+        detalles,
+        origen_log="auditoria.evento",
+        nivel_log="INFO",
+    )
 
 
 def actualizar_estado_mesa(mesa: Mesa):

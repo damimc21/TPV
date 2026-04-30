@@ -16,22 +16,33 @@ from .models import (
     Departamento, Producto, Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria,
     PerfilComentarios, Comentario, PerfilSuplementos, Suplemento, Cliente,
     PlantillaConfigurable, FormatoProducto, GrupoOpciones, OpcionGrupo, PrecioOpcionFormato, MovimientoStock,
-    CategoriaInventario, ArticuloInventario
+    CategoriaInventario, Proveedor, ArticuloInventario
 )
 from .serializers import (
     DepartamentoSerializer, ProductoSerializer, MesaSerializer, ComandaSerializer,
     LineaComandaSerializer, FacturaSerializer, PagoSerializer, EventoAuditoriaSerializer,
     PerfilComentariosSerializer, ComentarioSerializer, PerfilSuplementosSerializer, SuplementoSerializer,
     ClienteSerializer, PlantillaConfigurableSerializer, MovimientoStockSerializer,
-    CategoriaInventarioSerializer, ArticuloInventarioSerializer
+    CategoriaInventarioSerializer, ProveedorSerializer, ArticuloInventarioSerializer
 )
 from .services import actualizar_estado_mesa, imprimir_comprobante, emitir_factura, registrar_pago, registrar_evento
-from .permissions import IsManagerOrReadOnly
+from .permissions import IsManagerOrReadOnly, has_app_permission
 from tpvapp.auditoria import log_info, log_warn, log_error
 
 # Create your views here.
 def _actor_username(user):
     return user.username if getattr(user, "is_authenticated", False) else "anon"
+
+
+def _forbidden_response(request, permiso_codename: str):
+    log_warn(
+        "authz.api",
+        f"usuario={_actor_username(request.user)} accion=denegado permiso={permiso_codename} path={request.path}",
+    )
+    return Response(
+        {"detail": "No tienes permisos para esta operacion."},
+        status=status.HTTP_403_FORBIDDEN,
+    )
 
 
 def _commit_borrador_a_comanda(mesa: Mesa, user, lineas_payload: list) -> Comanda:
@@ -309,6 +320,8 @@ class MesaViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"], url_path="abrir-comanda-por-numero")
     def abrir_comanda_por_numero(self, request):
+        if not has_app_permission(request.user, "manage_orders"):
+            return _forbidden_response(request, "manage_orders")
         """
         Teclado / acceso por número:
         - Crea la mesa si no existe
@@ -347,6 +360,8 @@ class MesaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def enviar(self, request, pk=None):
+        if not has_app_permission(request.user, "manage_orders"):
+            return _forbidden_response(request, "manage_orders")
         """
         Commit del borrador al salir al mapa.
         - Si lineas vacío: vacía y elimina la comanda abierta (si existe)
@@ -389,6 +404,8 @@ class MesaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"], url_path="asignar-cliente")
     def asignar_cliente(self, request, pk=None):
+        if not has_app_permission(request.user, "manage_orders"):
+            return _forbidden_response(request, "manage_orders")
         mesa = self.get_object()
         cliente_id = request.data.get("cliente_id")
 
@@ -418,6 +435,8 @@ class MesaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def traspasar(self, request, pk=None):
+        if not has_app_permission(request.user, "manage_orders"):
+            return _forbidden_response(request, "manage_orders")
         mesa_origen = self.get_object()
         try:
             destino_numero = int(request.data.get("destino_numero"))
@@ -501,6 +520,8 @@ class MesaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def cobrar(self, request, pk=None):
+        if not has_app_permission(request.user, "process_payments"):
+            return _forbidden_response(request, "process_payments")
         """
         Cierra la mesa cobrando:
         1. Sincroniza el borrador (lineas) con la comanda abierta
@@ -671,6 +692,8 @@ class MesaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def comprobante(self, request, pk=None):
+        if not has_app_permission(request.user, "print_documents"):
+            return _forbidden_response(request, "print_documents")
         """
         Si hay borrador, lo envía primero.
         Luego marca comprobante_impreso_a/por.
@@ -711,6 +734,8 @@ class MesaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def total(self, request, pk=None):
+        if not has_app_permission(request.user, "manage_orders"):
+            return _forbidden_response(request, "manage_orders")
         """
         Si hay borrador, lo envía primero y devuelve el total.
         """
@@ -778,6 +803,8 @@ class FacturaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def pagar(self, request, pk=None):
+        if not has_app_permission(request.user, "process_payments"):
+            return _forbidden_response(request, "process_payments")
         factura = self.get_object()
         cantidad = request.data.get("cantidad")
         metodo_pago = request.data.get("metodo_pago", "efectivo")
@@ -963,6 +990,8 @@ def plantilla_configurable(request, producto_id):
         return Response(serializer.data)
 
     elif request.method == 'POST':
+        if not has_app_permission(request.user, "manage_catalog"):
+            return _forbidden_response(request, "manage_catalog")
         with transaction.atomic():
             PlantillaConfigurable.objects.filter(producto_id=producto_id).delete()
 
@@ -1080,13 +1109,127 @@ class CategoriaInventarioViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
+class ProveedorViewSet(viewsets.ModelViewSet):
+    queryset = Proveedor.objects.all().order_by('nombre')
+    serializer_class = ProveedorSerializer
+    permission_classes = [IsAuthenticated]
+
+    def _linked_articulos(self, proveedor):
+        return (
+            ArticuloInventario.objects
+            .filter(proveedor_ref=proveedor)
+            .select_related('categoria')
+            .order_by('categoria__nombre', 'nombre')
+        )
+
+    def _articulos_payload(self, queryset, limit=30):
+        articulos = list(queryset[:limit])
+        return [
+            {
+                "id": articulo.id,
+                "nombre": articulo.nombre,
+                "categoria": articulo.categoria.nombre if articulo.categoria else "",
+            }
+            for articulo in articulos
+        ]
+
+    def perform_create(self, serializer):
+        proveedor = serializer.save()
+        actor = _actor_username(self.request.user)
+        detalles = f"proveedor_id={proveedor.id}, nombre={proveedor.nombre}"
+        registrar_evento(self.request.user, "PROVEEDOR_CREADO", detalles)
+        log_info(
+            "stock.proveedores",
+            f"usuario={actor} accion=crear proveedor_id={proveedor.id} nombre={proveedor.nombre}",
+        )
+
+    def perform_update(self, serializer):
+        instance = serializer.instance
+        before_nombre = instance.nombre
+        before_activo = instance.activo
+        changed_fields = ",".join(sorted(serializer.validated_data.keys())) or "sin_campos"
+
+        with transaction.atomic():
+            proveedor = serializer.save()
+            articulos_qs = self._linked_articulos(proveedor)
+            articulos_count = articulos_qs.count()
+
+            if before_nombre != proveedor.nombre:
+                articulos_qs.update(proveedor=proveedor.nombre)
+
+        actor = _actor_username(self.request.user)
+        if before_activo != proveedor.activo:
+            accion = "reactivar" if proveedor.activo else "desactivar"
+        else:
+            accion = "editar"
+
+        detalles = (
+            f"accion={accion}, proveedor_id={proveedor.id}, "
+            f"nombre_antes={before_nombre}, nombre_despues={proveedor.nombre}, "
+            f"activo_antes={before_activo}, activo_despues={proveedor.activo}, "
+            f"campos={changed_fields}, articulos_asociados={articulos_count}"
+        )
+        registrar_evento(self.request.user, "PROVEEDOR_ACTUALIZADO", detalles)
+        log_info(
+            "stock.proveedores",
+            f"usuario={actor} {detalles}",
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        proveedor = self.get_object()
+        articulos_qs = self._linked_articulos(proveedor)
+        articulos_count = articulos_qs.count()
+        confirmed = str(request.query_params.get("confirm") or "").lower() in {"1", "true", "yes", "si", "sí"}
+
+        if articulos_count and not confirmed:
+            return Response(
+                {
+                    "requires_confirmation": True,
+                    "detail": (
+                        f"Este proveedor esta asignado a {articulos_count} productos. "
+                        "Si lo eliminas, quedaran sin proveedor."
+                    ),
+                    "proveedor": {
+                        "id": proveedor.id,
+                        "nombre": proveedor.nombre,
+                    },
+                    "articulos_count": articulos_count,
+                    "articulos": self._articulos_payload(articulos_qs),
+                    "truncated": articulos_count > 30,
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        articulos_nombres = list(articulos_qs.values_list("nombre", flat=True))
+        with transaction.atomic():
+            if articulos_count:
+                articulos_qs.update(proveedor_ref=None, proveedor="")
+            proveedor_id = proveedor.id
+            proveedor_nombre = proveedor.nombre
+            proveedor.delete()
+
+        detalles = (
+            f"proveedor_id={proveedor_id}, nombre={proveedor_nombre}, "
+            f"articulos_desvinculados={articulos_count}, "
+            f"articulos={', '.join(articulos_nombres[:30])}"
+        )
+        registrar_evento(request.user, "PROVEEDOR_ELIMINADO", detalles)
+        log_warn(
+            "stock.proveedores",
+            f"usuario={_actor_username(request.user)} accion=eliminar {detalles}",
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class ArticuloInventarioViewSet(viewsets.ModelViewSet):
-    queryset = ArticuloInventario.objects.all().order_by('categoria__orden', 'nombre')
+    queryset = ArticuloInventario.objects.select_related('categoria', 'proveedor_ref', 'producto_vinculado').all().order_by('categoria__orden', 'nombre')
     serializer_class = ArticuloInventarioSerializer
     permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=['post'])
     def ajustar(self, request, pk=None):
+        if not has_app_permission(request.user, "manage_stock"):
+            return _forbidden_response(request, "manage_stock")
         """Movimiento manual de inventario no bloqueante."""
         articulo = self.get_object()
         operacion = str(request.data.get('operacion') or 'delta').lower()
@@ -1282,6 +1425,8 @@ def plantillas_inventario(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def importar_plantilla_inventario(request):
+    if not has_app_permission(request.user, "manage_stock"):
+        return _forbidden_response(request, "manage_stock")
     """Importa una lista de artículos predefinidos"""
     articulos_data = request.data.get('articulos', [])
     creados = 0
@@ -1333,6 +1478,8 @@ from .models import ConfiguracionTPV
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def configuracion_update(request):
+    if not has_app_permission(request.user, "manage_configuration"):
+        return _forbidden_response(request, "manage_configuration")
     """Actualiza un valor de configuración global."""
     clave = request.data.get('clave')
     valor = request.data.get('valor')

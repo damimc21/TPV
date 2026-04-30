@@ -2,6 +2,10 @@
    BACKUPS - Logica JS
    ============================================================ */
 (function () {
+    document.addEventListener("DOMContentLoaded", () => {
+        initAutoBackupSelect();
+    });
+
     function getCookie(name) {
         let v = null;
         document.cookie.split(";").forEach((c) => {
@@ -11,7 +15,67 @@
         return v;
     }
 
+    function initAutoBackupSelect() {
+        const trigger = document.getElementById("autoBackupTrigger");
+        const menu = document.getElementById("autoBackupOptions");
+        const input = document.getElementById("autoBackupIntervalo");
+        const label = document.getElementById("autoBackupLabel");
+        if (!trigger || !menu || !input || !label) return;
+
+        const selected = menu.querySelector(`.fich-custom-select__option[data-value="${input.value}"]`)
+            || menu.querySelector(".fich-custom-select__option.is-selected")
+            || menu.querySelector(".fich-custom-select__option");
+        if (selected) {
+            input.value = selected.dataset.value || "0";
+            label.textContent = selected.textContent || "Deshabilitado";
+            selected.classList.add("is-selected");
+        }
+
+        trigger.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const willOpen = menu.classList.contains("hidden");
+            closeAutoBackupSelect();
+            if (willOpen) {
+                menu.classList.remove("hidden");
+                trigger.setAttribute("aria-expanded", "true");
+            }
+        });
+
+        menu.addEventListener("click", async (event) => {
+            const option = event.target.closest(".fich-custom-select__option");
+            if (!option) return;
+            input.value = option.dataset.value || "0";
+            label.textContent = option.textContent || "Deshabilitado";
+            menu.querySelectorAll(".fich-custom-select__option").forEach((opt) => {
+                opt.classList.toggle("is-selected", opt === option);
+            });
+            closeAutoBackupSelect();
+            await window.guardarAutoBackup();
+        });
+
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest("#autoBackupSelect")) closeAutoBackupSelect();
+        });
+    }
+
+    function closeAutoBackupSelect() {
+        const menu = document.getElementById("autoBackupOptions");
+        const trigger = document.getElementById("autoBackupTrigger");
+        if (menu) menu.classList.add("hidden");
+        if (trigger) trigger.setAttribute("aria-expanded", "false");
+    }
+
     window.crearBackup = async () => {
+        const ok = await Notify.confirm(
+            "Se creara una copia completa de la base de datos y se guardara en el servidor. Puedes descargarla desde el historial cuando termine.",
+            {
+                title: "Crear backup",
+                confirmText: "Crear backup",
+                cancelText: "Cancelar",
+            }
+        );
+        if (!ok) return;
+
         const btn = document.getElementById("btnCrearBackup");
         btn.disabled = true;
         btn.textContent = "Creando backup...";

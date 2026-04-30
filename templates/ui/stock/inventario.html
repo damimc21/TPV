@@ -1,0 +1,388 @@
+{% extends "ui/base.html" %}
+{% load static %}
+
+{% block title %}Inventario | Antigravity TPV{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/stock/index.css' %}?v=16">
+{% endblock %}
+
+{% block content %}
+<div class="stock-dashboard">
+    <header class="dashboard-header animated fadeInDown">
+        <div class="header-info">
+            <h1>Panel de Inventario</h1>
+            <p>Control independiente de existencias, materias primas e ingredientes.</p>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'ui:stock' %}" class="sync-btn sync-btn--ghost">
+                <img src="/static/ui/img/iconos/move-left.svg" class="svg-icon" width="18">
+                <span>Stock</span>
+            </a>
+            <button onclick="openModal('modalPlantillas')" class="sync-btn sync-btn--ghost">
+                <img src="/static/ui/img/iconos/package-search.svg" class="svg-icon" width="18">
+                <span>Plantillas</span>
+            </button>
+            <button onclick="refreshInventory()" class="sync-btn sync-btn--ghost" title="Recargar datos">
+                <img src="/static/ui/img/iconos/refresh-ccw.svg" class="svg-icon" width="18">
+            </button>
+            <button onclick="openModal('modalArticulo')" class="sync-btn sync-btn--primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Nuevo Artículo</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="dashboard-toolbar animated fadeInUp">
+        <div class="search-wrapper">
+            <img src="/static/ui/img/iconos/package-search.svg" class="icon svg-icon">
+            <input type="text" id="stockSearch" class="search-input" placeholder="¿Qué artículo buscas?" onkeyup="filterStock()">
+        </div>
+
+        <!-- Custom Dropdown Categorías -->
+        <div class="custom-select-container" id="containerCat">
+            <div class="custom-select-trigger" onclick="toggleDropdown('containerCat')">
+                <div class="flex items-center gap-3">
+                    <img src="/static/ui/img/iconos/warehouse.svg" class="svg-icon toolbar-trigger-icon" width="16">
+                    <span id="selectedCatName">Todas las Categorías</span>
+                </div>
+                <img src="/static/ui/img/iconos/move-down.svg" class="arrow svg-icon" width="10">
+            </div>
+            <div class="custom-select-dropdown" id="dropdownCat">
+                <!-- Opciones dinámicas -->
+            </div>
+            <input type="hidden" id="filterCat" value="" onchange="filterStock()">
+        </div>
+
+        <!-- Custom Dropdown Status -->
+        <div class="custom-select-container" id="containerStatus">
+            <div class="custom-select-trigger" onclick="toggleDropdown('containerStatus')">
+                <div class="flex items-center gap-3">
+                    <img src="{% static 'ui/img/iconos/bolt.svg' %}" class="svg-icon toolbar-trigger-icon" width="16">
+                    <span id="selectedStatusName">Todos los Estados</span>
+                </div>
+                <img src="{% static 'ui/img/iconos/move-down.svg' %}" class="arrow svg-icon" width="10">
+            </div>
+            <div class="custom-select-dropdown">
+                <div class="custom-option is-selected" onclick="selectStatus('all', 'Todos los Estados')">Todos los Estados</div>
+                <div class="custom-option" onclick="selectStatus('order', 'Para Pedir')">Para Pedir</div>
+                <div class="custom-option" onclick="selectStatus('review', 'Revisar')">Revisar</div>
+                <div class="custom-option" onclick="selectStatus('ok', 'En Stock')">En Stock</div>
+                <div class="custom-option" onclick="selectStatus('low', 'Stock Bajo')">Stock Bajo</div>
+                <div class="custom-option" onclick="selectStatus('out', 'Sin Stock')">Sin Stock</div>
+            </div>
+            <input type="hidden" id="filterStatus" value="all" onchange="filterStock()">
+        </div>
+
+        <!-- View Toggle -->
+        <div class="view-toggle" id="viewToggle">
+            <button class="view-toggle-btn active" data-view="cards" onclick="switchView('cards')" title="Vista tarjetas">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </button>
+            <button class="view-toggle-btn" data-view="table" onclick="switchView('table')" title="Vista tabla">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Cards View -->
+    <div id="stockGrid" class="inventory-grid active">
+    </div>
+
+    <!-- Table View -->
+    <div id="stockTableWrap" class="inventory-table-wrap">
+        <table class="inv-table">
+            <thead>
+                <tr>
+                    <th class="th-product">Artículo</th>
+                    <th class="th-category">Categoría</th>
+                    <th class="th-state">Estado</th>
+                    <th class="th-stock">Stock</th>
+                    <th class="th-unit">Unidad</th>
+                    <th class="th-min">Mínimo</th>
+                    <th class="th-provider">Proveedor</th>
+                    <th class="th-auto">Auto descuento</th>
+                    <th class="th-actions">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="stockTableBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Proveedores -->
+<div id="modalProveedores" class="modal-overlay-generic hidden">
+    <div class="modal-content-glass-compact modal-content-proveedores">
+        <button class="modal-close-x-v2" onclick="closeModal('modalProveedores')">&times;</button>
+        <div class="m-header-v2">
+            <h3 class="m-title-v2">Proveedores</h3>
+            <div class="m-pill-info">
+                <span id="proveedoresCount">0 activos</span>
+            </div>
+        </div>
+
+        <div class="m-body proveedores-layout">
+            <section class="proveedor-panel">
+                <input type="hidden" id="proveedor_id">
+                <label class="m-label-v2">Nombre</label>
+                <input type="text" id="proveedor_nombre" class="input-compact-v2" placeholder="Nombre comercial">
+
+                <div class="m-grid-fast proveedor-grid">
+                    <div>
+                        <label class="m-label-v2">Contacto</label>
+                        <input type="text" id="proveedor_contacto" class="input-compact-v2" placeholder="Persona">
+                    </div>
+                    <div>
+                        <label class="m-label-v2">NIF/CIF</label>
+                        <input type="text" id="proveedor_nif" class="input-compact-v2" placeholder="Opcional">
+                    </div>
+                </div>
+
+                <div class="m-grid-fast proveedor-grid">
+                    <div>
+                        <label class="m-label-v2">Teléfono</label>
+                        <input type="text" id="proveedor_telefono" class="input-compact-v2" placeholder="Opcional">
+                    </div>
+                    <div>
+                        <label class="m-label-v2">Email</label>
+                        <input type="email" id="proveedor_email" class="input-compact-v2" placeholder="Opcional">
+                    </div>
+                </div>
+
+                <label class="m-label-v2">Notas</label>
+                <textarea id="proveedor_notas" class="textarea-ghost proveedor-notas" placeholder="Condiciones, horarios, observaciones..."></textarea>
+
+                <label class="proveedor-check">
+                    <input type="checkbox" id="proveedor_activo" checked>
+                    <span>Proveedor activo</span>
+                </label>
+
+                <div class="proveedor-actions">
+                    <button class="btn-fast btn-fast-secondary" onclick="resetProveedorForm()">Limpiar</button>
+                    <button class="btn-fast btn-fast-primary" onclick="guardarProveedor()">Guardar proveedor</button>
+                </div>
+            </section>
+
+            <section class="proveedores-list custom-scroll" id="proveedoresList">
+                <div class="p-10 text-center opacity-50">Cargando...</div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Movimiento Inventario -->
+<div id="modalAjuste" class="modal-overlay-generic hidden">
+    <div class="modal-content-glass-compact">
+        <button class="modal-close-x-v2" onclick="closeModal('modalAjuste')">&times;</button>
+
+        <div class="m-header-v2">
+            <h3 class="m-title-v2">Movimiento de Inventario</h3>
+            <div class="m-pill-info">
+                <span id="ajuste_prod_nombre">Producto</span>
+                <span class="opacity-20 mx-1">|</span>
+                <span class="m-pill-stock">Stock: <span id="ajuste_stock_actual">0</span></span>
+            </div>
+        </div>
+
+        <div class="m-body">
+            <input type="hidden" id="ajuste_prod_id">
+
+            <div class="m-grid-fast">
+                <div>
+                    <label class="m-label-v2">Operación</label>
+                    <div class="custom-select-container w-full" id="containerAjusteTipo">
+                        <div class="custom-select-trigger op-trigger-premium py-2 px-3 min-h-[44px]" onclick="toggleDropdown('containerAjusteTipo')">
+                            <span id="selectedAjusteTipoName" class="text-xs">Entrada</span>
+                            <img src="{% static 'ui/img/iconos/move-down.svg' %}" class="arrow svg-icon opacity-60" width="10">
+                        </div>
+                        <div class="custom-select-dropdown">
+                            <div class="custom-option text-xs is-selected" onclick="selectAjusteTipo('entrada', 'Entrada')">Entrada</div>
+                            <div class="custom-option text-xs" onclick="selectAjusteTipo('salida', 'Salida / Merma')">Salida / Merma</div>
+                            <div class="custom-option text-xs" onclick="selectAjusteTipo('recuento', 'Recuento')">Recuento</div>
+                        </div>
+                        <input type="hidden" id="ajuste_tipo" value="entrada">
+                    </div>
+                </div>
+                <div>
+                    <label class="m-label-v2">Cantidad / stock contado</label>
+                    <input type="number" id="ajuste_cantidad" class="input-compact-v2 text-center font-black text-teal-400" step="0.01" value="0">
+                </div>
+            </div>
+
+            <div class="m-section">
+                <label class="m-label-v2">Nota / Motivo (Opcional)</label>
+                <textarea id="ajuste_motivo" class="input-compact-v2 textarea-ghost"
+                    placeholder="Escriba aquí..."
+                    oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></textarea>
+            </div>
+        </div>
+
+        <div class="m-footer-v2">
+            <button class="btn-fast btn-fast-secondary" onclick="closeModal('modalAjuste')">
+                Cancelar
+            </button>
+            <button class="btn-fast btn-fast-primary" onclick="saveAjuste()">
+                Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Historial -->
+<div id="modalHistorial" class="modal-overlay-generic hidden">
+    <div class="modal-content-glass-compact modal-content-history">
+        <button class="modal-close-x-v2" onclick="closeModal('modalHistorial')">&times;</button>
+
+        <div class="m-header-v2">
+            <h3 class="m-title-v2">Bitácora de Stock</h3>
+            <div class="m-pill-info">
+                <span>Historial Cronológico</span>
+            </div>
+        </div>
+
+        <div class="m-body">
+            <div class="history-list-container">
+                <div id="movHistoryList" class="custom-scroll history-scroll">
+                    <!-- Items JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="m-footer-v2 m-footer-v2--single">
+            <button class="btn-fast btn-fast-primary w-full" onclick="closeModal('modalHistorial')">
+                Entendido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Plantillas -->
+<div id="modalPlantillas" class="modal-overlay-generic hidden">
+    <div class="modal-content-glass-compact modal-content-inventory-templates">
+        <button class="modal-close-x-v2" onclick="closeModal('modalPlantillas')">&times;</button>
+        <div class="tpl-modal">
+            <div class="tpl-header">
+                <h3 class="m-title-v2">Plantillas de Inventario</h3>
+                <p>Elige una subcategoría, selecciona solo lo que quieras controlar y ajusta la unidad antes de importarlo.</p>
+            </div>
+
+            <div class="tpl-body">
+                <aside class="tpl-sidebar" id="plantillasTree">
+                    <div class="p-10 text-center opacity-50">Cargando...</div>
+                </aside>
+
+                <section class="tpl-main">
+                    <div class="tpl-main-header">
+                        <div>
+                            <h4 class="tpl-main-title" id="plantillasPanelTitle">Selecciona una categoría</h4>
+                            <p class="tpl-main-subtitle" id="plantillasPanelSubtitle">Puedes cambiar unidades, stock inicial y mínimos antes de importar.</p>
+                        </div>
+                        <input type="text" class="tpl-search" id="plantillasSearch" placeholder="Buscar en esta lista..." oninput="renderPlantillaItems()">
+                    </div>
+                    <div class="tpl-list custom-scroll tpl-list-scroll" id="plantillasContainer">
+                        <div class="tpl-empty">Cargando plantillas...</div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="tpl-footer">
+                <div class="tpl-selected-count" id="plantillasSelectedCount">0 seleccionados</div>
+                <button class="btn-fast btn-fast-secondary" onclick="closeModal('modalPlantillas')">Cancelar</button>
+                <button class="btn-fast btn-fast-primary" onclick="importarPlantillaSeleccionada()">Importar selección</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Artículo -->
+<div id="modalArticulo" class="modal-overlay-generic hidden">
+    <div class="modal-content-glass-compact modal-content-article">
+        <button class="modal-close-x-v2" onclick="closeModal('modalArticulo')">&times;</button>
+
+        <div class="m-header-v2">
+            <h3 class="m-title-v2" id="modalArtTitle">Nuevo Artículo</h3>
+        </div>
+
+        <div class="m-body article-form-grid">
+            <input type="hidden" id="ajuste_art_id">
+
+            <div class="article-field article-field--name">
+                <label class="m-label-v2">Nombre del Artículo</label>
+                <input type="text" id="art_nombre" class="input-compact-v2" placeholder="Ej: Leche Entera, Café en grano...">
+            </div>
+
+            <div class="article-field article-field--category">
+                <label class="m-label-v2">Categoría</label>
+                <select id="art_categoria" class="input-compact-v2 px-2" data-ui-select>
+                    <option value="">Seleccionar...</option>
+                </select>
+            </div>
+
+            <div class="article-field article-field--unit">
+                <label class="m-label-v2">Unidad</label>
+                <select id="art_unidad" class="input-compact-v2 px-2" data-ui-select>
+                    <option value="ud">Unidades</option>
+                    <option value="pack">Packs</option>
+                    <option value="caja">Cajas</option>
+                    <option value="kg">Kilos (kg)</option>
+                    <option value="g">Gramos (g)</option>
+                    <option value="l">Litros (L)</option>
+                    <option value="ml">Mililitros (ml)</option>
+                </select>
+            </div>
+
+            <div class="article-field article-field--provider">
+                <div class="field-with-action">
+                    <label class="m-label-v2">Proveedor</label>
+                    <button type="button" class="field-action-btn" onclick="openProveedoresManager()" title="Gestionar proveedores">Gestionar</button>
+                </div>
+                <select id="art_proveedor" class="input-compact-v2 px-2" data-ui-select data-ui-select-empty-valid="true">
+                    <option value="">Sin proveedor</option>
+                </select>
+            </div>
+
+            <div class="article-field article-field--stock">
+                <label class="m-label-v2">Stock Actual (Inicial)</label>
+                <input type="number" id="art_stock" class="input-compact-v2 text-center" step="0.01" value="0">
+            </div>
+
+            <div class="article-field article-field--min">
+                <label class="m-label-v2">Stock Mínimo</label>
+                <input type="number" id="art_minimo" class="input-compact-v2 text-center" step="0.01" value="0">
+            </div>
+
+            <div class="article-field article-field--auto">
+                <label class="m-label-v2">Vincular a Producto TPV (Opcional)</label>
+                <label class="article-auto-toggle">
+                    <input type="checkbox" id="art_auto_desc" onchange="toggleAutoDesc()">
+                    <span class="article-auto-toggle__box" aria-hidden="true"></span>
+                    <span class="article-auto-toggle__text">Descontar al vender un producto</span>
+                </label>
+            </div>
+
+            <div id="vinculo_opciones" class="article-field article-field--product hidden">
+                <label class="m-label-v2">Producto asociado</label>
+                <select id="art_producto_vinculado" class="input-compact-v2 px-2 text-sm" data-ui-select>
+                    <option value="">Buscar producto...</option>
+                </select>
+            </div>
+
+            <p class="article-field article-field--help vinculo-help" id="vinculo_help">
+                Solo se descontará si marcas la casilla (1 unidad por venta). Las ventas nunca se bloquearán por falta de stock.
+            </p>
+        </div>
+
+        <div class="m-footer-v2">
+            <button class="btn-fast btn-fast-secondary" onclick="closeModal('modalArticulo')">Cancelar</button>
+            <button class="btn-fast btn-fast-primary" onclick="guardarArticulo()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/stock/stock.js' %}?v=15"></script>
+{% endblock %}
+

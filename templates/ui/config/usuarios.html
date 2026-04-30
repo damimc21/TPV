@@ -1,0 +1,134 @@
+{% extends "ui/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Usuarios" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/config/usuarios.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+    <div class="page-head__left">
+        <a class="cfg-back-link" href="{% url 'ui:config' %}">
+            <span aria-hidden="true">←</span>
+            <span>{% trans "Volver a Configuracion" %}</span>
+        </a>
+    </div>
+    <h1 class="h1">{% trans "Gestion de Usuarios" %}</h1>
+    <div class="page-head__right"></div>
+</div>
+
+<section class="cfg-users">
+    {% if notice_ok %}
+    <div class="cfg-notice cfg-notice--ok">{{ notice_ok }}</div>
+    {% endif %}
+    {% if notice_error %}
+    <div class="cfg-notice cfg-notice--error">{{ notice_error }}</div>
+    {% endif %}
+
+    <div class="cfg-users__panel">
+        <h2>{% trans "Crear usuario" %}</h2>
+        <form method="post" class="cfg-users__create-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create">
+            <div class="cfg-users__create-grid">
+                <label>
+                    <span>{% trans "Usuario" %}</span>
+                    <input type="text" name="username" required maxlength="150">
+                </label>
+                <label>
+                    <span>{% trans "Contrasena" %}</span>
+                    <input type="password" name="password" required minlength="4">
+                </label>
+                <label>
+                    <span>{% trans "Nombre" %}</span>
+                    <input type="text" name="first_name" maxlength="150">
+                </label>
+                <label>
+                    <span>{% trans "Apellidos" %}</span>
+                    <input type="text" name="last_name" maxlength="150">
+                </label>
+                <label>
+                    <span>{% trans "Email" %}</span>
+                    <input type="email" name="email" maxlength="254">
+                </label>
+            </div>
+
+            <div class="cfg-users__create-meta">
+                <label class="cfg-check">
+                    <input type="checkbox" name="is_staff" value="1">
+                    <span>{% trans "Es encargado/admin (staff)" %}</span>
+                </label>
+                <label class="cfg-check">
+                    <input type="checkbox" name="is_active" value="1" checked>
+                    <span>{% trans "Usuario activo" %}</span>
+                </label>
+                <div class="cfg-users__actions">
+                    <button class="btn btn--success" type="submit">{% trans "Crear usuario" %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="cfg-users__panel">
+        <h2>{% trans "Usuarios existentes" %}</h2>
+        <p class="cfg-users__hint">{% trans "Puedes actualizar datos, estado y contrasena. Para borrar, usa el boton Eliminar." %}</p>
+
+        <div class="cfg-users__list">
+            {% for user_item in users %}
+            <form method="post" class="cfg-user-card">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user_item.id }}">
+                <div class="cfg-user-card__header">
+                    <strong>{{ user_item.username }}</strong>
+                    {% if user_item.is_superuser %}
+                    <span class="cfg-badge">{% trans "Superusuario" %}</span>
+                    {% elif user_item.is_staff %}
+                    <span class="cfg-badge cfg-badge--staff">{% trans "Staff" %}</span>
+                    {% endif %}
+                </div>
+                <div class="cfg-user-card__grid">
+                    <label>
+                        <span>{% trans "Nombre" %}</span>
+                        <input type="text" name="first_name" value="{{ user_item.first_name }}">
+                    </label>
+                    <label>
+                        <span>{% trans "Apellidos" %}</span>
+                        <input type="text" name="last_name" value="{{ user_item.last_name }}">
+                    </label>
+                    <label>
+                        <span>{% trans "Email" %}</span>
+                        <input type="email" name="email" value="{{ user_item.email }}">
+                    </label>
+                    <label>
+                        <span>{% trans "Nueva contrasena (opcional)" %}</span>
+                        <input type="password" name="new_password" placeholder="{% trans 'Sin cambios' %}">
+                    </label>
+                </div>
+                <div class="cfg-user-card__checks">
+                    <label class="cfg-check">
+                        <input type="checkbox" name="is_staff" value="1" {% if user_item.is_staff %}checked{% endif %}>
+                        <span>{% trans "Staff" %}</span>
+                    </label>
+                    <label class="cfg-check">
+                        <input type="checkbox" name="is_active" value="1" {% if user_item.is_active %}checked{% endif %}>
+                        <span>{% trans "Activo" %}</span>
+                    </label>
+                </div>
+                <div class="cfg-user-card__actions">
+                    <button class="btn btn--success" type="submit" name="action" value="update">{% trans "Guardar cambios" %}</button>
+                    <button class="btn btn--danger" type="submit" name="action" value="delete"
+                            onclick="return confirm('{% trans '¿Seguro que deseas eliminar este usuario?' %}');"
+                            {% if user_item.id == request.user.id %}disabled{% endif %}>
+                        {% trans "Eliminar" %}
+                    </button>
+                </div>
+            </form>
+            {% empty %}
+            <p class="cfg-users__hint">{% trans "No hay usuarios registrados." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

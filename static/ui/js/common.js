@@ -29,6 +29,7 @@
   function logUiEvent(evento, detalle, nivel = "INFO", origen = "ui.tema") {
     fetch("/api/ficheros/logs/ui-evento/", {
       method: "POST",
+      keepalive: true,
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": getCookie("csrftoken"),
@@ -71,8 +72,43 @@
     const input = $("#langInput");
     if (!form || !input) return;
 
+    const currentLang = (document.documentElement.lang || "unknown").toLowerCase().split("-")[0];
+    const targetLang = (lang || "").toLowerCase();
+    if (targetLang && targetLang !== currentLang) {
+      logUiEvent(
+        "language_change",
+        `from=${currentLang} to=${targetLang} path=${window.location.pathname}`,
+        "INFO",
+        "ui.lang"
+      );
+    }
+
     input.value = lang;
     form.submit();
+  }
+
+  function setupUserActionLogs() {
+    $$("a[href*='switch=1']").forEach((link) => {
+      link.addEventListener("click", () => {
+        logUiEvent(
+          "switch_user_click",
+          `path=${window.location.pathname}`,
+          "INFO",
+          "ui.auth"
+        );
+      });
+    });
+
+    $$("form[action*='/logout/']").forEach((form) => {
+      form.addEventListener("submit", () => {
+        logUiEvent(
+          "logout_click",
+          `path=${window.location.pathname}`,
+          "INFO",
+          "ui.auth"
+        );
+      });
+    });
   }
 
   // ---------------------------
@@ -104,6 +140,270 @@
       if (e.key === "Escape") close();
     });
   }
+
+  // ---------------------------
+  // Select común
+  // ---------------------------
+  const selectState = new WeakMap();
+  let openSelect = null;
+
+  function isSelectElement(target) {
+    return target && target.tagName === "SELECT";
+  }
+
+  function getSelects(target) {
+    if (!target) return [];
+    if (isSelectElement(target)) return [target];
+    return $$("select[data-ui-select]", target);
+  }
+
+  function selectedOption(select) {
+    return select.options[select.selectedIndex] || select.options[0] || null;
+  }
+
+  function closeUiSelect(select) {
+    const state = select ? selectState.get(select) : null;
+    if (!state) return;
+    state.wrapper.classList.remove("is-open");
+    state.button.setAttribute("aria-expanded", "false");
+    state.menu.classList.remove("is-open");
+    openSelect = openSelect === select ? null : openSelect;
+  }
+
+  function closeAllUiSelects() {
+    if (openSelect) closeUiSelect(openSelect);
+  }
+
+  function positionUiSelectMenu(select) {
+    const state = selectState.get(select);
+    if (!state) return;
+
+    const rect = state.button.getBoundingClientRect();
+    const gap = 6;
+    const margin = 8;
+    const spaceBelow = window.innerHeight - rect.bottom - margin;
+    const spaceAbove = rect.top - margin;
+    const openUp = spaceBelow < 160 && spaceAbove > spaceBelow;
+    const available = Math.max(120, (openUp ? spaceAbove : spaceBelow) - gap);
+
+    state.menu.style.left = `${Math.round(rect.left)}px`;
+    state.menu.style.width = `${Math.round(rect.width)}px`;
+    state.menu.style.maxHeight = `${Math.min(260, available)}px`;
+    state.menu.style.top = openUp ? "auto" : `${Math.round(rect.bottom + gap)}px`;
+    state.menu.style.bottom = openUp ? `${Math.round(window.innerHeight - rect.top + gap)}px` : "auto";
+  }
+
+  function syncUiSelect(select) {
+    const state = selectState.get(select);
+    if (!state) return;
+
+    const option = selectedOption(select);
+    const label = option ? option.textContent.trim() : (select.dataset.uiSelectPlaceholder || "Seleccionar...");
+    state.value.textContent = label || select.dataset.uiSelectPlaceholder || "Seleccionar...";
+    state.wrapper.classList.toggle("is-empty", !select.value && select.dataset.uiSelectEmptyValid !== "true");
+    state.button.disabled = select.disabled;
+    state.menu.querySelectorAll(".tpv-select__option").forEach((btn) => {
+      btn.classList.toggle("is-selected", btn.dataset.value === select.value);
+      btn.setAttribute("aria-selected", btn.dataset.value === select.value ? "true" : "false");
+    });
+  }
+
+  function buildUiSelectMenu(select) {
+    const state = selectState.get(select);
+    if (!state) return;
+
+    state.menu.innerHTML = "";
+    const options = Array.from(select.options).filter((option) => !option.hidden);
+
+    if (options.length === 0) {
+      const empty = document.createElement("button");
+      empty.type = "button";
+      empty.className = "tpv-select__option";
+      empty.disabled = true;
+      empty.textContent = "Sin opciones";
+      state.menu.appendChild(empty);
+      return;
+    }
+
+    options.forEach((option) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "tpv-select__option";
+      item.dataset.value = option.value;
+      item.textContent = option.textContent.trim();
+      item.disabled = option.disabled;
+      item.setAttribute("role", "option");
+      item.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (option.disabled) return;
+        select.value = option.value;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        syncUiSelect(select);
+        closeUiSelect(select);
+        state.button.focus({ preventScroll: true });
+      });
+      state.menu.appendChild(item);
+    });
+  }
+
+  function openUiSelect(select) {
+    const state = selectState.get(select);
+    if (!state || select.disabled) return;
+
+    if (openSelect && openSelect !== select) closeUiSelect(openSelect);
+    buildUiSelectMenu(select);
+    syncUiSelect(select);
+    positionUiSelectMenu(select);
+    state.wrapper.classList.add("is-open");
+    state.button.setAttribute("aria-expanded", "true");
+    state.menu.classList.add("is-open");
+    openSelect = select;
+
+    const selected = state.menu.querySelector(".tpv-select__option.is-selected:not([disabled])");
+    (selected || state.menu.querySelector(".tpv-select__option:not([disabled])"))?.focus({ preventScroll: true });
+  }
+
+  function toggleUiSelect(select) {
+    const state = selectState.get(select);
+    if (!state) return;
+    if (state.wrapper.classList.contains("is-open")) {
+      closeUiSelect(select);
+    } else {
+      openUiSelect(select);
+    }
+  }
+
+  function focusUiSelectOption(menu, direction) {
+    const items = $$(".tpv-select__option:not([disabled])", menu);
+    if (items.length === 0) return;
+    const current = document.activeElement;
+    const currentIndex = items.indexOf(current);
+    const nextIndex = currentIndex < 0
+      ? (direction > 0 ? 0 : items.length - 1)
+      : (currentIndex + direction + items.length) % items.length;
+    items[nextIndex].focus({ preventScroll: true });
+  }
+
+  function enhanceUiSelect(select) {
+    if (!select) return;
+    if (select.dataset.uiSelectReady === "1") {
+      syncUiSelect(select);
+      return;
+    }
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "tpv-select";
+    if (select.classList.contains("input-compact-v2") || select.dataset.uiSelectSize === "compact") {
+      wrapper.classList.add("tpv-select--compact");
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "tpv-select__button";
+    button.setAttribute("aria-haspopup", "listbox");
+    button.setAttribute("aria-expanded", "false");
+
+    const value = document.createElement("span");
+    value.className = "tpv-select__value";
+
+    const arrow = document.createElement("span");
+    arrow.className = "tpv-select__arrow";
+    arrow.setAttribute("aria-hidden", "true");
+
+    const menu = document.createElement("div");
+    menu.className = "tpv-select__menu";
+    menu.setAttribute("role", "listbox");
+
+    select.parentNode.insertBefore(wrapper, select);
+    wrapper.appendChild(select);
+    wrapper.appendChild(button);
+    button.appendChild(value);
+    button.appendChild(arrow);
+    document.body.appendChild(menu);
+
+    select.classList.add("tpv-select__native");
+    select.setAttribute("aria-hidden", "true");
+    select.tabIndex = -1;
+    select.dataset.uiSelectReady = "1";
+    selectState.set(select, { wrapper, button, value, arrow, menu });
+
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleUiSelect(select);
+    });
+
+    button.addEventListener("keydown", (event) => {
+      if (["ArrowDown", "ArrowUp", "Enter", " "].includes(event.key)) {
+        event.preventDefault();
+        openUiSelect(select);
+      }
+    });
+
+    menu.addEventListener("click", (event) => event.stopPropagation());
+    menu.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeUiSelect(select);
+        button.focus({ preventScroll: true });
+      }
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        focusUiSelectOption(menu, 1);
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        focusUiSelectOption(menu, -1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        $$(".tpv-select__option:not([disabled])", menu)[0]?.focus({ preventScroll: true });
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        const items = $$(".tpv-select__option:not([disabled])", menu);
+        items[items.length - 1]?.focus({ preventScroll: true });
+      }
+    });
+
+    select.addEventListener("change", () => syncUiSelect(select));
+    buildUiSelectMenu(select);
+    syncUiSelect(select);
+  }
+
+  function initUiSelects(root = document) {
+    getSelects(root).forEach(enhanceUiSelect);
+  }
+
+  function refreshUiSelects(target = document) {
+    getSelects(target).forEach((select) => {
+      if (select.dataset.uiSelectReady === "1") {
+        buildUiSelectMenu(select);
+        syncUiSelect(select);
+        if (selectState.get(select)?.wrapper.classList.contains("is-open")) {
+          positionUiSelectMenu(select);
+        }
+      } else {
+        enhanceUiSelect(select);
+      }
+    });
+  }
+
+  document.addEventListener("click", closeAllUiSelects);
+  document.addEventListener("scroll", () => {
+    if (openSelect) positionUiSelectMenu(openSelect);
+  }, true);
+  window.addEventListener("resize", () => {
+    if (openSelect) positionUiSelectMenu(openSelect);
+  });
+
+  window.TPVSelect = {
+    init: initUiSelects,
+    refresh: refreshUiSelects,
+    sync: syncUiSelect,
+    closeAll: closeAllUiSelects,
+  };
 
   // ---------------------------
   // Sidebar (hamburguesa)
@@ -197,6 +497,8 @@
     setupSidebar();
     setupTopMenuDropdown();
     setupUserDropdown();
+    initUiSelects(document);
+    setupUserActionLogs();
     startClock();
 
     // Registrar Service Worker para PWA

@@ -4,7 +4,7 @@
 {% block title %}{% trans "Logs del Sistema" %} | Ficheros{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
@@ -16,10 +16,7 @@
   </div>
   <h1 class="h1">{% trans "Logs del Sistema" %}</h1>
   <div class="page-head__right">
-    <button class="btn btn--ghost" onclick="exportarLogs()">
-      <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="16" class="svg-icon" alt="">
-      Exportar CSV
-    </button>
+    {% include "ui/componentes/export_menu.html" with export_handler="exportarLogsFormato" export_direction="down" export_button_class="btn--success" export_icon="ui/img/iconos/download.svg" %}
     <button class="btn btn--danger btn--mini" onclick="limpiarLogsAntiguos()">Limpiar &gt;30 días</button>
   </div>
 </div>
@@ -106,5 +103,5 @@
 
 {% block extra_js %}
 <script src="{% static 'ui/js/ficheros/date-field.js' %}"></script>
-<script src="{% static 'ui/js/ficheros/logs.js' %}"></script>
+<script src="{% static 'ui/js/ficheros/logs.js' %}?v=2"></script>
 {% endblock %}

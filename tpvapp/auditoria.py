@@ -58,3 +58,34 @@ def log_error(origen, mensaje, exc=None):
 
 def log_critical(origen, mensaje, exc=None):
     log("CRITICAL", origen, mensaje, _trace_from_exception(exc))
+
+
+def registrar_evento_usuario(
+    usuario,
+    evento,
+    detalles="",
+    *,
+    origen_log=None,
+    nivel_log="INFO",
+):
+    """
+    Registra un evento funcional de auditoria y, opcionalmente, un log tecnico.
+    """
+    registrar(usuario, evento, detalles)
+
+    if not origen_log:
+        return
+
+    username = getattr(usuario, "username", None) or "anon"
+    mensaje = f"usuario={username} evento={evento}"
+    if detalles:
+        mensaje += f" detalles={detalles}"
+
+    nivel = (nivel_log or "INFO").upper()
+    if nivel == "WARN":
+        log_warn(origen_log, mensaje)
+    elif nivel in ("ERROR", "CRITICAL"):
+        # No hay excepcion asociada aqui, solo evento de negocio.
+        log(nivel, origen_log, mensaje)
+    else:
+        log_info(origen_log, mensaje)

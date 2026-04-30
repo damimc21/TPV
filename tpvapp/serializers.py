@@ -3,7 +3,7 @@ from .models import (
     Departamento, Producto, Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria,
     PerfilComentarios, Comentario, PerfilSuplementos, Suplemento, Cliente,
     PlantillaConfigurable, FormatoProducto, GrupoOpciones, OpcionGrupo, PrecioOpcionFormato, MovimientoStock,
-    CategoriaInventario, ArticuloInventario
+    CategoriaInventario, Proveedor, ArticuloInventario
 )
 
 
@@ -118,9 +118,30 @@ class CategoriaInventarioSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ProveedorSerializer(serializers.ModelSerializer):
+    articulos_count = serializers.IntegerField(source='articulos.count', read_only=True)
+
+    class Meta:
+        model = Proveedor
+        fields = "__all__"
+
+    def validate_nombre(self, value):
+        nombre = (value or "").strip()
+        if not nombre:
+            raise serializers.ValidationError("El nombre del proveedor es obligatorio.")
+
+        qs = Proveedor.objects.filter(nombre__iexact=nombre)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("Ya existe un proveedor con ese nombre.")
+        return nombre
+
+
 class ArticuloInventarioSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.ReadOnlyField(source='categoria.nombre')
     producto_vinculado_nombre = serializers.ReadOnlyField(source='producto_vinculado.nombre')
+    proveedor_nombre = serializers.SerializerMethodField()
     categoria_id = serializers.PrimaryKeyRelatedField(
         source='categoria',
         queryset=CategoriaInventario.objects.all(),
@@ -135,10 +156,57 @@ class ArticuloInventarioSerializer(serializers.ModelSerializer):
         allow_null=True,
         write_only=True,
     )
+    proveedor_id = serializers.PrimaryKeyRelatedField(
+        source='proveedor_ref',
+        queryset=Proveedor.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+    )
 
     class Meta:
         model = ArticuloInventario
         fields = "__all__"
+
+    def get_proveedor_nombre(self, obj):
+        if obj.proveedor_ref:
+            return obj.proveedor_ref.nombre
+        return obj.proveedor or ""
+
+    def _get_or_create_proveedor(self, nombre):
+        nombre = (nombre or "").strip()
+        if not nombre:
+            return None
+        proveedor = Proveedor.objects.filter(nombre__iexact=nombre).first()
+        if proveedor:
+            return proveedor
+        return Proveedor.objects.create(nombre=nombre)
+
+    def _sync_proveedor(self, validated_data, *, creating=False):
+        has_ref = 'proveedor_ref' in validated_data
+        has_text = 'proveedor' in validated_data
+
+        if has_ref:
+            proveedor = validated_data.get('proveedor_ref')
+            validated_data['proveedor'] = proveedor.nombre if proveedor else ''
+            return validated_data
+
+        if has_text:
+            proveedor = self._get_or_create_proveedor(validated_data.get('proveedor'))
+            validated_data['proveedor_ref'] = proveedor
+            validated_data['proveedor'] = proveedor.nombre if proveedor else ''
+            return validated_data
+
+        if creating:
+            validated_data.setdefault('proveedor', '')
+            validated_data.setdefault('proveedor_ref', None)
+        return validated_data
+
+    def create(self, validated_data):
+        return super().create(self._sync_proveedor(validated_data, creating=True))
+
+    def update(self, instance, validated_data):
+        return super().update(instance, self._sync_proveedor(validated_data))
 
     def validate(self, attrs):
         producto_vinculado = attrs.get(

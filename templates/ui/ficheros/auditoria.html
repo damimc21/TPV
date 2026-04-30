@@ -4,7 +4,7 @@
 {% block title %}{% trans "Auditoría" %} | Ficheros{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
@@ -16,17 +16,7 @@
   </div>
   <h1 class="h1">{% trans "Auditoría" %}</h1>
   <div class="page-head__right">
-    <div class="fich-export fich-export--down">
-      <button class="btn btn--ghost fich-export__toggle" onclick="toggleExportMenu(event, this)">
-        <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="16" class="svg-icon" alt="">
-        Exportar
-      </button>
-      <div class="fich-export__menu hidden">
-        <button class="fich-export__item" onclick="exportarAuditoriaFormato(event, 'pdf')">PDF</button>
-        <button class="fich-export__item" onclick="exportarAuditoriaFormato(event, 'csv')">CSV</button>
-        <button class="fich-export__item" onclick="exportarAuditoriaFormato(event, 'xlsx')">Excel</button>
-      </div>
-    </div>
+    {% include "ui/componentes/export_menu.html" with export_handler="exportarAuditoriaFormato" export_direction="down" export_button_class="btn--success" export_icon="ui/img/iconos/download.svg" %}
   </div>
 </div>
 
@@ -113,6 +103,6 @@
 
 {% block extra_js %}
 <script src="{% static 'ui/js/ficheros/date-field.js' %}"></script>
-<script src="{% static 'ui/js/ficheros/auditoria.js' %}"></script>
+<script src="{% static 'ui/js/ficheros/auditoria.js' %}?v=2"></script>
 {% endblock %}
 

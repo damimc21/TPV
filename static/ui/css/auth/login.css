@@ -3,73 +3,73 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 22px;
+  padding: 28px;
 }
 
 .loginWrap {
-  width: min(420px, 100%);
+  width: min(520px, 100%);
   position: relative;
-}
-
-.backBtn {
-  display: inline-flex;
-  align-items: center;
-  width: auto;
-  gap: 8px;
-  text-decoration: none;
-  color: var(--text);
-  font-weight: 800;
-  margin-bottom: 16px;
-  opacity: .9;
-}
-
-.backBtn:hover {
-  opacity: 1;
-}
-
-.loginCard .backBtn {
-  align-self: flex-start;
+  text-align: center;
+  animation: loginIn .22s ease-out both;
 }
 
 .loginTitle {
-  font-size: 54px;
-  line-height: 1;
-  margin: 0 0 10px 0;
-  letter-spacing: -0.5px;
+  font-size: clamp(34px, 5vw, 46px);
+  line-height: 1.04;
+  margin: 0 0 9px 0;
+  letter-spacing: 0;
+  text-align: center;
 }
 
 .loginSubtitle {
-  margin: 0 0 18px 0;
+  margin: 0 auto 22px auto;
   color: var(--muted);
   font-weight: 700;
+  text-align: center;
+  max-width: 34ch;
 }
 
 .loginCard {
   display: grid;
-  gap: 10px;
-  padding: 18px;
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, .06);
-  box-shadow: var(--shadow2);
-  backdrop-filter: blur(12px);
+  gap: 12px;
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .035)),
+    rgba(8, 12, 24, .46);
+  box-shadow:
+    0 26px 80px rgba(0, 0, 0, .34),
+    inset 0 1px 0 rgba(255, 255, 255, .08);
+  backdrop-filter: blur(18px);
+  text-align: left;
 }
 
 .loginLabel {
   color: var(--muted);
   font-weight: 800;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .loginCard input {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: rgba(0, 0, 0, .15);
+  min-height: 52px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .13);
+  background: rgba(0, 0, 0, .18);
   color: var(--text);
   font-weight: 800;
   outline: none;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.loginCard input:focus {
+  background: rgba(0, 0, 0, .22);
+  border-color: rgba(255, 255, 255, .34);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, .08),
+    inset 0 1px 0 rgba(255, 255, 255, .05);
 }
 
 [data-theme="light"] .loginCard input {
@@ -78,20 +78,29 @@
 }
 
 .loginBtn {
-  margin-top: 6px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, .08);
+  margin-top: 12px;
+  min-height: 54px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .075)),
+    rgba(255, 255, 255, .05);
   color: var(--text);
   font-weight: 900;
   cursor: pointer;
-  font-size: 16px;
-  letter-spacing: .3px;
+  font-size: 17px;
+  letter-spacing: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
 }
 
 .loginBtn:hover {
-  background: rgba(255, 255, 255, .12);
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, .26);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .095)),
+    rgba(255, 255, 255, .06);
 }
 
 .loginError {
@@ -110,38 +119,61 @@
 }
 
 .pwField input {
-  padding-right: 46px;
-  /* espacio para el botón ojo */
+  padding-right: 54px;
 }
 
 .pwToggle {
   position: absolute;
-  right: 10px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.623);
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
   color: var(--text);
   cursor: pointer;
   display: grid;
   place-items: center;
+  opacity: .82;
+  transition: opacity .15s ease, background .15s ease, transform .15s ease;
 }
 
 .pwToggle img {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   pointer-events: none;
+  filter: brightness(0) invert(1);
 }
 
 .pwToggle:hover {
-  background: rgba(255, 255, 255, 0.363);
+  opacity: 1;
+  background: rgba(255, 255, 255, .08);
+  transform: translateY(-50%) scale(1.04);
 }
 
-.loginWrap {
-  animation: loginIn .22s ease-out both;
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  width: fit-content;
+  gap: 8px;
+  margin: 6px auto 0;
+  padding: 9px 12px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-weight: 800;
+  text-decoration: none;
+  opacity: .88;
+  transition: opacity .15s ease, transform .15s ease, background .15s ease, color .15s ease;
+}
+
+.backBtn:hover {
+  opacity: 1;
+  color: var(--text);
+  background: rgba(255, 255, 255, .07);
+  transform: translateX(-2px);
 }
 
 @keyframes loginIn {
@@ -155,27 +187,6 @@
     transform: translateY(0) scale(1);
   }
 }
-
-.backBtn {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  gap: 8px;
-  font-weight: 800;
-  opacity: .8;
-  transition: opacity .15s ease, transform .15s ease;
-}
-
-.backBtn:hover {
-  opacity: 1;
-  transform: translateX(-3px);
-}
-
-.loginCard input:focus {
-  border-color: rgba(255, 255, 255, .35);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, .08);
-}
-
 
 /* --- FIX AUTOFILL CHROME --- */
 input:-webkit-autofill,
@@ -192,4 +203,15 @@ select:-webkit-autofill {
 [data-theme="light"] input:-webkit-autofill {
   box-shadow: 0 0 0px 1000px rgba(255, 255, 255, .85) inset !important;
   -webkit-text-fill-color: #111 !important;
+}
+
+@media (max-width: 560px) {
+  .loginPage {
+    padding: 18px;
+  }
+
+  .loginCard {
+    padding: 20px;
+    border-radius: 18px;
+  }
 }

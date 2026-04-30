@@ -4,11 +4,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404, JsonResponse, HttpResponseBadRequest
 from decimal import Decimal
 from django.views.decorators.http import require_POST, require_http_methods
+from django.contrib.auth import logout, get_user_model
+from django.contrib.auth.models import Permission
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.core.exceptions import PermissionDenied
 from .models import TPVMap, TPVMapItem
 from tpvapp.models import Factura, Pago, SesionCaja, DiaContable, ConfiguracionTPV, LineaComanda, Comanda
-from tpvapp.auditoria import log_info, log_warn, log_error
+from tpvapp.auditoria import log_info, log_warn, log_error, registrar
+from tpvapp.permissions import has_app_permission
+from tpvapp.permission_profiles import (
+    PERMISSION_PACKS,
+    CATEGORY_LABELS,
+    grouped_permissions,
+    permission_codenames,
+)
 from tpvapp.auth_security import (
     get_auth_security_config,
     get_client_ip,
@@ -25,9 +35,63 @@ def _actor_username(user):
     return user.username if getattr(user, "is_authenticated", False) else "anon"
 
 
+def _require_permission_or_403(request, codename: str):
+    if has_app_permission(request.user, codename):
+        return
+    username = _actor_username(request.user)
+    log_warn(
+        "authz.ui",
+        f"usuario={username} accion=denegado permiso={codename} path={request.path}",
+    )
+    raise PermissionDenied(_("No tienes permisos para realizar esta accion."))
+
+
+def _require_any_permission_or_403(request, *codenames):
+    if any(has_app_permission(request.user, code) for code in codenames):
+        return
+    username = _actor_username(request.user)
+    joined = ",".join(codenames)
+    log_warn(
+        "authz.ui",
+        f"usuario={username} accion=denegado permiso={joined} path={request.path}",
+    )
+    raise PermissionDenied(_("No tienes permisos para realizar esta accion."))
+
+
+def _forbidden_json(request, codename: str):
+    username = _actor_username(request.user)
+    log_warn(
+        "authz.ui",
+        f"usuario={username} accion=denegado permiso={codename} path={request.path}",
+    )
+    return JsonResponse(
+        {"ok": False, "error": "No tienes permisos para esta operacion."},
+        status=403,
+    )
+
+
 class TpvLoginView(LoginView):
     template_name = "ui/auth/login.html"
     redirect_authenticated_user = True
+
+    def dispatch(self, request, *args, **kwargs):
+        if (
+            request.method == "GET"
+            and request.GET.get("switch") == "1"
+            and getattr(request.user, "is_authenticated", False)
+        ):
+            next_url = (request.GET.get("next") or "").strip() or "/"
+            registrar(
+                request.user,
+                "AUTH_CAMBIAR_USUARIO_INICIADO",
+                f"next={next_url}",
+            )
+            log_info(
+                "auth.switch_user",
+                f"usuario={_actor_username(request.user)} accion=cambiar_usuario_iniciar next={next_url}",
+            )
+            logout(request)
+        return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         username = (request.POST.get("username") or "").strip()
@@ -67,6 +131,7 @@ def index(request):
 
 @login_required
 def tpv(request):
+    _require_permission_or_403(request, "access_tpv")
     active = TPVMap.objects.filter(owner=request.user, is_active=True).first()
     dia_actual = DiaContable.objects.filter(fecha_cierre__isnull=True).first()
     sesion_actual = SesionCaja.objects.filter(fecha_cierre__isnull=True).first() if dia_actual else None
@@ -91,6 +156,7 @@ def tpv(request):
 
 @login_required
 def mesa(request, numero):
+    _require_permission_or_403(request, "manage_orders")
     # 1) rango válido
     if not (1 <= numero <= 999):
         raise Http404("Mesa inválida")
@@ -244,17 +310,26 @@ def _get_report_data(dia=None, sesion=None):
 @login_required
 def ticket_cierre_dia(request, dia_id):
     dia = get_object_or_404(DiaContable, id=dia_id)
+    log_info(
+        "caja.cierres",
+        f"usuario={_actor_username(request.user)} accion=ver_ticket_cierre_jornada dia_id={dia.id} cerrada={'1' if dia.fecha_cierre else '0'}",
+    )
     ctx = _get_report_data(dia=dia)
     return render(request, "ui/tpv/ticket_cierre.html", ctx)
 
 @login_required
 def ticket_cierre_turno(request, sesion_id):
     sesion = get_object_or_404(SesionCaja, id=sesion_id)
+    log_info(
+        "caja.cierres",
+        f"usuario={_actor_username(request.user)} accion=ver_ticket_cierre_turno sesion_id={sesion.id} cerrada={'1' if sesion.fecha_cierre else '0'}",
+    )
     ctx = _get_report_data(sesion=sesion)
     return render(request, "ui/tpv/ticket_cierre.html", ctx)
 
 @login_required
 def comprobante(request, comanda_id):
+    _require_permission_or_403(request, "print_documents")
     from tpvapp.models import Comanda
     from tpvapp.services import imprimir_comprobante
     comanda = get_object_or_404(Comanda, id=comanda_id)
@@ -268,21 +343,25 @@ def comprobante(request, comanda_id):
 # CARD VIEWS
 @login_required
 def ficheros(request):
+    _require_permission_or_403(request, "manage_files")
     return render(request, "ui/ficheros/index.html")
 
 
 @login_required
 def ficheros_importar(request):
+    _require_permission_or_403(request, "manage_files")
     return render(request, "ui/ficheros/importar.html")
 
 
 @login_required
 def ficheros_exportar(request):
+    _require_permission_or_403(request, "manage_files")
     return render(request, "ui/ficheros/exportar.html")
 
 
 @login_required
 def ficheros_backups(request):
+    _require_permission_or_403(request, "manage_files")
     from tpvapp.models import BackupRegistro, ConfiguracionTPV
     backups = BackupRegistro.objects.all()[:50]
     
@@ -298,41 +377,61 @@ def ficheros_backups(request):
 
 @login_required
 def ficheros_informes(request):
+    _require_permission_or_403(request, "manage_files")
     return render(request, "ui/ficheros/informes.html")
 
 
 @login_required
 def ficheros_auditoria(request):
+    _require_permission_or_403(request, "manage_files")
     return render(request, "ui/ficheros/auditoria.html")
 
 
 @login_required
 def ficheros_logs(request):
+    _require_permission_or_403(request, "manage_files")
     return render(request, "ui/ficheros/logs.html")
 
 
 @login_required
 def catalogo(request):
+    _require_permission_or_403(request, "manage_catalog")
     return render(request, "ui/catalogo/index.html")
 
 
 @login_required
 def catalogo_articulos(request):
+    _require_permission_or_403(request, "manage_catalog")
     return render(request, "ui/catalogo/catalogo.html")
 
 
 @login_required
 def catalogo_modificadores(request):
+    _require_permission_or_403(request, "manage_catalog")
     return render(request, "ui/catalogo/modificadores.html")
 
 
 @login_required
 def stock(request):
+    _require_permission_or_403(request, "manage_stock")
     return render(request, "ui/stock/index.html")
 
 
 @login_required
+def stock_inventario(request):
+    _require_permission_or_403(request, "manage_stock")
+    return render(request, "ui/stock/inventario.html")
+
+
+@login_required
+def stock_proveedores(request):
+    _require_permission_or_403(request, "manage_stock")
+    return render(request, "ui/stock/proveedores.html")
+
+
+@login_required
 def caja(request):
+    _require_permission_or_403(request, "manage_cash")
     return render(request, "ui/caja/index.html")
 
 
@@ -340,6 +439,7 @@ def caja(request):
 
 @login_required
 def caja_reaperturas(request):
+    _require_permission_or_403(request, "reopen_cash_sessions")
     """Vista para reabrir jornadas o turnos cerrados por error."""
     # Últimos 10 días cerrados
     dias = DiaContable.objects.filter(fecha_cierre__isnull=False).order_by("-fecha_apertura")[:10]
@@ -353,6 +453,7 @@ def caja_reaperturas(request):
 
 @login_required
 def caja_cierres(request):
+    _require_any_permission_or_403(request, "view_cash_reports", "manage_cash")
     """Historial de cierres de caja (Turnos y Jornadas)."""
     # Jornadas (Días Contables)
     dias_qs = DiaContable.objects.filter(fecha_cierre__isnull=False).order_by("-fecha_apertura")
@@ -387,6 +488,8 @@ def caja_cierres(request):
 @login_required
 @require_POST
 def api_dia_reabrir(request, dia_id):
+    if not has_app_permission(request.user, "reopen_cash_sessions"):
+        return _forbidden_json(request, "reopen_cash_sessions")
     """Reabre una jornada cerrada."""
     dia = get_object_or_404(DiaContable, id=dia_id)
     if not dia.fecha_cierre:
@@ -416,6 +519,8 @@ def api_dia_reabrir(request, dia_id):
 @login_required
 @require_POST
 def api_caja_reabrir(request, sesion_id):
+    if not has_app_permission(request.user, "reopen_cash_sessions"):
+        return _forbidden_json(request, "reopen_cash_sessions")
     """Reabre un turno de caja cerrado."""
     sesion = get_object_or_404(SesionCaja, id=sesion_id)
     if not sesion.fecha_cierre:
@@ -453,14 +558,25 @@ def api_caja_reabrir(request, sesion_id):
 
 @login_required
 def caja_gestion(request):
+    _require_permission_or_403(request, "manage_cash")
     """Vista para abrir/cerrar el día y la caja."""
     
     if request.method == "POST" and "fondo_caja" in request.POST:
         # Guardar parámetro
         fondo = request.POST.get("fondo_caja", "0.00")
+        actual = ConfiguracionTPV.objects.filter(clave="fondo_caja_predeterminado").first()
+        valor_anterior = actual.valor if actual else ""
         ConfiguracionTPV.objects.update_or_create(
             clave="fondo_caja_predeterminado",
             defaults={"valor": fondo, "descripcion": "Fondo de caja inicial por defecto"}
+        )
+        log_info(
+            "configuracion.caja",
+            (
+                f"usuario={_actor_username(request.user)} accion=actualizar_fondo_caja_predeterminado "
+                f"valor_anterior={valor_anterior or 'vacio'} valor_nuevo={fondo} "
+                f"cambio={'1' if str(valor_anterior) != str(fondo) else '0'}"
+            ),
         )
         return redirect("ui:caja_gestion")
 
@@ -499,6 +615,7 @@ import json
 
 @login_required
 def caja_estadisticas(request):
+    _require_any_permission_or_403(request, "view_cash_reports", "manage_cash")
     hoy = timezone.now().date()
     hace_14_dias = hoy - timedelta(days=13)
     inicio_mes = hoy.replace(day=1)
@@ -590,6 +707,8 @@ def caja_estadisticas(request):
 @login_required
 @require_POST
 def api_dia_abrir(request):
+    if not has_app_permission(request.user, "manage_cash"):
+        return _forbidden_json(request, "manage_cash")
     if DiaContable.objects.filter(fecha_cierre__isnull=True).exists():
         log_warn(
             "caja.jornada",
@@ -607,6 +726,8 @@ def api_dia_abrir(request):
 @login_required
 @require_POST
 def api_dia_cerrar(request):
+    if not has_app_permission(request.user, "manage_cash"):
+        return _forbidden_json(request, "manage_cash")
     dia = DiaContable.objects.filter(fecha_cierre__isnull=True).first()
     if not dia:
         log_warn(
@@ -640,9 +761,15 @@ def api_dia_cerrar(request):
     dia.fecha_cierre = timezone.now()
     dia.cerrado_por = request.user
     dia.save(update_fields=["fecha_cierre", "cerrado_por"])
+    sesion_id = sesion_abierta.id if sesion_abierta else "none"
+    cierre_turno = "manual" if efectivo_real is not None else "automatico"
     log_info(
         "caja.jornada",
-        f"usuario={_actor_username(request.user)} accion=cerrar_jornada dia_id={dia.id}",
+        (
+            f"usuario={_actor_username(request.user)} accion=cerrar_jornada dia_id={dia.id} "
+            f"sesion_cerrada={sesion_id} cierre_turno={cierre_turno} "
+            f"efectivo_final_real={efectivo_real if efectivo_real is not None else 'auto'}"
+        ),
     )
 
     from django.urls import reverse
@@ -653,6 +780,8 @@ def api_dia_cerrar(request):
 @login_required
 @require_POST
 def api_caja_abrir(request):
+    if not has_app_permission(request.user, "manage_cash"):
+        return _forbidden_json(request, "manage_cash")
     dia = DiaContable.objects.filter(fecha_cierre__isnull=True).first()
     if not dia:
         log_warn(
@@ -687,6 +816,8 @@ def api_caja_abrir(request):
 @login_required
 @require_POST
 def api_caja_cerrar(request):
+    if not has_app_permission(request.user, "manage_cash"):
+        return _forbidden_json(request, "manage_cash")
     sesion = SesionCaja.objects.filter(fecha_cierre__isnull=True).first()
     if not sesion:
         log_warn(
@@ -713,9 +844,14 @@ def api_caja_cerrar(request):
     sesion.efectivo_final_real = efectivo_real
     sesion.observaciones = observaciones
     sesion.save()
+    observaciones_len = len((observaciones or "").strip())
     log_info(
         "caja.turno",
-        f"usuario={_actor_username(request.user)} accion=cerrar_turno sesion_id={sesion.id} efectivo_final_real={efectivo_real}",
+        (
+            f"usuario={_actor_username(request.user)} accion=cerrar_turno sesion_id={sesion.id} "
+            f"efectivo_final_real={efectivo_real if efectivo_real is not None else 'none'} "
+            f"observaciones_len={observaciones_len}"
+        ),
     )
 
     from django.urls import reverse
@@ -725,6 +861,8 @@ def api_caja_cerrar(request):
 @login_required
 @require_POST
 def api_caja_movimiento(request):
+    if not has_app_permission(request.user, "manage_cash"):
+        return _forbidden_json(request, "manage_cash")
     from tpvapp.models import MovimientoCaja
 
     sesion = SesionCaja.objects.filter(fecha_cierre__isnull=True).first()
@@ -742,12 +880,24 @@ def api_caja_movimiento(request):
         concepto = data.get("concepto")
 
         if tipo not in ["entrada", "salida"]:
+            log_warn(
+                "caja.movimientos",
+                f"usuario={_actor_username(request.user)} accion=movimiento_bloqueado sesion_id={sesion.id} motivo=tipo_invalido tipo={tipo}",
+            )
             return JsonResponse({"ok": False, "error": "Tipo invalido."}, status=400)
 
         importe_dec = Decimal(str(importe))
         if importe_dec <= 0:
+            log_warn(
+                "caja.movimientos",
+                f"usuario={_actor_username(request.user)} accion=movimiento_bloqueado sesion_id={sesion.id} motivo=importe_invalido importe={importe}",
+            )
             return JsonResponse({"ok": False, "error": "Importe invalido."}, status=400)
         if not concepto:
+            log_warn(
+                "caja.movimientos",
+                f"usuario={_actor_username(request.user)} accion=movimiento_bloqueado sesion_id={sesion.id} motivo=concepto_vacio",
+            )
             return JsonResponse({"ok": False, "error": "Concepto requerido."}, status=400)
 
         movimiento = MovimientoCaja.objects.create(
@@ -773,6 +923,8 @@ def api_caja_movimiento(request):
 @login_required
 @require_POST
 def api_configuracion_update(request):
+    if not has_app_permission(request.user, "manage_configuration"):
+        return _forbidden_json(request, "manage_configuration")
     """Actualiza una clave de configuracion."""
     try:
         data = json.loads(request.body)
@@ -780,15 +932,25 @@ def api_configuracion_update(request):
         valor = data.get("valor")
 
         if not clave:
+            log_warn(
+                "configuracion.ui",
+                f"usuario={_actor_username(request.user)} accion=actualizar_bloqueado motivo=clave_vacia",
+            )
             return JsonResponse({"ok": False, "error": "Falta la clave."}, status=400)
 
-        ConfiguracionTPV.objects.update_or_create(
+        actual = ConfiguracionTPV.objects.filter(clave=clave).first()
+        valor_anterior = actual.valor if actual else ""
+        _, created = ConfiguracionTPV.objects.update_or_create(
             clave=clave,
             defaults={"valor": str(valor)},
         )
         log_info(
             "configuracion.ui",
-            f"usuario={_actor_username(request.user)} accion=actualizar clave={clave} valor={valor}",
+            (
+                f"usuario={_actor_username(request.user)} accion=actualizar clave={clave} "
+                f"valor_anterior={valor_anterior or 'vacio'} valor_nuevo={valor} "
+                f"creado={'1' if created else '0'} cambio={'1' if str(valor_anterior) != str(valor) else '0'}"
+            ),
         )
         return JsonResponse({"ok": True})
     except Exception as e:
@@ -801,11 +963,13 @@ def api_configuracion_update(request):
 
 @login_required
 def albaranes_facturas(request):
+    _require_any_permission_or_403(request, "process_payments", "manage_files")
     return render(request, "ui/albaranes_facturas/index.html")
 
 
 @login_required
 def config(request):
+    _require_permission_or_403(request, "manage_configuration")
     return render(request, "ui/config/index.html")
 
 
@@ -815,6 +979,7 @@ def _post_bool(post, key):
 
 @login_required
 def config_seguridad(request):
+    _require_permission_or_403(request, "manage_configuration")
     saved = False
     if request.method == "POST":
         rules = []
@@ -865,9 +1030,257 @@ def config_seguridad(request):
 
 @login_required
 def config_impresoras(request):
+    _require_permission_or_403(request, "manage_configuration")
     from tpvapp.models import Impresora
     impresoras = Impresora.objects.all().order_by('nombre')
     return render(request, "ui/config/impresoras.html", {"impresoras": impresoras})
+
+
+@login_required
+def config_usuarios(request):
+    _require_permission_or_403(request, "manage_users")
+    User = get_user_model()
+    notice_ok = ""
+    notice_error = ""
+
+    if request.method == "POST":
+        action = (request.POST.get("action") or "").strip().lower()
+        actor = _actor_username(request.user)
+        try:
+            if action == "create":
+                username = (request.POST.get("username") or "").strip()
+                password = request.POST.get("password") or ""
+                email = (request.POST.get("email") or "").strip()
+                first_name = (request.POST.get("first_name") or "").strip()
+                last_name = (request.POST.get("last_name") or "").strip()
+                is_staff = _post_bool(request.POST, "is_staff")
+                is_active = _post_bool(request.POST, "is_active")
+
+                if not username:
+                    raise ValueError("El nombre de usuario es obligatorio.")
+                if not password:
+                    raise ValueError("La contraseña es obligatoria para crear el usuario.")
+                if User.objects.filter(username__iexact=username).exists():
+                    raise ValueError("Ya existe un usuario con ese nombre.")
+
+                new_user = User.objects.create_user(
+                    username=username,
+                    password=password,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    is_staff=is_staff,
+                    is_active=is_active,
+                )
+                registrar(
+                    request.user,
+                    "USUARIO_CREADO",
+                    f"usuario_objetivo={new_user.username} staff={is_staff} activo={is_active}",
+                )
+                log_info(
+                    "auth.users",
+                    f"usuario={actor} accion=crear usuario_objetivo={new_user.username} staff={is_staff} activo={is_active}",
+                )
+                notice_ok = "Usuario creado correctamente."
+
+            elif action == "update":
+                user_id = request.POST.get("user_id")
+                target = get_object_or_404(User, id=user_id)
+                if target.is_superuser and not request.user.is_superuser:
+                    raise ValueError("Solo un superusuario puede editar otro superusuario.")
+
+                is_staff = _post_bool(request.POST, "is_staff")
+                is_active = _post_bool(request.POST, "is_active")
+                if target.id == request.user.id and not is_active:
+                    raise ValueError("No puedes desactivar tu propio usuario.")
+
+                before = {
+                    "email": target.email or "",
+                    "first_name": target.first_name or "",
+                    "last_name": target.last_name or "",
+                    "is_staff": target.is_staff,
+                    "is_active": target.is_active,
+                }
+
+                target.email = (request.POST.get("email") or "").strip()
+                target.first_name = (request.POST.get("first_name") or "").strip()
+                target.last_name = (request.POST.get("last_name") or "").strip()
+                target.is_staff = is_staff
+                target.is_active = is_active
+                changed_fields = ["email", "first_name", "last_name", "is_staff", "is_active"]
+
+                new_password = request.POST.get("new_password") or ""
+                if new_password.strip():
+                    target.set_password(new_password.strip())
+                    changed_fields.append("password")
+
+                target.save()
+                registrar(
+                    request.user,
+                    "USUARIO_ACTUALIZADO",
+                    (
+                        f"usuario_objetivo={target.username} "
+                        f"email_antes={before['email']} email_despues={target.email or ''} "
+                        f"staff_antes={before['is_staff']} staff_despues={target.is_staff} "
+                        f"activo_antes={before['is_active']} activo_despues={target.is_active} "
+                        f"campos={','.join(changed_fields)}"
+                    ),
+                )
+                log_info(
+                    "auth.users",
+                    f"usuario={actor} accion=editar usuario_objetivo={target.username} campos={','.join(changed_fields)}",
+                )
+                notice_ok = "Usuario actualizado correctamente."
+
+            elif action == "delete":
+                user_id = request.POST.get("user_id")
+                target = get_object_or_404(User, id=user_id)
+                if target.id == request.user.id:
+                    raise ValueError("No puedes eliminar tu propio usuario.")
+                if target.is_superuser and not request.user.is_superuser:
+                    raise ValueError("Solo un superusuario puede eliminar otro superusuario.")
+
+                username_target = target.username
+                target.delete()
+                registrar(
+                    request.user,
+                    "USUARIO_ELIMINADO",
+                    f"usuario_objetivo={username_target}",
+                )
+                log_warn(
+                    "auth.users",
+                    f"usuario={actor} accion=eliminar usuario_objetivo={username_target}",
+                )
+                notice_ok = "Usuario eliminado correctamente."
+            else:
+                notice_error = "Accion no valida."
+        except ValueError as exc:
+            notice_error = str(exc)
+        except Exception as exc:
+            log_error(
+                "auth.users",
+                f"usuario={_actor_username(request.user)} accion=gestion_usuarios_error",
+                exc=exc,
+            )
+            notice_error = "No se pudo completar la operacion sobre usuarios."
+
+    users = User.objects.all().order_by("username")
+    return render(
+        request,
+        "ui/config/usuarios.html",
+        {
+            "users": users,
+            "notice_ok": notice_ok,
+            "notice_error": notice_error,
+        },
+    )
+
+
+@login_required
+def config_permisos(request):
+    _require_permission_or_403(request, "manage_permissions")
+    User = get_user_model()
+    users = User.objects.all().order_by("username")
+    selected_user = None
+    notice_ok = ""
+    notice_error = ""
+
+    selected_user_id = request.GET.get("user") or request.POST.get("user_id")
+    if users.exists():
+        if selected_user_id:
+            selected_user = users.filter(id=selected_user_id).first()
+        if selected_user is None:
+            selected_user = users.first()
+
+    custom_codes = permission_codenames()
+    custom_permissions_qs = Permission.objects.filter(
+        content_type__app_label="tpvapp",
+        codename__in=custom_codes,
+    ).order_by("codename")
+    permission_map = {perm.codename: perm for perm in custom_permissions_qs}
+    missing_codes = [code for code in custom_codes if code not in permission_map]
+
+    if request.method == "POST" and selected_user is not None:
+        if selected_user.is_superuser and not request.user.is_superuser:
+            notice_error = "Solo un superusuario puede modificar permisos de otro superusuario."
+        elif missing_codes:
+            notice_error = "Faltan permisos en base de datos. Ejecuta migraciones para crearlos."
+        else:
+            selected_pack_keys = [
+                key for key in request.POST.getlist("pack")
+                if key in PERMISSION_PACKS
+            ]
+            manual_codes = {
+                code for code in request.POST.getlist("perm")
+                if code in permission_map
+            }
+            pack_codes = set()
+            for key in selected_pack_keys:
+                pack_codes.update(PERMISSION_PACKS[key]["permissions"])
+
+            final_codes = sorted(pack_codes | manual_codes)
+            selected_user.user_permissions.set(
+                [permission_map[code] for code in final_codes if code in permission_map]
+            )
+
+            registrar(
+                request.user,
+                "USUARIO_PERMISOS_ACTUALIZADOS",
+                (
+                    f"usuario_objetivo={selected_user.username} "
+                    f"packs={','.join(selected_pack_keys) if selected_pack_keys else 'ninguno'} "
+                    f"permisos={','.join(final_codes) if final_codes else 'ninguno'}"
+                ),
+            )
+            log_info(
+                "auth.permissions",
+                (
+                    f"usuario={_actor_username(request.user)} accion=actualizar_permisos "
+                    f"usuario_objetivo={selected_user.username} "
+                    f"packs={','.join(selected_pack_keys) if selected_pack_keys else 'ninguno'} "
+                    f"permisos={','.join(final_codes) if final_codes else 'ninguno'}"
+                ),
+            )
+            notice_ok = "Permisos actualizados correctamente."
+
+    active_codes = set()
+    active_packs = set()
+    if selected_user is not None:
+        active_codes = set(
+            selected_user.user_permissions.filter(
+                content_type__app_label="tpvapp",
+                codename__in=custom_codes,
+            ).values_list("codename", flat=True)
+        )
+        for key, pack in PERMISSION_PACKS.items():
+            if set(pack["permissions"]).issubset(active_codes):
+                active_packs.add(key)
+
+    categories_prepared = []
+    for cat_key, items in grouped_permissions().items():
+        categories_prepared.append(
+            {
+                "key": cat_key,
+                "label": CATEGORY_LABELS.get(cat_key, cat_key),
+                "items": items,
+            }
+        )
+
+    return render(
+        request,
+        "ui/config/permisos.html",
+        {
+            "users": users,
+            "selected_user": selected_user,
+            "permission_packs": PERMISSION_PACKS.items(),
+            "permission_categories": categories_prepared,
+            "active_codes": active_codes,
+            "active_packs": active_packs,
+            "missing_codes": missing_codes,
+            "notice_ok": notice_ok,
+            "notice_error": notice_error,
+        },
+    )
 
 def ayuda(request):
     return render(request, "ui/ayuda/index.html")
@@ -876,11 +1289,13 @@ def ayuda(request):
 # CONFIG VIEWS
 @login_required
 def map_editor(request):
+    _require_permission_or_403(request, "manage_configuration")
     return render(request, "ui/config/maps/map_editor.html")
 
 
 @login_required
 def maps_list(request):
+    _require_permission_or_403(request, "manage_configuration")
     # Listar mapas del usuario y saber cuál está activo
     maps = TPVMap.objects.filter(owner=request.user).order_by("-updated_at")
     active = maps.filter(is_active=True).first()
@@ -893,6 +1308,7 @@ def maps_list(request):
 @login_required
 @require_POST
 def activate_map(request, map_id: int):
+    _require_permission_or_403(request, "manage_configuration")
     # Activar un mapa y desactivar los demas del usuario
     m = get_object_or_404(TPVMap, id=map_id, owner=request.user)
 
@@ -932,6 +1348,8 @@ def _map_to_dict(m: TPVMap):
 @login_required
 @require_http_methods(["GET"])
 def api_map_get(request, map_id: int):
+    if not has_app_permission(request.user, "manage_configuration"):
+        return _forbidden_json(request, "manage_configuration")
     m = TPVMap.objects.filter(id=map_id, owner=request.user).first()
     if not m:
         return JsonResponse({"error": "not_found"}, status=404)
@@ -940,6 +1358,8 @@ def api_map_get(request, map_id: int):
 @login_required
 @require_http_methods(["GET"])
 def api_maps_list(request):
+    if not has_app_permission(request.user, "manage_configuration"):
+        return _forbidden_json(request, "manage_configuration")
     qs = TPVMap.objects.filter(owner=request.user).order_by("-updated_at")
     data = [{
         "id": m.id,
@@ -953,6 +1373,8 @@ def api_maps_list(request):
 @login_required
 @require_http_methods(["POST"])
 def api_map_save(request, map_id: int):
+    if not has_app_permission(request.user, "manage_configuration"):
+        return _forbidden_json(request, "manage_configuration")
     try:
         payload = json.loads(request.body.decode("utf-8"))
     except Exception:
@@ -1005,6 +1427,8 @@ def api_map_save(request, map_id: int):
 @login_required
 @require_http_methods(["POST"])
 def api_map_activate(request, map_id: int):
+    if not has_app_permission(request.user, "manage_configuration"):
+        return _forbidden_json(request, "manage_configuration")
     m = get_object_or_404(TPVMap, id=map_id, owner=request.user)
 
     TPVMap.objects.filter(owner=request.user, is_active=True).update(is_active=False)
@@ -1019,6 +1443,8 @@ def api_map_activate(request, map_id: int):
 @login_required
 @require_http_methods(["POST"])
 def api_map_delete(request, map_id: int):
+    if not has_app_permission(request.user, "manage_configuration"):
+        return _forbidden_json(request, "manage_configuration")
     m = get_object_or_404(TPVMap, id=map_id, owner=request.user)
 
     if m.is_active:

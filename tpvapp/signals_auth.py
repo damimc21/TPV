@@ -1,7 +1,7 @@
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
 from django.dispatch import receiver
 
-from tpvapp.auditoria import log_info, log_warn
+from tpvapp.auditoria import log_info, log_warn, registrar_evento_usuario
 from tpvapp.auth_security import register_failed_login, register_success_login
 
 
@@ -37,6 +37,11 @@ def _failed_identity(credentials):
 def on_user_logged_in(sender, request, user, **kwargs):
     username = getattr(user, "username", None) or "unknown"
     register_success_login(request, username)
+    registrar_evento_usuario(
+        user,
+        "AUTH_LOGIN_OK",
+        _request_context(request),
+    )
     message = f"usuario={username} accion=login_ok {_request_context(request)}"
     log_info("auth.login", message)
 
@@ -44,6 +49,11 @@ def on_user_logged_in(sender, request, user, **kwargs):
 @receiver(user_logged_out)
 def on_user_logged_out(sender, request, user, **kwargs):
     username = getattr(user, "username", None) or "unknown"
+    registrar_evento_usuario(
+        user,
+        "AUTH_LOGOUT",
+        _request_context(request),
+    )
     message = f"usuario={username} accion=logout {_request_context(request)}"
     log_info("auth.logout", message)
 
@@ -59,5 +69,10 @@ def on_user_login_failed(sender, credentials, request, **kwargs):
         extra += " user_lock=permanent"
     elif security["user_lock_applied"]:
         extra += f" user_lock={security['user_lock_applied']}s"
+    registrar_evento_usuario(
+        None,
+        "AUTH_LOGIN_FAILED",
+        f"usuario_intento={identity} {_request_context(request)}{extra}",
+    )
     message = f"usuario_intento={identity} accion=login_failed {_request_context(request)}{extra}"
     log_warn("auth.login_failed", message)

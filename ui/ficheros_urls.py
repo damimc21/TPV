@@ -12,6 +12,9 @@ urlpatterns = [
     path("backup/restaurar/", ficheros_api.backup_restaurar, name="ficheros_backup_restaurar"),
 
     # === IMPORTAR ===
+    path("importar-plantilla/", ficheros_api.importar_plantilla, name="ficheros_importar_plantilla"),
+    path("importar-previsualizar/", ficheros_api.importar_previsualizar, name="ficheros_importar_previsualizar"),
+    path("importar-verificar/", ficheros_api.importar_verificar, name="ficheros_importar_verificar"),
     path("importar-productos/", ficheros_api.importar_productos, name="ficheros_importar_productos"),
     path("importar-inventario/", ficheros_api.importar_inventario, name="ficheros_importar_inventario"),
 
