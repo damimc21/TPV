@@ -15,6 +15,7 @@ from tpvapp.auditoria import log_info, log_warn, log_error, registrar
 from tpvapp.permissions import has_app_permission
 from tpvapp.permission_profiles import (
     PERMISSION_PACKS,
+    PERMISSION_DEFINITIONS,
     CATEGORY_LABELS,
     grouped_permissions,
     permission_codenames,
@@ -68,6 +69,39 @@ def _forbidden_json(request, codename: str):
         {"ok": False, "error": "No tienes permisos para esta operacion."},
         status=403,
     )
+
+
+ROLE_PACK_KEYS = ("camarero", "staff")
+
+
+def _role_from_permissions(user):
+    if getattr(user, "is_superuser", False):
+        return "superusuario"
+    active_codes = set(
+        user.user_permissions.filter(
+            content_type__app_label="tpvapp",
+            codename__in=permission_codenames(),
+        ).values_list("codename", flat=True)
+    )
+    # Comprueba los packs visibles de mayor a menor
+    for role_key in reversed(ROLE_PACK_KEYS):
+        role_codes = set(PERMISSION_PACKS[role_key]["permissions"])
+        if role_codes.issubset(active_codes):
+            return role_key
+    return "normal"
+
+
+def _apply_role_permissions(user, role_key):
+    custom_codes = permission_codenames()
+    current_custom = Permission.objects.filter(
+        content_type__app_label="tpvapp",
+        codename__in=custom_codes,
+    )
+    user.user_permissions.remove(*current_custom)
+    if role_key in PERMISSION_PACKS:
+        role_codes = PERMISSION_PACKS[role_key]["permissions"]
+        role_permissions = current_custom.filter(codename__in=role_codes)
+        user.user_permissions.add(*role_permissions)
 
 
 class TpvLoginView(LoginView):
@@ -1042,6 +1076,7 @@ def config_usuarios(request):
     User = get_user_model()
     notice_ok = ""
     notice_error = ""
+    actor_is_system_user = getattr(request.user, "is_system_user", False)
 
     if request.method == "POST":
         action = (request.POST.get("action") or "").strip().lower()
@@ -1051,10 +1086,13 @@ def config_usuarios(request):
                 username = (request.POST.get("username") or "").strip()
                 password = request.POST.get("password") or ""
                 email = (request.POST.get("email") or "").strip()
-                first_name = (request.POST.get("first_name") or "").strip()
-                last_name = (request.POST.get("last_name") or "").strip()
+                wants_waiter = _post_bool(request.POST, "role_camarero")
                 is_staff = _post_bool(request.POST, "is_staff")
                 is_active = _post_bool(request.POST, "is_active")
+                # Solo el usuario de sistema puede crear otro superusuario.
+                wants_superuser = _post_bool(request.POST, "is_superuser")
+                if wants_superuser and not actor_is_system_user:
+                    raise ValueError("Solo el usuario de sistema puede crear otro superusuario.")
 
                 if not username:
                     raise ValueError("El nombre de usuario es obligatorio.")
@@ -1067,47 +1105,92 @@ def config_usuarios(request):
                     username=username,
                     password=password,
                     email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    is_staff=is_staff,
+                    is_staff=is_staff or wants_superuser,
                     is_active=is_active,
+                    is_superuser=wants_superuser,
                 )
+                role_key = "superusuario" if wants_superuser else "staff" if is_staff else "camarero" if wants_waiter else None
+                _apply_role_permissions(new_user, role_key)
                 registrar(
                     request.user,
                     "USUARIO_CREADO",
-                    f"usuario_objetivo={new_user.username} staff={is_staff} activo={is_active}",
+                    f"usuario_objetivo={new_user.username} staff={is_staff} superuser={wants_superuser} activo={is_active}",
                 )
                 log_info(
                     "auth.users",
-                    f"usuario={actor} accion=crear usuario_objetivo={new_user.username} staff={is_staff} activo={is_active}",
+                    f"usuario={actor} accion=crear usuario_objetivo={new_user.username} staff={is_staff} superuser={wants_superuser} activo={is_active}",
                 )
-                notice_ok = "Usuario creado correctamente."
+                notice_ok = f"Usuario '{new_user.username}' creado correctamente."
 
             elif action == "update":
                 user_id = request.POST.get("user_id")
                 target = get_object_or_404(User, id=user_id)
-                if target.is_superuser and not request.user.is_superuser:
-                    raise ValueError("Solo un superusuario puede editar otro superusuario.")
+
+                # Protecciones para el superusuario de sistema.
+                if target.is_system_user:
+                    if target.id != request.user.id:
+                        raise ValueError("El usuario de sistema solo puede modificar su propia contraseña.")
+                    # Solo permite cambiar contraseña.
+                    new_password = request.POST.get("new_password") or ""
+                    if new_password.strip():
+                        if len(new_password.strip()) < 4:
+                            raise ValueError("La contraseña debe tener al menos 4 caracteres.")
+                        target.set_password(new_password.strip())
+                        target.save(update_fields=["password"])
+                        registrar(
+                            request.user,
+                            "USUARIO_ACTUALIZADO",
+                            f"usuario_objetivo={target.username} campos=password",
+                        )
+                        log_info(
+                            "auth.users",
+                            f"usuario={actor} accion=editar usuario_objetivo={target.username} campos=password",
+                        )
+                        notice_ok = "Contraseña del usuario de sistema actualizada correctamente."
+                    else:
+                        notice_ok = "No se realizaron cambios."
+                    # Salir sin procesar más campos.
+                    users = list(User.objects.all().order_by("username"))
+                    for user_item in users:
+                        user_item.permission_role = _role_from_permissions(user_item)
+                    _rp_keys = list(ROLE_PACK_KEYS) + (["superusuario"] if getattr(request.user, "is_system_user", False) else [])
+                    role_packs = [(key, PERMISSION_PACKS[key]) for key in _rp_keys]
+                    return render(
+                        request,
+                        "ui/config/usuarios.html",
+                        {"users": users, "role_packs": role_packs, "notice_ok": notice_ok, "notice_error": notice_error},
+                    )
+
+                if target.is_superuser and target.id != request.user.id and not actor_is_system_user:
+                    raise ValueError("Solo el usuario de sistema puede editar otro superusuario.")
 
                 is_staff = _post_bool(request.POST, "is_staff")
+                wants_waiter = _post_bool(request.POST, "role_camarero")
                 is_active = _post_bool(request.POST, "is_active")
                 if target.id == request.user.id and not is_active:
                     raise ValueError("No puedes desactivar tu propio usuario.")
 
+                # Solo el usuario de sistema puede promover/degradar superusuarios.
+                posted_superuser = _post_bool(request.POST, "is_superuser")
+                if not actor_is_system_user and "is_superuser" in request.POST and posted_superuser != target.is_superuser:
+                    raise ValueError("Solo el usuario de sistema puede cambiar el rol de superusuario.")
+                if actor_is_system_user and target.id == request.user.id and "is_superuser" in request.POST and posted_superuser != target.is_superuser:
+                    raise ValueError("No puedes cambiar tu propio rol de superusuario.")
+                wants_superuser = posted_superuser if actor_is_system_user and target.id != request.user.id else target.is_superuser
+
                 before = {
                     "email": target.email or "",
-                    "first_name": target.first_name or "",
-                    "last_name": target.last_name or "",
                     "is_staff": target.is_staff,
                     "is_active": target.is_active,
+                    "is_superuser": target.is_superuser,
                 }
 
                 target.email = (request.POST.get("email") or "").strip()
-                target.first_name = (request.POST.get("first_name") or "").strip()
-                target.last_name = (request.POST.get("last_name") or "").strip()
-                target.is_staff = is_staff
+                target.is_staff = is_staff or wants_superuser
                 target.is_active = is_active
-                changed_fields = ["email", "first_name", "last_name", "is_staff", "is_active"]
+                target.is_superuser = wants_superuser
+                changed_fields = ["email", "is_staff", "is_active", "is_superuser"]
+                role_key = "superusuario" if wants_superuser else "staff" if is_staff else "camarero" if wants_waiter else None
 
                 new_password = request.POST.get("new_password") or ""
                 if new_password.strip():
@@ -1115,6 +1198,7 @@ def config_usuarios(request):
                     changed_fields.append("password")
 
                 target.save()
+                _apply_role_permissions(target, role_key)
                 registrar(
                     request.user,
                     "USUARIO_ACTUALIZADO",
@@ -1123,33 +1207,63 @@ def config_usuarios(request):
                         f"email_antes={before['email']} email_despues={target.email or ''} "
                         f"staff_antes={before['is_staff']} staff_despues={target.is_staff} "
                         f"activo_antes={before['is_active']} activo_despues={target.is_active} "
-                        f"campos={','.join(changed_fields)}"
+                        f"campos={','.join(changed_fields)} rol={role_key or 'normal'}"
                     ),
                 )
                 log_info(
                     "auth.users",
-                    f"usuario={actor} accion=editar usuario_objetivo={target.username} campos={','.join(changed_fields)}",
+                    f"usuario={actor} accion=editar usuario_objetivo={target.username} campos={','.join(changed_fields)} rol={role_key or 'normal'}",
                 )
-                notice_ok = "Usuario actualizado correctamente."
+                notice_ok = f"Usuario '{target.username}' actualizado correctamente."
 
             elif action == "delete":
                 user_id = request.POST.get("user_id")
                 target = get_object_or_404(User, id=user_id)
+                if target.is_system_user:
+                    raise ValueError("El usuario de sistema no puede eliminarse.")
                 if target.id == request.user.id:
                     raise ValueError("No puedes eliminar tu propio usuario.")
-                if target.is_superuser and not request.user.is_superuser:
-                    raise ValueError("Solo un superusuario puede eliminar otro superusuario.")
+                if target.is_superuser and not actor_is_system_user:
+                    raise ValueError("Solo el usuario de sistema puede eliminar otro superusuario.")
+
+                # Detectar comandas activas del usuario (sin cerrar).
+                comandas_activas = Comanda.objects.filter(
+                    usuario=target, fecha_cierre__isnull=True
+                ).count()
+                confirmed = request.POST.get("confirm_delete") == "1"
+                if comandas_activas and not confirmed:
+                    # Devolver aviso al frontend para que muestre confirmación extra.
+                    users = list(User.objects.all().order_by("username"))
+                    for user_item in users:
+                        user_item.permission_role = _role_from_permissions(user_item)
+                    _rp_keys = list(ROLE_PACK_KEYS) + (["superusuario"] if getattr(request.user, "is_system_user", False) else [])
+                    role_packs = [(key, PERMISSION_PACKS[key]) for key in _rp_keys]
+                    return render(
+                        request,
+                        "ui/config/usuarios.html",
+                        {
+                            "users": users,
+                            "role_packs": role_packs,
+                            "notice_ok": "",
+                            "notice_error": "",
+                            "delete_warning": {
+                                "user_id": target.id,
+                                "username": target.username,
+                                "comandas_activas": comandas_activas,
+                            },
+                        },
+                    )
 
                 username_target = target.username
                 target.delete()
                 registrar(
                     request.user,
                     "USUARIO_ELIMINADO",
-                    f"usuario_objetivo={username_target}",
+                    f"usuario_objetivo={username_target} comandas_activas_al_borrar={comandas_activas}",
                 )
                 log_warn(
                     "auth.users",
-                    f"usuario={actor} accion=eliminar usuario_objetivo={username_target}",
+                    f"usuario={actor} accion=eliminar usuario_objetivo={username_target} comandas_activas={comandas_activas}",
                 )
                 notice_ok = "Usuario eliminado correctamente."
             else:
@@ -1164,12 +1278,17 @@ def config_usuarios(request):
             )
             notice_error = "No se pudo completar la operacion sobre usuarios."
 
-    users = User.objects.all().order_by("username")
+    users = list(User.objects.all().order_by("username"))
+    for user_item in users:
+        user_item.permission_role = _role_from_permissions(user_item)
+    _rp_keys = list(ROLE_PACK_KEYS) + (["superusuario"] if getattr(request.user, "is_system_user", False) else [])
+    role_packs = [(key, PERMISSION_PACKS[key]) for key in _rp_keys]
     return render(
         request,
         "ui/config/usuarios.html",
         {
             "users": users,
+            "role_packs": role_packs,
             "notice_ok": notice_ok,
             "notice_error": notice_error,
         },
@@ -1178,21 +1297,34 @@ def config_usuarios(request):
 
 @login_required
 def config_permisos(request):
-    _require_permission_or_403(request, "manage_permissions")
+    _require_permission_or_403(request, "manage_users")
     User = get_user_model()
+    actor_is_system_user = getattr(request.user, "is_system_user", False)
+    actor_is_superuser = getattr(request.user, "is_superuser", False)
+
+    # Permisos que el actor puede otorgar:
+    # - superusuario (is_superuser): todos los del catálogo (tiene bypass total).
+    # - usuario normal con manage_users: solo los que él mismo tiene asignados.
+    custom_codes = permission_codenames()
+    if actor_is_superuser:
+        grantable_codes = set(custom_codes)
+    else:
+        grantable_codes = set(
+            request.user.user_permissions.filter(
+                content_type__app_label="tpvapp",
+                codename__in=custom_codes,
+            ).values_list("codename", flat=True)
+        )
+
     users = User.objects.all().order_by("username")
     selected_user = None
     notice_ok = ""
     notice_error = ""
 
     selected_user_id = request.GET.get("user") or request.POST.get("user_id")
-    if users.exists():
-        if selected_user_id:
-            selected_user = users.filter(id=selected_user_id).first()
-        if selected_user is None:
-            selected_user = users.first()
+    if users.exists() and selected_user_id:
+        selected_user = users.filter(id=selected_user_id).first()
 
-    custom_codes = permission_codenames()
     custom_permissions_qs = Permission.objects.filter(
         content_type__app_label="tpvapp",
         codename__in=custom_codes,
@@ -1201,14 +1333,20 @@ def config_permisos(request):
     missing_codes = [code for code in custom_codes if code not in permission_map]
 
     if request.method == "POST" and selected_user is not None:
-        if selected_user.is_superuser and not request.user.is_superuser:
-            notice_error = "Solo un superusuario puede modificar permisos de otro superusuario."
+        # Regla 1: nadie puede editar sus propios permisos.
+        if selected_user.id == request.user.id:
+            notice_error = "No puedes modificar tus propios permisos."
+        elif selected_user.is_system_user:
+            notice_error = "Los permisos del usuario de sistema no se pueden modificar."
+        elif selected_user.is_superuser and not actor_is_system_user:
+            notice_error = "Solo el usuario de sistema puede modificar permisos de otro superusuario."
         elif missing_codes:
             notice_error = "Faltan permisos en base de datos. Ejecuta migraciones para crearlos."
         else:
+            # Solo packs visibles en la UI (camarero, staff); superusuario se ignora aunque llegue.
             selected_pack_keys = [
                 key for key in request.POST.getlist("pack")
-                if key in PERMISSION_PACKS
+                if key in PERMISSION_PACKS and key in ROLE_PACK_KEYS
             ]
             manual_codes = {
                 code for code in request.POST.getlist("perm")
@@ -1218,53 +1356,74 @@ def config_permisos(request):
             for key in selected_pack_keys:
                 pack_codes.update(PERMISSION_PACKS[key]["permissions"])
 
-            final_codes = sorted(pack_codes | manual_codes)
-            selected_user.user_permissions.set(
-                [permission_map[code] for code in final_codes if code in permission_map]
-            )
+            requested_codes = pack_codes | manual_codes
 
-            registrar(
-                request.user,
-                "USUARIO_PERMISOS_ACTUALIZADOS",
-                (
-                    f"usuario_objetivo={selected_user.username} "
-                    f"packs={','.join(selected_pack_keys) if selected_pack_keys else 'ninguno'} "
-                    f"permisos={','.join(final_codes) if final_codes else 'ninguno'}"
-                ),
-            )
-            log_info(
-                "auth.permissions",
-                (
-                    f"usuario={_actor_username(request.user)} accion=actualizar_permisos "
-                    f"usuario_objetivo={selected_user.username} "
-                    f"packs={','.join(selected_pack_keys) if selected_pack_keys else 'ninguno'} "
-                    f"permisos={','.join(final_codes) if final_codes else 'ninguno'}"
-                ),
-            )
-            notice_ok = "Permisos actualizados correctamente."
+            # Regla 2: solo puedes otorgar permisos que tú mismo tienes.
+            forbidden_codes = requested_codes - grantable_codes
+            if forbidden_codes:
+                _label_map = {p["codename"]: p["label"] for p in PERMISSION_DEFINITIONS}
+                forbidden_labels = [_label_map.get(c, c) for c in sorted(forbidden_codes)]
+                notice_error = (
+                    f"No puedes otorgar permisos que tú no tienes: {', '.join(forbidden_labels)}."
+                )
+            else:
+                final_codes = sorted(requested_codes)
+                selected_user.user_permissions.set(
+                    [permission_map[code] for code in final_codes if code in permission_map]
+                )
+                registrar(
+                    request.user,
+                    "USUARIO_PERMISOS_ACTUALIZADOS",
+                    (
+                        f"usuario_objetivo={selected_user.username} "
+                        f"packs={','.join(selected_pack_keys) if selected_pack_keys else 'ninguno'} "
+                        f"permisos={','.join(final_codes) if final_codes else 'ninguno'}"
+                    ),
+                )
+                log_info(
+                    "auth.permissions",
+                    (
+                        f"usuario={_actor_username(request.user)} accion=actualizar_permisos "
+                        f"usuario_objetivo={selected_user.username} "
+                        f"packs={','.join(selected_pack_keys) if selected_pack_keys else 'ninguno'} "
+                        f"permisos={','.join(final_codes) if final_codes else 'ninguno'}"
+                    ),
+                )
+                notice_ok = "Permisos actualizados correctamente."
 
-    active_codes = set()
+    active_codes = set(
+        selected_user.user_permissions.filter(
+            content_type__app_label="tpvapp",
+            codename__in=custom_codes,
+        ).values_list("codename", flat=True)
+    ) if selected_user else set()
+
+    # Packs activos: todos los permisos del pack están activados en el usuario
     active_packs = set()
-    if selected_user is not None:
-        active_codes = set(
-            selected_user.user_permissions.filter(
-                content_type__app_label="tpvapp",
-                codename__in=custom_codes,
-            ).values_list("codename", flat=True)
-        )
-        for key, pack in PERMISSION_PACKS.items():
-            if set(pack["permissions"]).issubset(active_codes):
-                active_packs.add(key)
+    for key in ROLE_PACK_KEYS:
+        pack_perms = set(PERMISSION_PACKS[key]["permissions"])
+        if pack_perms and pack_perms.issubset(active_codes):
+            active_packs.add(key)
 
-    categories_prepared = []
+    # Packs bloqueados: contienen permisos que el actor no puede otorgar
+    locked_packs = set()
+    for key in ROLE_PACK_KEYS:
+        pack_perms = set(PERMISSION_PACKS[key]["permissions"])
+        if not pack_perms.issubset(grantable_codes):
+            locked_packs.add(key)
+
+    # Categorías de permisos para el template
+    permission_categories = []
+    from tpvapp.permission_profiles import grouped_permissions, CATEGORY_LABELS
     for cat_key, items in grouped_permissions().items():
-        categories_prepared.append(
+        permission_categories.append(
             {
-                "key": cat_key,
                 "label": CATEGORY_LABELS.get(cat_key, cat_key),
-                "items": items,
+                "items": [{"codename": p["codename"], "label": p["label"]} for p in items],
             }
         )
+
+    visible_packs = [(key, PERMISSION_PACKS[key]) for key in ROLE_PACK_KEYS]
 
     return render(
         request,
@@ -1272,16 +1431,195 @@ def config_permisos(request):
         {
             "users": users,
             "selected_user": selected_user,
-            "permission_packs": PERMISSION_PACKS.items(),
-            "permission_categories": categories_prepared,
-            "active_codes": active_codes,
+            "permission_packs": visible_packs,
+            "permission_categories": permission_categories,
             "active_packs": active_packs,
+            "active_codes": active_codes,
+            "grantable_codes": grantable_codes,
+            "locked_packs": locked_packs,
             "missing_codes": missing_codes,
             "notice_ok": notice_ok,
             "notice_error": notice_error,
+            "actor_is_system_user": actor_is_system_user,
         },
     )
 
+
+def ayuda(request):
+    return render(request, "ui/ayuda/index.html")
+
+
+# CONFIG VIEWS
+@login_required
+def map_editor(request):
+    return render(request, "ui/config/maps/editor.html")
+
+
+@login_required
+def maps_list(request):
+    _require_permission_or_403(request, "manage_configuration")
+    from tpvapp.models import MapaTPV
+    maps = MapaTPV.objects.all().order_by("-activo", "nombre")
+    active_map = maps.filter(activo=True).first()
+    return render(
+        request,
+        "ui/config/maps/list.html",
+        {"maps": maps, "active_map": active_map},
+    )
+
+
+@login_required
+def activate_map(request, map_id: int):
+    _require_permission_or_403(request, "manage_configuration")
+    from tpvapp.models import MapaTPV
+    mapa = get_object_or_404(MapaTPV, id=map_id)
+    MapaTPV.objects.update(activo=False)
+    mapa.activo = True
+    mapa.save(update_fields=["activo"])
+    log_info(
+        "config.mapas",
+        f"usuario={_actor_username(request.user)} accion=activar_mapa mapa_id={map_id} nombre={mapa.nombre}",
+    )
+    return redirect("ui:maps_list")
+
+
+@login_required
+def api_map_get(request, map_id: int):
+    _require_permission_or_403(request, "manage_configuration")
+    from tpvapp.models import MapaTPV
+    mapa = get_object_or_404(MapaTPV, id=map_id)
+    return JsonResponse({"id": mapa.id, "nombre": mapa.nombre, "data": mapa.data, "activo": mapa.activo})
+
+
+@login_required
+def api_maps_list(request):
+    _require_permission_or_403(request, "manage_configuration")
+    from tpvapp.models import MapaTPV
+    maps = list(
+        MapaTPV.objects.values("id", "nombre", "activo").order_by("-activo", "nombre")
+    )
+    return JsonResponse({"maps": maps})
+
+
+@login_required
+@require_POST
+def api_map_save(request, map_id: int):
+    _require_permission_or_403(request, "manage_configuration")
+    from tpvapp.models import MapaTPV
+    try:
+        payload = json.loads(request.body)
+    except Exception:
+        return JsonResponse({"error": "JSON inválido"}, status=400)
+
+    nombre = (payload.get("nombre") or "").strip()
+    data = payload.get("data")
+
+    if map_id == 0:
+        if not nombre:
+            return JsonResponse({"error": "El nombre es obligatorio"}, status=400)
+        mapa = MapaTPV.objects.create(nombre=nombre, data=data or {})
+        log_info(
+            "config.mapas",
+            f"usuario={_actor_username(request.user)} accion=crear_mapa mapa_id={mapa.id} nombre={nombre}",
+        )
+        return JsonResponse({"ok": True, "id": mapa.id})
+
+    mapa = get_object_or_404(MapaTPV, id=map_id)
+    if nombre:
+        mapa.nombre = nombre
+    if data is not None:
+        mapa.data = data
+    mapa.save()
+    log_info(
+        "config.mapas",
+        f"usuario={_actor_username(request.user)} accion=guardar_mapa mapa_id={map_id} nombre={mapa.nombre}",
+    )
+    return JsonResponse({"ok": True, "id": mapa.id})
+
+
+@login_required
+@require_POST
+def api_map_activate(request, map_id: int):
+    _require_permission_or_403(request, "manage_configuration")
+    from tpvapp.models import MapaTPV
+    mapa = get_object_or_404(MapaTPV, id=map_id)
+    MapaTPV.objects.update(activo=False)
+    mapa.activo = True
+    mapa.save(update_fields=["activo"])
+    log_info(
+        "config.mapas",
+        f"usuario={_actor_username(request.user)} accion=activar_mapa mapa_id={map_id} nombre={mapa.nombre}",
+    )
+    return JsonResponse({"ok": True})
+
+
+@login_required
+@require_POST
+def api_map_delete(request, map_id: int):
+    _require_permission_or_403(request, "manage_configuration")
+    from tpvapp.models import MapaTPV
+    mapa = get_object_or_404(MapaTPV, id=map_id)
+    map_name = mapa.nombre
+    mapa.delete()
+    log_info(
+        "config.mapas",
+        f"usuario={_actor_username(request.user)} accion=eliminar_mapa mapa_id={map_id} nombre={map_name}",
+    )
+    return JsonResponse({"ok": True})
+
+
+    active_codes = set(
+        selected_user.user_permissions.filter(
+            content_type__app_label="tpvapp",
+            codename__in=custom_codes,
+        ).values_list("codename", flat=True)
+    ) if selected_user else set()
+
+    # Packs activos: todos los permisos del pack están activados en el usuario
+    active_packs = set()
+    for key in ROLE_PACK_KEYS:
+        pack_perms = set(PERMISSION_PACKS[key]["permissions"])
+        if pack_perms and pack_perms.issubset(active_codes):
+            active_packs.add(key)
+
+    # Packs bloqueados: contienen permisos que el actor no puede otorgar
+    locked_packs = set()
+    for key in ROLE_PACK_KEYS:
+        pack_perms = set(PERMISSION_PACKS[key]["permissions"])
+        if not pack_perms.issubset(grantable_codes):
+            locked_packs.add(key)
+
+    # Categorías de permisos para el template
+    permission_categories = []
+    from tpvapp.permission_profiles import grouped_permissions, CATEGORY_LABELS
+    for cat_key, items in grouped_permissions().items():
+        permission_categories.append(
+            {
+                "label": CATEGORY_LABELS.get(cat_key, cat_key),
+                "items": [{"codename": p["codename"], "label": p["label"]} for p in items],
+            }
+        )
+
+    visible_packs = [(key, PERMISSION_PACKS[key]) for key in ROLE_PACK_KEYS]
+
+    return render(
+        request,
+        "ui/config/permisos.html",
+        {
+            "users": users,
+            "selected_user": selected_user,
+            "permission_packs": visible_packs,
+            "permission_categories": permission_categories,
+            "active_packs": active_packs,
+            "active_codes": active_codes,
+            "grantable_codes": grantable_codes,
+            "locked_packs": locked_packs,
+            "missing_codes": missing_codes,
+            "notice_ok": notice_ok,
+            "notice_error": notice_error,
+            "actor_is_system_user": actor_is_system_user,
+        },
+    )
 def ayuda(request):
     return render(request, "ui/ayuda/index.html")
 
@@ -1452,13 +1790,4 @@ def api_map_delete(request, map_id: int):
             "config.mapas",
             f"usuario={_actor_username(request.user)} accion=eliminar_mapa_bloqueado mapa_id={m.id} motivo=mapa_activo",
         )
-        return JsonResponse({"ok": False, "error": "No puedes borrar el mapa activo."}, status=400)
-
-    map_name = m.name
-    m.delete()
-    log_warn(
-        "config.mapas",
-        f"usuario={_actor_username(request.user)} accion=eliminar_mapa mapa_id={map_id} nombre={map_name}",
-    )
-    return JsonResponse({"ok": True})
-
+        return JsonResponse({"ok": False, "error": "No pue

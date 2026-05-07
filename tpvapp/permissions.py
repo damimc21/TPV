@@ -4,13 +4,14 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 def has_app_permission(user, codename: str) -> bool:
     """
     Comprueba un permiso funcional del dominio TPV.
-    Regla de compatibilidad:
-    - superuser y staff conservan acceso total.
-    - resto de usuarios se evalua por permiso Django tpvapp.<codename>.
+    Regla:
+    - superuser conserva acceso total.
+    - staff es un rol visual/organizativo; sus accesos vienen por permisos.
+    - el resto de usuarios se evalua por permiso Django tpvapp.<codename>.
     """
     if not user or not getattr(user, "is_authenticated", False):
         return False
-    if getattr(user, "is_superuser", False) or getattr(user, "is_staff", False):
+    if getattr(user, "is_superuser", False):
         return True
     return user.has_perm(f"tpvapp.{codename}")
 

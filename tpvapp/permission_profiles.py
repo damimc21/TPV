@@ -1,16 +1,33 @@
 """
-Catalogo de permisos funcionales y packs de permisos.
+Catálogo de permisos funcionales y packs de permisos.
+
+Jerarquía:
+  sistema (is_system_user) → superusuario (is_superuser) → usuarios con permisos
+
+Reglas clave:
+  - Nadie puede editar sus propios permisos.
+  - Solo puedes otorgar permisos que tú mismo tienes (excepto superusuario, que tiene bypass).
+  - El rol superusuario (is_superuser) solo lo gestiona el usuario de sistema.
+  - El pack "superusuario" no se expone en la UI; se usa internamente al crear/promover superusuarios.
+  - access_tpv y visible_in_tpv siempre van juntos.
 """
 
 from collections import OrderedDict
 
 
 PERMISSION_DEFINITIONS = [
+    # --- TPV operativo ---
     {
         "codename": "access_tpv",
         "name": "Puede acceder al TPV",
         "category": "tpv",
         "label": "Acceso al TPV",
+    },
+    {
+        "codename": "visible_in_tpv",
+        "name": "Aparece en el selector de operador del TPV",
+        "category": "tpv",
+        "label": "Visible en selector de operador",
     },
     {
         "codename": "manage_orders",
@@ -30,11 +47,12 @@ PERMISSION_DEFINITIONS = [
         "category": "tpv",
         "label": "Emitir comprobantes/tickets",
     },
+    # --- Caja ---
     {
         "codename": "manage_cash",
         "name": "Puede abrir/cerrar caja y jornada",
         "category": "caja",
-        "label": "Gestion de caja y jornada",
+        "label": "Gestión de caja y jornada",
     },
     {
         "codename": "reopen_cash_sessions",
@@ -46,13 +64,14 @@ PERMISSION_DEFINITIONS = [
         "codename": "view_cash_reports",
         "name": "Puede consultar cierres y estadisticas de caja",
         "category": "caja",
-        "label": "Ver cierres y estadisticas",
+        "label": "Ver cierres y estadísticas",
     },
+    # --- Datos ---
     {
         "codename": "manage_catalog",
         "name": "Puede gestionar catalogo de productos",
         "category": "datos",
-        "label": "Gestionar catalogo",
+        "label": "Gestionar catálogo",
     },
     {
         "codename": "manage_stock",
@@ -66,36 +85,35 @@ PERMISSION_DEFINITIONS = [
         "category": "datos",
         "label": "Gestionar ficheros y backups",
     },
+    # --- Configuracion ---
     {
         "codename": "manage_configuration",
         "name": "Puede modificar configuracion del sistema",
         "category": "config",
-        "label": "Modificar configuracion",
+        "label": "Modificar configuración",
     },
     {
         "codename": "manage_users",
-        "name": "Puede crear/editar/eliminar usuarios",
+        "name": "Puede gestionar usuarios y asignar permisos",
         "category": "config",
-        "label": "Gestionar usuarios",
-    },
-    {
-        "codename": "manage_permissions",
-        "name": "Puede asignar permisos a usuarios",
-        "category": "config",
-        "label": "Gestionar permisos",
+        "label": "Gestionar usuarios y permisos",
     },
 ]
 
 
+# Packs mostrados en la UI de permisos (camarero y staff).
+# El pack "superusuario" existe solo para uso interno (crear/promover superusuarios)
+# y NO se expone en la pantalla de permisos.
 PERMISSION_PACKS = OrderedDict(
     [
         (
-            "tpv_operador",
+            "camarero",
             {
-                "label": "Operador TPV",
-                "description": "Acceso al TPV para comandar, cobrar e imprimir tickets.",
+                "label": "Camarero",
+                "description": "Trabajo diario: entrar al TPV, aparecer en el selector, comandar, cobrar e imprimir tickets.",
                 "permissions": [
                     "access_tpv",
+                    "visible_in_tpv",
                     "manage_orders",
                     "process_payments",
                     "print_documents",
@@ -103,59 +121,88 @@ PERMISSION_PACKS = OrderedDict(
             },
         ),
         (
-            "caja_responsable",
+            "staff",
             {
-                "label": "Responsable de Caja",
-                "description": "Control de aperturas/cierres y revision de informes de caja.",
+                "label": "Staff",
+                "description": "Incluye Camarero y tareas de encargado: caja, cierres, informes, catálogo y stock.",
                 "permissions": [
+                    "access_tpv",
+                    "visible_in_tpv",
+                    "manage_orders",
+                    "process_payments",
+                    "print_documents",
                     "manage_cash",
                     "reopen_cash_sessions",
                     "view_cash_reports",
+                    "manage_catalog",
+                    "manage_stock",
                 ],
             },
         ),
+        # Uso interno: permisos por defecto al crear/promover un superusuario.
+        # No se muestra en la UI de permisos.
         (
-            "gestion_datos",
+            "superusuario",
             {
-                "label": "Gestion de Datos",
-                "description": "Catalogo, inventario y operaciones de ficheros.",
+                "label": "Superusuario",
+                "description": "Acceso completo al sistema excepto gestión del propio rol de superusuario.",
                 "permissions": [
+                    "access_tpv",
+                    "visible_in_tpv",
+                    "manage_orders",
+                    "process_payments",
+                    "print_documents",
+                    "manage_cash",
+                    "reopen_cash_sessions",
+                    "view_cash_reports",
                     "manage_catalog",
                     "manage_stock",
                     "manage_files",
+                    "manage_configuration",
+                    "manage_users",
                 ],
             },
         ),
         (
-            "admin_config",
+            "tpv_operador",
             {
-                "label": "Administrador de Configuracion",
-                "description": "Config global, usuarios y permisos.",
+                "label": "Operador TPV",
+                "description": "Alias compatible del perfil Camarero.",
                 "permissions": [
-                    "manage_configuration",
-                    "manage_users",
-                    "manage_permissions",
+                    "access_tpv",
+                    "visible_in_tpv",
+                    "manage_orders",
+                    "process_payments",
+                    "print_documents",
                 ],
             },
         ),
     ]
 )
 
-
-CATEGORY_LABELS = {
-    "tpv": "Operativa TPV",
-    "caja": "Caja y Cierres",
-    "datos": "Catalogo, Stock y Ficheros",
-    "config": "Configuracion y Seguridad",
-}
+# Claves de packs que se muestran en la UI de permisos (excluye superusuario y tpv_operador).
+ROLE_PACK_KEYS = ("camarero", "staff")
 
 
 def permission_codenames():
-    return [item["codename"] for item in PERMISSION_DEFINITIONS]
+    """Devuelve la lista ordenada de codenames del catálogo de permisos."""
+    return [p["codename"] for p in PERMISSION_DEFINITIONS]
 
 
 def grouped_permissions():
-    grouped = OrderedDict((key, []) for key in CATEGORY_LABELS.keys())
-    for item in PERMISSION_DEFINITIONS:
-        grouped[item["category"]].append(item)
-    return grouped
+    """Devuelve los permisos agrupados por categoría (OrderedDict)."""
+    groups = OrderedDict()
+    for perm in PERMISSION_DEFINITIONS:
+        cat = perm["category"]
+        if cat not in groups:
+            groups[cat] = []
+        groups[cat].append(perm)
+    return groups
+
+
+CATEGORY_LABELS = {
+    "tpv": "TPV",
+    "caja": "Caja",
+    "datos": "Datos",
+    "config": "Configuración",
+}

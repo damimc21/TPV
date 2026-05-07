@@ -107,7 +107,7 @@ class ConfigUserPermissionViewsTests(TestCase):
         self.assertTrue(get_user_model().objects.filter(username="nuevo_user").exists())
 
     def test_config_permisos_assign_pack_and_advanced(self):
-        self._grant("manage_permissions")
+        self._grant("manage_users")
         resp = self.client.post(
             "/es/config/permisos/",
             data={
