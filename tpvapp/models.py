@@ -12,10 +12,16 @@ from django.utils import timezone
 
 class Usuario(AbstractUser):
     activo = models.BooleanField(default=True)
+    is_system_user = models.BooleanField(
+        default=False,
+        editable=False,
+        help_text="Usuario de sistema creado automáticamente. No puede eliminarse ni renombrarse.",
+    )
 
     class Meta:
         permissions = [
             ("access_tpv", "Puede acceder al TPV"),
+            ("visible_in_tpv", "Aparece en el selector de operador del TPV"),
             ("manage_orders", "Puede comandar y editar pedidos"),
             ("process_payments", "Puede cobrar y registrar pagos"),
             ("print_documents", "Puede emitir comprobantes y tickets"),
@@ -26,8 +32,7 @@ class Usuario(AbstractUser):
             ("manage_stock", "Puede gestionar inventario y stock"),
             ("manage_files", "Puede usar importaciones, exportaciones y backups"),
             ("manage_configuration", "Puede modificar configuracion del sistema"),
-            ("manage_users", "Puede crear/editar/eliminar usuarios"),
-            ("manage_permissions", "Puede asignar permisos a usuarios"),
+            ("manage_users", "Puede gestionar usuarios y asignar permisos"),
         ]
 
     def __str__(self):
@@ -512,10 +517,10 @@ class DiaContable(models.Model):
     fecha_apertura = models.DateTimeField(default=timezone.now)
     fecha_cierre = models.DateTimeField(null=True, blank=True)
     abierta_por = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="dias_abiertos"
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="dias_abiertos"
     )
     cerrado_por = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="dias_cerrados"
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="dias_cerrados"
     )
 
     class Meta:
@@ -535,10 +540,10 @@ class SesionCaja(models.Model):
     dia = models.ForeignKey(DiaContable, on_delete=models.CASCADE, related_name="sesiones", null=True, blank=True)
 
     abierta_por = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="sesiones_abiertas"
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="sesiones_abiertas"
     )
     cerrada_por = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="sesiones_cerradas"
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="sesiones_cerradas"
     )
 
     fecha_apertura = models.DateTimeField(default=timezone.now)
@@ -570,7 +575,7 @@ class SesionCaja(models.Model):
 class MovimientoCaja(models.Model):
     """Entradas o salidas de efectivo manuales."""
     sesion = models.ForeignKey(SesionCaja, on_delete=models.CASCADE, related_name="movimientos")
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     tipo = models.CharField(max_length=10, choices=[("entrada", "Entrada"), ("salida", "Salida")])
     importe = models.DecimalField(max_digits=10, decimal_places=2)
