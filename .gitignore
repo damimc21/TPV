@@ -87,3 +87,7 @@ _backup_limpieza_*/
 output.txt
 tmp_*
 tmp*/
+.claude/
+test_claude_write.txt
+preview_icons.html
+reset_venv.ps1
