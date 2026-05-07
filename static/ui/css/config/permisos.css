@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════
+   Gestión de permisos — permisos.css
+   ═══════════════════════════════════════════════ */
+
 .cfg-perm {
     width: 100%;
     display: flex;
@@ -5,6 +9,7 @@
     gap: 14px;
 }
 
+/* ── Cabecera de página ── */
 .page-head--center-title .page-head__left {
     position: absolute;
     left: 0;
@@ -25,8 +30,13 @@
     font-size: 0.84rem;
     font-weight: 800;
     line-height: 1;
-    letter-spacing: 0.005em;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.cfg-back-link img {
+    width: 17px;
+    height: 17px;
+    filter: brightness(0) invert(1);
 }
 
 .cfg-back-link:hover {
@@ -40,6 +50,7 @@
     outline-offset: 2px;
 }
 
+/* ── Panel base ── */
 .cfg-perm__panel {
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
@@ -48,201 +59,171 @@
     padding: 20px;
 }
 
-.cfg-perm__selector {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-}
-
-.cfg-perm__selector label {
-    font-weight: 800;
-}
-
-.cfg-perm__selector select {
-    width: min(460px, 100%);
-    min-width: 260px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 10px;
-    background: rgba(8, 14, 28, 0.62);
-    color: #ffffff;
-    padding: 10px 12px;
-}
-
-.cfg-perm__user-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.cfg-perm__form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.cfg-perm__block h2 {
-    margin: 0 0 8px;
-}
-
-.cfg-perm__hint {
-    margin: 0 0 10px;
-    color: rgba(218, 228, 245, 0.85);
-}
-
-.cfg-perm__packs {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 10px;
-}
-
-.cfg-perm__pack {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    background: rgba(8, 14, 28, 0.34);
-    padding: 10px;
-    display: grid;
-    grid-template-columns: 24px 1fr;
-    gap: 10px;
-    align-items: flex-start;
-}
-
-.cfg-perm__pack p {
-    margin: 4px 0 0;
-    color: rgba(218, 228, 245, 0.85);
-    font-size: 0.9rem;
-}
-
-.cfg-perm__categories {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 10px;
-}
-
-.cfg-perm__category {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    background: rgba(8, 14, 28, 0.34);
-    padding: 10px;
-}
-
-.cfg-perm__category h3 {
-    margin: 0 0 8px;
-    font-size: 1rem;
-}
-
-.cfg-perm__items {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.cfg-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-}
-
-.cfg-check input[type="checkbox"] {
-    width: 17px;
-    height: 17px;
-    margin: 0;
-    accent-color: #3b82f6;
-}
-
-.cfg-perm__actions {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.cfg-perm__actions .btn {
-    min-width: 170px;
-    justify-content: center;
-}
-
-.cfg-badge {
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 4px 10px;
-    font-size: 0.78rem;
-    font-weight: 800;
-}
-
-.cfg-badge--staff {
-    border-color: rgba(110, 180, 255, 0.45);
-    color: #d7ecff;
-    background: rgba(57, 133, 216, 0.22);
-}
-
+/* ── Avisos ── */
 .cfg-notice {
-    padding: 10px 12px;
+    padding: 10px 14px;
     border-radius: 12px;
-    font-weight: 700;
+    font-weight: 750;
     border: 1px solid transparent;
+    font-size: 0.97rem;
 }
 
 .cfg-notice--ok {
     border-color: rgba(23, 183, 127, 0.52);
     background: rgba(23, 183, 127, 0.16);
+    color: #6ee7b7;
 }
 
 .cfg-notice--error {
     border-color: rgba(236, 72, 153, 0.48);
     background: rgba(236, 72, 153, 0.16);
+    color: #fca5a5;
 }
 
-@media (min-width: 1600px) {
-    .cfg-perm__categories {
-        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    }
+.cfg-notice--dismissible {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-@media (max-width: 980px) {
-    .cfg-perm__selector select {
-        min-width: 0;
-    }
+.cfg-notice__close {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+    padding: 0;
+    line-height: 1;
 }
 
-@media (max-width: 768px) {
-    .page-head--center-title {
-        justify-content: flex-start;
-        gap: 10px;
-    }
-
-    .page-head--center-title .h1 {
-        text-align: left;
-        font-size: 1.65rem;
-    }
-
-    .page-head--center-title .page-head__left,
-    .page-head--center-title .page-head__right {
-        position: static;
-    }
-
-    .cfg-back-link {
-        height: 34px;
-        padding: 0 11px;
-        font-size: 0.8rem;
-    }
-
-    .cfg-perm__panel {
-        padding: 16px;
-    }
-
-    .cfg-perm__selector {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .cfg-perm__selector select,
-    .cfg-perm__actions .btn {
-        width: 100%;
-    }
-
-    .cfg-perm__actions {
-        justify-content: stretch;
-    }
+.cfg-notice__close:hover {
+    background: rgba(255, 255, 255, 0.18);
 }
+
+/* ── Selector de usuario ── */
+.cfg-perm__selector {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.cfg-perm__selector-label {
+    font-weight: 800;
+    color: rgba(233, 240, 255, 0.9);
+    white-space: nowrap;
+}
+
+/* ── Custom Select ── */
+.cfg-custom-select {
+    position: relative;
+    width: min(460px, 100%);
+}
+
+.cfg-custom-select__trigger {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    background: rgba(8, 14, 28, 0.62);
+    color: #e2eaf7;
+    font-size: 0.96rem;
+    font-weight: 650;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    box-sizing: border-box;
+}
+
+.cfg-custom-select__trigger:hover {
+    border-color: rgba(200, 215, 245, 0.28);
+    background: rgba(8, 14, 28, 0.75);
+}
+
+.cfg-custom-select__trigger:focus-visible {
+    outline: 2px solid rgba(96, 165, 250, 0.75);
+    outline-offset: 2px;
+}
+
+.cfg-custom-select__trigger[aria-expanded="true"] {
+    border-color: rgba(96, 165, 250, 0.7);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+#userSelectLabel {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cfg-custom-select__placeholder {
+    color: rgba(200, 215, 240, 0.45);
+    font-style: italic;
+}
+
+.cfg-custom-select__label-hint {
+    font-style: normal;
+    color: rgba(180, 200, 235, 0.6);
+    font-size: 0.88em;
+    font-weight: 600;
+}
+
+/* Chevron dibujado en CSS */
+.cfg-custom-select__chevron {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cfg-custom-select__chevron::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid rgba(200, 215, 245, 0.6);
+    border-bottom: 2px solid rgba(200, 215, 245, 0.6);
+    transform: rotate(45deg) translateY(-3px);
+    transition: transform 0.18s ease;
+}
+
+.cfg-custom-select__trigger[aria-expanded="true"] .cfg-custom-select__chevron::before {
+    transform: rotate(-135deg) translateY(1px);
+}
+
+/* Panel desplegable */
+.cfg-custom-select__panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 300;
+    background: linear-gradient(145deg, rgba(18, 24, 50, 0.98), rgba(12, 32, 44, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.cfg-custom-select__panel[hidden] {
+    display: none;
+}
+
+.cfg-custom-selec

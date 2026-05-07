@@ -11,124 +11,471 @@
 <div class="page-head page-head--center-title">
     <div class="page-head__left">
         <a class="cfg-back-link" href="{% url 'ui:config' %}">
-            <span aria-hidden="true">←</span>
-            <span>{% trans "Volver a Configuracion" %}</span>
+            <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="" aria-hidden="true">
+            <span>{% trans "Volver a Configuración" %}</span>
         </a>
     </div>
-    <h1 class="h1">{% trans "Gestion de Usuarios" %}</h1>
+    <h1 class="h1">{% trans "Gestión de usuarios" %}</h1>
     <div class="page-head__right"></div>
 </div>
 
 <section class="cfg-users">
     {% if notice_ok %}
-    <div class="cfg-notice cfg-notice--ok">{{ notice_ok }}</div>
+    <div class="cfg-notice cfg-notice--ok cfg-notice--dismissible" role="alert">
+        <span>{{ notice_ok }}</span>
+        <button class="cfg-notice__close" type="button" aria-label="{% trans 'Cerrar' %}">✕</button>
+    </div>
     {% endif %}
     {% if notice_error %}
-    <div class="cfg-notice cfg-notice--error">{{ notice_error }}</div>
+    <div class="cfg-notice cfg-notice--error cfg-notice--dismissible" role="alert">
+        <span>{{ notice_error }}</span>
+        <button class="cfg-notice__close" type="button" aria-label="{% trans 'Cerrar' %}">✕</button>
+    </div>
     {% endif %}
 
     <div class="cfg-users__panel">
-        <h2>{% trans "Crear usuario" %}</h2>
-        <form method="post" class="cfg-users__create-form">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="create">
-            <div class="cfg-users__create-grid">
-                <label>
-                    <span>{% trans "Usuario" %}</span>
-                    <input type="text" name="username" required maxlength="150">
-                </label>
-                <label>
-                    <span>{% trans "Contrasena" %}</span>
-                    <input type="password" name="password" required minlength="4">
-                </label>
-                <label>
-                    <span>{% trans "Nombre" %}</span>
-                    <input type="text" name="first_name" maxlength="150">
-                </label>
-                <label>
-                    <span>{% trans "Apellidos" %}</span>
-                    <input type="text" name="last_name" maxlength="150">
-                </label>
-                <label>
-                    <span>{% trans "Email" %}</span>
-                    <input type="email" name="email" maxlength="254">
-                </label>
-            </div>
-
-            <div class="cfg-users__create-meta">
-                <label class="cfg-check">
-                    <input type="checkbox" name="is_staff" value="1">
-                    <span>{% trans "Es encargado/admin (staff)" %}</span>
-                </label>
-                <label class="cfg-check">
-                    <input type="checkbox" name="is_active" value="1" checked>
-                    <span>{% trans "Usuario activo" %}</span>
-                </label>
-                <div class="cfg-users__actions">
-                    <button class="btn btn--success" type="submit">{% trans "Crear usuario" %}</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <div class="cfg-users__panel">
-        <h2>{% trans "Usuarios existentes" %}</h2>
-        <p class="cfg-users__hint">{% trans "Puedes actualizar datos, estado y contrasena. Para borrar, usa el boton Eliminar." %}</p>
-
-        <div class="cfg-users__list">
-            {% for user_item in users %}
-            <form method="post" class="cfg-user-card">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" value="{{ user_item.id }}">
-                <div class="cfg-user-card__header">
-                    <strong>{{ user_item.username }}</strong>
-                    {% if user_item.is_superuser %}
-                    <span class="cfg-badge">{% trans "Superusuario" %}</span>
-                    {% elif user_item.is_staff %}
-                    <span class="cfg-badge cfg-badge--staff">{% trans "Staff" %}</span>
-                    {% endif %}
-                </div>
-                <div class="cfg-user-card__grid">
-                    <label>
-                        <span>{% trans "Nombre" %}</span>
-                        <input type="text" name="first_name" value="{{ user_item.first_name }}">
-                    </label>
-                    <label>
-                        <span>{% trans "Apellidos" %}</span>
-                        <input type="text" name="last_name" value="{{ user_item.last_name }}">
-                    </label>
-                    <label>
-                        <span>{% trans "Email" %}</span>
-                        <input type="email" name="email" value="{{ user_item.email }}">
-                    </label>
-                    <label>
-                        <span>{% trans "Nueva contrasena (opcional)" %}</span>
-                        <input type="password" name="new_password" placeholder="{% trans 'Sin cambios' %}">
-                    </label>
-                </div>
-                <div class="cfg-user-card__checks">
-                    <label class="cfg-check">
-                        <input type="checkbox" name="is_staff" value="1" {% if user_item.is_staff %}checked{% endif %}>
-                        <span>{% trans "Staff" %}</span>
-                    </label>
-                    <label class="cfg-check">
-                        <input type="checkbox" name="is_active" value="1" {% if user_item.is_active %}checked{% endif %}>
-                        <span>{% trans "Activo" %}</span>
-                    </label>
-                </div>
-                <div class="cfg-user-card__actions">
-                    <button class="btn btn--success" type="submit" name="action" value="update">{% trans "Guardar cambios" %}</button>
-                    <button class="btn btn--danger" type="submit" name="action" value="delete"
-                            onclick="return confirm('{% trans '¿Seguro que deseas eliminar este usuario?' %}');"
-                            {% if user_item.id == request.user.id %}disabled{% endif %}>
-                        {% trans "Eliminar" %}
+        <div class="cfg-users__top-bar">
+            <h2>{% trans "Usuarios" %}</h2>
+            <div class="cfg-users__top-actions">
+                {# ── Popover de roles ── #}
+                <div class="cfg-roles-popover" id="rolesPopover">
+                    <button class="btn btn--ghost cfg-users__info-btn" type="button" id="btnRolesInfo"
+                            aria-expanded="false" aria-controls="rolesPopoverPanel">
+                        <img src="{% static 'ui/img/iconos/info.svg' %}" alt="" aria-hidden="true">
+                        {% trans "Roles" %}
                     </button>
+                    <div class="cfg-roles-popover__panel" id="rolesPopoverPanel" hidden>
+                        <div class="cfg-roles-popover__arrow"></div>
+                        {% for pack_key, pack in role_packs %}
+                        <div class="cfg-roles-popover__item">
+                            <strong>{{ pack.label }}</strong>
+                            <span>{{ pack.description }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <button class="btn btn--primary cfg-users__add-btn" type="button" id="btnNuevoUsuario"
+                        aria-expanded="false">
+                    <img src="{% static 'ui/img/iconos/user-round-plus.svg' %}" alt="" aria-hidden="true">
+                    {% trans "Añadir usuario" %}
+                </button>
+            </div>
+        </div>
+
+        {# ── Formulario de creación (colapsable) ── #}
+        <div class="cfg-users__create-wrap" id="formNuevoUsuario">
+            <form method="post" class="cfg-users__create-form" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <div class="cfg-form-head">
+                    <span class="cfg-form-head__icon" aria-hidden="true">
+                        <img src="{% static 'ui/img/iconos/user-plus.svg' %}" alt="">
+                    </span>
+                    <h3 class="cfg-users__create-title">{% trans "Nuevo usuario" %}</h3>
+                </div>
+                <div class="cfg-users__create-grid">
+                    <label class="cfg-field">
+                        <span>{% trans "Nombre de usuario" %}</span>
+                        <input type="text" name="username" required maxlength="150" autocomplete="off"
+                               placeholder="{% trans 'Ej. María, Encarni...' %}">
+                    </label>
+                    <label class="cfg-field">
+                        <span>{% trans "Contraseña" %}</span>
+                        <input type="password" name="password" required minlength="4" autocomplete="new-password"
+                               placeholder="{% trans 'Introduce una contraseña' %}">
+                    </label>
+                    <label class="cfg-field">
+                        <span>{% trans "Correo electrónico" %}</span>
+                        <input type="email" name="email" maxlength="254"
+                               placeholder="{% trans 'Introduce un correo electrónico' %}">
+                    </label>
+                </div>
+                <div class="cfg-users__create-meta">
+                    <div class="cfg-switch-group">
+                        <label class="cfg-switch">
+                            <input type="checkbox" name="role_camarero" value="1" data-role="camarero">
+                            <span class="cfg-switch__control" aria-hidden="true"></span>
+                            <span class="cfg-switch__text">{% trans "Camarero" %}</span>
+                        </label>
+                        <label class="cfg-switch">
+                            <input type="checkbox" name="is_staff" value="1" data-role="staff">
+                            <span class="cfg-switch__control" aria-hidden="true"></span>
+                            <span class="cfg-switch__text">{% trans "Staff" %}</span>
+                        </label>
+                        {% if request.user.is_system_user %}
+                        <label class="cfg-switch">
+                            <input type="checkbox" name="is_superuser" value="1" data-role="superusuario">
+                            <span class="cfg-switch__control" aria-hidden="true"></span>
+                            <span class="cfg-switch__text">{% trans "Superusuario" %}</span>
+                        </label>
+                        {% endif %}
+                        <label class="cfg-switch">
+                            <input type="checkbox" name="is_active" value="1" checked>
+                            <span class="cfg-switch__control" aria-hidden="true"></span>
+                            <span class="cfg-switch__text">{% trans "Activo" %}</span>
+                        </label>
+                    </div>
+                    <div class="cfg-users__create-actions">
+                        <button class="btn btn--ghost cfg-btn-with-icon" type="button" id="btnCancelarCrear">
+                            <img src="{% static 'ui/img/iconos/x.svg' %}" alt="" aria-hidden="true">
+                            {% trans "Cancelar" %}
+                        </button>
+                        <button class="btn btn--success cfg-btn-with-icon" type="submit">
+                            <img src="{% static 'ui/img/iconos/check.svg' %}" alt="" aria-hidden="true">
+                            {% trans "Crear usuario" %}
+                        </button>
+                    </div>
                 </div>
             </form>
-            {% empty %}
-            <p class="cfg-users__hint">{% trans "No hay usuarios registrados." %}</p>
-            {% endfor %}
+        </div>
+
+        {# ── Tabla de usuarios ── #}
+        <div class="cfg-users__table-wrap">
+            <table class="cfg-users__table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Usuario" %}</th>
+                        <th>{% trans "Correo electrónico" %}</th>
+                        <th>{% trans "Rol" %}</th>
+                        <th>{% trans "Estado" %}</th>
+                        <th class="cfg-users__th-actions">{% trans "Acciones" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_item in users %}
+                    <tr class="cfg-users__row" id="row{{ user_item.id }}">
+                        <td class="cfg-users__td-user" data-label="{% trans 'Usuario' %}">
+                            <strong>{{ user_item.username }}</strong>
+                        </td>
+                        <td data-label="{% trans 'Correo electrónico' %}">{{ user_item.email|default:"–" }}</td>
+                        <td data-label="{% trans 'Rol' %}">
+                            {% if user_item.is_system_user %}
+                            <span class="cfg-badge cfg-badge--system">{% trans "Sistema" %}</span>
+                            {% elif user_item.is_superuser %}
+                            <span class="cfg-badge cfg-badge--super">{% trans "Superusuario" %}</span>
+                            {% elif user_item.is_staff %}
+                            <span class="cfg-badge cfg-badge--staff">{% trans "Staff" %}</span>
+                            {% elif user_item.permission_role == "camarero" %}
+                            <span class="cfg-badge cfg-badge--waiter">{% trans "Camarero" %}</span>
+                            {% else %}
+                            <span class="cfg-badge cfg-badge--normal">{% trans "Sin rol" %}</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="{% trans 'Estado' %}">
+                            {% if user_item.is_active %}
+                            <span class="cfg-status cfg-status--active">{% trans "Activo" %}</span>
+                            {% else %}
+                            <span class="cfg-status cfg-status--inactive">{% trans "Inactivo" %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="cfg-users__td-actions">
+                                {% if not user_item.is_system_user or user_item.id == request.user.id %}
+                                <button class="btn btn--ghost cfg-icon-btn cfg-btn-edit"
+                                        type="button"
+                                        data-target="editRow{{ user_item.id }}"
+                                        aria-expanded="false"
+                                        title="{% trans 'Editar' %}"
+                                        aria-label="{% trans 'Editar' %} {{ user_item.username }}">
+                                    <img src="{% static 'ui/img/iconos/pencil.svg' %}" alt="" aria-hidden="true">
+                                </button>
+                                {% endif %}
+                                {% if not user_item.is_system_user and user_item.id != request.user.id %}
+                                <button class="btn btn--danger cfg-icon-btn cfg-delete-trigger"
+                                        type="button"
+                                        data-user-id="{{ user_item.id }}"
+                                        data-username="{{ user_item.username }}"
+                                        title="{% trans 'Eliminar' %}"
+                                        aria-label="{% trans 'Eliminar' %} {{ user_item.username }}">
+                                    <img src="{% static 'ui/img/iconos/trash-2.svg' %}" alt="" aria-hidden="true">
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {# ── Fila de edición expandible ── #}
+                    <tr class="cfg-users__edit-row" id="editRow{{ user_item.id }}">
+                        <td colspan="5">
+                            <div class="cfg-user-edit-inner">
+                                <form method="post" novalidate>
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="update">
+                                    <input type="hidden" name="user_id" value="{{ user_item.id }}">
+
+                                    {% if user_item.is_system_user %}
+                                    <div class="cfg-system-user-notice">
+                                        <span class="cfg-system-user-notice__icon" aria-hidden="true">
+                                            <img src="{% static 'ui/img/iconos/shield.svg' %}" alt="">
+                                        </span>
+                                        {% trans "Usuario de sistema: solo puede modificar su contraseña." %}
+                                    </div>
+                                    <div class="cfg-user-edit-grid cfg-user-edit-grid--single">
+                                        <label class="cfg-field">
+                                            <span>{% trans "Nueva contraseña" %}</span>
+                                            <input type="password" name="new_password" minlength="4"
+                                                   autocomplete="new-password"
+                                                   placeholder="{% trans 'Dejar vacío para no cambiar' %}">
+                                        </label>
+                                    </div>
+                                    {% else %}
+                                    <div class="cfg-user-edit-grid">
+                                        <label class="cfg-field">
+                                            <span>{% trans "Correo electrónico" %}</span>
+                                            <input type="email" name="email" maxlength="254"
+                                                   value="{{ user_item.email }}"
+                                                   placeholder="{% trans 'Correo electrónico' %}">
+                                        </label>
+                                        <label class="cfg-field">
+                                            <span>{% trans "Nueva contraseña" %}</span>
+                                            <input type="password" name="new_password" minlength="4"
+                                                   autocomplete="new-password"
+                                                   placeholder="{% trans 'Dejar vacío para no cambiar' %}">
+                                        </label>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="cfg-user-edit-footer">
+                                        {% if not user_item.is_system_user %}
+                                        <div class="cfg-switch-group">
+                                            <label class="cfg-switch">
+                                                <input type="checkbox" name="role_camarero" value="1" data-role="camarero"
+                                                       {% if user_item.permission_role == "camarero" or user_item.permission_role == "staff" or user_item.permission_role == "superusuario" %}checked{% endif %}>
+                                                <span class="cfg-switch__control" aria-hidden="true"></span>
+                                                <span class="cfg-switch__text">{% trans "Camarero" %}</span>
+                                            </label>
+                                            <label class="cfg-switch">
+                                                <input type="checkbox" name="is_staff" value="1" data-role="staff"
+                                                       {% if user_item.is_staff %}checked{% endif %}>
+                                                <span class="cfg-switch__control" aria-hidden="true"></span>
+                                                <span class="cfg-switch__text">{% trans "Staff" %}</span>
+                                            </label>
+                                            {% if request.user.is_system_user %}
+                                            <label class="cfg-switch">
+                                                <input type="checkbox" name="is_superuser" value="1" data-role="superusuario"
+                                                       {% if user_item.is_superuser %}checked{% endif %}>
+                                                <span class="cfg-switch__control" aria-hidden="true"></span>
+                                                <span class="cfg-switch__text">{% trans "Superusuario" %}</span>
+                                            </label>
+                                            {% endif %}
+                                            <label class="cfg-switch">
+                                                <input type="checkbox" name="is_active" value="1"
+                                                       {% if user_item.is_active %}checked{% endif %}>
+                                                <span class="cfg-switch__control" aria-hidden="true"></span>
+                                                <span class="cfg-switch__text">{% trans "Activo" %}</span>
+                                            </label>
+                                        </div>
+                                        {% else %}
+                                        <div></div>
+                                        {% endif %}
+                                        <div class="cfg-user-edit-actions">
+                                            <button type="button" class="btn btn--ghost cfg-btn-with-icon cfg-btn-cancel-edit"
+                                                    data-target="editRow{{ user_item.id }}">
+                                                <img src="{% static 'ui/img/iconos/x.svg' %}" alt="" aria-hidden="true">
+                                                {% trans "Cancelar" %}
+                                            </button>
+                                            <button type="submit" class="btn btn--success cfg-btn-with-icon">
+                                                <img src="{% static 'ui/img/iconos/check.svg' %}" alt="" aria-hidden="true">
+                                                {% trans "Guardar cambios" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="cfg-users__empty-state">{% trans "No hay usuarios registrados." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </section>
+
+{# ── Modal de confirmación de borrado ── #}
+<div class="cfg-modal-backdrop" id="deleteModal" hidden role="dialog" aria-modal="true"
+     aria-labelledby="deleteModalTitle">
+    <div class="cfg-modal">
+        <h2 class="cfg-modal__title" id="deleteModalTitle">{% trans "Eliminar usuario" %}</h2>
+        <p class="cfg-modal__body" id="deleteModalMsg"></p>
+        <div class="cfg-modal__warning" id="deleteModalWarning" hidden>
+            <img src="{% static 'ui/img/iconos/triangle-alert.svg' %}" alt="" aria-hidden="true">
+            <span id="deleteModalWarningText"></span>
+        </div>
+        <form method="post" id="deleteModalForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="user_id" id="deleteModalUserId">
+            <input type="hidden" name="confirm_delete" value="1">
+            <div class="cfg-modal__actions">
+                <button type="button" class="btn btn--ghost" id="deleteModalCancel">{% trans "Cancelar" %}</button>
+                <button type="submit" class="btn btn--danger">{% trans "Sí, eliminar" %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if delete_warning %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    openDeleteModal(
+        "{{ delete_warning.user_id }}",
+        "{{ delete_warning.username }}",
+        {{ delete_warning.comandas_activas }}
+    );
+});
+</script>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    // ── Auto-dismiss de avisos ──
+    document.querySelectorAll(".cfg-notice--dismissible").forEach(function (notice) {
+        // Botón X manual
+        const closeBtn = notice.querySelector(".cfg-notice__close");
+        function dismiss() {
+            notice.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+            notice.style.opacity = "0";
+            notice.style.transform = "translateY(-6px)";
+            setTimeout(() => notice.remove(), 320);
+        }
+        if (closeBtn) closeBtn.addEventListener("click", dismiss);
+        // Auto-dismiss a los 5 segundos
+        setTimeout(dismiss, 5000);
+    });
+
+    // ── Popover de roles ──
+    const btnRoles = document.getElementById("btnRolesInfo");
+    const rolesPanel = document.getElementById("rolesPopoverPanel");
+    if (btnRoles && rolesPanel) {
+        btnRoles.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const isHidden = rolesPanel.hasAttribute("hidden");
+            if (isHidden) {
+                rolesPanel.removeAttribute("hidden");
+                btnRoles.setAttribute("aria-expanded", "true");
+                // Pequeña animación de entrada
+                rolesPanel.style.opacity = "0";
+                rolesPanel.style.transform = "translateY(-6px) scale(0.97)";
+                requestAnimationFrame(() => {
+                    rolesPanel.style.transition = "opacity 0.18s ease, transform 0.18s ease";
+                    rolesPanel.style.opacity = "1";
+                    rolesPanel.style.transform = "translateY(0) scale(1)";
+                });
+            } else {
+                rolesPanel.setAttribute("hidden", "");
+                btnRoles.setAttribute("aria-expanded", "false");
+            }
+        });
+        // Cerrar al hacer click fuera
+        document.addEventListener("click", function (e) {
+            if (!rolesPanel.hasAttribute("hidden") && !rolesPanel.contains(e.target) && e.target !== btnRoles) {
+                rolesPanel.setAttribute("hidden", "");
+                btnRoles.setAttribute("aria-expanded", "false");
+            }
+        });
+        // Cerrar con Escape
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && !rolesPanel.hasAttribute("hidden")) {
+                rolesPanel.setAttribute("hidden", "");
+                btnRoles.setAttribute("aria-expanded", "false");
+                btnRoles.focus();
+            }
+        });
+    }
+
+    // ── Formulario de creación ──
+    const btnNuevo = document.getElementById("btnNuevoUsuario");
+    const wrapCrear = document.getElementById("formNuevoUsuario");
+    const btnCancelar = document.getElementById("btnCancelarCrear");
+    if (btnNuevo && wrapCrear) {
+        btnNuevo.addEventListener("click", function () {
+            wrapCrear.classList.add("is-open");
+            btnNuevo.setAttribute("aria-expanded", "true");
+            wrapCrear.querySelector("input[name='username']")?.focus();
+        });
+    }
+    if (btnCancelar && wrapCrear) {
+        btnCancelar.addEventListener("click", function () {
+            wrapCrear.classList.remove("is-open");
+            btnNuevo?.setAttribute("aria-expanded", "false");
+        });
+    }
+
+    // ── Expandir fila de edición ──
+    document.querySelectorAll(".cfg-btn-edit").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const targetId = btn.getAttribute("data-target");
+            const editRow = document.getElementById(targetId);
+            if (!editRow) return;
+            const isOpen = editRow.classList.contains("is-open");
+            document.querySelectorAll(".cfg-users__edit-row.is-open").forEach(r => r.classList.remove("is-open"));
+            document.querySelectorAll(".cfg-btn-edit").forEach(b => b.setAttribute("aria-expanded", "false"));
+            if (!isOpen) { editRow.classList.add("is-open"); btn.setAttribute("aria-expanded", "true"); }
+        });
+    });
+    document.querySelectorAll(".cfg-btn-cancel-edit").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const editRow = document.getElementById(btn.getAttribute("data-target"));
+            if (editRow) editRow.classList.remove("is-open");
+        });
+    });
+
+    // ── Sincronización de roles ──
+    function syncRoleGroup(form) {
+        const staffCb = form.querySelector("[data-role='staff']");
+        const camareroCb = form.querySelector("[data-role='camarero']");
+        const superCb = form.querySelector("[data-role='superusuario']");
+        if (!staffCb && !camareroCb) return;
+        function update() {
+            if (superCb && superCb.checked) {
+                if (staffCb) { staffCb.checked = true; staffCb.disabled = true; }
+                if (camareroCb) { camareroCb.checked = true; camareroCb.disabled = true; }
+                return;
+            }
+            if (staffCb) staffCb.disabled = false;
+            if (camareroCb) camareroCb.disabled = false;
+            if (staffCb && staffCb.checked && camareroCb) {
+                camareroCb.checked = true; camareroCb.disabled = true;
+            } else if (camareroCb) { camareroCb.disabled = false; }
+        }
+        [staffCb, camareroCb, superCb].filter(Boolean).forEach(cb => cb.addEventListener("change", update));
+        update();
+    }
+    document.querySelectorAll("form").forEach(syncRoleGroup);
+
+    // ── Modal de borrado ──
+    const modal = document.getElementById("deleteModal");
+    const modalMsg = document.getElementById("deleteModalMsg");
+    const modalWarning = document.getElementById("deleteModalWarning");
+    const modalWarningText = document.getElementById("deleteModalWarningText");
+    const modalUserId = document.getElementById("deleteModalUserId");
+    const modalCancel = document.getElementById("deleteModalCancel");
+
+    window.openDeleteModal = function (userId, username, comandasActivas) {
+        if (!modal) return;
+        modalUserId.value = userId;
+        modalMsg.textContent = '¿Seguro que quieres eliminar al usuario "' + username + '"? Esta acción no se puede deshacer.';
+        if (parseInt(comandasActivas) > 0) {
+            modalWarningText.textContent = "Este usuario tiene " + comandasActivas + " comanda(s) abierta(s). Las comandas quedarán sin usuario asignado.";
+            modalWarning.removeAttribute("hidden");
+        } else { modalWarning.setAttribute("hidden", ""); }
+        modal.removeAttribute("hidden");
+        modalCancel?.focus();
+    };
+    document.querySelectorAll(".cfg-delete-trigger").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            openDeleteModal(btn.getAttribute("data-user-id"), btn.getAttribute("data-username"), 0);
+        });
+    });
+    modalCancel?.addEventListener("click", () => modal.setAttribute("hidden", ""));
+    modal?.addEventListener("click", e => { if (e.target === modal) modal.setAttribute("hidden", ""); });
+    modal?.addEventListener("keydown", e => { if (e.key === "Escape") modal.setAttribute("hidden", ""); });
+})();
+</script>
 {% endblock %}

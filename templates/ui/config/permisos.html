@@ -11,44 +11,102 @@
 <div class="page-head page-head--center-title">
     <div class="page-head__left">
         <a class="cfg-back-link" href="{% url 'ui:config' %}">
-            <span aria-hidden="true">←</span>
-            <span>{% trans "Volver a Configuracion" %}</span>
+            <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="" aria-hidden="true">
+            <span>{% trans "Volver a Configuración" %}</span>
         </a>
     </div>
-    <h1 class="h1">{% trans "Gestion de Permisos" %}</h1>
+    <h1 class="h1">{% trans "Gestión de permisos" %}</h1>
     <div class="page-head__right"></div>
 </div>
 
 <section class="cfg-perm">
+
     {% if notice_ok %}
-    <div class="cfg-notice cfg-notice--ok">{{ notice_ok }}</div>
+    <div class="cfg-notice cfg-notice--ok cfg-notice--dismissible" role="alert">
+        <span>{{ notice_ok }}</span>
+        <button class="cfg-notice__close" type="button" aria-label="{% trans 'Cerrar' %}">✕</button>
+    </div>
     {% endif %}
     {% if notice_error %}
-    <div class="cfg-notice cfg-notice--error">{{ notice_error }}</div>
+    <div class="cfg-notice cfg-notice--error cfg-notice--dismissible" role="alert">
+        <span>{{ notice_error }}</span>
+        <button class="cfg-notice__close" type="button" aria-label="{% trans 'Cerrar' %}">✕</button>
+    </div>
     {% endif %}
-
     {% if missing_codes %}
-    <div class="cfg-notice cfg-notice--error">
-        {% trans "Faltan permisos en base de datos. Ejecuta migraciones para crear:" %}
-        {{ missing_codes|join:", " }}
+    <div class="cfg-notice cfg-notice--error cfg-notice--dismissible" role="alert">
+        <span>{% trans "Faltan permisos en BD. Ejecuta migraciones para crear:" %} {{ missing_codes|join:", " }}</span>
+        <button class="cfg-notice__close" type="button" aria-label="{% trans 'Cerrar' %}">✕</button>
     </div>
     {% endif %}
 
+    {# ── Selector de usuario ── #}
     <div class="cfg-perm__panel">
-        <form method="get" class="cfg-perm__selector">
-            <label for="userSelect">{% trans "Usuario" %}</label>
-            <select id="userSelect" name="user" onchange="this.form.submit()">
-                {% for user_item in users %}
-                <option value="{{ user_item.id }}" {% if selected_user and selected_user.id == user_item.id %}selected{% endif %}>
-                    {{ user_item.username }}
-                    {% if user_item.is_superuser %} (superuser){% elif user_item.is_staff %} (staff){% endif %}
-                </option>
-                {% endfor %}
-            </select>
-        </form>
+        <div class="cfg-perm__selector">
+            <span class="cfg-perm__selector-label">{% trans "Usuario" %}</span>
+            <div class="cfg-custom-select" id="userSelectWidget">
+                <button type="button" class="cfg-custom-select__trigger"
+                        aria-haspopup="listbox" aria-expanded="false" id="userSelectTrigger">
+                    <span id="userSelectLabel">
+                        {% if selected_user %}
+                            {{ selected_user.username }}{% if selected_user.is_system_user %}&nbsp;<em class="cfg-custom-select__label-hint">({% trans "sistema" %})</em>{% elif selected_user.is_superuser %}&nbsp;<em class="cfg-custom-select__label-hint">({% trans "superusuario" %})</em>{% elif selected_user.is_staff %}&nbsp;<em class="cfg-custom-select__label-hint">({% trans "staff" %})</em>{% endif %}
+                        {% else %}
+                            <span class="cfg-custom-select__placeholder">{% trans "— Selecciona un usuario —" %}</span>
+                        {% endif %}
+                    </span>
+                    <span class="cfg-custom-select__chevron" aria-hidden="true"></span>
+                </button>
+                <div class="cfg-custom-select__panel" id="userSelectPanel" hidden
+                     role="listbox" aria-label="{% trans 'Seleccionar usuario' %}">
+                    <div class="cfg-custom-select__search">
+                        <input type="text" id="userSelectSearch"
+                               placeholder="{% trans 'Buscar usuario...' %}"
+                               autocomplete="off" aria-label="{% trans 'Buscar usuario' %}">
+                    </div>
+                    <ul class="cfg-custom-select__list">
+                        <li class="cfg-custom-select__option cfg-custom-select__option--placeholder"
+                            data-value="" role="option"
+                            aria-selected="{% if not selected_user %}true{% else %}false{% endif %}">
+                            {% trans "— Selecciona un usuario —" %}
+                        </li>
+                        {% for user_item in users %}
+                        <li class="cfg-custom-select__option{% if selected_user and selected_user.id == user_item.id %} is-selected{% endif %}"
+                            data-value="{{ user_item.id }}" role="option"
+                            aria-selected="{% if selected_user and selected_user.id == user_item.id %}true{% else %}false{% endif %}">
+                            <span>{{ user_item.username }}</span>
+                            {% if user_item.is_system_user %}
+                            <span class="cfg-custom-select__badge cfg-custom-select__badge--system">{% trans "sistema" %}</span>
+                            {% elif user_item.is_superuser %}
+                            <span class="cfg-custom-select__badge cfg-custom-select__badge--super">{% trans "superusuario" %}</span>
+                            {% elif user_item.is_staff %}
+                            <span class="cfg-custom-select__badge cfg-custom-select__badge--staff">{% trans "staff" %}</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     {% if selected_user %}
+
+    {# ── Casos bloqueados ── #}
+    {% if selected_user.id == request.user.id %}
+    <div class="cfg-perm__panel">
+        <div class="cfg-perm__locked">{% trans "No puedes modificar tus propios permisos." %}</div>
+    </div>
+    {% elif selected_user.is_system_user %}
+    <div class="cfg-perm__panel">
+        <div class="cfg-perm__locked">{% trans "Los permisos del usuario de sistema no se pueden modificar." %}</div>
+    </div>
+    {% elif selected_user.is_superuser and not actor_is_system_user %}
+    <div class="cfg-perm__panel">
+        <div class="cfg-perm__locked">{% trans "Solo el usuario de sistema puede modificar permisos de otro superusuario." %}</div>
+    </div>
+    {% else %}
+
+    {# ── Formulario de permisos ── #}
     <form method="post" class="cfg-perm__panel cfg-perm__form">
         {% csrf_token %}
         <input type="hidden" name="user_id" value="{{ selected_user.id }}">
@@ -56,39 +114,53 @@
         <div class="cfg-perm__user-head">
             <strong>{{ selected_user.username }}</strong>
             {% if selected_user.is_superuser %}
-            <span class="cfg-badge">{% trans "Superusuario (acceso total)" %}</span>
+            <span class="cfg-badge">{% trans "Superusuario" %}</span>
             {% elif selected_user.is_staff %}
-            <span class="cfg-badge cfg-badge--staff">{% trans "Staff (acceso total por compatibilidad)" %}</span>
+            <span class="cfg-badge cfg-badge--staff">{% trans "Staff" %}</span>
             {% endif %}
         </div>
 
+        {# ── Packs de permisos ── #}
         <section class="cfg-perm__block">
             <h2>{% trans "Packs de permisos" %}</h2>
             <p class="cfg-perm__hint">{% trans "Selecciona perfiles de alto nivel para asignar varios permisos de una vez." %}</p>
             <div class="cfg-perm__packs">
                 {% for pack_key, pack in permission_packs %}
-                <label class="cfg-perm__pack">
-                    <input type="checkbox" name="pack" value="{{ pack_key }}" {% if pack_key in active_packs %}checked{% endif %}>
+                <label class="cfg-perm__pack{% if pack_key in locked_packs %} cfg-perm__pack--locked{% endif %}">
+                    <input type="checkbox" name="pack" value="{{ pack_key }}"
+                           data-pack="{{ pack_key }}"
+                           data-pack-codes="{{ pack.permissions|join:' ' }}"
+                           {% if pack_key in active_packs %}checked{% endif %}
+                           {% if pack_key in locked_packs %}disabled{% endif %}>
+                    <span class="cfg-check__box" aria-hidden="true"></span>
                     <div>
                         <strong>{{ pack.label }}</strong>
                         <p>{{ pack.description }}</p>
+                        {% if pack_key in locked_packs %}
+                        <small class="cfg-perm__pack-lock-hint">{% trans "Contiene permisos que no puedes otorgar." %}</small>
+                        {% endif %}
                     </div>
                 </label>
                 {% endfor %}
             </div>
         </section>
 
+        {# ── Permisos individuales ── #}
         <section class="cfg-perm__block">
-            <h2>{% trans "Modo avanzado (granular)" %}</h2>
-            <p class="cfg-perm__hint">{% trans "Ajusta permisos individuales de forma detallada." %}</p>
+            <h2>{% trans "Permisos individuales" %}</h2>
+            <p class="cfg-perm__hint">{% trans "Ajusta permisos de forma detallada. Los permisos en gris no están disponibles para tu nivel de acceso." %}</p>
             <div class="cfg-perm__categories">
                 {% for category in permission_categories %}
                 <div class="cfg-perm__category">
                     <h3>{{ category.label }}</h3>
                     <div class="cfg-perm__items">
                         {% for item in category.items %}
-                        <label class="cfg-check">
-                            <input type="checkbox" name="perm" value="{{ item.codename }}" {% if item.codename in active_codes %}checked{% endif %}>
+                        <label class="cfg-check{% if item.codename not in grantable_codes %} cfg-check--locked{% endif %}">
+                            <input type="checkbox" name="perm" value="{{ item.codename }}"
+                                   data-code="{{ item.codename }}"
+                                   {% if item.codename in active_codes %}checked{% endif %}
+                                   {% if item.codename not in grantable_codes %}disabled{% endif %}>
+                            <span class="cfg-check__box" aria-hidden="true"></span>
                             <span>{{ item.label }}</span>
                         </label>
                         {% endfor %}
@@ -102,10 +174,128 @@
             <button class="btn btn--success" type="submit">{% trans "Guardar permisos" %}</button>
         </div>
     </form>
+
+    {% endif %}{# fin bloque editable #}
+
     {% else %}
-    <div class="cfg-perm__panel">
-        <p class="cfg-perm__hint">{% trans "No hay usuarios disponibles para asignar permisos." %}</p>
+    {# ── Sin usuario seleccionado ── #}
+    <div class="cfg-perm__panel cfg-perm__empty-state">
+        <div class="cfg-perm__empty-icon" aria-hidden="true">
+            <img src="{% static 'ui/img/iconos/user-lock.svg' %}" alt="">
+        </div>
+        <p>{% trans "Selecciona un usuario para gestionar sus permisos." %}</p>
     </div>
     {% endif %}
+
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    // ── Auto-dismiss de avisos ──
+    document.querySelectorAll(".cfg-notice--dismissible").forEach(function (notice) {
+        var closeBtn = notice.querySelector(".cfg-notice__close");
+        function dismiss() {
+            notice.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+            notice.style.opacity = "0";
+            notice.style.transform = "translateY(-6px)";
+            setTimeout(function () { notice.remove(); }, 320);
+        }
+        if (closeBtn) closeBtn.addEventListener("click", dismiss);
+        setTimeout(dismiss, 5000);
+    });
+
+    // ── Custom Select ──
+    var trigger = document.getElementById("userSelectTrigger");
+    var panel   = document.getElementById("userSelectPanel");
+    var search  = document.getElementById("userSelectSearch");
+
+    function openDropdown() {
+        panel.removeAttribute("hidden");
+        trigger.setAttribute("aria-expanded", "true");
+        panel.style.opacity = "0";
+        panel.style.transform = "translateY(-6px) scale(0.98)";
+        requestAnimationFrame(function () {
+            panel.style.transition = "opacity 0.18s ease, transform 0.18s ease";
+            panel.style.opacity = "1";
+            panel.style.transform = "translateY(0) scale(1)";
+        });
+        if (search) { search.value = ""; filterOptions(""); search.focus(); }
+    }
+
+    function closeDropdown() {
+        panel.setAttribute("hidden", "");
+        trigger.setAttribute("aria-expanded", "false");
+    }
+
+    if (trigger && panel) {
+        trigger.addEventListener("click", function (e) {
+            e.stopPropagation();
+            panel.hasAttribute("hidden") ? openDropdown() : closeDropdown();
+        });
+        document.addEventListener("click", function (e) {
+            if (!panel.hasAttribute("hidden") && !panel.contains(e.target) && e.target !== trigger) {
+                closeDropdown();
+            }
+        });
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && !panel.hasAttribute("hidden")) {
+                closeDropdown();
+                trigger.focus();
+            }
+        });
+    }
+
+    function filterOptions(q) {
+        document.querySelectorAll(".cfg-custom-select__option").forEach(function (opt) {
+            if (!opt.dataset.value) { opt.style.display = ""; return; }
+            opt.style.display = (q === "" || opt.textContent.toLowerCase().includes(q)) ? "" : "none";
+        });
+    }
+
+    if (search) {
+        search.addEventListener("input", function () {
+            filterOptions(search.value.toLowerCase().trim());
+        });
+    }
+
+    document.querySelectorAll(".cfg-custom-select__option").forEach(function (opt) {
+        opt.addEventListener("click", function () {
+            var val = opt.dataset.value;
+            window.location.href = val ? ("?user=" + val) : window.location.pathname;
+        });
+    });
+
+    // ── Pack <-> Permisos individuales ──
+    var packCbs = document.querySelectorAll("[data-pack]");
+    var permCbs = document.querySelectorAll("[data-code]");
+
+    packCbs.forEach(function (packCb) {
+        packCb.addEventListener("change", function () {
+            var codes = (packCb.dataset.packCodes || "").split(" ").filter(Boolean);
+            codes.forEach(function (code) {
+                var cb = document.querySelector('[data-code="' + code + '"]');
+                if (cb && !cb.disabled) cb.checked = packCb.checked;
+            });
+        });
+    });
+
+    permCbs.forEach(function (permCb) {
+        permCb.addEventListener("change", function () { syncPackStates(); });
+    });
+
+    function syncPackStates() {
+        packCbs.forEach(function (packCb) {
+            if (packCb.disabled) return;
+            var codes = (packCb.dataset.packCodes || "").split(" ").filter(Boolean);
+            if (!codes.length) return;
+            packCb.checked = codes.every(function (code) {
+                var cb = document.querySelector('[data-code="' + code + '"]');
+                return cb && cb.checked;
+            });
+        });
+    }
+})();
+</script>
 {% endblock %}
