@@ -813,4 +813,203 @@
 
     .cfg-users__row td::before {
         content: attr(data-label);
-       
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(200, 215, 240, 0.55);
+        margin-bottom: 3px;
+    }
+
+    .cfg-users__td-actions {
+        justify-content: flex-start;
+        padding-right: 14px;
+    }
+
+    .cfg-users__edit-row.is-open {
+        display: block;
+        border-radius: 0 0 14px 14px;
+        margin-top: -8px;
+        margin-bottom: 8px;
+    }
+
+    .cfg-users__edit-row > td {
+        display: block;
+    }
+
+    .cfg-user-edit-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cfg-user-edit-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cfg-user-edit-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-head--center-title {
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
+    .page-head--center-title .h1 {
+        text-align: left;
+        font-size: 1.65rem;
+    }
+
+    .page-head--center-title .page-head__left,
+    .page-head--center-title .page-head__right {
+        position: static;
+    }
+
+    .cfg-back-link {
+        height: 34px;
+        padding: 0 11px;
+        font-size: 0.8rem;
+    }
+
+    .cfg-users__panel {
+        padding: 14px;
+    }
+
+    .cfg-users__create-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cfg-users__create-actions,
+    .cfg-user-edit-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-left: 0;
+    }
+
+    .cfg-users__top-bar,
+    .cfg-users__top-actions,
+    .cfg-switch-group {
+        flex-wrap: wrap;
+    }
+
+    .cfg-roles-info {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 1600px) {
+    .cfg-user-edit-grid {
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+    }
+
+    .cfg-users__create-grid {
+        grid-template-columns: repeat(3, minmax(260px, 1fr));
+    }
+}
+
+/* ── Popover de roles ── */
+.cfg-roles-popover {
+    position: relative;
+    display: inline-block;
+}
+
+.cfg-roles-popover__panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 400;
+    min-width: 260px;
+    max-width: 340px;
+    background: linear-gradient(145deg, rgba(18, 24, 50, 0.98), rgba(12, 32, 44, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.5);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cfg-roles-popover__panel[hidden] {
+    display: none;
+}
+
+.cfg-roles-popover__arrow {
+    position: absolute;
+    top: -7px;
+    right: 18px;
+    width: 13px;
+    height: 13px;
+    background: rgba(20, 26, 54, 0.98);
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+    transform: rotate(45deg);
+    border-radius: 2px;
+}
+
+.cfg-roles-popover__item {
+    padding: 9px 11px;
+    border-radius: 10px;
+    border: 1px solid rgba(125, 150, 190, 0.14);
+    background: rgba(8, 14, 28, 0.32);
+}
+
+.cfg-roles-popover__item strong {
+    display: block;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 850;
+    margin-bottom: 3px;
+}
+
+.cfg-roles-popover__item span {
+    color: rgba(218, 228, 245, 0.72);
+    font-size: 0.84rem;
+    line-height: 1.35;
+}
+
+/* ── Avisos con cierre ── */
+.cfg-notice--dismissible {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.cfg-notice__close {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.cfg-notice__close:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Separar footer del form de edición de los campos de texto ── */
+.cfg-user-edit-footer {
+    margin-top: 14px;
+}
+
+/* ── Alineación cabecera "Acciones" con los botones (centrado) ── */
+.cfg-users__th-actions {
+    text-align: center !important;
+    padding-right: 14px !important;
+}

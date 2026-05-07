@@ -1790,4 +1790,13 @@ def api_map_delete(request, map_id: int):
             "config.mapas",
             f"usuario={_actor_username(request.user)} accion=eliminar_mapa_bloqueado mapa_id={m.id} motivo=mapa_activo",
         )
-        return JsonResponse({"ok": False, "error": "No pue
+        return JsonResponse({"ok": False, "error": "No puedes borrar el mapa activo."}, status=400)
+
+    map_name = m.name
+    m.delete()
+    log_warn(
+        "config.mapas",
+        f"usuario={_actor_username(request.user)} accion=eliminar_mapa mapa_id={map_id} nombre={map_name}",
+    )
+    return JsonResponse({"ok": True})
+

@@ -226,4 +226,425 @@
     display: none;
 }
 
-.cfg-custom-selec
+.cfg-custom-select__search {
+    padding: 10px 10px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cfg-custom-select__search input {
+    width: 100%;
+    background: rgba(8, 14, 28, 0.5);
+    border: 1px solid rgba(170, 190, 225, 0.18);
+    border-radius: 8px;
+    padding: 8px 11px;
+    color: #e2eaf7;
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cfg-custom-select__search input::placeholder {
+    color: rgba(200, 215, 240, 0.38);
+}
+
+.cfg-custom-select__search input:focus {
+    border-color: rgba(96, 165, 250, 0.6);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.cfg-custom-select__list {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    max-height: 248px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+.cfg-custom-select__option {
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.94rem;
+    font-weight: 650;
+    color: rgba(218, 228, 248, 0.88);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.12s ease, color 0.12s ease;
+    user-select: none;
+}
+
+.cfg-custom-select__option:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
+}
+
+.cfg-custom-select__option.is-selected {
+    background: rgba(59, 130, 246, 0.18);
+    color: #bfdbfe;
+}
+
+.cfg-custom-select__option--placeholder {
+    color: rgba(200, 215, 240, 0.42);
+    font-style: italic;
+}
+
+.cfg-custom-select__option > span:first-child {
+    flex: 1;
+}
+
+.cfg-custom-select__badge {
+    flex-shrink: 0;
+    font-size: 0.71rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: auto;
+}
+
+.cfg-custom-select__badge--system {
+    background: rgba(139, 92, 246, 0.2);
+    color: #ddd6fe;
+    border: 1px solid rgba(167, 139, 250, 0.4);
+}
+
+.cfg-custom-select__badge--super {
+    background: rgba(251, 191, 36, 0.12);
+    color: #fde68a;
+    border: 1px solid rgba(251, 191, 36, 0.38);
+}
+
+.cfg-custom-select__badge--staff {
+    background: rgba(57, 133, 216, 0.2);
+    color: #d7ecff;
+    border: 1px solid rgba(110, 180, 255, 0.38);
+}
+
+/* ── Estado vacío ── */
+.cfg-perm__empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 40px 20px;
+    text-align: center;
+    color: rgba(200, 215, 240, 0.5);
+    font-size: 1rem;
+    font-style: italic;
+}
+
+.cfg-perm__empty-icon img {
+    width: 38px;
+    height: 38px;
+    filter: brightness(0) invert(1);
+    opacity: 0.2;
+}
+
+/* ── Formulario principal ── */
+.cfg-perm__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cfg-perm__user-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cfg-perm__user-head strong {
+    font-size: 1.05rem;
+    color: #f1f5ff;
+}
+
+.cfg-perm__block {
+    display: flex;
+    flex-direction: column;
+}
+
+.cfg-perm__block h2 {
+    margin: 0 0 6px;
+    font-size: 1.1rem;
+}
+
+.cfg-perm__hint {
+    margin: 0 0 12px;
+    color: rgba(218, 228, 245, 0.72);
+    font-size: 0.92rem;
+    line-height: 1.4;
+}
+
+/* ── Packs ── */
+.cfg-perm__packs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+}
+
+.cfg-perm__pack {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(8, 14, 28, 0.34);
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.cfg-perm__pack:hover:not(.cfg-perm__pack--locked) {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(8, 14, 28, 0.5);
+}
+
+.cfg-perm__pack p {
+    margin: 4px 0 0;
+    color: rgba(218, 228, 245, 0.78);
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
+.cfg-perm__pack-lock-hint {
+    display: block;
+    margin-top: 6px;
+    color: rgba(252, 211, 77, 0.88);
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+
+.cfg-perm__pack--locked {
+    opacity: 0.58;
+    cursor: not-allowed;
+}
+
+/* ── Mensaje bloqueado ── */
+.cfg-perm__locked {
+    border: 1px solid rgba(252, 211, 77, 0.32);
+    border-radius: 12px;
+    background: rgba(252, 211, 77, 0.08);
+    color: #fde68a;
+    padding: 10px 14px;
+    font-weight: 800;
+}
+
+/* ── Categorías individuales ── */
+.cfg-perm__categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+}
+
+.cfg-perm__category {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(8, 14, 28, 0.34);
+    padding: 12px 14px;
+}
+
+.cfg-perm__category h3 {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    font-weight: 850;
+    color: rgba(200, 215, 245, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.cfg-perm__items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ══════════════════════════════════
+   CHECKBOXES CUSTOM
+   ══════════════════════════════════ */
+
+/* Ocultar input nativo sin sacarlo del flujo visual */
+.cfg-perm input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* Caja visual del checkbox */
+.cfg-check__box {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(180, 200, 235, 0.28);
+    background: rgba(8, 14, 28, 0.6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Tilde del checkmark (L rotada) */
+.cfg-check__box::after {
+    content: '';
+    display: block;
+    width: 11px;
+    height: 6px;
+    border-bottom: 2px solid transparent;
+    border-left: 2px solid transparent;
+    transform: rotate(-45deg) translate(1px, 1px);
+    transition: border-color 0.12s ease;
+}
+
+/* Checked */
+.cfg-perm input[type="checkbox"]:checked ~ .cfg-check__box {
+    background: rgba(59, 130, 246, 0.88);
+    border-color: rgba(96, 165, 250, 0.85);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+}
+
+.cfg-perm input[type="checkbox"]:checked ~ .cfg-check__box::after {
+    border-bottom-color: #ffffff;
+    border-left-color: #ffffff;
+}
+
+/* Focus teclado */
+.cfg-perm input[type="checkbox"]:focus-visible ~ .cfg-check__box {
+    outline: 2px solid rgba(96, 165, 250, 0.75);
+    outline-offset: 2px;
+}
+
+/* Permiso individual: label contenedor */
+.cfg-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 700;
+    font-size: 0.94rem;
+    color: rgba(229, 238, 255, 0.9);
+    transition: color 0.15s ease;
+}
+
+.cfg-check:hover:not(.cfg-check--locked) {
+    color: #ffffff;
+}
+
+.cfg-check:hover:not(.cfg-check--locked) .cfg-check__box {
+    border-color: rgba(200, 215, 245, 0.5);
+}
+
+/* Bloqueado: no otorgable */
+.cfg-check--locked {
+    cursor: not-allowed;
+    opacity: 0.44;
+}
+
+/* ── Acciones ── */
+.cfg-perm__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cfg-perm__actions .btn {
+    min-width: 170px;
+    justify-content: center;
+}
+
+/* ── Badges ── */
+.cfg-badge {
+    border-radius: 999px;
+    border: 1px solid rgba(251, 191, 36, 0.5);
+    color: #fde68a;
+    background: rgba(251, 191, 36, 0.12);
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    font-weight: 850;
+}
+
+.cfg-badge--staff {
+    border-color: rgba(110, 180, 255, 0.45);
+    color: #d7ecff;
+    background: rgba(57, 133, 216, 0.22);
+}
+
+.cfg-badge--system {
+    border-color: rgba(167, 139, 250, 0.55);
+    color: #ddd6fe;
+    background: rgba(139, 92, 246, 0.18);
+}
+
+/* ── Responsive ── */
+@media (min-width: 1600px) {
+    .cfg-perm__categories {
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    }
+}
+
+@media (max-width: 980px) {
+    .cfg-custom-select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-head--center-title {
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
+    .page-head--center-title .h1 {
+        text-align: left;
+        font-size: 1.65rem;
+    }
+
+    .page-head--center-title .page-head__left,
+    .page-head--center-title .page-head__right {
+        position: static;
+    }
+
+    .cfg-back-link {
+        height: 34px;
+        padding: 0 11px;
+        font-size: 0.8rem;
+    }
+
+    .cfg-perm__panel {
+        padding: 14px;
+    }
+
+    .cfg-perm__selector {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cfg-custom-select {
+        width: 100%;
+    }
+
+    .cfg-perm__categories,
+    .cfg-perm__packs {
+        grid-template-columns: 1fr;
+    }
+
+    .cfg-perm__actions {
+        justify-content: stretch;
+    }
+
+    .cfg-perm__actions .btn {
+        width: 100%;
+    }
+}
