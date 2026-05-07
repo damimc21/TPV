@@ -783,6 +783,56 @@ class MovimientoStock(models.Model):
         return f"{self.get_tipo_display()} - {nombre}: {self.cantidad}"
 
 
+class DocumentoProveedor(models.Model):
+    TIPO_ALBARAN = "albaran"
+    TIPO_FACTURA = "factura"
+    TIPOS = [
+        (TIPO_ALBARAN, "Albaran"),
+        (TIPO_FACTURA, "Factura"),
+    ]
+
+    ESTADO_PENDIENTE = "pendiente"
+    ESTADO_RECIBIDO = "recibido"
+    ESTADO_CONTABILIZADO = "contabilizado"
+    ESTADO_PAGADO = "pagado"
+    ESTADOS = [
+        (ESTADO_PENDIENTE, "Pendiente"),
+        (ESTADO_RECIBIDO, "Recibido"),
+        (ESTADO_CONTABILIZADO, "Contabilizado"),
+        (ESTADO_PAGADO, "Pagado"),
+    ]
+
+    tipo = models.CharField(max_length=12, choices=TIPOS)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, null=True, blank=True, related_name="documentos")
+    proveedor_nombre = models.CharField(max_length=150, blank=True, default="")
+    numero = models.CharField(max_length=80, blank=True, default="")
+    fecha = models.DateField(default=timezone.localdate)
+    vencimiento = models.DateField(null=True, blank=True)
+    concepto = models.CharField(max_length=255, blank=True, default="")
+    base = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    impuestos = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default=ESTADO_PENDIENTE)
+    notas = models.TextField(blank=True, default="")
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="documentos_proveedor_creados")
+    creado_a = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = "documentos_proveedor"
+        ordering = ["-fecha", "-id"]
+        verbose_name = "Documento de proveedor"
+        verbose_name_plural = "Documentos de proveedor"
+
+    def save(self, *args, **kwargs):
+        if self.proveedor and not self.proveedor_nombre:
+            self.proveedor_nombre = self.proveedor.nombre
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        proveedor = self.proveedor_nombre or (self.proveedor.nombre if self.proveedor else "Sin proveedor")
+        return f"{self.get_tipo_display()} {self.numero or '#'+str(self.pk or '')} - {proveedor}"
+
+
 # =========================
 # 10) LOGS DEL SISTEMA
 # =========================

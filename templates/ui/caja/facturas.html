@@ -1,0 +1,78 @@
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Facturas emitidas" %} | {% trans "Caja y cierres" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
+{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+  <div class="page-head__left">
+    <a class="fich-back-link" href="{% url 'ui:caja' %}">
+      <span>&larr;</span><span>{% trans "Volver a Caja" %}</span>
+    </a>
+  </div>
+  <h1 class="h1">{% trans "Facturas emitidas" %}</h1>
+</div>
+
+<section class="grid" style="margin-bottom:16px;">
+  <div class="card" style="cursor:default;">
+    <div class="card__icon"><img src="{% static 'ui/img/iconos/calendar.svg' %}" alt=""></div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Hoy" %}</h2>
+      <p class="card__desc">
+        {% blocktrans with count=facturas_hoy_count total=facturas_hoy_total|floatformat:2 %}{{ count }} facturas emitidas, {{ total }}&euro; pagados.{% endblocktrans %}
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="cursor:default;">
+    <div class="card__icon"><img src="{% static 'ui/img/iconos/clock.svg' %}" alt=""></div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Pendientes" %}</h2>
+      <p class="card__desc">
+        {% blocktrans with pending=facturas_pendientes_count %}{{ pending }} facturas emitidas pendientes de pago.{% endblocktrans %}
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="fich-card">
+  <div class="fich-card__header">
+    <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" width="20" class="svg-icon" alt="">
+    <h2 class="fich-card__title">{% trans "Ultimas facturas de cliente" %}</h2>
+  </div>
+  <div class="fich-card__body fich-card__body--table">
+    <table class="fich-table">
+      <thead>
+        <tr>
+          <th>{% trans "Factura" %}</th>
+          <th>{% trans "Fecha" %}</th>
+          <th>{% trans "Cliente" %}</th>
+          <th>{% trans "Tipo" %}</th>
+          <th>{% trans "Estado" %}</th>
+          <th>{% trans "Total" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for factura in facturas %}
+          <tr>
+            <td>#{{ factura.id }}</td>
+            <td>{{ factura.emitida_a|date:"d/m/Y H:i" }}</td>
+            <td>{{ factura.cliente|default:"-" }}</td>
+            <td>{{ factura.tipo_factura }}</td>
+            <td>{{ factura.get_estado_display }}</td>
+            <td>{{ factura.total|floatformat:2 }}&euro;</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td class="fich-empty-cell" colspan="6">{% trans "Aun no hay facturas emitidas." %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -4,21 +4,22 @@
 {% block title %}Inventario | Antigravity TPV{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/stock/index.css' %}?v=16">
+<link rel="stylesheet" href="{% static 'ui/css/stock/index.css' %}?v=20">
 {% endblock %}
 
 {% block content %}
 <div class="stock-dashboard">
     <header class="dashboard-header animated fadeInDown">
-        <div class="header-info">
-            <h1>Panel de Inventario</h1>
-            <p>Control independiente de existencias, materias primas e ingredientes.</p>
-        </div>
-        <div class="header-actions">
+        <div class="header-left">
             <a href="{% url 'ui:stock' %}" class="sync-btn sync-btn--ghost">
                 <img src="/static/ui/img/iconos/move-left.svg" class="svg-icon" width="18">
                 <span>Stock</span>
             </a>
+        </div>
+        <div class="header-info">
+            <h1>Panel de Inventario</h1>
+        </div>
+        <div class="header-actions">
             <button onclick="openModal('modalPlantillas')" class="sync-btn sync-btn--ghost">
                 <img src="/static/ui/img/iconos/package-search.svg" class="svg-icon" width="18">
                 <span>Plantillas</span>
@@ -40,38 +41,119 @@
         </div>
 
         <!-- Custom Dropdown Categorías -->
-        <div class="custom-select-container" id="containerCat">
-            <div class="custom-select-trigger" onclick="toggleDropdown('containerCat')">
+        <div class="custom-select-container custom-select-container--filters" id="containerFilters">
+            <div class="custom-select-trigger" onclick="toggleDropdown('containerFilters')">
                 <div class="flex items-center gap-3">
-                    <img src="/static/ui/img/iconos/warehouse.svg" class="svg-icon toolbar-trigger-icon" width="16">
-                    <span id="selectedCatName">Todas las Categorías</span>
+                    <img src="{% static 'ui/img/iconos/funnel.svg' %}" class="svg-icon toolbar-trigger-icon" width="16">
+                    <span>Filtros</span>
+                    <span id="selectedFilterName" class="filter-trigger-count"></span>
                 </div>
                 <img src="/static/ui/img/iconos/move-down.svg" class="arrow svg-icon" width="10">
             </div>
-            <div class="custom-select-dropdown" id="dropdownCat">
-                <!-- Opciones dinámicas -->
+            <div class="custom-select-dropdown filter-panel" id="filterPanel">
+                <section class="filter-panel__section">
+                    <div class="filter-panel__title">
+                        <img src="{% static 'ui/img/iconos/warehouse.svg' %}" class="svg-icon option-icon" width="15">
+                        <span>Categoría</span>
+                    </div>
+                    <div class="filter-panel__options" id="dropdownCat"></div>
+                </section>
+
+                <section class="filter-panel__section">
+                    <div class="filter-panel__title">
+                        <img src="{% static 'ui/img/iconos/bolt.svg' %}" class="svg-icon option-icon" width="15">
+                        <span>Estado</span>
+                    </div>
+                    <div class="filter-panel__options" id="dropdownStatus">
+                        <div class="custom-option is-selected" onclick="selectStatus('all', 'Todos')">Todos</div>
+                        <div class="custom-option" onclick="selectStatus('order', 'Para pedir')">Para pedir</div>
+                        <div class="custom-option" onclick="selectStatus('review', 'Revisar')">Revisar</div>
+                        <div class="custom-option" onclick="selectStatus('ok', 'En stock')">En stock</div>
+                        <div class="custom-option" onclick="selectStatus('low', 'Stock bajo')">Stock bajo</div>
+                        <div class="custom-option" onclick="selectStatus('out', 'Sin stock')">Sin stock</div>
+                    </div>
+                </section>
+
+                <section class="filter-panel__section">
+                    <div class="filter-panel__title">
+                        <img src="{% static 'ui/img/iconos/funnel.svg' %}" class="svg-icon option-icon" width="15">
+                        <span>Ordenar por</span>
+                    </div>
+                    <div class="filter-panel__options" id="dropdownSort">
+                        <div class="custom-option is-selected" onclick="selectSort('name_asc', 'Nombre A-Z')">
+                            <img src="{% static 'ui/img/iconos/a-arrow-down.svg' %}" class="svg-icon option-icon" width="15">
+                            <span>Nombre A-Z</span>
+                        </div>
+                        <div class="custom-option" onclick="selectSort('name_desc', 'Nombre Z-A')">
+                            <img src="{% static 'ui/img/iconos/a-arrow-up.svg' %}" class="svg-icon option-icon" width="15">
+                            <span>Nombre Z-A</span>
+                        </div>
+                        <div class="custom-option" onclick="selectSort('stock_desc', 'Stock mayor')">
+                            <img src="{% static 'ui/img/iconos/arrow-down-to-line.svg' %}" class="svg-icon option-icon" width="15">
+                            <span>Stock mayor</span>
+                        </div>
+                        <div class="custom-option" onclick="selectSort('stock_asc', 'Stock menor')">
+                            <img src="{% static 'ui/img/iconos/a-arrow-up.svg' %}" class="svg-icon option-icon" width="15">
+                            <span>Stock menor</span>
+                        </div>
+                        <div class="custom-option" onclick="selectSort('min_desc', 'Mínimo mayor')">
+                            <img src="{% static 'ui/img/iconos/arrow-down-to-line.svg' %}" class="svg-icon option-icon" width="15">
+                            <span>Mínimo mayor</span>
+                        </div>
+                        <div class="custom-option" onclick="selectSort('state_priority', 'Prioridad stock')">
+                            <img src="{% static 'ui/img/iconos/circle-alert.svg' %}" class="svg-icon option-icon" width="15">
+                            <span>Prioridad stock</span>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="filter-panel__footer">
+                    <button type="button" class="filter-panel__reset" onclick="resetStockFilters()">Limpiar filtros</button>
+                </div>
             </div>
             <input type="hidden" id="filterCat" value="" onchange="filterStock()">
+            <input type="hidden" id="filterStatus" value="all" onchange="filterStock()">
+            <input type="hidden" id="filterSort" value="name_asc">
         </div>
 
-        <!-- Custom Dropdown Status -->
-        <div class="custom-select-container" id="containerStatus">
-            <div class="custom-select-trigger" onclick="toggleDropdown('containerStatus')">
+        <div class="legacy-filter-controls hidden">
+        <!-- Custom Dropdown Orden -->
+        <div class="custom-select-container custom-select-container--sort" id="containerSort">
+            <div class="custom-select-trigger" onclick="toggleDropdown('containerSort')">
                 <div class="flex items-center gap-3">
-                    <img src="{% static 'ui/img/iconos/bolt.svg' %}" class="svg-icon toolbar-trigger-icon" width="16">
-                    <span id="selectedStatusName">Todos los Estados</span>
+                    <img src="{% static 'ui/img/iconos/funnel.svg' %}" class="svg-icon toolbar-trigger-icon" width="16">
+                    <span id="selectedSortName">Nombre A-Z</span>
                 </div>
                 <img src="{% static 'ui/img/iconos/move-down.svg' %}" class="arrow svg-icon" width="10">
             </div>
             <div class="custom-select-dropdown">
-                <div class="custom-option is-selected" onclick="selectStatus('all', 'Todos los Estados')">Todos los Estados</div>
-                <div class="custom-option" onclick="selectStatus('order', 'Para Pedir')">Para Pedir</div>
-                <div class="custom-option" onclick="selectStatus('review', 'Revisar')">Revisar</div>
-                <div class="custom-option" onclick="selectStatus('ok', 'En Stock')">En Stock</div>
-                <div class="custom-option" onclick="selectStatus('low', 'Stock Bajo')">Stock Bajo</div>
-                <div class="custom-option" onclick="selectStatus('out', 'Sin Stock')">Sin Stock</div>
+                <div class="custom-option is-selected" onclick="selectSort('name_asc', 'Nombre A-Z')">
+                    <img src="{% static 'ui/img/iconos/a-arrow-down.svg' %}" class="svg-icon option-icon" width="15">
+                    <span>Nombre A-Z</span>
+                </div>
+                <div class="custom-option" onclick="selectSort('name_desc', 'Nombre Z-A')">
+                    <img src="{% static 'ui/img/iconos/a-arrow-up.svg' %}" class="svg-icon option-icon" width="15">
+                    <span>Nombre Z-A</span>
+                </div>
+                <div class="custom-option" onclick="selectSort('stock_desc', 'Stock mayor')">
+                    <img src="{% static 'ui/img/iconos/arrow-down-to-line.svg' %}" class="svg-icon option-icon" width="15">
+                    <span>Stock mayor</span>
+                </div>
+                <div class="custom-option" onclick="selectSort('stock_asc', 'Stock menor')">
+                    <img src="{% static 'ui/img/iconos/a-arrow-up.svg' %}" class="svg-icon option-icon" width="15">
+                    <span>Stock menor</span>
+                </div>
+                <div class="custom-option" onclick="selectSort('min_desc', 'Mínimo mayor')">
+                    <img src="{% static 'ui/img/iconos/arrow-down-to-line.svg' %}" class="svg-icon option-icon" width="15">
+                    <span>Mínimo mayor</span>
+                </div>
+                <div class="custom-option" onclick="selectSort('state_priority', 'Prioridad stock')">
+                    <img src="{% static 'ui/img/iconos/circle-alert.svg' %}" class="svg-icon option-icon" width="15">
+                    <span>Prioridad stock</span>
+                </div>
             </div>
-            <input type="hidden" id="filterStatus" value="all" onchange="filterStock()">
+            <input type="hidden" id="filterSort" value="name_asc">
+        </div>
         </div>
 
         <!-- View Toggle -->
@@ -383,6 +465,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'ui/js/stock/stock.js' %}?v=15"></script>
+<script src="{% static 'ui/js/stock/stock.js' %}?v=21"></script>
 {% endblock %}
 

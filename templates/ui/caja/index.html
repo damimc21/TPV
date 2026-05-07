@@ -65,5 +65,19 @@
     </div>
     <div class="card__cta">{% trans "Gestionar" %} →</div>
   </a>
+
+  <!-- Card: Facturas emitidas -->
+  <a class="card" href="{% url 'ui:caja_facturas' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Facturas emitidas" %}</h2>
+      <p class="card__desc">
+        {% trans "Consulta facturas de clientes generadas desde el TPV." %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Consultar" %} &rarr;</div>
+  </a>
 </section>
 {% endblock %}

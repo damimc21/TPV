@@ -36,6 +36,7 @@ urlpatterns = [
     path("caja/reaperturas/", views.caja_reaperturas, name="caja_reaperturas"),
     path("caja/cierres/", views.caja_cierres, name="caja_cierres"),
     path("caja/estadisticas/", views.caja_estadisticas, name="caja_estadisticas"),
+    path("caja/facturas/", views.caja_facturas, name="caja_facturas"),
     
     # API Caja
     path("api/dia/abrir/", views.api_dia_abrir, name="api_dia_abrir"),
@@ -48,6 +49,8 @@ urlpatterns = [
     path("api/configuracion/update/", views.api_configuracion_update, name="api_configuracion_update"),
 
     path("albaranes-facturas/", views.albaranes_facturas, name="albaranes_facturas"),
+    path("albaranes-facturas/albaranes/", views.albaranes, name="albaranes"),
+    path("albaranes-facturas/facturas/", views.facturas, name="facturas"),
     path("config/", views.config, name="config"),
     path("config/usuarios/", views.config_usuarios, name="config_usuarios"),
     path("config/permisos/", views.config_permisos, name="config_permisos"),

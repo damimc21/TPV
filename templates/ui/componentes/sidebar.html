@@ -36,7 +36,7 @@
             <span class="nav__text">{% trans "Stock" %}</span>
         </a>
 
-        <a class="nav__item {% if request.resolver_match.url_name == 'caja' %}is-active{% endif %}"
+        <a class="nav__item {% if 'caja' in request.resolver_match.url_name %}is-active{% endif %}"
             href="{% url 'ui:caja' %}">
             <span class="nav__icon">
                 <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" alt="">
@@ -44,7 +44,7 @@
             <span class="nav__text">{% trans "Caja y cierres" %}</span>
         </a>
 
-        <a class="nav__item {% if request.resolver_match.url_name == 'albaranes_facturas' %}is-active{% endif %}"
+        <a class="nav__item {% if request.resolver_match.url_name == 'albaranes_facturas' or request.resolver_match.url_name == 'albaranes' or request.resolver_match.url_name == 'facturas' %}is-active{% endif %}"
             href="{% url 'ui:albaranes_facturas' %}">
             <span class="nav__icon">
                 <img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt="">

@@ -1,19 +1,38 @@
-{% load i18n static %}
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{% trans "Albaranes y Facturas" %}</title>
-  <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
-</head>
-<body>
-  <div class="app">
-    <main class="main">
-      <h1 class="h1">{% trans "Albaranes y Facturas" %}</h1>
-      <p class="hint">{% trans "Sección en construcción." %}</p>
-      <a class="meta meta--button" href="{% url 'ui:index' %}">{% trans "Volver" %}</a>
-    </main>
-  </div>
-</body>
-</html>
+{% extends "ui/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Albaranes y Facturas" %}{% endblock %}
+
+{% block content %}
+<div class="page-head page-head--center-title">
+  <h1 class="h1">{% trans "Albaranes y Facturas" %}</h1>
+</div>
+
+<section class="grid">
+  <a class="card" href="{% url 'ui:albaranes' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Albaranes" %}</h2>
+      <p class="card__desc">
+        {% blocktrans with entradas=entradas_mes_count %}Control de entregas de proveedor y entradas de stock. Este mes: {{ entradas }} entradas registradas.{% endblocktrans %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Abrir" %} &rarr;</div>
+  </a>
+
+  <a class="card" href="{% url 'ui:facturas' %}">
+    <div class="card__icon">
+      <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" alt="">
+    </div>
+    <div class="card__body">
+      <h2 class="card__title">{% trans "Facturas de proveedor" %}</h2>
+      <p class="card__desc">
+        {% blocktrans with proveedores=proveedores_count %}Registro de facturas recibidas: Coca-Cola, Mercadona, Catunambu, Apolo y otros proveedores. Proveedores: {{ proveedores }}.{% endblocktrans %}
+      </p>
+    </div>
+    <div class="card__cta">{% trans "Consultar" %} &rarr;</div>
+  </a>
+</section>
+{% endblock %}
