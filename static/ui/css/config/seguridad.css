@@ -2,41 +2,6 @@
     max-width: 1160px;
 }
 
-.page-head--center-title .page-head__left {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-}
-
-.sec-auth-back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    height: 38px;
-    padding: 0 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.04);
-    color: #e7edf7;
-    text-decoration: none;
-    font-size: 0.84rem;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: 0.005em;
-    transition: all 0.2s ease;
-}
-
-.sec-auth-back-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.24);
-    color: #ffffff;
-}
-
-.sec-auth-back-link:focus-visible {
-    outline: 2px solid rgba(96, 165, 250, 0.75);
-    outline-offset: 2px;
-}
-
 .sec-auth__card {
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 24px;
@@ -351,26 +316,6 @@
 }
 
 @media (max-width: 768px) {
-    .page-head--center-title {
-        justify-content: flex-start;
-        gap: 10px;
-    }
-
-    .page-head--center-title .h1 {
-        text-align: left;
-        font-size: 1.65rem;
-    }
-
-    .page-head--center-title .page-head__left,
-    .page-head--center-title .page-head__right {
-        position: static;
-    }
-
-    .sec-auth-back-link {
-        height: 34px;
-        padding: 0 11px;
-        font-size: 0.8rem;
-    }
 
     .sec-auth__card {
         padding: 18px 16px;

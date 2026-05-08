@@ -6,42 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-}
-
-/* === PAGE HEAD BACK (Ficheros) === */
-.page-head--center-title .page-head__left {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-}
-
-.fich-back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 38px;
-  padding: 0 13px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
-  text-decoration: none;
-  font-size: 0.84rem;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: 0.005em;
-  transition: all 0.2s ease;
-}
-
-.fich-back-link:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #fff;
-}
-
-.fich-back-link:focus-visible {
-  outline: 2px solid rgba(96, 165, 250, 0.7);
-  outline-offset: 2px;
+  min-width: 0;
 }
 
 /* === CARDS === */
@@ -50,6 +15,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
+  min-width: 0;
 }
 
 .fich-card--export {
@@ -117,6 +83,7 @@
 .fich-card__body--table {
   padding: 0;
   overflow-x: auto;
+  max-width: 100%;
 }
 
 .fich-card__footer {
@@ -710,6 +677,65 @@
   color: var(--muted);
 }
 
+/* Caja / facturas emitidas */
+.caja-invoice-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.caja-invoice-kpi {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+}
+
+.caja-invoice-kpi > img {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .10);
+}
+
+.caja-invoice-kpi div {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  align-items: baseline;
+}
+
+.caja-invoice-kpi span {
+  color: #f8fafc;
+  font-weight: 900;
+}
+
+.caja-invoice-kpi strong {
+  color: #5eead4;
+  font-size: 1.35rem;
+  font-weight: 950;
+}
+
+.caja-invoice-kpi small {
+  grid-column: 1 / -1;
+  min-width: 0;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* === TYPE PILLS === */
 .fich-type-pill {
   padding: 3px 10px;
@@ -802,9 +828,31 @@
   max-width: 270px;
 }
 
-.fich-audit-search {
+.fich-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
   flex: 2.4 1 520px;
   min-width: 280px;
+}
+
+.fich-search-icon {
+  position: absolute;
+  left: 12px;
+  opacity: 0.45;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.fich-search-wrapper .fich-filter-input,
+.fich-search-wrapper .provider-search {
+  padding-left: 36px;
+  width: 100%;
+}
+
+.fich-audit-search {
+  flex: 1;
+  min-width: 0;
 }
 
 .fich-audit-row--secondary {
@@ -1355,26 +1403,6 @@
 }
 
 @media (max-width: 768px) {
-  .page-head--center-title {
-    justify-content: flex-start;
-    gap: 10px;
-  }
-
-  .page-head--center-title .h1 {
-    text-align: left;
-    font-size: 1.6rem;
-  }
-
-  .page-head--center-title .page-head__left,
-  .page-head--center-title .page-head__right {
-    position: static;
-  }
-
-  .fich-back-link {
-    height: 34px;
-    padding: 0 11px;
-    font-size: 0.8rem;
-  }
 
   .fich-import-type-group {
     flex-direction: column;
@@ -1389,6 +1417,12 @@
   .fich-logs-dates {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .fich-search-wrapper {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
   }
 
   .fich-logs-row--secondary {
@@ -1417,6 +1451,18 @@
   .fich-filter-input,
   .fich-select {
     width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .fich-logs-row--primary .fich-select,
+  .fich-audit-row--primary .fich-custom-select {
+    flex: 1 1 auto;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .fich-custom-select {
+    flex: 1 1 auto;
   }
 
   .fich-export-filter-grid {
@@ -1427,6 +1473,10 @@
   .fich-custom-select--export {
     max-width: none;
     width: 100%;
+  }
+
+  .caja-invoice-summary {
+    grid-template-columns: 1fr;
   }
 
   .fich-segmented__item span {

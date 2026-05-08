@@ -1,0 +1,273 @@
+/* ═══════════════════════════════════════════════════════════════
+   section-layout.css  —  Layout compartido para páginas de sección
+   ---------------------------------------------------------------
+   Clases reutilizables por cualquier página que siga el patrón:
+     header (título + botones) + toolbar (búsqueda + filtros) + contenido
+   ---------------------------------------------------------------
+   Usado por: inventario, albaranes, facturas de proveedor,
+              y cualquier nueva sección que adopte este estilo.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Variables de diseño (glass / accent) ── */
+:root {
+  --glass-bg:     rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --accent-emerald: #10b981;
+  --accent-amber:   #f59e0b;
+  --accent-rose:    #f43f5e;
+  --accent-teal:    #14b8a6;
+}
+
+/* ── Contenedor principal de sección ── */
+.section-dashboard,
+.stock-dashboard {
+  width: min(100%, 1480px);
+  margin: 0 auto;
+  min-width: 0;
+  min-height: calc(100dvh - 54px);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Header: título centrado + back izquierda + acciones derecha ── */
+.dashboard-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "title title title"
+    "back  spacer actions";
+  align-items: center;
+  row-gap: 16px;
+  column-gap: 14px;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 16px;
+  min-width: 0;
+}
+
+.header-info {
+  grid-area: title;
+  text-align: center;
+  min-width: 0;
+}
+
+.header-left {
+  grid-area: back;
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  min-width: 0;
+}
+
+.header-actions {
+  grid-area: actions;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  justify-self: end;
+  position: relative;
+  z-index: 600;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.header-info h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  line-height: 1.1;
+}
+
+.header-info p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin: 4px 0 0;
+}
+
+/* ── Toolbar: búsqueda + filtros sobre fondo glass ── */
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  z-index: 501;
+  position: relative;
+  overflow: visible;
+  flex-wrap: wrap;
+}
+
+/* ── Buscador dentro del toolbar ── */
+.search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-wrapper .icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+  width: 20px;
+}
+
+.search-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 10px 12px 10px 45px;
+  color: #fff;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.search-input:focus {
+  border-color: var(--accent-teal);
+  background: rgba(0, 0, 0, 0.4);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+}
+
+/* ── Botones de acción (sync-btn) ── */
+.sync-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  padding: 9px 16px;
+  border-radius: 12px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.sync-btn:hover {
+  background: var(--accent-teal);
+  color: #0f172a;
+  border-color: var(--accent-teal);
+}
+
+.sync-btn.sync-btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.sync-btn.sync-btn--ghost:hover span {
+  color: #f8fafc !important;
+}
+
+.sync-btn--primary {
+  background: var(--accent-emerald);
+  color: #0f172a;
+  border: none;
+}
+
+.sync-btn--primary:hover {
+  background: #34d399;
+  color: #06251d;
+  border: none;
+}
+
+.sync-btn--danger {
+  background: rgba(244, 63, 94, 0.12);
+  border-color: rgba(244, 63, 94, 0.3);
+  color: #fda4af;
+}
+
+.sync-btn--danger:hover {
+  background: var(--accent-rose);
+  color: #fff;
+  border-color: var(--accent-rose);
+}
+
+/* ── Ocultar spinners en inputs numéricos ── */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ── Animaciones de entrada ── */
+@keyframes sl-fadeInDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes sl-fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes sl-fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animated.fadeInDown { animation: sl-fadeInDown 0.4s ease both; }
+.animated.fadeInUp   { animation: sl-fadeInUp   0.4s ease both; }
+.animated.fadeIn     { animation: sl-fadeIn     0.4s ease both; }
+
+/* ── Responsive ── */
+@media (max-width: 1180px) {
+  .dashboard-header {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "back"
+      "actions";
+  }
+
+  .header-left {
+    justify-self: center;
+  }
+
+  .header-actions {
+    justify-self: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 680px) {
+  .header-actions {
+    width: 100%;
+  }
+
+  .sync-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .dashboard-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-wrapper {
+    min-width: unset;
+  }
+}

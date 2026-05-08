@@ -4,7 +4,8 @@
 {% block title %}{% trans "Modificadores" %} - {% trans "Catálogo" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo.css' %}?v=12">
 {% endblock %}
 
 {% block content %}
@@ -34,33 +35,39 @@
 
 <div id="js-translations" data-seleccionar="{% trans 'Seleccionar' %}" class="hidden"></div>
 <div class="catalogo-app is-resolving">
-    <header class="catalogo-header">
-        <div class="catalogo-tabs">
-            <a href="{% url 'ui:catalogo' %}" class="tab-btn catalogo-back-btn"
-                title="{% trans 'Volver al Catálogo' %}">
-                <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="Volver">
+    <header class="dashboard-header">
+        <div class="header-left">
+            <a href="{% url 'ui:catalogo' %}" class="sync-btn sync-btn--ghost" title="{% trans 'Volver al Catálogo' %}">
+                <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+                <span>{% trans "Catálogo" %}</span>
             </a>
-            <button class="tab-btn is-active" data-tab="comentarios"><img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" alt=""> {% trans "Comentarios" %}</button>
-            <button class="tab-btn" data-tab="suplementos"><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Suplementos" %}</button>
         </div>
-        <div class="catalogo-actions">
-            <button id="btnNuevoPerfil" class="btn btn--ghost"><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Nuevo Perfil Comentarios" %}</button>
-            <button id="btnComentarioLibre" class="btn btn--ghost hidden" style="border: 1px solid rgba(100, 255, 218, 0.3); color: #64ffda;">
-                <img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" alt=""> {% trans "Comentario Libre" %}
+        <div class="header-info">
+            <h1>{% trans "Comentarios y suplementos" %}</h1>
+        </div>
+        <div class="header-actions">
+            <button id="btnNuevoPerfil" class="sync-btn sync-btn--primary"><img src="{% static 'ui/img/iconos/plus.svg' %}" class="svg-icon" width="16" alt=""> {% trans "Nuevo Perfil Comentarios" %}</button>
+            <button id="btnComentarioLibre" class="sync-btn sync-btn--ghost hidden" style="border-color: rgba(100,255,218,0.3); color: #64ffda;">
+                <img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" class="svg-icon" width="16" alt=""> {% trans "Comentario Libre" %}
             </button>
-            <button id="btnComodin" class="btn btn--ghost hidden" style="border: 1px solid rgba(100, 255, 218, 0.3); color: #64ffda;">
-                <img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Comodín" %}
+            <button id="btnComodin" class="sync-btn sync-btn--ghost hidden" style="border-color: rgba(100,255,218,0.3); color: #64ffda;">
+                <img src="{% static 'ui/img/iconos/plus.svg' %}" class="svg-icon" width="16" alt=""> {% trans "Comodín" %}
             </button>
-            <button id="btnNuevoGeneral" class="btn btn--primary" disabled><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Nuevo Comentario" %}</button>
+            <button id="btnNuevoGeneral" class="sync-btn sync-btn--primary" disabled><img src="{% static 'ui/img/iconos/plus.svg' %}" class="svg-icon" width="16" alt=""> {% trans "Nuevo Comentario" %}</button>
         </div>
     </header>
 
+    <nav class="catalogo-tabs catalogo-tabs--section" aria-label="{% trans 'Secciones de modificadores' %}">
+        <button class="tab-btn is-active" data-tab="comentarios"><img src="{% static 'ui/img/iconos/message-circle-more.svg' %}" alt=""> {% trans "Comentarios" %}</button>
+        <button class="tab-btn" data-tab="suplementos"><img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Suplementos" %}</button>
+    </nav>
+
     <main class="catalogo-content">
         <!-- Barra de Búsqueda y Filtros -->
-        <div class="catalogo-filters">
+        <div class="dashboard-toolbar catalogo-filters">
             <div class="search-wrapper">
-                <img src="{% static 'ui/img/iconos/package-search.svg' %}" class="search-icon" alt="">
-                <input type="text" id="searchInput" class="form-control" autocomplete="off"
+                <img src="{% static 'ui/img/iconos/search.svg' %}" class="icon svg-icon" alt="">
+                <input type="text" id="searchInput" class="search-input" autocomplete="off"
                     placeholder="{% trans 'Buscar por nombre o ID...' %}">
             </div>
 

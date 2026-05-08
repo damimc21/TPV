@@ -4,7 +4,8 @@
 {% block title %}{% trans "Catálogo - Departamentos y Productos" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo.css' %}?v=11">
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo.css' %}?v=12">
 <link rel="stylesheet" href="{% static 'ui/css/catalogo/catalogo_extras.css' %}?v=1">
 {% endblock %}
 
@@ -69,31 +70,36 @@
 
 <div class="catalogo-app is-resolving">
 
-  <header class="catalogo-header">
-    <div class="catalogo-tabs">
-      <a href="{% url 'ui:catalogo' %}" class="tab-btn catalogo-back-btn" title="{% trans 'Volver al Catálogo' %}">
-        <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="Volver">
+  <header class="dashboard-header">
+    <div class="header-left">
+      <a href="{% url 'ui:catalogo' %}" class="sync-btn sync-btn--ghost" title="{% trans 'Volver al Catálogo' %}">
+        <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+        <span>{% trans "Catálogo" %}</span>
       </a>
-
-      <button class="tab-btn" data-tab="departamentos">
-        <img src="{% static 'ui/img/iconos/folders.svg' %}" alt=""> {% trans "Departamentos" %}
-      </button>
-      <button class="tab-btn" data-tab="productos">
-        <img src="{% static 'ui/img/iconos/package-search.svg' %}" alt=""> {% trans "Productos" %}
-      </button>
     </div>
-
-    <div class="catalogo-actions">
-      <button id="btnNuevo" class="btn btn--primary"></button>
+    <div class="header-info">
+      <h1>{% trans "Departamentos y productos" %}</h1>
+    </div>
+    <div class="header-actions">
+      <button id="btnNuevo" class="sync-btn sync-btn--primary"></button>
     </div>
   </header>
 
+  <nav class="catalogo-tabs catalogo-tabs--section" aria-label="{% trans 'Secciones de catálogo' %}">
+    <button class="tab-btn" data-tab="departamentos">
+      <img src="{% static 'ui/img/iconos/folders.svg' %}" alt=""> {% trans "Departamentos" %}
+    </button>
+    <button class="tab-btn" data-tab="productos">
+      <img src="{% static 'ui/img/iconos/package-search.svg' %}" alt=""> {% trans "Productos" %}
+    </button>
+  </nav>
+
   <main class="catalogo-content">
 
-    <div class="catalogo-filters">
+    <div class="dashboard-toolbar catalogo-filters">
       <div class="search-wrapper">
-        <img src="{% static 'ui/img/iconos/package-search.svg' %}" class="search-icon" alt="">
-        <input type="text" id="searchInput" class="form-control" autocomplete="off"
+        <img src="{% static 'ui/img/iconos/search.svg' %}" class="icon svg-icon" alt="">
+        <input type="text" id="searchInput" class="search-input" autocomplete="off"
           placeholder="{% trans 'Buscar por nombre o ID...' %}">
       </div>
 
@@ -314,7 +320,7 @@
                   </div>
                   <div class="appearance-strip__sep"></div>
                   <button type="button" id="btnEditConfigTemplate" class="appearance-chip__btn appearance-chip__btn--primary hidden" onclick="openConfigTemplateManager()">
-                    <img src="{% static 'ui/img/iconos/settings.svg' %}" alt=""> {% trans "Editar Plantilla" %}
+                    <img src="{% static 'ui/img/iconos/cog.svg' %}" alt=""> {% trans "Editar Plantilla" %}
                   </button>
                 </div>
               </div>

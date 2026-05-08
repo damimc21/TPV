@@ -4,20 +4,25 @@
 {% block title %}{% trans "Usuarios" %}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'ui/css/config/usuarios.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="page-head page-head--center-title">
-    <div class="page-head__left">
-        <a class="cfg-back-link" href="{% url 'ui:config' %}">
-            <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="" aria-hidden="true">
-            <span>{% trans "Volver a Configuración" %}</span>
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+    <div class="header-left">
+        <a class="sync-btn sync-btn--ghost" href="{% url 'ui:config' %}">
+            <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="" aria-hidden="true">
+            <span>{% trans "Configuración" %}</span>
         </a>
     </div>
-    <h1 class="h1">{% trans "Gestión de usuarios" %}</h1>
-    <div class="page-head__right"></div>
-</div>
+    <div class="header-info">
+        <h1>{% trans "Gestión de usuarios" %}</h1>
+    </div>
+    <div class="header-actions"></div>
+</header>
 
 <section class="cfg-users">
     {% if notice_ok %}
@@ -329,6 +334,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 {% endif %}
 
+</div><!-- /.section-dashboard -->
 {% endblock %}
 
 {% block extra_js %}

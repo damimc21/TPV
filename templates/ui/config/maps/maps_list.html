@@ -3,23 +3,36 @@
 
 {% block title %}{% trans "Tus mapas TPV" %}{% endblock %}
 
-{% block content %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+{% endblock %}
 
-<div class="page-head page-head--center-title">
-  <h1 class="h1">{% trans "Tus mapas TPV" %}</h1>
-  <div class="page-head__right">
-    <a class="btn" href="{% url 'ui:map_editor' %}">➕ {% trans "Crear mapa" %}</a>
+{% block content %}
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+  <div class="header-left">
+    <a class="sync-btn sync-btn--ghost" href="{% url 'ui:config' %}">
+      <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+      <span>{% trans "Configuración" %}</span>
+    </a>
   </div>
-</div>
+  <div class="header-info">
+    <h1>{% trans "Tus mapas TPV" %}</h1>
+  </div>
+  <div class="header-actions">
+    <a class="sync-btn sync-btn--primary" href="{% url 'ui:map_editor' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>{% trans "Crear mapa" %}</span>
+    </a>
+  </div>
+</header>
 
 <section class="grid" id="mapsGrid">
   <!-- Se rellena por JS -->
 </section>
 
-<div class="mt-14">
-  <a class="btn btn--ghost" href="{% url 'ui:config' %}">↩️ {% trans "Volver a Configuración" %}</a>
-</div>
-
+</div><!-- /.section-dashboard -->
 {% endblock %}
 
 {% block extra_js %}

@@ -4,37 +4,42 @@
 {% block title %}{% trans "Facturas emitidas" %} | {% trans "Caja y cierres" %}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
-<div class="page-head page-head--center-title">
-  <div class="page-head__left">
-    <a class="fich-back-link" href="{% url 'ui:caja' %}">
-      <span>&larr;</span><span>{% trans "Volver a Caja" %}</span>
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+  <div class="header-left">
+    <a class="sync-btn sync-btn--ghost" href="{% url 'ui:caja' %}">
+      <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+      <span>{% trans "Caja" %}</span>
     </a>
   </div>
-  <h1 class="h1">{% trans "Facturas emitidas" %}</h1>
-</div>
+  <div class="header-info">
+    <h1>{% trans "Facturas emitidas" %}</h1>
+  </div>
+  <div class="header-actions"></div>
+</header>
 
-<section class="grid" style="margin-bottom:16px;">
-  <div class="card" style="cursor:default;">
-    <div class="card__icon"><img src="{% static 'ui/img/iconos/calendar.svg' %}" alt=""></div>
-    <div class="card__body">
-      <h2 class="card__title">{% trans "Hoy" %}</h2>
-      <p class="card__desc">
-        {% blocktrans with count=facturas_hoy_count total=facturas_hoy_total|floatformat:2 %}{{ count }} facturas emitidas, {{ total }}&euro; pagados.{% endblocktrans %}
-      </p>
+<section class="caja-invoice-summary">
+  <div class="caja-invoice-kpi">
+    <img src="{% static 'ui/img/iconos/calendar.svg' %}" class="svg-icon" width="20" alt="">
+    <div>
+      <span>{% trans "Hoy" %}</span>
+      <strong>{{ facturas_hoy_count }}</strong>
+      <small>{{ facturas_hoy_total|floatformat:2 }}&euro; {% trans "pagados" %}</small>
     </div>
   </div>
 
-  <div class="card" style="cursor:default;">
-    <div class="card__icon"><img src="{% static 'ui/img/iconos/clock.svg' %}" alt=""></div>
-    <div class="card__body">
-      <h2 class="card__title">{% trans "Pendientes" %}</h2>
-      <p class="card__desc">
-        {% blocktrans with pending=facturas_pendientes_count %}{{ pending }} facturas emitidas pendientes de pago.{% endblocktrans %}
-      </p>
+  <div class="caja-invoice-kpi">
+    <img src="{% static 'ui/img/iconos/clock.svg' %}" class="svg-icon" width="20" alt="">
+    <div>
+      <span>{% trans "Pendientes" %}</span>
+      <strong>{{ facturas_pendientes_count }}</strong>
+      <small>{% trans "facturas emitidas pendientes" %}</small>
     </div>
   </div>
 </section>
@@ -74,5 +79,6 @@
       </tbody>
     </table>
   </div>
-</div>
+</div><!-- /.fich-card -->
+</div><!-- /.section-dashboard -->
 {% endblock %}

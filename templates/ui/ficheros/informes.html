@@ -4,18 +4,25 @@
 {% block title %}{% trans "Informes" %} | Ficheros{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
-<div class="page-head page-head--center-title">
-  <div class="page-head__left">
-    <a class="fich-back-link" href="{% url 'ui:ficheros' %}">
-      <span>←</span><span>{% trans "Volver a Ficheros" %}</span>
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+  <div class="header-left">
+    <a class="sync-btn sync-btn--ghost" href="{% url 'ui:ficheros' %}">
+      <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+      <span>{% trans "Ficheros" %}</span>
     </a>
   </div>
-  <h1 class="h1">{% trans "Informes" %}</h1>
-</div>
+  <div class="header-info">
+    <h1>{% trans "Informes" %}</h1>
+  </div>
+  <div class="header-actions"></div>
+</header>
 
 <div class="fich-layout">
 
@@ -164,7 +171,8 @@
       {% include "ui/componentes/export_menu.html" with export_id="previewExport" export_menu_id="previewExportMenu" export_handler="exportarInformeFormato" export_button_class="btn--primary" export_pdf_id="btnPreviewExportPdf" export_csv_id="btnPreviewExportCsv" export_xlsx_id="btnPreviewExportXlsx" %}
     </div>
   </div>
-</div>
+</div><!-- /.fich-layout -->
+</div><!-- /.section-dashboard -->
 {% endblock %}
 
 {% block extra_js %}

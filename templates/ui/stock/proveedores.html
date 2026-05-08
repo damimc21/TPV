@@ -4,24 +4,37 @@
 {% block title %}{% trans "Proveedores" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/stock/proveedores.css' %}?v=5">
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/stock/proveedores.css' %}?v=6">
 {% endblock %}
 
 {% block content %}
-<div class="page-head page-head--center-title stock-providers-head">
-  <div class="page-head__left">
-    <a class="section-back-link" href="{% url 'ui:stock' %}">
-      <span aria-hidden="true">&larr;</span>
-      <span>{% trans "Volver a Stock" %}</span>
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+  <div class="header-left">
+    <a class="sync-btn sync-btn--ghost" href="{% url 'ui:stock' %}">
+      <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+      <span>{% trans "Stock" %}</span>
     </a>
   </div>
-  <h1 class="h1">{% trans "Proveedores" %}</h1>
-  <div class="page-head__right">
-    <button type="button" class="btn btn--success provider-new-btn" id="providerNewBtn">
-      <span aria-hidden="true">+</span>
+  <div class="header-info">
+    <h1>{% trans "Proveedores" %}</h1>
+  </div>
+  <div class="header-actions">
+    <button type="button" class="sync-btn sync-btn--primary" id="providerNewBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       <span>{% trans "Nuevo proveedor" %}</span>
     </button>
   </div>
+</header>
+
+<div class="dashboard-toolbar">
+  <div class="search-wrapper">
+    <img src="{% static 'ui/img/iconos/search.svg' %}" class="icon svg-icon" alt="">
+    <input type="search" id="providerSearch" class="search-input" placeholder="{% trans 'Buscar por nombre, telefono o email' %}">
+  </div>
+  <span class="provider-toolbar-stat" id="providerStats">0</span>
 </div>
 
 <section class="stock-providers-shell">
@@ -29,9 +42,8 @@
     <div class="provider-list-panel__head">
       <div>
         <h2>{% trans "Listado" %}</h2>
-        <span id="providerStats">0</span>
+        <p>{% trans "Gestiona proveedores activos e inactivos." %}</p>
       </div>
-      <input type="search" id="providerSearch" class="provider-search" placeholder="{% trans 'Buscar por nombre, telefono o email' %}">
     </div>
 
     <div class="provider-list custom-scroll" id="providerList">
@@ -103,6 +115,7 @@
     </form>
   </section>
 </div>
+</div><!-- /.section-dashboard -->
 {% endblock %}
 
 {% block extra_js %}

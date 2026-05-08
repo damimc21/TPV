@@ -9,48 +9,11 @@
     gap: 14px;
 }
 
-/* ── Cabecera de página ── */
-.page-head--center-title .page-head__left {
-    position: absolute;
-    left: 0;
-    bottom: 0;
+.cfg-perm__toolbar {
+    justify-content: flex-start;
+    padding: 14px;
 }
 
-.cfg-back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    height: 38px;
-    padding: 0 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.04);
-    color: #e7edf7;
-    text-decoration: none;
-    font-size: 0.84rem;
-    font-weight: 800;
-    line-height: 1;
-    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.cfg-back-link img {
-    width: 17px;
-    height: 17px;
-    filter: brightness(0) invert(1);
-}
-
-.cfg-back-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.24);
-    color: #ffffff;
-}
-
-.cfg-back-link:focus-visible {
-    outline: 2px solid rgba(96, 165, 250, 0.75);
-    outline-offset: 2px;
-}
-
-/* ── Panel base ── */
 .cfg-perm__panel {
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
@@ -111,6 +74,8 @@
 
 /* ── Selector de usuario ── */
 .cfg-perm__selector {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -126,12 +91,14 @@
 /* ── Custom Select ── */
 .cfg-custom-select {
     position: relative;
-    width: min(460px, 100%);
+    width: min(640px, 100%);
+    flex: 0 1 640px;
+    min-width: 240px;
 }
 
 .cfg-custom-select__trigger {
     width: 100%;
-    min-height: 44px;
+    min-height: 42px;
     padding: 10px 14px;
     border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 12px;
@@ -601,38 +568,24 @@
 }
 
 @media (max-width: 768px) {
-    .page-head--center-title {
-        justify-content: flex-start;
-        gap: 10px;
-    }
-
-    .page-head--center-title .h1 {
-        text-align: left;
-        font-size: 1.65rem;
-    }
-
-    .page-head--center-title .page-head__left,
-    .page-head--center-title .page-head__right {
-        position: static;
-    }
-
-    .cfg-back-link {
-        height: 34px;
-        padding: 0 11px;
-        font-size: 0.8rem;
-    }
 
     .cfg-perm__panel {
         padding: 14px;
     }
 
+    .cfg-perm__toolbar {
+        align-items: stretch;
+    }
+
     .cfg-perm__selector {
         flex-direction: column;
         align-items: flex-start;
+        width: 100%;
     }
 
     .cfg-custom-select {
         width: 100%;
+        min-width: 0;
     }
 
     .cfg-perm__categories,

@@ -1,173 +1,24 @@
+/* ─────────────────────────────────────────────────────────────────
+   NOTA: Las clases de layout compartido (stock-dashboard,
+   dashboard-header, header-*, sync-btn, dashboard-toolbar,
+   search-wrapper, search-input, animaciones...) se han movido a:
+       static/ui/css/section-layout.css
+   Este archivo debe cargarse ANTES que stock/index.css.
+   ───────────────────────────────────────────────────────────────── */
+
 :root {
-        --glass-bg: rgba(255, 255, 255, 0.03);
-        --glass-border: rgba(255, 255, 255, 0.08);
-        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        --accent-emerald: #10b981;
-        --accent-amber: #f59e0b;
-        --accent-rose: #f43f5e;
-        --accent-teal: #14b8a6;
-        --stock-card-min-height: 318px;
-    }
-
-    .stock-dashboard {
-        width: min(100%, 1480px);
-        margin: 0 auto;
-        min-height: calc(100dvh - 54px);
-        color: #f8fafc;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-    }
-
-    .dashboard-header {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        grid-template-areas:
-            "title title title"
-            "back spacer actions";
-        align-items: center;
-        row-gap: 16px;
-        column-gap: 14px;
-        border-bottom: 1px solid var(--glass-border);
-        padding-bottom: 16px;
-    }
-
-    .header-info {
-        grid-area: title;
-        text-align: center;
-        min-width: 0;
-    }
-
-    .header-left {
-        grid-area: back;
-        display: flex;
-        align-items: center;
-        justify-self: start;
-        min-width: 0;
-    }
-
-    .header-actions {
-        grid-area: actions;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        justify-content: flex-end;
-        justify-self: end;
-        position: relative;
-        z-index: 600;
-        flex-wrap: nowrap;
-    }
-
-    .header-info h1 {
-        margin: 0;
-        color: var(--text);
-        font-size: 28px;
-        font-weight: 900;
-        letter-spacing: 0.2px;
-        line-height: 1.1;
-    }
-
-    .header-info p {
-        color: #94a3b8;
-        font-size: 0.95rem;
-    }
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --accent-emerald: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --accent-teal: #14b8a6;
+    --stock-card-min-height: 318px;
+}
 
     .toolbar-trigger-icon {
         opacity: 0.5;
-    }
-
-    /* Glass Toolbar */
-    .dashboard-toolbar {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: var(--glass-bg);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        padding: 12px 14px;
-        border-radius: 16px;
-        border: 1px solid var(--glass-border);
-        box-shadow: var(--glass-shadow);
-        z-index: 501;
-        position: relative;
-        overflow: visible;
-        flex-wrap: wrap;
-    }
-
-    @media (max-width: 1180px) {
-        .dashboard-header {
-            grid-template-columns: 1fr;
-            grid-template-areas:
-                "title"
-                "back"
-                "actions";
-        }
-
-        .header-left {
-            justify-self: center;
-        }
-
-        .header-actions {
-            justify-self: center;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-    }
-
-    @media (max-width: 680px) {
-        .header-actions {
-            width: 100%;
-        }
-
-        .sync-btn {
-            flex: 1 1 auto;
-            justify-content: center;
-        }
-    }
-
-    .search-wrapper {
-        position: relative;
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .search-wrapper .icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        opacity: 0.5;
-        width: 20px;
-    }
-
-    .search-input {
-        width: 100%;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid var(--glass-border);
-        border-radius: 12px;
-        padding: 10px 12px 10px 45px;
-        color: #fff;
-        font-size: 0.9rem;
-        transition: all 0.3s;
-    }
-
-    .search-input:focus {
-        border-color: var(--accent-teal);
-        background: rgba(0, 0, 0, 0.4);
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
-    }
-
-    /* Hide Number Spinners */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        appearance: none;
-        margin: 0;
-    }
-    input[type=number] {
-        -moz-appearance: textfield;
-        appearance: textfield;
     }
 
     /* Custom Premium Select */
@@ -967,45 +818,7 @@
     .inv-table tbody tr.row-out { border-left-color: var(--accent-rose); }
     .inv-table tbody tr.row-review { border-left-color: #fb7185; }
 
-    /* === Sync button === */
-    .sync-btn {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid var(--glass-border);
-        color: #fff;
-        padding: 9px 16px;
-        border-radius: 12px;
-        font-size: 0.83rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    .sync-btn:hover {
-        background: var(--accent-teal);
-        color: #0f172a;
-        border-color: var(--accent-teal);
-    }
-    .sync-btn.sync-btn--ghost:hover {
-        background: rgba(255,255,255,0.08) !important;
-        color: #f8fafc !important;
-        border-color: rgba(255,255,255,0.18) !important;
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
-    }
-    .sync-btn.sync-btn--ghost:hover span {
-        color: #f8fafc !important;
-    }
-    .sync-btn--primary {
-        background: var(--accent-emerald);
-        color: #0f172a;
-        border: none;
-    }
-    .sync-btn--primary:hover {
-        background: #34d399;
-        color: #06251d;
-        border: none;
-    }
+    /* sync-btn → ver section-layout.css */
 
     /* === MODAL STYLES (preserved) === */
     .modal-content-glass-compact {

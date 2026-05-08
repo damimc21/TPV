@@ -4,20 +4,25 @@
 {% block title %}{% trans "Seguridad de acceso" %}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'ui/css/config/seguridad.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="page-head page-head--center-title">
-    <div class="page-head__left">
-        <a class="sec-auth-back-link" href="{% url 'ui:config' %}">
-            <span aria-hidden="true">←</span>
-            <span>{% trans "Volver a Configuración" %}</span>
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+    <div class="header-left">
+        <a class="sync-btn sync-btn--ghost" href="{% url 'ui:config' %}">
+            <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+            <span>{% trans "Configuración" %}</span>
         </a>
     </div>
-    <h1 class="h1">{% trans "Seguridad de acceso" %}</h1>
-    <div class="page-head__right"></div>
-</div>
+    <div class="header-info">
+        <h1>{% trans "Seguridad de acceso" %}</h1>
+    </div>
+    <div class="header-actions"></div>
+</header>
 
 <section class="sec-auth">
     <div class="sec-auth__card">
@@ -135,6 +140,7 @@
         </div>
     </div>
 </template>
+</div><!-- /.section-dashboard -->
 {% endblock %}
 
 {% block extra_js %}

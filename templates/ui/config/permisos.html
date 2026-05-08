@@ -4,20 +4,25 @@
 {% block title %}{% trans "Permisos" %}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'ui/css/config/permisos.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="page-head page-head--center-title">
-    <div class="page-head__left">
-        <a class="cfg-back-link" href="{% url 'ui:config' %}">
-            <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="" aria-hidden="true">
-            <span>{% trans "Volver a Configuración" %}</span>
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+    <div class="header-left">
+        <a class="sync-btn sync-btn--ghost" href="{% url 'ui:config' %}">
+            <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="" aria-hidden="true">
+            <span>{% trans "Configuración" %}</span>
         </a>
     </div>
-    <h1 class="h1">{% trans "Gestión de permisos" %}</h1>
-    <div class="page-head__right"></div>
-</div>
+    <div class="header-info">
+        <h1>{% trans "Gestión de permisos" %}</h1>
+    </div>
+    <div class="header-actions"></div>
+</header>
 
 <section class="cfg-perm">
 
@@ -41,7 +46,7 @@
     {% endif %}
 
     {# ── Selector de usuario ── #}
-    <div class="cfg-perm__panel">
+    <div class="dashboard-toolbar cfg-perm__toolbar">
         <div class="cfg-perm__selector">
             <span class="cfg-perm__selector-label">{% trans "Usuario" %}</span>
             <div class="cfg-custom-select" id="userSelectWidget">
@@ -59,6 +64,7 @@
                 <div class="cfg-custom-select__panel" id="userSelectPanel" hidden
                      role="listbox" aria-label="{% trans 'Seleccionar usuario' %}">
                     <div class="cfg-custom-select__search">
+                        <img src="{% static 'ui/img/iconos/search.svg' %}" class="svg-icon fich-search-icon" width="14">
                         <input type="text" id="userSelectSearch"
                                placeholder="{% trans 'Buscar usuario...' %}"
                                autocomplete="off" aria-label="{% trans 'Buscar usuario' %}">
@@ -188,6 +194,7 @@
     {% endif %}
 
 </section>
+</div><!-- /.section-dashboard -->
 {% endblock %}
 
 {% block extra_js %}

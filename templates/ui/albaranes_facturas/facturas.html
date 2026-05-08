@@ -4,126 +4,188 @@
 {% block title %}{% trans "Facturas de proveedor" %} | {% trans "Albaranes y Facturas" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
-<link rel="stylesheet" href="{% static 'ui/css/albaranes_facturas/index.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/albaranes_facturas/index.css' %}?v=3">
 {% endblock %}
 
 {% block content %}
-<div class="page-head page-head--center-title">
-  <div class="page-head__left">
-    <a class="fich-back-link" href="{% url 'ui:albaranes_facturas' %}">
-      <span>&larr;</span><span>{% trans "Volver" %}</span>
-    </a>
+<div class="stock-dashboard">
+
+  <!-- Header -->
+  <header class="dashboard-header animated fadeInDown">
+    <div class="header-left">
+      <a href="{% url 'ui:albaranes_facturas' %}" class="sync-btn sync-btn--ghost">
+        <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18">
+        <span>{% trans "Albaranes y Facturas" %}</span>
+      </a>
+    </div>
+    <div class="header-info">
+      <h1>{% trans "Facturas de proveedor" %}</h1>
+    </div>
+    <div class="header-actions">
+      <button class="sync-btn sync-btn--primary" onclick="openDpModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>{% trans "Nueva Factura" %}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Toolbar -->
+  <div class="dashboard-toolbar animated fadeInUp">
+    <div class="search-wrapper">
+      <img src="{% static 'ui/img/iconos/search.svg' %}" class="icon svg-icon">
+      <input type="text" id="dpSearch" class="search-input" placeholder="{% trans 'Buscar factura...' %}" oninput="filterDocs()">
+    </div>
+    <select id="dpEstado" class="dp-filter-select" data-ui-select onchange="filterDocs()">
+      <option value="">{% trans "Todos los estados" %}</option>
+      {% for value, label in estados %}
+        <option value="{{ value }}">{{ label }}</option>
+      {% endfor %}
+    </select>
   </div>
-  <h1 class="h1">{% trans "Facturas de proveedor" %}</h1>
-</div>
 
-<div class="docprov-layout">
-  <form method="post" class="fich-card docprov-form" autocomplete="off">
-    {% csrf_token %}
-    <div class="fich-card__header">
-      <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" width="20" class="svg-icon" alt="">
-      <h2 class="fich-card__title">{% trans "Nueva factura recibida" %}</h2>
-    </div>
-    <div class="fich-card__body">
-      {% if error %}<p class="docprov-error">{{ error }}</p>{% endif %}
-      <div class="docprov-form-grid">
-        <label class="docprov-field docprov-field--wide">
-          <span>{% trans "Proveedor" %}</span>
-          <select class="fich-filter-input" name="proveedor">
-            <option value="">{% trans "Seleccionar proveedor" %}</option>
-            {% for proveedor in proveedores %}
-              <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
-            {% endfor %}
-          </select>
-        </label>
-        <label class="docprov-field">
-          <span>{% trans "O escribir proveedor" %}</span>
-          <input class="fich-filter-input" name="proveedor_nombre" placeholder="Coca-Cola, Mercadona...">
-        </label>
-        <label class="docprov-field">
-          <span>{% trans "N. factura" %}</span>
-          <input class="fich-filter-input" name="numero" placeholder="FRA-2026-001">
-        </label>
-        <label class="docprov-field">
-          <span>{% trans "Fecha" %}</span>
-          <input class="fich-filter-input" type="date" name="fecha" value="{{ today|date:'Y-m-d' }}">
-        </label>
-        <label class="docprov-field">
-          <span>{% trans "Vencimiento" %}</span>
-          <input class="fich-filter-input" type="date" name="vencimiento">
-        </label>
-        <label class="docprov-field docprov-field--wide">
-          <span>{% trans "Concepto" %}</span>
-          <input class="fich-filter-input" name="concepto" placeholder="Compra semanal, bebidas, limpieza...">
-        </label>
-        <label class="docprov-field">
-          <span>{% trans "Base" %}</span>
-          <input class="fich-filter-input" type="number" step="0.01" name="base" placeholder="0.00">
-        </label>
-        <label class="docprov-field">
-          <span>{% trans "Impuestos" %}</span>
-          <input class="fich-filter-input" type="number" step="0.01" name="impuestos" placeholder="0.00">
-        </label>
-        <label class="docprov-field">
-          <span>{% trans "Total" %}</span>
-          <input class="fich-filter-input" type="number" step="0.01" name="total" placeholder="0.00" required>
-        </label>
-        <label class="docprov-field">
-          <span>{% trans "Estado" %}</span>
-          <select class="fich-filter-input" name="estado">
-            {% for value, label in estados %}
-              <option value="{{ value }}">{{ label }}</option>
-            {% endfor %}
-          </select>
-        </label>
-        <label class="docprov-field docprov-field--full">
-          <span>{% trans "Notas" %}</span>
-          <textarea class="fich-filter-input docprov-notes" name="notas" placeholder="Forma de pago, incidencia, pedido relacionado..."></textarea>
-        </label>
-      </div>
-    </div>
-    <div class="fich-card__footer">
-      <button class="btn btn--success" type="submit">{% trans "Guardar factura" %}</button>
-      <a class="btn btn--outline" href="{% url 'ui:stock_proveedores' %}">{% trans "Ver proveedores" %}</a>
-    </div>
-  </form>
-
-  <div class="fich-card">
-    <div class="fich-card__header">
-      <img src="{% static 'ui/img/iconos/table-of-contents.svg' %}" width="20" class="svg-icon" alt="">
-      <h2 class="fich-card__title">{% trans "Facturas registradas" %}</h2>
-    </div>
-    <div class="fich-card__body fich-card__body--table">
-      <table class="fich-table">
-        <thead>
-          <tr>
-            <th>{% trans "Proveedor" %}</th>
-            <th>{% trans "N. factura" %}</th>
-            <th>{% trans "Fecha" %}</th>
-            <th>{% trans "Concepto" %}</th>
-            <th>{% trans "Estado" %}</th>
-            <th>{% trans "Total" %}</th>
+  <!-- Tabla -->
+  <div class="dp-table-card animated fadeIn">
+    <table class="fich-table" id="docTable">
+      <thead>
+        <tr>
+          <th>{% trans "Proveedor" %}</th>
+          <th>{% trans "N. factura" %}</th>
+          <th>{% trans "Fecha" %}</th>
+          <th>{% trans "Concepto" %}</th>
+          <th>{% trans "Estado" %}</th>
+          <th>{% trans "Total" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in documentos %}
+          <tr data-row data-estado="{{ doc.estado }}">
+            <td>{{ doc.proveedor_nombre|default:"-" }}</td>
+            <td>{{ doc.numero|default:"-" }}</td>
+            <td>{{ doc.fecha|date:"d/m/Y" }}</td>
+            <td>{{ doc.concepto|default:"-" }}</td>
+            <td><span class="dp-badge dp-badge--{{ doc.estado }}">{{ doc.get_estado_display }}</span></td>
+            <td>{{ doc.total|floatformat:2 }}&euro;</td>
           </tr>
-        </thead>
-        <tbody>
-          {% for documento in documentos %}
-            <tr>
-              <td>{{ documento.proveedor_nombre|default:"-" }}</td>
-              <td>{{ documento.numero|default:"-" }}</td>
-              <td>{{ documento.fecha|date:"d/m/Y" }}</td>
-              <td>{{ documento.concepto|default:"-" }}</td>
-              <td>{{ documento.get_estado_display }}</td>
-              <td>{{ documento.total|floatformat:2 }}&euro;</td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td class="fich-empty-cell" colspan="6">{% trans "Aun no hay facturas de proveedor registradas." %}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        {% empty %}
+          <tr id="emptyRow">
+            <td class="fich-empty-cell" colspan="6">{% trans "Aún no hay facturas de proveedor registradas." %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p id="noResults" class="dp-no-results hidden">{% trans "No hay resultados para esta búsqueda." %}</p>
+  </div>
+
+</div><!-- /.stock-dashboard -->
+
+<!-- Modal Nueva Factura -->
+<div id="dpModal" class="dp-modal-overlay hidden" onclick="closeDpModalOutside(event)">
+  <div class="dp-modal-box">
+    <button class="dp-modal-close" onclick="closeDpModal()" type="button">&times;</button>
+    <div class="dp-modal-header">
+      <img src="{% static 'ui/img/iconos/receipt-text.svg' %}" width="20" class="svg-icon" alt="">
+      <h2 class="dp-modal-title">{% trans "Nueva factura recibida" %}</h2>
     </div>
+    <form method="post" autocomplete="off">
+      {% csrf_token %}
+      <div class="dp-modal-body">
+        {% if error %}<p class="docprov-error">{{ error }}</p>{% endif %}
+        <div class="docprov-form-grid">
+          <label class="docprov-field docprov-field--wide">
+            <span>{% trans "Proveedor" %}</span>
+            <select class="fich-filter-input" name="proveedor" data-ui-select>
+              <option value="">{% trans "Seleccionar proveedor" %}</option>
+              {% for proveedor in proveedores %}
+                <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label class="docprov-field">
+            <span>{% trans "O escribir proveedor" %}</span>
+            <input class="fich-filter-input" name="proveedor_nombre" placeholder="Coca-Cola, Mercadona...">
+          </label>
+          <label class="docprov-field">
+            <span>{% trans "N. factura" %}</span>
+            <input class="fich-filter-input" name="numero" placeholder="FRA-2026-001">
+          </label>
+          <label class="docprov-field">
+            <span>{% trans "Fecha" %}</span>
+            <input class="fich-filter-input" type="date" name="fecha" value="{{ today|date:'Y-m-d' }}">
+          </label>
+          <label class="docprov-field">
+            <span>{% trans "Vencimiento" %}</span>
+            <input class="fich-filter-input" type="date" name="vencimiento">
+          </label>
+          <label class="docprov-field docprov-field--wide">
+            <span>{% trans "Concepto" %}</span>
+            <input class="fich-filter-input" name="concepto" placeholder="Compra semanal, bebidas, limpieza...">
+          </label>
+          <label class="docprov-field">
+            <span>{% trans "Base" %}</span>
+            <input class="fich-filter-input" type="number" step="0.01" name="base" placeholder="0.00">
+          </label>
+          <label class="docprov-field">
+            <span>{% trans "Impuestos" %}</span>
+            <input class="fich-filter-input" type="number" step="0.01" name="impuestos" placeholder="0.00">
+          </label>
+          <label class="docprov-field">
+            <span>{% trans "Total" %}</span>
+            <input class="fich-filter-input" type="number" step="0.01" name="total" placeholder="0.00" required>
+          </label>
+          <label class="docprov-field">
+            <span>{% trans "Estado" %}</span>
+            <select class="fich-filter-input" name="estado" data-ui-select>
+              {% for value, label in estados %}
+                <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label class="docprov-field docprov-field--full">
+            <span>{% trans "Notas" %}</span>
+            <textarea class="fich-filter-input docprov-notes" name="notas" placeholder="Forma de pago, incidencia, pedido relacionado..."></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="dp-modal-footer">
+        <button type="button" class="btn btn--ghost" onclick="closeDpModal()">{% trans "Cancelar" %}</button>
+        <button type="submit" class="btn btn--success">{% trans "Guardar factura" %}</button>
+      </div>
+    </form>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function openDpModal() {
+    document.getElementById('dpModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDpModal() {
+    document.getElementById('dpModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  function closeDpModalOutside(e) {
+    if (e.target === document.getElementById('dpModal')) closeDpModal();
+  }
+  function filterDocs() {
+    const search = document.getElementById('dpSearch').value.toLowerCase();
+    const estado = document.getElementById('dpEstado').value;
+    const rows = document.querySelectorAll('#docTable tbody tr[data-row]');
+    let visible = 0;
+    rows.forEach(tr => {
+      const matchSearch = !search || tr.textContent.toLowerCase().includes(search);
+      const matchEstado = !estado || tr.dataset.estado === estado;
+      const show = matchSearch && matchEstado;
+      tr.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    const noResults = document.getElementById('noResults');
+    const emptyRow = document.getElementById('emptyRow');
+    if (noResults) noResults.classList.toggle('hidden', visible > 0 || rows.length === 0);
+    if (emptyRow) emptyRow.style.display = (rows.length === 0) ? '' : 'none';
+  }
+  {% if error %}openDpModal();{% endif %}
+</script>
 {% endblock %}

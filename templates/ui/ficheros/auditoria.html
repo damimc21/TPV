@@ -4,28 +4,37 @@
 {% block title %}{% trans "Auditoría" %} | Ficheros{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'ui/css/ficheros/ficheros.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
-<div class="page-head page-head--center-title">
-  <div class="page-head__left">
-    <a class="fich-back-link" href="{% url 'ui:ficheros' %}">
-      <span>←</span><span>{% trans "Volver a Ficheros" %}</span>
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+  <div class="header-left">
+    <a class="sync-btn sync-btn--ghost" href="{% url 'ui:ficheros' %}">
+      <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+      <span>{% trans "Ficheros" %}</span>
     </a>
   </div>
-  <h1 class="h1">{% trans "Auditoría" %}</h1>
-  <div class="page-head__right">
+  <div class="header-info">
+    <h1>{% trans "Auditoría" %}</h1>
+  </div>
+  <div class="header-actions">
     {% include "ui/componentes/export_menu.html" with export_handler="exportarAuditoriaFormato" export_direction="down" export_button_class="btn--success" export_icon="ui/img/iconos/download.svg" %}
   </div>
-</div>
+</header>
 
 <div class="fich-layout">
   <div class="fich-card fich-card--compact">
     <div class="fich-card__body">
       <div class="fich-audit-filters">
         <div class="fich-audit-row fich-audit-row--primary">
-          <input type="text" class="fich-filter-input fich-audit-search" id="auditSearch" placeholder="Buscar evento..." oninput="cargarAuditoria()">
+          <div class="fich-search-wrapper">
+            <img src="{% static 'ui/img/iconos/search.svg' %}" class="svg-icon fich-search-icon" width="15">
+            <input type="text" class="fich-filter-input fich-audit-search" id="auditSearch" placeholder="Buscar evento..." oninput="cargarAuditoria()">
+          </div>
           <div class="fich-custom-select" id="auditUsuarioSelect">
             <button type="button" class="fich-custom-select__trigger" id="auditUsuarioTrigger" aria-haspopup="listbox" aria-expanded="false">
               <span id="auditUsuarioLabel">Todos los usuarios</span>
@@ -98,7 +107,8 @@
     </div>
     <div class="fich-card__footer fich-pagination" id="auditPagination"></div>
   </div>
-</div>
+</div><!-- /.fich-layout -->
+</div><!-- /.section-dashboard -->
 {% endblock %}
 
 {% block extra_js %}

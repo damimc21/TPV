@@ -3,20 +3,30 @@
 
 {% block title %}{% trans "Configurar Impresoras" %}{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+{% endblock %}
+
 {% block content %}
-<div class="page-head">
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <a href="{% url 'ui:config' %}" class="btn btn--ghost" style="padding: 8px;">
-            <img src="{% static 'ui/img/iconos/move-left.svg' %}" alt="Volver" style="width: 24px; filter: brightness(0) invert(1);">
-        </a>
-        <h1 class="h1">{% trans "Gestión de Impresoras" %}</h1>
-    </div>
-    <div class="page-head__right">
-        <a href="/admin/tpvapp/impresora/add/" target="_blank" class="btn btn--primary">
-            <img src="{% static 'ui/img/iconos/plus.svg' %}" alt=""> {% trans "Añadir Impresora (Admin)" %}
+<div class="section-dashboard">
+
+<header class="dashboard-header">
+    <div class="header-left">
+        <a class="sync-btn sync-btn--ghost" href="{% url 'ui:config' %}">
+            <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+            <span>{% trans "Configuración" %}</span>
         </a>
     </div>
-</div>
+    <div class="header-info">
+        <h1>{% trans "Gestión de Impresoras" %}</h1>
+    </div>
+    <div class="header-actions">
+        <a href="/admin/tpvapp/impresora/add/" target="_blank" class="sync-btn sync-btn--primary">
+            <img src="{% static 'ui/img/iconos/plus.svg' %}" class="svg-icon" width="18" alt="">
+            <span>{% trans "Añadir Impresora (Admin)" %}</span>
+        </a>
+    </div>
+</header>
 
 <section class="mt-2">
     <div class="card" style="margin-bottom: 24px; padding: 20px; background: rgba(0,0,0,0.2) !important; cursor: default;">
@@ -76,4 +86,5 @@
     </div>
 
 </section>
+</div><!-- /.section-dashboard -->
 {% endblock %}

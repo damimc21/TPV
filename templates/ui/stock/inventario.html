@@ -4,7 +4,8 @@
 {% block title %}Inventario | Antigravity TPV{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'ui/css/stock/index.css' %}?v=20">
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/stock/index.css' %}?v=21">
 {% endblock %}
 
 {% block content %}
@@ -36,7 +37,7 @@
 
     <div class="dashboard-toolbar animated fadeInUp">
         <div class="search-wrapper">
-            <img src="/static/ui/img/iconos/package-search.svg" class="icon svg-icon">
+            <img src="/static/ui/img/iconos/search.svg" class="icon svg-icon">
             <input type="text" id="stockSearch" class="search-input" placeholder="¿Qué artículo buscas?" onkeyup="filterStock()">
         </div>
 
