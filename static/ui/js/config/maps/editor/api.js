@@ -1,11 +1,11 @@
 /* api.js — Persistencia en Django (CSRF + endpoints) */
 
 // ─── CSRF ────────────────────────────────────────────────────
+// Delegado en window.TpvUtils (definido en common/utils.js).
 export function getCSRFToken() {
-    return document.cookie
-        .split("; ")
-        .find((r) => r.startsWith("csrftoken="))
-        ?.split("=")[1] || "";
+    return (typeof window !== "undefined" && window.TpvUtils)
+        ? window.TpvUtils.getCSRFToken()
+        : "";
 }
 
 // ─── Base path (detecta /es/ o /en/ etc) ─────────────────────

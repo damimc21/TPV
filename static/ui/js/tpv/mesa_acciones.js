@@ -73,14 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getCookie(name) {
-        const cookies = document.cookie ? document.cookie.split(";") : [];
-        for (const raw of cookies) {
-            const cookie = raw.trim();
-            if (cookie.startsWith(name + "=")) {
-                return decodeURIComponent(cookie.slice(name.length + 1));
-            }
-        }
-        return "";
+        return (window.TpvUtils && window.TpvUtils.getCookie(name)) || "";
     }
 
     function logUiEvent(evento, detalle, nivel = "INFO", origen = "ui.tpv") {

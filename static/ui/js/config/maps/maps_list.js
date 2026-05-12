@@ -29,12 +29,7 @@
   const BASE = basePath();
 
   function getCSRFToken() {
-    return (
-      document.cookie
-        .split("; ")
-        .find((r) => r.startsWith("csrftoken="))
-        ?.split("=")[1] || ""
-    );
+      return window.TpvUtils ? window.TpvUtils.getCSRFToken() : "";
   }
 
   async function apiListMaps() {

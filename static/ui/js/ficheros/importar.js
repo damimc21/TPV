@@ -17,12 +17,7 @@
     const COLOR_HEADERS = ['color_boton', 'color_texto'];
 
     function getCookie(name) {
-        let v = null;
-        document.cookie.split(';').forEach((c) => {
-            const [k, val] = c.trim().split('=');
-            if (k === name) v = decodeURIComponent(val);
-        });
-        return v;
+        return window.TpvUtils ? window.TpvUtils.getCookie(name) : null;
     }
 
     function expectedHeaders() {

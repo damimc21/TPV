@@ -31,7 +31,9 @@
   {% include "ui/componentes/js_i18n_common.html" %}
   <script src="{% url 'javascript-catalog' %}"></script>
   <script src="{% static 'ui/js/i18n.js' %}"></script>
+  <script src="{% static 'ui/js/common/utils.js' %}?v=1"></script>
   <script src="{% static 'ui/js/common.js' %}"></script>
+  <script src="{% static 'ui/js/common/module_loader.js' %}?v=1"></script>
   <script src="{% static 'ui/js/modals.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>
