@@ -8,6 +8,7 @@
 {% block title %}{% trans "Editor de mapas TPV" %}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'ui/css/config/maps/map_editor.css' %}">
 {% endblock %}
 
@@ -17,69 +18,69 @@
 
     <!-- CABECERA DEL EDITOR -->
     <section class="editor__head">
-        <div class="editorHead">
-            <!-- IZQUIERDA: nombre -->
-            <div class="editorHead__left">
-                <div class="editor__label">{% trans "Nombre del mapa" %}</div>
+        <header class="dashboard-header editorDashboardHeader">
+            <div class="header-left">
+                <a class="sync-btn sync-btn--ghost" id="btnBack" href="{% url 'ui:maps_list' %}">
+                    <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+                    <span>{% trans "Mapas" %}</span>
+                </a>
+            </div>
+            <div class="header-info">
+                <h1>{% trans "Editor de mapas TPV" %}</h1>
+            </div>
+            <div class="header-actions">
+                <div class="picker editorMapPicker" id="picker">
+                    <button class="sync-btn sync-btn--ghost picker__btn" id="mapPicker" type="button"
+                        aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'ui/img/iconos/folders.svg' %}" class="svg-icon" width="18" alt="">
+                        <span>{% trans "Mis mapas" %}</span>
+                        <span class="picker__chevron" aria-hidden="true"></span>
+                    </button>
+                    <div class="picker__drop" id="pickerDrop" aria-hidden="true"></div>
+                </div>
+                <button id="btnNewMap" class="sync-btn sync-btn--primary" type="button">
+                    <img src="{% static 'ui/img/iconos/plus.svg' %}" class="svg-icon" width="18" alt="">
+                    <span>{% trans "Crear mapa" %}</span>
+                </button>
+            </div>
+        </header>
 
-                <div class="editor__nameRow">
-                    <div class="inputWrap">
+        <div class="dashboard-toolbar editorControls">
+            <label class="editorNameField" for="mapName">
+                <span class="editor__label">{% trans "Nombre del mapa" %}</span>
+                <span class="editorNameLine">
+                    <span class="inputWrap">
                         <input id="mapName" class="editor__input" type="text" placeholder="{% trans 'Ej: Salón' %}">
                         <button class="inputWrap__clear hidden" id="btnNameCancel" type="button"
-                            aria-label="{% trans 'Cancelar cambios del nombre' %}">✕</button>
-                    </div>
+                            aria-label="{% trans 'Cancelar cambios del nombre' %}">×</button>
+                    </span>
 
-                    <!-- Botón de guardar -->
-                    <button class="iconAction" id="btnSave" type="button" title="{% trans 'Guardar' %}"
-                        aria-label="{% trans 'Guardar' %}">
-                        💾
-                    </button>
-
-                    <!-- Botón de eliminar -->
-                    <button class="iconAction iconAction--danger" id="btnDeleteMap" type="button"
-                        title="{% trans 'Eliminar mapa' %}" aria-label="{% trans 'Eliminar mapa' %}">
-                        🗑
-                    </button>
-                </div>
-
-                <div class="editor__metaRow">
                     <span id="saveState" class="editor__hint"></span>
 
-                    <div class="editor__resInline">
-                        <span class="editor__labelSmall">{% trans "Resolución:" %}</span>
+                    <span class="editorControls__actions">
+                        <button class="sync-btn sync-btn--ghost editorIconButton" id="btnSave" type="button"
+                            title="{% trans 'Guardar' %}" aria-label="{% trans 'Guardar' %}">
+                            <img src="{% static 'ui/img/iconos/save.svg' %}" class="svg-icon" width="18" alt="">
+                        </button>
+                        <button class="sync-btn sync-btn--danger editorIconButton" id="btnDeleteMap" type="button"
+                            title="{% trans 'Eliminar mapa' %}" aria-label="{% trans 'Eliminar mapa' %}">
+                            <img src="{% static 'ui/img/iconos/trash-2.svg' %}" class="svg-icon" width="18" alt="">
+                        </button>
+                    </span>
+                </span>
+            </label>
 
-                        <div class="picker picker--small" id="resPicker">
-                            <button class="picker__btn" id="btnResPicker" type="button">1920 × 1080 ▾</button>
-                            <div class="picker__drop" id="resPickerDrop" aria-hidden="true">
-                                <button class="picker__item" type="button" data-value="5120x1440">5120 × 1440
-                                    (32:9)</button>
-                                <button class="picker__item" type="button" data-value="2560x1080">2560 × 1080
-                                    (21:9)</button>
-                                <button class="picker__item" type="button" data-value="1920x1200">1920 × 1200
-                                    (16:10)</button>
-                                <button class="picker__item" type="button" data-value="1920x1080">1920 × 1080
-                                    (16:9)</button>
-                                <button class="picker__item" type="button" data-value="1280x1024">1280 × 1024
-                                    (5:4)</button>
-                                <button class="picker__item" type="button" data-value="1024x768">1024 × 768
-                                    (4:3)</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DERECHA: acciones -->
-            <div class="editorHead__right">
-                <a class="btn btn--ghost" id="btnBack" href="{% url 'ui:config' %}">↩️ Volver</a>
-                <div class="editorHead__stack">
-                    <div class="picker" id="picker">
-                        <button class="picker__btn" id="mapPicker" type="button">📁 Mis mapas ▾</button>
-                        <button id="btnNewMap" class="btn btn-primary">➕ Crear nuevo mapa</button>
-                        <div class="picker__drop" id="pickerDrop" aria-hidden="true"></div>
-                    </div>
-                </div>
-            </div>
+            <label class="editorResolutionField" for="mapResolution">
+                <span class="editor__label">{% trans "Resolución" %}</span>
+                <select id="mapResolution" class="editor__resolutionSelect" data-ui-select data-ui-select-size="compact">
+                    <option value="5120x1440">5120 × 1440 (32:9)</option>
+                    <option value="2560x1080">2560 × 1080 (21:9)</option>
+                    <option value="1920x1200">1920 × 1200 (16:10)</option>
+                    <option value="1920x1080" selected>1920 × 1080 (16:9)</option>
+                    <option value="1280x1024">1280 × 1024 (5:4)</option>
+                    <option value="1024x768">1024 × 768 (4:3)</option>
+                </select>
+            </label>
         </div>
     </section>
 
@@ -94,12 +95,14 @@
                 <div class="panel__heading">{% trans "Herramientas" %}</div>
                 <div class="panel__grid panel__grid--2">
                     <button class="tool" type="button" id="btnPanMode" data-tip="{% trans 'Mover mapa' %}"
-                        data-shortcut="Espacio">
+                        data-shortcut="Espacio" aria-label="{% trans 'Mover mapa' %}">
                         <span class="tool__icon">👋</span>
+                        <span class="tool__label">{% trans "Mover" %}</span>
                     </button>
                     <button class="tool is-active" type="button" data-tool="select" data-tip="{% trans 'Seleccionar' %}"
-                        data-shortcut="Espacio">
+                        data-shortcut="Espacio" aria-label="{% trans 'Seleccionar' %}">
                         <span class="tool__icon">🖱️</span>
+                        <span class="tool__label">{% trans "Selec." %}</span>
                     </button>
                 </div>
             </div>
@@ -111,20 +114,24 @@
                 <div class="panel__heading">{% trans "Objetos" %}</div>
                 <div class="panel__grid panel__grid--2">
                     <button class="tool" type="button" data-tool="mesa_normal" draggable="true"
-                        data-tip="{% trans 'Mesa normal' %}">
+                        data-tip="{% trans 'Mesa normal' %}" aria-label="{% trans 'Mesa normal' %}">
                         <span class="tool__icon">🪑</span>
+                        <span class="tool__label">{% trans "Mesa" %}</span>
                     </button>
                     <button class="tool" type="button" data-tool="mesa_grande" draggable="true"
-                        data-tip="{% trans 'Mesa grande' %}">
+                        data-tip="{% trans 'Mesa grande' %}" aria-label="{% trans 'Mesa grande' %}">
                         <span class="tool__icon">🧩</span>
+                        <span class="tool__label">{% trans "Grande" %}</span>
                     </button>
                     <button class="tool" type="button" data-tool="taburete" draggable="true"
-                        data-tip="{% trans 'Taburete' %}">
+                        data-tip="{% trans 'Taburete' %}" aria-label="{% trans 'Taburete' %}">
                         <span class="tool__icon">🟠</span>
+                        <span class="tool__label">{% trans "Tab." %}</span>
                     </button>
                     <button class="tool" type="button" data-tool="llevar" draggable="true"
-                        data-tip="{% trans 'Llevar' %}">
+                        data-tip="{% trans 'Llevar' %}" aria-label="{% trans 'Llevar' %}">
                         <span class="tool__icon">👜</span>
+                        <span class="tool__label">{% trans "Llevar" %}</span>
                     </button>
                 </div>
             </div>
@@ -135,8 +142,10 @@
             <div class="panel__section">
                 <div class="panel__heading">{% trans "Decoración" %}</div>
                 <div class="panel__grid panel__grid--2">
-                    <button class="tool" type="button" data-tool="planta" draggable="true" data-tip="Planta">
+                    <button class="tool" type="button" data-tool="planta" draggable="true" data-tip="Planta"
+                        aria-label="{% trans 'Planta' %}">
                         <span class="tool__icon">🌿</span>
+                        <span class="tool__label">{% trans "Planta" %}</span>
                     </button>
                 </div>
             </div>
@@ -148,20 +157,26 @@
                 <div class="panel__heading">{% trans "Acciones" %}</div>
                 <div class="panel__grid panel__grid--2">
                     <button class="tool tool--action" id="btnRotateL" type="button"
-                        data-tip="{% trans 'Girar izquierda' %}" data-shortcut="Shift + R">
+                        data-tip="{% trans 'Girar izquierda' %}" data-shortcut="Shift + R"
+                        aria-label="{% trans 'Girar izquierda' %}">
                         <span class="tool__icon">↺</span>
+                        <span class="tool__label">{% trans "Izq." %}</span>
                     </button>
                     <button class="tool tool--action" id="btnRotateR" type="button"
-                        data-tip="{% trans 'Girar derecha' %}" data-shortcut="R">
+                        data-tip="{% trans 'Girar derecha' %}" data-shortcut="R"
+                        aria-label="{% trans 'Girar derecha' %}">
                         <span class="tool__icon">↻</span>
+                        <span class="tool__label">{% trans "Der." %}</span>
                     </button>
                     <button class="tool tool--action" id="btnEditNumber" type="button"
-                        data-tip="{% trans 'Editar número' %}">
+                        data-tip="{% trans 'Editar número' %}" aria-label="{% trans 'Editar número' %}">
                         <span class="tool__icon">✍️</span>
+                        <span class="tool__label">{% trans "Núm." %}</span>
                     </button>
                     <button class="tool tool--danger" id="btnDelete" type="button" data-tip="{% trans 'Eliminar' %}"
-                        data-shortcut="Supr">
+                        data-shortcut="Supr" aria-label="{% trans 'Eliminar' %}">
                         <span class="tool__icon">🗑️</span>
+                        <span class="tool__label">{% trans "Borrar" %}</span>
                     </button>
                 </div>
             </div>

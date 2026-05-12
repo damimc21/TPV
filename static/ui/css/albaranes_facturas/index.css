@@ -214,14 +214,45 @@
   grid-column: 1 / -1;
 }
 
-.docprov-form .fich-filter-input {
+.docprov-field .fich-filter-input {
   width: 100%;
   min-width: 0;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, .38);
+  color: #f8fafc;
+  padding: 0 14px;
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 650;
+  outline: none;
+  color-scheme: dark;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.docprov-field .fich-filter-input::placeholder {
+  color: rgba(226, 232, 240, .50);
+  font-weight: 600;
+}
+
+.docprov-field .fich-filter-input:hover {
+  border-color: rgba(255, 255, 255, .22);
+  background: rgba(0, 0, 0, .46);
+}
+
+.docprov-field .fich-filter-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, .12);
+}
+
+.docprov-field textarea.fich-filter-input {
+  line-height: 1.45;
+  padding: 12px 14px;
 }
 
 .docprov-notes {
-  min-height: 70px;
-  padding-top: 10px;
+  min-height: 84px;
   resize: vertical;
 }
 

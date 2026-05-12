@@ -115,7 +115,7 @@
             <button class="btn btn--mini ${isActive ? "btn--success" : ""}" data-action="activate" ${isActive ? "disabled" : ""}>
               ${isActive ? "Activo" : "Activar"}
             </button>
-            <a class="btn btn--mini" href="${BASE}/config/maps/create/?edit=${encodeURIComponent(m.id)}">Editar</a>
+            <a class="btn btn--mini" href="${BASE}/config/maps/create/?id=${encodeURIComponent(m.id)}">Editar</a>
             <button class="btn btn--mini btn--danger" data-action="delete" ${isActive ? "disabled title='No puedes borrar el mapa activo'" : ""}>
               🗑️ Eliminar
             </button>

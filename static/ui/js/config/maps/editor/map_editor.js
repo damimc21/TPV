@@ -24,6 +24,7 @@ import { showPrompt } from './modal.js';
 // ─────────────────────────────────────────────────────────────
 const canvas = $("#canvas");
 const world = $("#world");
+const canvasWrap = canvas?.closest(".editor__canvasWrap") || canvas;
 const mapName = $("#mapName");
 const saveState = $("#saveState");
 
@@ -36,6 +37,7 @@ const btnRotateR = $("#btnRotateR");
 const btnDelete = $("#btnDelete");
 const btnNameCancel = $("#btnNameCancel");
 const btnEditNumber = $("#btnEditNumber");
+const resolutionSelect = $("#mapResolution");
 
 const mapPicker = $("#mapPicker");
 const pickerDrop = $("#pickerDrop");
@@ -64,12 +66,14 @@ let redoStack = [];
 const MAX_HISTORY = 50;
 
 // Modos: pan / select (space invierte temporalmente)
-let panMode = true;
+let panMode = false;
 let spaceDown = false;
+let placementTool = null;
 
 // Interacciones
 let dragging = null;
 let marquee = null;
+let marqueeBaseSelection = null;
 let marqueeEl = null;
 let suppressNextCanvasClick = false;
 let suppressNextItemClick = false;
@@ -92,15 +96,70 @@ let savedName = "";
 // Estado guardado / cambios
 let hasSaved = false;
 let savedSnapshot = "";
+let syncingResolutionSelect = false;
+
+function syncResolutionControl(w = 1920, h = 1080) {
+    if (!resolutionSelect) return;
+    syncingResolutionSelect = true;
+    resolutionSelect.value = `${w}x${h}`;
+    resolutionSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    syncingResolutionSelect = false;
+}
 
 // Pan
 let panning = null;
+const activeTouchPointers = new Map();
+let pinchGesture = null;
 
 // Cámara
 let minZoom = 0.2;
 const maxZoom = 3;
 
 const camera = { zoom: 1, panX: 0, panY: 0 };
+
+const MAP_SKINS = {
+    mesa_grande: {
+        svg: "Mesa Alargada_TPV-nobg.svg",
+    },
+    planta: {
+        svg: "Maceta_TPV-nobg.svg",
+    },
+};
+
+function mapSkinUrl(fileName) {
+    return `/static/ui/img/map_icons_clean/${encodeURIComponent(fileName)}`;
+}
+
+function getItemSkin(item) {
+    return item?.data?.skin || "svg";
+}
+
+function isTouchPointer(e) {
+    return e.pointerType === "touch" || e.pointerType === "pen";
+}
+
+function preventTouchGesture(e) {
+    if (isTouchPointer(e) && e.cancelable) e.preventDefault();
+}
+
+function worldPointFromClient(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: (clientX - rect.left - camera.panX) / camera.zoom,
+        y: (clientY - rect.top - camera.panY) / camera.zoom,
+    };
+}
+
+function touchDistance(a, b) {
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}
+
+function touchMidpoint(a, b) {
+    return {
+        clientX: (a.clientX + b.clientX) / 2,
+        clientY: (a.clientY + b.clientY) / 2,
+    };
+}
 
 // ─────────────────────────────────────────────────────────────
 // Snapshot / Dirty / UI contextual
@@ -220,6 +279,78 @@ function clampCamera() {
 
 function applyCamera() {
     world.style.transform = `translate(${camera.panX}px, ${camera.panY}px) scale(${camera.zoom})`;
+}
+
+function cancelCanvasGesture(pointerId = null) {
+    activeTouchPointers.forEach((_, id) => {
+        try { canvas.releasePointerCapture(id); } catch { /* noop */ }
+        try { canvasWrap?.releasePointerCapture(id); } catch { /* noop */ }
+    });
+    if (panning && pointerId !== null) {
+        try { canvas.releasePointerCapture(pointerId); } catch { /* noop */ }
+        try { canvasWrap?.releasePointerCapture(pointerId); } catch { /* noop */ }
+    }
+    panning = null;
+    canvas.classList.remove("is-panning");
+
+    if (marquee) {
+        if (pointerId !== null) {
+            try { canvas.releasePointerCapture(pointerId); } catch { /* noop */ }
+            try { canvasWrap?.releasePointerCapture(pointerId); } catch { /* noop */ }
+        }
+        marquee = null;
+        marqueeBaseSelection = null;
+        hideMarquee();
+    }
+
+    dragging = null;
+    hideGuides();
+}
+
+function beginPinchGesture() {
+    if (activeTouchPointers.size < 2) return false;
+    const [a, b] = Array.from(activeTouchPointers.values()).slice(0, 2);
+    const distance = touchDistance(a, b);
+    if (distance < 8) return false;
+
+    const midpoint = touchMidpoint(a, b);
+    pinchGesture = {
+        startDistance: distance,
+        startZoom: camera.zoom,
+        worldMidpoint: worldPointFromClient(midpoint.clientX, midpoint.clientY),
+    };
+    cancelCanvasGesture();
+    canvas.classList.add("is-pinching");
+    return true;
+}
+
+function updatePinchGesture() {
+    if (!pinchGesture || activeTouchPointers.size < 2) return;
+    const [a, b] = Array.from(activeTouchPointers.values()).slice(0, 2);
+    const distance = touchDistance(a, b);
+    if (distance < 8) return;
+
+    const midpoint = touchMidpoint(a, b);
+    const rect = canvas.getBoundingClientRect();
+    const nextZoom = clamp(pinchGesture.startZoom * (distance / pinchGesture.startDistance), minZoom, maxZoom);
+
+    camera.zoom = nextZoom;
+    camera.panX = (midpoint.clientX - rect.left) - pinchGesture.worldMidpoint.x * camera.zoom;
+    camera.panY = (midpoint.clientY - rect.top) - pinchGesture.worldMidpoint.y * camera.zoom;
+    clampCamera();
+    applyCamera();
+}
+
+function endTouchPointer(pointerId) {
+    try { canvas.releasePointerCapture(pointerId); } catch { /* noop */ }
+    try { canvasWrap?.releasePointerCapture(pointerId); } catch { /* noop */ }
+    activeTouchPointers.delete(pointerId);
+    if (activeTouchPointers.size < 2) {
+        pinchGesture = null;
+        canvas.classList.remove("is-pinching");
+    } else {
+        beginPinchGesture();
+    }
 }
 
 function setWorldSize() {
@@ -412,6 +543,25 @@ function toggleSelection(id) {
     updateSelectionUI();
 }
 
+function updateMarqueeSelection() {
+    if (!marquee) return;
+
+    const box = normRect(marquee);
+    selectedIds.clear();
+
+    if (marquee.additive && marqueeBaseSelection) {
+        marqueeBaseSelection.forEach((id) => selectedIds.add(id));
+    }
+
+    (map.items || []).forEach((it) => {
+        const a = getAABB(it, map, it.x, it.y);
+        const r = { x: a.left, y: a.top, w: a.w, h: a.h };
+        if (rectsIntersect(box, r)) selectedIds.add(it.id);
+    });
+
+    updateSelectionUI();
+}
+
 // ─────────────────────────────────────────────────────────────
 // Render
 // ─────────────────────────────────────────────────────────────
@@ -430,6 +580,32 @@ function renderItemLabel(el, item) {
     lab.textContent = String(item.data?.numero ?? "").trim();
 }
 
+function renderItemSkin(el, item) {
+    const current = el.querySelector(".item__skin");
+    if (current) current.remove();
+    el.classList.remove("has-skin", "has-skin-error");
+
+    const skin = getItemSkin(item);
+    const fileName = MAP_SKINS[item.type]?.[skin];
+    if (!fileName) return;
+
+    const img = document.createElement("img");
+    img.className = "item__skin";
+    img.alt = "";
+    img.draggable = false;
+    img.addEventListener("load", () => {
+        el.classList.add("has-skin");
+        el.classList.remove("has-skin-error");
+    }, { once: true });
+    img.addEventListener("error", () => {
+        img.remove();
+        el.classList.remove("has-skin");
+        el.classList.add("has-skin-error");
+    }, { once: true });
+    img.src = mapSkinUrl(fileName);
+    el.prepend(img);
+}
+
 function createItemElement(item) {
     const el = document.createElement("div");
     el.className = `mapItem item--${item.type}`;
@@ -445,6 +621,7 @@ function createItemElement(item) {
     const label = document.createElement("div");
     label.className = "item__label";
     el.appendChild(label);
+    renderItemSkin(el, item);
     renderItemLabel(el, item);
 
     // Click: selección (con modificadores para multi)
@@ -461,6 +638,14 @@ function createItemElement(item) {
     // Pointerdown: preparar drag
     el.addEventListener("pointerdown", (e) => {
         if (spaceDown) return;
+        preventTouchGesture(e);
+        if (isTouchPointer(e)) {
+            activeTouchPointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+            if (activeTouchPointers.size >= 2) {
+                beginPinchGesture();
+                return;
+            }
+        }
         e.stopPropagation();
         const additive = e.shiftKey || e.ctrlKey || e.metaKey;
         if (additive) {
@@ -489,6 +674,7 @@ function createItemElement(item) {
 
     // Pointerup: finalizar drag
     el.addEventListener("pointerup", (e) => {
+        if (isTouchPointer(e)) endTouchPointer(e.pointerId);
         try { el.releasePointerCapture(e.pointerId); } catch { /* noop */ }
         if (dragging?.id === item.id) {
             if (dragging.moved) {
@@ -534,6 +720,12 @@ async function addItem(type, x, y) {
     render();
     setSingleSelection(item.id);
     afterAnyChange();
+}
+
+async function addItemCentered(type, point) {
+    if (!type || !point) return;
+    const s = getItemSize(type, map);
+    await addItem(type, point.x - s.w / 2, point.y - s.h / 2);
 }
 
 function rotateSelected(direction = 1) {
@@ -748,9 +940,12 @@ function setupDragFromSidebar() {
         const t = btn.dataset.tool;
         if (!t || t === "select") return;
         btn.setAttribute("draggable", "true");
+        btn.setAttribute("aria-pressed", "false");
+        btn.addEventListener("click", () => setPlacementTool(t));
         btn.addEventListener("dragstart", (e) => {
             e.dataTransfer.setData("text/plain", t);
             e.dataTransfer.effectAllowed = "copy";
+            clearPlacementTool();
 
             // Imagen de arrastre transparente (1x1) para que no se vea la default
             const blank = document.createElement("canvas");
@@ -835,8 +1030,18 @@ async function setupPicker() {
 
     if (!picker || !btn || !drop) return;
 
-    function open() { drop.classList.add("is-open"); drop.setAttribute("aria-hidden", "false"); picker.classList.add("is-drop-open"); }
-    function close() { drop.classList.remove("is-open"); drop.setAttribute("aria-hidden", "true"); picker.classList.remove("is-drop-open"); }
+    function open() {
+        drop.classList.add("is-open");
+        drop.setAttribute("aria-hidden", "false");
+        btn.setAttribute("aria-expanded", "true");
+        picker.classList.add("is-drop-open");
+    }
+    function close() {
+        drop.classList.remove("is-open");
+        drop.setAttribute("aria-hidden", "true");
+        btn.setAttribute("aria-expanded", "false");
+        picker.classList.remove("is-drop-open");
+    }
 
     async function refreshList() {
         try {
@@ -849,7 +1054,7 @@ async function setupPicker() {
             const header = document.createElement("a");
             header.className = "picker__header";
             header.href = CFG.mapsListUrl;
-            header.textContent = "📋 Gestionar mapas →";
+            header.textContent = "Gestionar mapas";
             drop.appendChild(header);
 
             if (maps.length === 0) {
@@ -881,6 +1086,7 @@ async function setupPicker() {
                     const qs = `?id=${m.id}`;
                     history.replaceState({}, "", CFG.editorUrl + qs);
                     await loadOrCreate();
+                    syncResolutionControl(map?.width || 1920, map?.height || 1080);
                     render();
                     fitToScreen();
                     afterAnyChange();
@@ -912,7 +1118,7 @@ async function setupPicker() {
 // ─────────────────────────────────────────────────────────────
 async function loadOrCreate() {
     const qs = getQuery();
-    const id = qs.get("id");
+    const id = qs.get("id") || qs.get("edit");
 
     if (id) {
         try {
@@ -1037,24 +1243,52 @@ function getEffectiveMode() {
 
 function updatePanReadyCursor() {
     canvas.classList.toggle("is-pan-ready", getEffectiveMode() === "pan");
+    canvas.classList.toggle("is-placement-ready", !!placementTool && getEffectiveMode() === "select");
+}
+
+function updateToolButtons() {
+    const btnPanMode = $("#btnPanMode");
+    const btnSelectMode = $('.tool[data-tool="select"]');
+    const isSelectMode = !panMode && !placementTool;
+
+    if (btnPanMode) {
+        const active = panMode && !placementTool;
+        btnPanMode.classList.toggle("is-active", active);
+        btnPanMode.setAttribute("aria-pressed", String(active));
+    }
+    if (btnSelectMode) {
+        btnSelectMode.classList.toggle("is-active", isSelectMode);
+        btnSelectMode.setAttribute("aria-pressed", String(isSelectMode));
+    }
+
+    $$(".tool[data-tool]").forEach((btn) => {
+        const tool = btn.dataset.tool;
+        if (!tool || tool === "select") return;
+        const active = placementTool === tool;
+        btn.classList.toggle("is-placement-active", active);
+        btn.setAttribute("aria-pressed", String(active));
+    });
+}
+
+function setPlacementTool(type) {
+    placementTool = placementTool === type ? null : type;
+    if (placementTool) panMode = false;
+    updateToolButtons();
+    updatePanReadyCursor();
+}
+
+function clearPlacementTool() {
+    placementTool = null;
+    updateToolButtons();
+    updatePanReadyCursor();
 }
 
 function setMode(mode) {
+    placementTool = null;
     panMode = mode === "pan";
     spaceDown = false;
     updatePanReadyCursor();
-
-    const btnPanMode = $("#btnPanMode");
-    const btnSelectMode = $('.tool[data-tool="select"]');
-
-    if (btnPanMode) {
-        btnPanMode.classList.toggle("is-active", panMode);
-        btnPanMode.setAttribute("aria-pressed", panMode);
-    }
-    if (btnSelectMode) {
-        btnSelectMode.classList.toggle("is-active", !panMode);
-        btnSelectMode.setAttribute("aria-pressed", !panMode);
-    }
+    updateToolButtons();
 
     if (panMode) clearSelection();
 }
@@ -1089,12 +1323,58 @@ function setupEvents() {
     });
 
     // Modo inicial
-    setMode("pan");
+    setMode("select");
 
     // Rastrear posición del ratón en coordenadas mundo
     canvas.addEventListener("pointermove", (e) => {
         lastWorldMouse = worldPointFromEvent(e, canvas, camera);
     }, { passive: true });
+
+    // En táctil el lienzo debe ganar a los gestos nativos del navegador.
+    ["touchstart", "touchmove"].forEach((eventName) => {
+        canvas.addEventListener(eventName, (e) => {
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+    });
+
+    canvasWrap?.addEventListener("pointerdown", (e) => {
+        if (!isTouchPointer(e)) return;
+        preventTouchGesture(e);
+        activeTouchPointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+        try { canvasWrap.setPointerCapture(e.pointerId); } catch { /* noop */ }
+        if (activeTouchPointers.size >= 2) {
+            beginPinchGesture();
+            e.stopPropagation();
+        }
+    }, true);
+
+    canvasWrap?.addEventListener("pointermove", (e) => {
+        if (!isTouchPointer(e) || !activeTouchPointers.has(e.pointerId)) return;
+        activeTouchPointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+        if (pinchGesture) {
+            preventTouchGesture(e);
+            updatePinchGesture();
+            e.stopPropagation();
+        }
+    }, true);
+
+    canvasWrap?.addEventListener("pointerup", (e) => {
+        if (!isTouchPointer(e)) return;
+        if (pinchGesture || activeTouchPointers.size > 1) {
+            preventTouchGesture(e);
+            endTouchPointer(e.pointerId);
+            e.stopPropagation();
+        }
+    }, true);
+
+    canvasWrap?.addEventListener("pointercancel", (e) => {
+        if (!isTouchPointer(e)) return;
+        if (pinchGesture || activeTouchPointers.size > 1) {
+            preventTouchGesture(e);
+            endTouchPointer(e.pointerId);
+            e.stopPropagation();
+        }
+    }, true);
 
     // ─── Menú contextual (clic derecho) ───────────────
     canvas.addEventListener("contextmenu", (e) => {
@@ -1151,8 +1431,27 @@ function setupEvents() {
     // ─── Pointerdown: pan o marquee ──────────────────────────
     canvas.addEventListener("pointerdown", (e) => {
         if (e.button !== 0) return;
+        preventTouchGesture(e);
+        if (isTouchPointer(e)) {
+            activeTouchPointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+            try { canvas.setPointerCapture(e.pointerId); } catch { /* noop */ }
+            if (activeTouchPointers.size >= 2) {
+                beginPinchGesture();
+                return;
+            }
+        }
         const mode = getEffectiveMode();
         const clickedEmpty = e.target === canvas || e.target === world;
+
+        if (placementTool && mode === "select" && clickedEmpty) {
+            e.preventDefault();
+            const p = worldPointFromEvent(e, canvas, camera);
+            lastWorldMouse = p;
+            void addItemCentered(placementTool, p);
+            suppressNextCanvasClick = true;
+            setTimeout(() => { suppressNextCanvasClick = false; }, 0);
+            return;
+        }
 
         if (mode === "pan" && clickedEmpty) {
             panning = {
@@ -1171,14 +1470,26 @@ function setupEvents() {
         const additive = e.shiftKey || e.ctrlKey || e.metaKey;
         const p = worldPointFromEvent(e, canvas, camera);
         marquee = { x1: p.x, y1: p.y, x2: p.x, y2: p.y, additive };
+        marqueeBaseSelection = new Set(selectedIds);
         canvas.setPointerCapture(e.pointerId);
         drawMarquee(marquee);
+        updateMarqueeSelection();
     });
 
     // ─── Pointermove: pan, drag items, marquee ───────────────
     canvas.addEventListener("pointermove", (e) => {
+        if (isTouchPointer(e) && activeTouchPointers.has(e.pointerId)) {
+            activeTouchPointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+            if (pinchGesture) {
+                preventTouchGesture(e);
+                updatePinchGesture();
+                return;
+            }
+        }
+
         // PAN
         if (panning) {
+            preventTouchGesture(e);
             camera.panX = panning.originX + (e.clientX - panning.startX);
             camera.panY = panning.originY + (e.clientY - panning.startY);
             clampCamera();
@@ -1188,6 +1499,7 @@ function setupEvents() {
 
         // DRAG de items (grupo) — con snapping corregido
         if (dragging) {
+            preventTouchGesture(e);
             const p = worldPointFromEvent(e, canvas, camera);
             let dx = p.x - dragging.startX;
             let dy = p.y - dragging.startY;
@@ -1260,15 +1572,22 @@ function setupEvents() {
 
         // MARQUEE
         if (marquee) {
+            preventTouchGesture(e);
             const p = worldPointFromEvent(e, canvas, camera);
             marquee.x2 = p.x;
             marquee.y2 = p.y;
             drawMarquee(marquee);
+            updateMarqueeSelection();
         }
     });
 
     // ─── Pointerup: cerrar pan / marquee ─────────────────────
     canvas.addEventListener("pointerup", (e) => {
+        preventTouchGesture(e);
+        if (isTouchPointer(e)) {
+            endTouchPointer(e.pointerId);
+            if (pinchGesture || activeTouchPointers.size > 0) return;
+        }
         hideGuides();
 
         if (panning) {
@@ -1283,16 +1602,10 @@ function setupEvents() {
         if (!marquee) return;
         try { canvas.releasePointerCapture(e.pointerId); } catch { /* noop */ }
 
-        const box = normRect(marquee);
-        if (!marquee.additive) selectedIds.clear();
-
-        (map.items || []).forEach((it) => {
-            const a = getAABB(it, map, it.x, it.y);
-            const r = { x: a.left, y: a.top, w: a.w, h: a.h };
-            if (rectsIntersect(box, r)) selectedIds.add(it.id);
-        });
+        updateMarqueeSelection();
 
         marquee = null;
+        marqueeBaseSelection = null;
         hideMarquee();
         updateSelectionUI();
 
@@ -1302,6 +1615,7 @@ function setupEvents() {
 
     // Cancelaciones
     canvas.addEventListener("pointercancel", (e) => {
+        if (isTouchPointer(e)) endTouchPointer(e.pointerId);
         if (panning) {
             try { canvas.releasePointerCapture(e.pointerId); } catch { /* noop */ }
             panning = null;
@@ -1310,6 +1624,7 @@ function setupEvents() {
         if (marquee) {
             try { canvas.releasePointerCapture(e.pointerId); } catch { /* noop */ }
             marquee = null;
+            marqueeBaseSelection = null;
             hideMarquee();
         }
     });
@@ -1368,6 +1683,7 @@ function setupEvents() {
         hasSaved = false;
         savedSnapshot = "";
         history.replaceState({}, "", CFG.editorUrl);
+        syncResolutionControl(map.width, map.height);
         render();
         afterAnyChange();
         mapName.focus();
@@ -1390,47 +1706,20 @@ function setupEvents() {
         afterAnyChange();
     });
 
-    // ─── Picker Resolución ───────────────────────────────────
-    const btnResPicker = $("#btnResPicker");
-    const resPickerDrop = $("#resPickerDrop");
-
-    function setResLabel(w, h) {
-        if (btnResPicker) btnResPicker.textContent = `${w} × ${h} ▾`;
-        $$(".picker__item", resPickerDrop).forEach((b) => {
-            b.classList.toggle("is-active", b.dataset.value === `${w}x${h}`);
-        });
-    }
-
-    function openRes(open) {
-        if (!resPickerDrop) return;
-        resPickerDrop.classList.toggle("is-open", open);
-        resPickerDrop.setAttribute("aria-hidden", open ? "false" : "true");
-        const resPicker = $("#resPicker");
-        if (resPicker) resPicker.classList.toggle("is-drop-open", open);
-    }
-
-    btnResPicker?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openRes(!resPickerDrop.classList.contains("is-open"));
-    });
-
-    document.addEventListener("click", () => openRes(false));
-
-    resPickerDrop?.addEventListener("click", (e) => {
-        const item = e.target.closest(".picker__item");
-        if (!item) return;
-        const [w, h] = item.dataset.value.split("x").map(Number);
+    // Resolución: usa el select común de la aplicación.
+    resolutionSelect?.addEventListener("change", () => {
+        if (syncingResolutionSelect) return;
+        const [w, h] = resolutionSelect.value.split("x").map(Number);
+        if (!map || !w || !h) return;
         map.width = w;
         map.height = h;
         setWorldSize();
         applyItemScale();
         fitToScreen();
         afterAnyChange();
-        setResLabel(w, h);
-        openRes(false);
     });
 
-    setResLabel(map?.width || 1920, map?.height || 1080);
+    syncResolutionControl(map?.width || 1920, map?.height || 1080);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1469,6 +1758,7 @@ async function init() {
         if (!spaceDown) {
             spaceDown = true;
             updatePanReadyCursor();
+            updateToolButtons();
         }
     });
 
@@ -1476,6 +1766,7 @@ async function init() {
         if (e.code !== "Space") return;
         spaceDown = false;
         updatePanReadyCursor();
+        updateToolButtons();
     });
 
     // Atajos de teclado (cuando no se está en input)

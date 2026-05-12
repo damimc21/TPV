@@ -9,22 +9,28 @@
 .editor {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px;
+  gap: 18px;
+  width: min(100%, 1840px);
+  margin: 0 auto;
+  padding: 20px 24px 28px;
+  overscroll-behavior: contain;
 }
 
 .editor__head {
-  padding: 20px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, .04);
-  border: 1px solid rgba(255, 255, 255, .08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  overflow: visible;
 }
 
 .editor__body {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 180px minmax(0, 1fr);
   gap: 20px;
-  min-height: calc(100vh - 190px);
+  min-height: calc(100vh - 238px);
 }
 
 /* =========================
@@ -34,7 +40,83 @@
 .editor__label {
   font-size: .9rem;
   opacity: .75;
-  margin-bottom: 6px;
+  margin-bottom: 0;
+}
+
+.editorDashboardHeader {
+  position: relative;
+  z-index: 80;
+}
+
+.editorControls {
+  align-items: flex-end;
+  padding: 14px 16px;
+  z-index: 70;
+}
+
+.editorNameField,
+.editorResolutionField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.editorNameField {
+  flex: 1 1 640px;
+  max-width: 860px;
+}
+
+.editorResolutionField {
+  flex: 0 0 340px;
+  margin-left: auto;
+}
+
+.editorResolutionField .tpv-select,
+.editorResolutionField .tpv-select__button {
+  width: 100%;
+}
+
+.editorResolutionField .tpv-select__button {
+  min-height: 44px;
+}
+
+.editor__resolutionSelect[data-ui-select]:not(.tpv-select__native) {
+  opacity: 0;
+}
+
+.editorControls__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.editorIconButton {
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+}
+
+.editorIconButton[disabled] {
+  opacity: .35;
+  cursor: not-allowed;
+  filter: grayscale(40%);
+}
+
+.editorIconButton[disabled]:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.editorIconButton.iconAction--saved {
+  border-color: rgba(16, 185, 129, .5);
+  background: rgba(16, 185, 129, .16);
+}
+
+.editorMapPicker {
+  flex: 0 0 auto;
 }
 
 .editor__nameRow {
@@ -45,10 +127,20 @@
 }
 
 .editor__hint {
-  margin-top: 0px;
+  align-self: center;
+  margin-top: 0;
   color: #7ddc8a;
   font-size: .9rem;
   opacity: .7;
+  min-width: 116px;
+  white-space: nowrap;
+}
+
+.editorNameLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .editor__metaRow {
@@ -184,15 +276,18 @@
 .tool {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1;
-  padding: 0;
+  gap: 4px;
+  min-height: 64px;
+  padding: 8px 4px 7px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, .12);
   background: rgba(255, 255, 255, .04);
   color: inherit;
   cursor: pointer;
+  touch-action: manipulation;
   transition: background .14s, border-color .14s, transform .1s;
 }
 
@@ -209,6 +304,14 @@
   box-shadow: 0 0 0 1px rgba(120, 160, 255, .15);
 }
 
+.tool.is-placement-active {
+  background: rgba(20, 184, 166, .18);
+  border-color: rgba(20, 184, 166, .55);
+  box-shadow:
+    0 0 0 1px rgba(20, 184, 166, .18),
+    0 10px 28px rgba(20, 184, 166, .12);
+}
+
 .tool--danger {
   border-color: rgba(255, 80, 80, .25);
 }
@@ -223,9 +326,39 @@
   display: block;
   width: 100%;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   line-height: 1;
   pointer-events: none;
+}
+
+.tool__label {
+  display: block;
+  max-width: 100%;
+  color: rgba(255, 255, 255, .68);
+  font-size: .66rem;
+  font-weight: 800;
+  line-height: 1;
+  overflow: hidden;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tool.is-active .tool__label,
+.tool.is-placement-active .tool__label {
+  color: rgba(255, 255, 255, .92);
+}
+
+.tool:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.tool:disabled:hover {
+  background: rgba(255, 255, 255, .04);
+  border-color: rgba(255, 255, 255, .12);
+  transform: none;
 }
 
 /* ─── Tooltip profesional (::before) ─── */
@@ -269,6 +402,11 @@
   height: 100%;
   min-height: 560px;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   border: 1px solid rgba(255, 255, 255, .08);
   background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .04), transparent 40%);
   scrollbar-color: rgba(255, 255, 255, .18) rgba(255, 255, 255, .03);
@@ -280,14 +418,19 @@
   background: rgba(120, 160, 255, .14);
   pointer-events: none;
   border-radius: 10px;
-  display: none;
   z-index: 99;
+  box-shadow: 0 0 0 1px rgba(120, 160, 255, .28) inset;
 }
 
 /* HTML usa #canvas con clase editor__canvas */
 .editor__canvas {
   position: relative;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 
   width: 100%;
   min-height: 560px;
@@ -296,11 +439,20 @@
   /* para que rellene el wrap si tiene altura */
 }
 
+.editor__canvas.is-placement-ready {
+  cursor: crosshair;
+}
+
 .editor__world {
   position: absolute;
   left: 0;
   top: 0;
   transform-origin: 0 0;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 
   --itemScale: 1;
 
@@ -321,9 +473,45 @@
   box-sizing: border-box;
 }
 
+.mapItem.has-skin {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.mapItem.has-skin-error {
+  background: rgba(255, 255, 255, .10);
+  border-color: rgba(255, 255, 255, .18);
+}
+
 .mapItem.is-selected {
   outline: 2px solid rgba(255, 255, 255, .35);
   border-radius: 12px;
+}
+
+.item__skin {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.mapItem.has-skin .item__label {
+  color: rgba(255, 255, 255, .96);
+  font-weight: 900;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, .65),
+    0 0 5px rgba(0, 0, 0, .35);
+}
+
+.item--planta.has-skin .item__skin {
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
 }
 
 /* número centrado general */
@@ -385,25 +573,61 @@
   background-position: center;
 }
 
+.mapItem.has-skin {
+  background: transparent;
+  background-image: none;
+  border-color: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.mapItem.has-skin.is-selected {
+  outline: none;
+  border-radius: 0;
+}
+
+.mapItem.has-skin.is-selected .item__skin {
+  filter:
+    drop-shadow(1px 0 0 rgba(255, 255, 255, .35))
+    drop-shadow(-1px 0 0 rgba(255, 255, 255, .35))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, .35))
+    drop-shadow(0 -1px 0 rgba(255, 255, 255, .35));
+}
+
+.mapItem.has-skin-error.is-selected {
+  outline: 2px solid rgba(255, 255, 255, .35);
+  border-radius: 12px;
+}
+
 /* =========================
    5) Componentes UI (input X, botones, dropdown)
    ========================= */
 
 .editor__input {
   width: 100%;
+  min-height: 44px;
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, .14);
-  background: rgba(0, 0, 0, .08);
+  background: rgba(0, 0, 0, .18);
   color: inherit;
   outline: none;
 }
 
+.editor__input:focus {
+  border-color: var(--accent-teal, #14b8a6);
+  background: rgba(0, 0, 0, .32);
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, .1);
+}
+
 /* Input con X dentro */
 .inputWrap {
+  display: block;
   position: relative;
-  width: min(420px, 50vw);
-  min-width: 260px;
+  flex: 1 1 420px;
+  width: auto;
+  max-width: 620px;
+  min-width: 240px;
 }
 
 .inputWrap .editor__input {
@@ -423,6 +647,10 @@
   background: rgba(255, 255, 255, .06);
   color: inherit;
   cursor: pointer;
+}
+
+.inputWrap__clear:hover {
+  background: rgba(255, 255, 255, .12);
 }
 
 /* Botón icono (guardar) */
@@ -478,47 +706,46 @@
 }
 
 .picker__btn {
-  height: 44px;
-  padding: 0 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, .14);
-  background: rgba(255, 255, 255, .06);
-  color: inherit;
+  min-height: 44px;
   cursor: pointer;
-  transition: border-radius .15s ease;
 }
 
-/* Cuando el dropdown está abierto, el botón pierde las esquinas inferiores */
-.picker.is-drop-open .picker__btn {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom-color: transparent;
+.picker__chevron {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  opacity: .85;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform .18s ease;
+}
+
+.picker.is-drop-open .picker__chevron {
+  transform: rotate(225deg) translateY(-1px);
 }
 
 .picker__drop {
   position: absolute;
-  left: 0;
-  top: calc(100% - 1px);
-  min-width: 180px;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 260px;
   width: max-content;
-  max-height: 240px;
+  max-height: min(320px, calc(100vh - 220px));
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, .22) transparent;
-  border-radius: 0 0 12px 12px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, .14);
-  border-top: none;
-  background: rgba(18, 22, 35, .95);
-  backdrop-filter: blur(10px);
-  padding: 4px;
-  z-index: 50;
-
-  /* Animación: desenrollar de arriba a abajo */
-  clip-path: inset(0 0 100% 0 round 0 0 12px 12px);
+  background: rgba(15, 23, 42, .96);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+  padding: 8px;
+  z-index: 900;
+  transform: translateY(-6px) scale(.98);
   opacity: 0;
   transition:
-    clip-path .3s cubic-bezier(.4, 0, .2, 1),
+    transform .18s ease,
     opacity .25s ease;
   pointer-events: none;
 }
@@ -533,31 +760,33 @@
 }
 
 .picker__drop.is-open {
-  clip-path: inset(0 0 0 0 round 0 0 12px 12px);
+  transform: translateY(0) scale(1);
   opacity: 1;
   pointer-events: auto;
 }
 
 .picker__item {
+  display: block;
   width: 100%;
   text-align: left;
-  padding: 5px 8px;
-  border-radius: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
   color: inherit;
-  font-size: .82rem;
+  font-size: .9rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .picker__header {
   display: block;
   width: 100%;
-  padding: 5px 8px;
-  margin-bottom: 2px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
   border-bottom: 1px solid rgba(255, 255, 255, .10);
-  font-size: .75rem;
-  font-weight: 600;
+  font-size: .82rem;
+  font-weight: 800;
   color: rgba(180, 200, 255, .85);
   text-decoration: none;
   transition: color .14s;
@@ -569,6 +798,13 @@
 
 .picker__item:hover {
   background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 255, 255, .08);
+}
+
+.picker__empty {
+  padding: 10px 12px;
+  color: rgba(255, 255, 255, .58);
+  font-size: .88rem;
 }
 
 /* Resolución debajo del nombre */
@@ -587,39 +823,11 @@
   box-shadow: 0 0 0 2px rgba(120, 160, 255, .15);
 }
 
-/* --- FIX dropdown Resolución --- */
-#resPickerDrop {
-  white-space: normal;
-  /* rompe la herencia del nowrap */
-}
-
-/* asegura items en columna */
-#resPickerDrop .picker__item {
-  display: block;
-  width: 100%;
-}
-
-/* Resaltar el item activo (resolución actual) en el dropdown */
-#resPickerDrop .picker__item.is-active {
-  border-color: rgba(120, 160, 255, .45);
-  background: rgba(120, 160, 255, .12);
-}
-
 .picker__item.is-current {
   font-weight: 600;
   background: rgba(120, 160, 255, .08);
   border-left: 3px solid rgba(120, 160, 255, .6);
   padding-left: 11px;
-}
-
-#resPickerDrop .picker__item:hover {
-  background: rgba(255, 255, 255, .10);
-}
-
-/* opcional: que caiga alineado al botón (mejor en este caso) */
-.picker--small .picker__drop {
-  left: 0;
-  right: auto;
 }
 
 /* =========================
@@ -645,6 +853,10 @@
 
 .editor__canvas.is-panning {
   cursor: grabbing;
+}
+
+.editor__canvas.is-pinching {
+  cursor: zoom-in;
 }
 
 
@@ -886,4 +1098,52 @@
   height: 1px;
   margin: 4px 8px;
   background: rgba(255, 255, 255, .1);
+}
+
+@media (max-width: 980px) {
+  .editor {
+    padding: 16px;
+  }
+
+  .editor__body {
+    grid-template-columns: 1fr;
+  }
+
+  .editor__panel {
+    width: auto;
+    flex-direction: row;
+    align-items: stretch;
+    overflow-x: auto;
+  }
+
+  .panel__section {
+    min-width: 156px;
+  }
+
+  .tool {
+    min-height: 72px;
+  }
+
+  .tool[data-tip]::before {
+    display: none;
+  }
+
+  .editorResolutionField {
+    flex: 1 1 220px;
+    margin-left: 0;
+  }
+
+  .editorNameLine {
+    flex-wrap: wrap;
+  }
+
+  .inputWrap {
+    max-width: none;
+  }
+
+  .picker__drop {
+    left: auto;
+    right: 0;
+    min-width: min(280px, calc(100vw - 32px));
+  }
 }
