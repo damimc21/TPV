@@ -1,4 +1,12 @@
-import { initManualTools } from './manual_tools.js';
+﻿import { initManualTools } from './manual_tools.js';
+import {
+    loadComentarios as apiLoadComentarios,
+    loadDepartamentosProductos as apiLoadDepartamentosProductos,
+    loadModificadoresData,
+    loadPerfilesComentarios as apiLoadPerfilesComentarios,
+    loadPerfilesSuplementos as apiLoadPerfilesSuplementos,
+    loadSuplementos as apiLoadSuplementos,
+} from './api.js';
 import {
     csrfHeaders,
     escapeHtml,
@@ -33,7 +41,7 @@ function initModificadoresApp() {
     let filterSecondaryValue = '';
     let activeSubTab = 'comentarios-perfiles';
 
-    // Cachés
+    // CachÃ©s
     let perfilesComentariosData = [];
     let comentariosData = [];
     let perfilesSuplementosData = [];
@@ -41,7 +49,7 @@ function initModificadoresApp() {
     let departamentosData = [];
     let productosData = [];
 
-    // Configuración
+    // ConfiguraciÃ³n
     initTabs();
     initSubTabs();
     initFilters();
@@ -52,15 +60,15 @@ function initModificadoresApp() {
 
     async function loadInitialData() {
         try {
-            await Promise.all([
-                loadDepartamentosProductos(),
-                fetch('/api/perfiles-comentarios/').then(r => r.json()).then(d => perfilesComentariosData = d),
-                fetch('/api/comentarios/').then(r => r.json()).then(d => comentariosData = d),
-                fetch('/api/perfiles-suplementos/').then(r => r.json()).then(d => perfilesSuplementosData = d),
-                fetch('/api/suplementos/').then(r => r.json()).then(d => suplementosData = d)
-            ]);
+            const data = await loadModificadoresData();
+            departamentosData = data.departamentos;
+            productosData = data.productos;
+            perfilesComentariosData = data.perfilesComentarios;
+            comentariosData = data.comentarios;
+            perfilesSuplementosData = data.perfilesSuplementos;
+            suplementosData = data.suplementos;
 
-            // Una única actualización y renderizado inicial
+            // Una Ãºnica actualizaciÃ³n y renderizado inicial
             updateFiltersForSubTab();
             updateGeneralButtonsState();
             renderAll();
@@ -110,11 +118,11 @@ function initModificadoresApp() {
         activeTab = targetId;
         window.history.replaceState(null, null, `#${targetId}`);
 
-        // Al cambiar de pestaña principal, nos aseguramos que se vea la subpestaña por defecto
+        // Al cambiar de pestaÃ±a principal, nos aseguramos que se vea la subpestaÃ±a por defecto
         const defaultSubTabId = targetId === 'comentarios' ? 'comentarios-perfiles' : 'suplementos-perfiles';
         activateSubTab(defaultSubTabId);
 
-        // Actualizar UI según la nueva pestaña
+        // Actualizar UI segÃºn la nueva pestaÃ±a
         updateGeneralButtonsState();
 
         // Flicker fix: reveal UI
@@ -125,7 +133,7 @@ function initModificadoresApp() {
     }
 
     // ==========================================
-    // SUB-TABS (Navegación interna)
+    // SUB-TABS (NavegaciÃ³n interna)
     // ==========================================
     function initSubTabs() {
         subtabBtns.forEach(btn => {
@@ -139,7 +147,7 @@ function initModificadoresApp() {
     function activateSubTab(subtabId) {
         activeSubTab = subtabId;
 
-        // Marcamos botón como activo (solo los de la vista actual)
+        // Marcamos botÃ³n como activo (solo los de la vista actual)
         const currentView = document.getElementById(`view-${activeTab}`);
         if (currentView) {
             currentView.querySelectorAll('.subtab-btn').forEach(btn => {
@@ -174,7 +182,7 @@ function initModificadoresApp() {
             btnNuevoGeneral.innerHTML = newGeneralText;
         }
 
-        // Visibilidad dinámica
+        // Visibilidad dinÃ¡mica
         if (isPerfiles) {
             btnNuevoPerfil.classList.remove('hidden');
             btnNuevoGeneral.classList.add('hidden');
@@ -377,74 +385,8 @@ function initModificadoresApp() {
     }
 
     // ==========================================
-    // FILTROS DINÁMICOS POR SUB-PESTAÑA
+    // FILTROS DINÃMICOS POR SUB-PESTAÃ‘A
     // ==========================================
-    function updateFiltersForSubTab() {
-        const filterPrimary = document.getElementById('customFilterPrimary');
-        const filterSecondary = document.getElementById('customFilterSecondary');
-        const sortFieldSelect = document.getElementById('customSortField');
-
-        // Resetear filtros y ordenación
-        setCustomSelectValue('customFilterPrimary', '', 'Todos');
-        setCustomSelectValue('customFilterSecondary', '', 'Todos');
-        setCustomSelectValue('customSortField', 'id', 'ID');
-        sortField = 'id'; // Reset internal state
-        sortDir = 'asc'; // Reset internal state
-        document.getElementById('searchInput').value = ''; // Reset search input
-
-        // Ocultar todos los filtros por defecto
-        filterPrimary.classList.add('hidden');
-        filterSecondary.classList.add('hidden');
-        sortFieldSelect.querySelector('[data-value="num_items"]').classList.add('hidden');
-        sortFieldSelect.querySelector('[data-value="perfil"]').classList.add('hidden');
-
-        // Actualizar opciones de filtro y visibilidad según la sub-pestaña
-        if (activeSubTab.endsWith('-perfiles')) {
-            // Perfiles: Filtrar por Departamento
-            filterPrimary.classList.remove('hidden');
-            filterPrimary.querySelector('.custom-select-trigger span').textContent = 'Todos los Departamentos';
-            filterPrimary.querySelector('.custom-options').innerHTML = `
-                <div class="custom-option is-selected" data-value="">Todos los Departamentos</div>
-                ${departamentosData.map(d => `<div class="custom-option" data-value="${d.id}">${escapeHtml(d.nombre)}</div>`).join('')}
-            `;
-            sortFieldSelect.querySelector('[data-value="num_items"]').classList.remove('hidden');
-        } else if (activeSubTab.endsWith('-lista')) {
-            // Comentarios/Suplementos: Filtrar por Perfil y Producto
-            filterPrimary.classList.remove('hidden');
-            filterSecondary.classList.remove('hidden');
-
-            const perfiles = activeTab === 'comentarios' ? perfilesComentariosData : perfilesSuplementosData;
-            const perfilesOptions = perfiles.map(p => `<div class="custom-option" data-value="${p.id}">${escapeHtml(p.nombre)}</div>`).join('');
-            filterPrimary.querySelector('.custom-select-trigger span').textContent = 'Todos los Perfiles';
-            filterPrimary.querySelector('.custom-options').innerHTML = `
-                <div class="custom-option is-selected" data-value="">Todos los Perfiles</div>
-                ${perfilesOptions}
-            `;
-
-            filterSecondary.querySelector('.custom-select-trigger span').textContent = 'Todos los Productos';
-            filterSecondary.querySelector('.custom-options').innerHTML = `
-                <div class="custom-option is-selected" data-value="">Todos los Productos</div>
-                ${productosData.map(p => `<div class="custom-option" data-value="${p.id}">${escapeHtml(p.nombre)}</div>`).join('')}
-            `;
-            sortFieldSelect.querySelector('[data-value="perfil"]').classList.remove('hidden');
-        }
-        syncAndRender();
-    }
-    // ==========================================
-    // UTILIDADES
-    // ==========================================
-    function escapeHtmlLegacy(str) {
-        if (!str) return '';
-        const p = document.createElement('p');
-        p.textContent = str;
-        return p.innerHTML;
-    }
-
-    function getCsrfTokenLegacy() {
-        const cookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
-        return cookie ? cookie.split('=')[1] : '';
-    }
-
     // ==========================================
     // MODALES
     // ==========================================
@@ -494,7 +436,7 @@ function initModificadoresApp() {
     };
 
     // ==========================================
-    // DIÁLOGOS UNIVERSALES (Alert/Confirm)
+    // DIÃLOGOS UNIVERSALES (Alert/Confirm)
     // ==========================================
 const UI = window.UI;
 const Notify = window.Notify;
@@ -511,12 +453,7 @@ const Notify = window.Notify;
     // ==========================================
     async function loadDepartamentosProductos() {
         try {
-            const [deptoResp, prodResp] = await Promise.all([
-                fetch('/api/departamentos/'),
-                fetch('/api/productos/')
-            ]);
-            departamentosData = await deptoResp.json();
-            productosData = await prodResp.json();
+            [departamentosData, productosData] = await apiLoadDepartamentosProductos();
         } catch (err) {
             console.error('Error cargando deptos/productos:', err);
         }
@@ -555,8 +492,7 @@ const Notify = window.Notify;
     // ==========================================
     async function loadPerfilesComentarios() {
         try {
-            const resp = await fetch('/api/perfiles-comentarios/');
-            perfilesComentariosData = await resp.json();
+            perfilesComentariosData = await apiLoadPerfilesComentarios();
             if (activeTab === 'comentarios') {
                 renderPerfilesComentarios();
                 updateFiltersForSubTab();
@@ -605,8 +541,8 @@ const Notify = window.Notify;
                     <button class="action-btn" title="Editar (${p.id})" onclick="editPerfilComentario(${p.id})">
                         <img src="/static/ui/img/iconos/pencil.svg" alt="Editar">
                     </button>
-                    <button class="action-btn" title="Añadir Comentario" onclick="openModalComentarioForPerfil(${p.id})">
-                        <img src="/static/ui/img/iconos/message-circle-more.svg" alt="Añadir">
+                    <button class="action-btn" title="AÃ±adir Comentario" onclick="openModalComentarioForPerfil(${p.id})">
+                        <img src="/static/ui/img/iconos/message-circle-more.svg" alt="AÃ±adir">
                     </button>
                     <button class="action-btn action-btn--delete" title="Eliminar" onclick="deletePerfilComentario(${p.id})">
                         <img src="/static/ui/img/iconos/trash-2.svg" alt="Eliminar">
@@ -698,7 +634,7 @@ const Notify = window.Notify;
             });
         }
 
-        const confirmed = await Notify.confirmDanger('¿Deseas eliminar este perfil de comentarios?', {
+        const confirmed = await Notify.confirmDanger('Â¿Deseas eliminar este perfil de comentarios?', {
             title: 'Eliminar Perfil',
             variant: 'danger',
         });
@@ -717,8 +653,7 @@ const Notify = window.Notify;
     // ==========================================
     async function loadComentarios() {
         try {
-            const resp = await fetch('/api/comentarios/');
-            comentariosData = await resp.json();
+            comentariosData = await apiLoadComentarios();
             if (activeTab === 'comentarios') renderComentarios();
         } catch (err) { console.error(err); }
     }
@@ -793,7 +728,7 @@ const Notify = window.Notify;
         document.getElementById('comentario_activo').checked = true;
         document.getElementById('modalComentarioTitle').innerText = 'Nuevo Comentario';
         document.getElementById('modalComentario').classList.remove('hidden');
-        // Ocultar selector de perfil si viene de un perfil específico
+        // Ocultar selector de perfil si viene de un perfil especÃ­fico
         document.getElementById('comentario_perfil_container').classList.add('hidden');
     };
 
@@ -818,7 +753,7 @@ const Notify = window.Notify;
         document.getElementById('comentario_activo').checked = c.activo;
         document.getElementById('modalComentarioTitle').innerText = 'Editar Comentario';
         document.getElementById('modalComentario').classList.remove('hidden');
-        // Mostrar selector en edición
+        // Mostrar selector en ediciÃ³n
         document.getElementById('comentario_perfil_container').classList.remove('hidden');
     };
 
@@ -849,7 +784,7 @@ const Notify = window.Notify;
     window.deleteComentario = async function (id) {
         const c = comentariosData.find(x => x.id === id);
         const name = c ? `"${c.texto}"` : 'este comentario';
-        const confirmed = await Notify.confirmDanger(`¿Estás seguro de que deseas eliminar <strong>${name}</strong>?`, {
+        const confirmed = await Notify.confirmDanger(`Â¿EstÃ¡s seguro de que deseas eliminar <strong>${name}</strong>?`, {
             title: 'Eliminar Comentario',
             variant: 'danger',
         });
@@ -868,8 +803,7 @@ const Notify = window.Notify;
     // ==========================================
     async function loadPerfilesSuplementos() {
         try {
-            const resp = await fetch('/api/perfiles-suplementos/');
-            perfilesSuplementosData = await resp.json();
+            perfilesSuplementosData = await apiLoadPerfilesSuplementos();
             if (activeTab === 'suplementos') {
                 renderPerfilesSuplementos();
                 updateFiltersForSubTab();
@@ -918,8 +852,8 @@ const Notify = window.Notify;
                     <button class="action-btn" title="Editar (${p.id})" onclick="editPerfilSuplemento(${p.id})">
                         <img src="/static/ui/img/iconos/pencil.svg" alt="Editar">
                     </button>
-                    <button class="action-btn" title="Añadir Suplemento" onclick="openModalSuplementoForPerfil(${p.id})">
-                        <img src="/static/ui/img/iconos/plus.svg" alt="Añadir">
+                    <button class="action-btn" title="AÃ±adir Suplemento" onclick="openModalSuplementoForPerfil(${p.id})">
+                        <img src="/static/ui/img/iconos/plus.svg" alt="AÃ±adir">
                     </button>
                     <button class="action-btn action-btn--delete" title="Eliminar" onclick="deletePerfilSuplemento(${p.id})">
                         <img src="/static/ui/img/iconos/trash-2.svg" alt="Eliminar">
@@ -967,7 +901,7 @@ const Notify = window.Notify;
         const currentSort = getCustomSelectValue('customSortField') || 'id';
         sortFieldOptions.innerHTML = '';
         if (isPerfiles) {
-            const itemLabel = activeTab === 'comentarios' ? 'Nº Coments' : 'Nº Suplem';
+            const itemLabel = activeTab === 'comentarios' ? 'NÂº Coments' : 'NÂº Suplem';
             sortFieldOptions.innerHTML = `
                 <div class="custom-option" data-value="id">ID</div>
                 <div class="custom-option" data-value="nombre">Nombre</div>
@@ -992,7 +926,7 @@ const Notify = window.Notify;
                 // Lista de comentarios
                 deptaContainer.classList.remove('hidden');
                 secondaryContainer.classList.add('hidden');
-                primaryLabel.textContent = 'Perfil (Categoría)';
+                primaryLabel.textContent = 'Perfil (CategorÃ­a)';
                 perfilesComentariosData.forEach(p => {
                     const div = document.createElement('div');
                     div.className = 'custom-option';
@@ -1010,7 +944,7 @@ const Notify = window.Notify;
                 // Lista de suplementos
                 deptaContainer.classList.remove('hidden');
                 secondaryContainer.classList.remove('hidden');
-                primaryLabel.textContent = 'Perfil (Categoría)';
+                primaryLabel.textContent = 'Perfil (CategorÃ­a)';
                 secondaryLabel.textContent = 'Producto Base';
 
                 perfilesSuplementosData.forEach(p => {
@@ -1103,7 +1037,7 @@ const Notify = window.Notify;
             });
         }
 
-        const confirmed = await Notify.confirmDanger('¿Eliminar este perfil de suplementos?', {
+        const confirmed = await Notify.confirmDanger('Â¿Eliminar este perfil de suplementos?', {
             title: 'Eliminar Perfil',
             variant: 'danger',
         });
@@ -1122,8 +1056,7 @@ const Notify = window.Notify;
     // ==========================================
     async function loadSuplementos() {
         try {
-            const resp = await fetch('/api/suplementos/');
-            suplementosData = await resp.json();
+            suplementosData = await apiLoadSuplementos();
             if (activeTab === 'suplementos') renderSuplementos();
         } catch (err) { console.error(err); }
     }
@@ -1161,7 +1094,7 @@ const Notify = window.Notify;
             const perfilNombre = perfilObj ? escapeHtml(perfilObj.nombre) : '<span class="text-muted">Sin perfil</span>';
 
             let displayNombre = escapeHtml(s.nombre);
-            let displayPrecio = parseFloat(s.precio).toFixed(2) + ' €';
+            let displayPrecio = parseFloat(s.precio).toFixed(2) + ' â‚¬';
             let badgeHtml = '';
 
             if (s.nombre === '__MANUAL_TEXT__') {
@@ -1169,7 +1102,7 @@ const Notify = window.Notify;
                 badgeHtml = '<span class="badge-special ml-2">HERRAMIENTA</span>';
                 displayPrecio = '<span class="text-mini opacity-0.5">N/A</span>';
             } else if (s.nombre === '__MANUAL_PRICE__') {
-                displayNombre = '<span style="color: #64ffda;">Comodín</span>';
+                displayNombre = '<span style="color: #64ffda;">ComodÃ­n</span>';
                 badgeHtml = '<span class="badge-special ml-2">HERRAMIENTA</span>';
                 displayPrecio = '<span style="color: #64ffda; font-weight: bold;">Manual</span>';
             }
@@ -1235,7 +1168,7 @@ const Notify = window.Notify;
         document.getElementById('modalSuplementoTitle').innerText = 'Editar Suplemento';
         document.getElementById('modalSuplemento').classList.remove('hidden');
         document.getElementById('modalSuplemento').style.display = 'flex';
-        // Mostrar selector en edición
+        // Mostrar selector en ediciÃ³n
         document.getElementById('suplemento_perfil_container').classList.remove('hidden');
     };
 
@@ -1268,7 +1201,7 @@ const Notify = window.Notify;
     window.deleteSuplemento = async function (id) {
         const s = suplementosData.find(x => x.id === id);
         const name = s ? `"${s.nombre}"` : 'este suplemento';
-        const confirmed = await Notify.confirmDanger(`¿Estás seguro de que deseas eliminar <strong>${name}</strong>?`, {
+        const confirmed = await Notify.confirmDanger(`Â¿EstÃ¡s seguro de que deseas eliminar <strong>${name}</strong>?`, {
             title: 'Eliminar Suplemento',
             variant: 'danger',
         });
@@ -1313,3 +1246,4 @@ if (document.readyState === 'loading') {
 } else {
     initModificadoresApp();
 }
+

@@ -28,6 +28,7 @@ import {
     touchMidpoint,
     worldPointFromClient,
 } from './interaction_helpers.js';
+import { copySelectedItems, duplicateItems, pasteItems } from './clipboard_ops.js';
 
 // ─────────────────────────────────────────────────────────────
 // DOM / Config
@@ -728,40 +729,19 @@ async function deleteSelected() {
 
 function copySelected() {
     if (selectedIds.size === 0) return;
-    clipboard = (map.items || []).filter((it) => selectedIds.has(it.id))
-        .map((it) => JSON.parse(JSON.stringify(it)));  // deep clone
+    clipboard = copySelectedItems(map.items, selectedIds);
 }
 
 function pasteClipboard() {
     if (clipboard.length === 0) return;
     pushHistory();
-
-    // Calcular centro actual del clipboard para centrar en cursor
-    let cx = 0, cy = 0;
-    for (const it of clipboard) { cx += it.x; cy += it.y; }
-    cx /= clipboard.length;
-    cy /= clipboard.length;
-
-    const dx = lastWorldMouse.x - cx;
-    const dy = lastWorldMouse.y - cy;
-
-    const newIds = new Set();
-
-    clipboard.forEach((orig) => {
-        const clone = JSON.parse(JSON.stringify(orig));
-        clone.id = uid();
-        clone.x = Math.round(clone.x + dx);
-        clone.y = Math.round(clone.y + dy);
-
-        // Auto-numerar items numerados
-        const prefix = getTypePrefix(clone.type);
-        if (prefix) {
-            clone.data = clone.data || {};
-            clone.data.numero = nextFreeNumero(prefix);
-        }
-
-        map.items.push(clone);
-        newIds.add(clone.id);
+    const newIds = pasteItems({
+        items: map.items,
+        clipboard,
+        lastWorldMouse,
+        uid,
+        getTypePrefix,
+        nextFreeNumero,
     });
 
     render();
@@ -774,25 +754,12 @@ function pasteClipboard() {
 function duplicateSelected() {
     if (selectedIds.size === 0) return;
     pushHistory();
-
-    const OFFSET = 20;
-    const newIds = new Set();
-    const originals = (map.items || []).filter((it) => selectedIds.has(it.id));
-
-    originals.forEach((orig) => {
-        const clone = JSON.parse(JSON.stringify(orig));
-        clone.id = uid();
-        clone.x = clone.x + OFFSET;
-        clone.y = clone.y + OFFSET;
-
-        const prefix = getTypePrefix(clone.type);
-        if (prefix) {
-            clone.data = clone.data || {};
-            clone.data.numero = nextFreeNumero(prefix);
-        }
-
-        map.items.push(clone);
-        newIds.add(clone.id);
+    const newIds = duplicateItems({
+        items: map.items,
+        selectedIds,
+        uid,
+        getTypePrefix,
+        nextFreeNumero,
     });
 
     render();
