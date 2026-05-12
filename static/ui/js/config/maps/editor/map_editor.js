@@ -18,6 +18,16 @@ import {
 } from './geometry.js';
 import { computeSnap } from './snapping.js';
 import { showPrompt } from './modal.js';
+import {
+    MAP_SKINS,
+    getItemSkin,
+    isTouchPointer,
+    mapSkinUrl,
+    preventTouchGesture,
+    touchDistance,
+    touchMidpoint,
+    worldPointFromClient,
+} from './interaction_helpers.js';
 
 // ─────────────────────────────────────────────────────────────
 // DOM / Config
@@ -116,50 +126,6 @@ let minZoom = 0.2;
 const maxZoom = 3;
 
 const camera = { zoom: 1, panX: 0, panY: 0 };
-
-const MAP_SKINS = {
-    mesa_grande: {
-        svg: "Mesa Alargada_TPV-nobg.svg",
-    },
-    planta: {
-        svg: "Maceta_TPV-nobg.svg",
-    },
-};
-
-function mapSkinUrl(fileName) {
-    return `/static/ui/img/map_icons_clean/${encodeURIComponent(fileName)}`;
-}
-
-function getItemSkin(item) {
-    return item?.data?.skin || "svg";
-}
-
-function isTouchPointer(e) {
-    return e.pointerType === "touch" || e.pointerType === "pen";
-}
-
-function preventTouchGesture(e) {
-    if (isTouchPointer(e) && e.cancelable) e.preventDefault();
-}
-
-function worldPointFromClient(clientX, clientY) {
-    const rect = canvas.getBoundingClientRect();
-    return {
-        x: (clientX - rect.left - camera.panX) / camera.zoom,
-        y: (clientY - rect.top - camera.panY) / camera.zoom,
-    };
-}
-
-function touchDistance(a, b) {
-    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
-}
-
-function touchMidpoint(a, b) {
-    return {
-        clientX: (a.clientX + b.clientX) / 2,
-        clientY: (a.clientY + b.clientY) / 2,
-    };
-}
 
 // ─────────────────────────────────────────────────────────────
 // Snapshot / Dirty / UI contextual
@@ -317,7 +283,7 @@ function beginPinchGesture() {
     pinchGesture = {
         startDistance: distance,
         startZoom: camera.zoom,
-        worldMidpoint: worldPointFromClient(midpoint.clientX, midpoint.clientY),
+        worldMidpoint: worldPointFromClient(midpoint.clientX, midpoint.clientY, canvas, camera),
     };
     cancelCanvasGesture();
     canvas.classList.add("is-pinching");
