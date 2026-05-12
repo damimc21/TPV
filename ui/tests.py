@@ -107,7 +107,18 @@ class ConfigUserPermissionViewsTests(TestCase):
         self.assertTrue(get_user_model().objects.filter(username="nuevo_user").exists())
 
     def test_config_permisos_assign_pack_and_advanced(self):
-        self._grant("manage_users")
+        # Regla 2 del sistema de permisos: "solo puedes otorgar permisos que tú
+        # mismo tienes". El actor necesita por tanto los permisos que va a delegar,
+        # además de manage_users para poder usar la vista.
+        self._grant(
+            "manage_users",
+            "access_tpv",
+            "visible_in_tpv",
+            "manage_orders",
+            "process_payments",
+            "print_documents",
+            "manage_cash",
+        )
         resp = self.client.post(
             "/es/config/permisos/",
             data={
