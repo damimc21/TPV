@@ -13,6 +13,12 @@ import {
     renderProductosTable,
     updateDepartmentSelects,
 } from './tables.js';
+import {
+    applySorting,
+    getFilterState,
+    initCatalogoFilters,
+    syncFilterState,
+} from './filters.js';
 
 /* ============================================================
    GESTIÓN DEL CATÁLOGO TPV (SPA)
@@ -31,11 +37,6 @@ function initCatalogoApp() {
     // Estado de la aplicación y Filtros
     let hash = window.location.hash ? window.location.hash.substring(1) : '';
     let activeTab = (hash === 'departamentos' || hash === 'productos') ? hash : 'departamentos';
-
-    let searchString = '';
-    let sortField = 'id';    // 'id' | 'nombre' | 'precio' | 'activo'
-    let sortDir = 'asc';     // 'asc' | 'desc'
-    let deptoFilterId = '';
 
     // Caché local de datos
     let departamentosData = [];
@@ -131,54 +132,17 @@ function initCatalogoApp() {
     // ==========================================
     // 3. SISTEMA DE FILTROS Y ORDENACIÓN
     // ==========================================
-    // --- Helper Custom Select ---
-    function initCustomSelect(id, onSelect) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const trigger = el.querySelector('.custom-select-trigger');
-
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            el.classList.toggle('is-active');
-            document.querySelectorAll('.custom-select').forEach(other => {
-                if (other !== el) other.classList.remove('is-active');
-            });
-        });
-
-        el.addEventListener('click', (e) => {
-            const opt = e.target.closest('.custom-option');
-            if (opt) {
-                const val = opt.getAttribute('data-value');
-                trigger.querySelector('span').textContent = opt.textContent;
-                el.querySelectorAll('.custom-option').forEach(o => o.classList.remove('is-selected'));
-                opt.classList.add('is-selected');
-                el.classList.remove('is-active');
-                if (onSelect) onSelect(val);
-            }
-        });
-    }
-
-    function getCustomSelectValue(id) {
-        const el = document.getElementById(id);
-        if (!el) return '';
-        const selected = el.querySelector('.custom-option.is-selected');
-        return selected ? selected.getAttribute('data-value') : '';
-    }
-
-    function setCustomSelectValue(id, val, text) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.querySelectorAll('.custom-option').forEach(opt => {
-            if (opt.getAttribute('data-value') === String(val)) {
-                opt.classList.add('is-selected');
-                el.querySelector('.custom-select-trigger span').textContent = text || opt.textContent;
-            } else {
-                opt.classList.remove('is-selected');
-            }
-        });
-    }
-
     function initFilters() {
+        initCatalogoFilters({
+            t,
+            getActiveTab: () => activeTab,
+            renderActiveTab: (tab) => {
+                if (tab === 'departamentos') renderDepartamentos();
+                else renderProductos();
+            },
+        });
+        return;
+
         const searchInput = document.getElementById('searchInput');
         const sortFieldEl = document.getElementById('sortField');
         const sortDirBtn = document.getElementById('sortDirBtn');
@@ -253,13 +217,13 @@ function initCatalogoApp() {
         }
     }
 
-    function syncFilterState() {
+    function syncFilterStateLegacy() {
         searchString = (document.getElementById('searchInput')?.value || '').toLowerCase();
         sortField = getCustomSelectValue('customSortField') || 'id';
         deptoFilterId = getCustomSelectValue('customFilterDepto') || '';
     }
 
-    function applySorting(array) {
+    function applySortingLegacy(array) {
         const dir = sortDir === 'asc' ? 1 : -1;
         return array.sort((a, b) => {
             if (sortField === 'id') return (a.id - b.id) * dir;
@@ -465,6 +429,7 @@ function initCatalogoApp() {
 
     function renderDepartamentos() {
         syncFilterState();
+        const { searchString } = getFilterState();
         const filtered = applySorting(departamentosData.filter(d => {
             if (searchString) {
                 return String(d.id).includes(searchString) || d.nombre.toLowerCase().includes(searchString);
@@ -578,6 +543,7 @@ function initCatalogoApp() {
 
     function renderProductos() {
         syncFilterState();
+        const { searchString, deptoFilterId } = getFilterState();
         const filtered = applySorting(productosData.filter(p => {
             const matchesSearch = searchString ? (String(p.id).includes(searchString) || p.nombre.toLowerCase().includes(searchString)) : true;
             const matchesDepto = deptoFilterId ? String(p.departamento) === deptoFilterId : true;
