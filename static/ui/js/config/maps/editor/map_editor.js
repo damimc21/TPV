@@ -1,10 +1,10 @@
-/* map_editor.js — Módulo principal del editor de mapas TPV
+﻿/* map_editor.js â€” MÃ³dulo principal del editor de mapas TPV
    
-   Módulo de entrada (ES module). Importa la lógica pura de:
-   - utils.js     → helpers, constantes, tipos
-   - api.js       → persistencia Django
-   - geometry.js  → AABB, tamaños, coordenadas
-   - snapping.js  → magnetismo corregido
+   MÃ³dulo de entrada (ES module). Importa la lÃ³gica pura de:
+   - utils.js     â†’ helpers, constantes, tipos
+   - api.js       â†’ persistencia Django
+   - geometry.js  â†’ AABB, tamaÃ±os, coordenadas
+   - snapping.js  â†’ magnetismo corregido
 */
 
 import {
@@ -29,10 +29,11 @@ import {
     worldPointFromClient,
 } from './interaction_helpers.js';
 import { copySelectedItems, duplicateItems, pasteItems } from './clipboard_ops.js';
+import { showContextMenu } from './context_menu.js';
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // DOM / Config
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const canvas = $("#canvas");
 const world = $("#world");
 const canvasWrap = canvas?.closest(".editor__canvasWrap") || canvas;
@@ -60,14 +61,14 @@ const CFG = cfgEl
     : { mapsListUrl: "/config/maps/", editorUrl: "/config/maps/create/" };
 const Notify = window.Notify;
 
-// Seguridad: si se carga en una página sin editor, no hacemos nada
+// Seguridad: si se carga en una pÃ¡gina sin editor, no hacemos nada
 if (!canvas || !world || !mapName) {
     throw new Error("map_editor: elementos DOM no encontrados, abortando.");
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Estado del editor
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let map = null;
 let selectedIds = new Set();
 
@@ -92,14 +93,13 @@ let suppressNextItemClick = false;
 // Clipboard (copia interna de items para pegar)
 let clipboard = [];
 
-// Posición del ratón en coordenadas mundo (para pegar en cursor)
+// PosiciÃ³n del ratÃ³n en coordenadas mundo (para pegar en cursor)
 let lastWorldMouse = { x: 0, y: 0 };
 
-// Menú contextual
-let ctxMenuEl = null;
+// MenÃº contextual
 
-// Guías de alineación (pool dinámico)
-let guideEls = [];  // pool de elementos guía reutilizables
+// GuÃ­as de alineaciÃ³n (pool dinÃ¡mico)
+let guideEls = [];  // pool de elementos guÃ­a reutilizables
 
 // Estado del nombre
 let savedName = "";
@@ -122,15 +122,15 @@ let panning = null;
 const activeTouchPointers = new Map();
 let pinchGesture = null;
 
-// Cámara
+// CÃ¡mara
 let minZoom = 0.2;
 const maxZoom = 3;
 
 const camera = { zoom: 1, panX: 0, panY: 0 };
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Snapshot / Dirty / UI contextual
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function computeSnapshot() {
     const name = (mapName.value || "").trim();
     const settings = {
@@ -199,16 +199,16 @@ function updateSaveUI() {
     if (btnDeleteMap) btnDeleteMap.disabled = !hasSaved;
 
     if (!nameOk) {
-        saveState.textContent = "• Sin nombre";
+        saveState.textContent = "â€¢ Sin nombre";
         saveState.style.color = "rgba(255,255,255,.6)";
         return;
     }
     if (dirty) {
-        saveState.textContent = "• Sin guardar";
+        saveState.textContent = "â€¢ Sin guardar";
         saveState.style.color = "rgba(255,210,90,.9)";
         return;
     }
-    saveState.textContent = "✓ Guardado";
+    saveState.textContent = "âœ“ Guardado";
     saveState.style.color = "rgba(120,255,160,.9)";
 }
 
@@ -223,9 +223,9 @@ function afterAnyChange() {
     updateSaveUI();
 }
 
-// ─────────────────────────────────────────────────────────────
-// Cámara / Pan / Zoom
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// CÃ¡mara / Pan / Zoom
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function clampCamera() {
     const vp = canvas.getBoundingClientRect();
     const worldW = (map.width || 1920) * camera.zoom;
@@ -344,9 +344,9 @@ function fitToScreen() {
     minZoom = camera.zoom;
 }
 
-// ─────────────────────────────────────────────────────────────
-// Marquee + Guías
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Marquee + GuÃ­as
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ensureMarqueeEl() {
     if (marqueeEl && marqueeEl.isConnected) return marqueeEl;
     marqueeEl = document.createElement("div");
@@ -392,7 +392,7 @@ function showGuides(guidesX, guidesY) {
 
     let idx = 0;
 
-    // Guías verticales (eje X)
+    // GuÃ­as verticales (eje X)
     for (const pos of guidesX) {
         const el = guideEls[idx++];
         el.className = "align-guide-x";
@@ -401,7 +401,7 @@ function showGuides(guidesX, guidesY) {
         el.classList.remove("hidden");
     }
 
-    // Guías horizontales (eje Y)
+    // GuÃ­as horizontales (eje Y)
     for (const pos of guidesY) {
         const el = guideEls[idx++];
         el.className = "align-guide-y";
@@ -411,9 +411,9 @@ function showGuides(guidesX, guidesY) {
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Numeración
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// NumeraciÃ³n
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function isNumeroUsed(prefix, numero, excludeId = null) {
     const num = String(numero);
     return (map.items || []).some((it) => {
@@ -425,7 +425,7 @@ function isNumeroUsed(prefix, numero, excludeId = null) {
     });
 }
 
-/** Devuelve el siguiente número libre para un prefijo, a partir de los items actuales */
+/** Devuelve el siguiente nÃºmero libre para un prefijo, a partir de los items actuales */
 function nextFreeNumero(prefix) {
     const used = new Set();
     for (const it of (map.items || [])) {
@@ -466,9 +466,9 @@ async function askNumeroRequired(prefix, current = "", opts = {}) {
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Selección
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// SelecciÃ³n
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getItemById(id) {
     return (map?.items || []).find((it) => it.id === id);
 }
@@ -529,9 +529,9 @@ function updateMarqueeSelection() {
     updateSelectionUI();
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Render
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderItemLabel(el, item) {
     const lab = el?.querySelector(".item__label");
     if (!lab) return;
@@ -591,7 +591,7 @@ function createItemElement(item) {
     renderItemSkin(el, item);
     renderItemLabel(el, item);
 
-    // Click: selección (con modificadores para multi)
+    // Click: selecciÃ³n (con modificadores para multi)
     el.addEventListener("click", (e) => {
         e.stopPropagation();
         if (getEffectiveMode() === "pan") return;
@@ -657,7 +657,7 @@ function createItemElement(item) {
 
 function render() {
     marqueeEl = null;
-    guideEls = [];    // world.innerHTML borra los divs de guía
+    guideEls = [];    // world.innerHTML borra los divs de guÃ­a
     world.innerHTML = "";
     setWorldSize();
     applyItemScale();
@@ -667,9 +667,9 @@ function render() {
     applyCamera();
 }
 
-// ─────────────────────────────────────────────────────────────
-// Operaciones sobre items / selección
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Operaciones sobre items / selecciÃ³n
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function addItem(type, x, y) {
     pushHistory();
     const item = {
@@ -712,7 +712,7 @@ function rotateSelected(direction = 1) {
 async function deleteSelected() {
     if (selectedIds.size === 0) return;
     const ok = await Notify.confirmDanger(
-        `¿Eliminar ${selectedIds.size} elemento(s) seleccionado(s)?`,
+        `Â¿Eliminar ${selectedIds.size} elemento(s) seleccionado(s)?`,
         { title: "Eliminar elementos", okText: "Eliminar" }
     );
     if (!ok) return;
@@ -723,9 +723,9 @@ async function deleteSelected() {
     afterAnyChange();
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Copiar / Pegar / Duplicar
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function copySelected() {
     if (selectedIds.size === 0) return;
@@ -769,63 +769,9 @@ function duplicateSelected() {
     afterAnyChange();
 }
 
-// ─────────────────────────────────────────────────────────────
-// Menú contextual (clic derecho)
-// ─────────────────────────────────────────────────────────────
-
-function closeContextMenu() {
-    if (ctxMenuEl) { ctxMenuEl.remove(); ctxMenuEl = null; }
-}
-
-function showContextMenu(x, y, items) {
-    closeContextMenu();
-
-    const menu = document.createElement("div");
-    menu.className = "ctx-menu";
-
-    items.forEach((entry) => {
-        if (entry === "---") {
-            const sep = document.createElement("div");
-            sep.className = "ctx-menu__sep";
-            menu.appendChild(sep);
-            return;
-        }
-
-        const btn = document.createElement("button");
-        btn.className = "ctx-menu__item";
-        if (entry.danger) btn.classList.add("ctx-menu__item--danger");
-        if (entry.disabled) btn.disabled = true;
-        btn.type = "button";
-        btn.innerHTML = `<span>${entry.icon || ''}</span><span>${entry.label}</span>`;
-        btn.addEventListener("click", () => {
-            closeContextMenu();
-            entry.action?.();
-        });
-        menu.appendChild(btn);
-    });
-
-    // Posicionar (ajustando si se sale de pantalla)
-    menu.style.left = x + "px";
-    menu.style.top = y + "px";
-    document.body.appendChild(menu);
-
-    const rect = menu.getBoundingClientRect();
-    if (rect.right > window.innerWidth) menu.style.left = (x - rect.width) + "px";
-    if (rect.bottom > window.innerHeight) menu.style.top = (y - rect.height) + "px";
-
-    ctxMenuEl = menu;
-
-    // Cerrar al hacer clic fuera
-    setTimeout(() => {
-        function onClickOut(e) {
-            if (!menu.contains(e.target)) {
-                closeContextMenu();
-                window.removeEventListener("pointerdown", onClickOut);
-            }
-        }
-        window.addEventListener("pointerdown", onClickOut);
-    }, 0);
-}
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// MenÃº contextual (clic derecho)
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function moveSelectedBy(dx, dy, { snap = false } = {}) {
     if (!map || selectedIds.size === 0) return;
@@ -863,9 +809,9 @@ function moveSelectedBy(dx, dy, { snap = false } = {}) {
     afterAnyChange();
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Drag & Drop desde el sidebar (con ghost preview)
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let dragGhost = null;
 
 function setupDragFromSidebar() {
@@ -913,8 +859,8 @@ function setupDragFromSidebar() {
     canvas.addEventListener("dragenter", (e) => {
         // Leer tipo de la transferencia
         const type = e.dataTransfer.getData("text/plain");
-        // En dragenter no siempre está disponible getData, así que buscamos
-        // desde las herramientas cuál se está arrastrando
+        // En dragenter no siempre estÃ¡ disponible getData, asÃ­ que buscamos
+        // desde las herramientas cuÃ¡l se estÃ¡ arrastrando
         const draggingTool = document.querySelector('.tool[draggable="true"]:active')
             || document.querySelector('.tool[draggable="true"]:focus');
         const itemType = type || draggingTool?.dataset.tool;
@@ -952,9 +898,9 @@ function setupDragFromSidebar() {
     });
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Picker "Mis mapas"
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function setupPicker() {
     const picker = $("#picker");
     const btn = $("#mapPicker");
@@ -983,7 +929,7 @@ async function setupPicker() {
 
             drop.innerHTML = "";
 
-            // Encabezado: enlace a la página de gestión de mapas
+            // Encabezado: enlace a la pÃ¡gina de gestiÃ³n de mapas
             const header = document.createElement("a");
             header.className = "picker__header";
             header.href = CFG.mapsListUrl;
@@ -1008,7 +954,7 @@ async function setupPicker() {
                 item.addEventListener("click", async () => {
                     if (hasChanges()) {
                         const wantsSave = await Notify.confirm(
-                            "Tienes cambios sin guardar. ¿Quieres guardarlos antes de abrir otro mapa?",
+                            "Tienes cambios sin guardar. Â¿Quieres guardarlos antes de abrir otro mapa?",
                             { title: "Cambios sin guardar", okText: "Guardar" }
                         );
                         if (wantsSave) {
@@ -1046,9 +992,9 @@ async function setupPicker() {
     });
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Load / Save / Delete map
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadOrCreate() {
     const qs = getQuery();
     const id = qs.get("id") || qs.get("edit");
@@ -1132,7 +1078,7 @@ async function saveCurrentMap() {
 async function deleteMap() {
     if (!map?.id) return;
     const ok = await Notify.confirmDanger(
-        "¿Seguro que quieres eliminar este mapa? Esta acción no se puede deshacer.",
+        "Â¿Seguro que quieres eliminar este mapa? Esta acciÃ³n no se puede deshacer.",
         { title: "Eliminar mapa", okText: "Eliminar" }
     );
     if (!ok) return;
@@ -1161,14 +1107,14 @@ async function deleteMap() {
 async function confirmLeave() {
     if (!hasChanges()) return true;
     return await Notify.confirmDanger(
-        "Tienes cambios sin guardar. ¿Quieres salir sin guardar?",
+        "Tienes cambios sin guardar. Â¿Quieres salir sin guardar?",
         { title: "Cambios sin guardar" }
     );
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Modos (pan / select)
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getEffectiveMode() {
     if (spaceDown) return panMode ? "select" : "pan";
     return panMode ? "pan" : "select";
@@ -1226,9 +1172,9 @@ function setMode(mode) {
     if (panMode) clearSelection();
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Eventos principales
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function setupEvents() {
     // Botones de modo
     const btnPanMode = $("#btnPanMode");
@@ -1236,7 +1182,7 @@ function setupEvents() {
     btnPanMode?.addEventListener("click", () => setMode("pan"));
     btnSelectMode?.addEventListener("click", () => setMode("select"));
 
-    // Editar número
+    // Editar nÃºmero
     btnEditNumber?.addEventListener("click", async () => {
         if (selectedIds.size !== 1) return;
         const id = [...selectedIds][0];
@@ -1258,12 +1204,12 @@ function setupEvents() {
     // Modo inicial
     setMode("select");
 
-    // Rastrear posición del ratón en coordenadas mundo
+    // Rastrear posiciÃ³n del ratÃ³n en coordenadas mundo
     canvas.addEventListener("pointermove", (e) => {
         lastWorldMouse = worldPointFromEvent(e, canvas, camera);
     }, { passive: true });
 
-    // En táctil el lienzo debe ganar a los gestos nativos del navegador.
+    // En tÃ¡ctil el lienzo debe ganar a los gestos nativos del navegador.
     ["touchstart", "touchmove"].forEach((eventName) => {
         canvas.addEventListener(eventName, (e) => {
             if (e.cancelable) e.preventDefault();
@@ -1309,28 +1255,28 @@ function setupEvents() {
         }
     }, true);
 
-    // ─── Menú contextual (clic derecho) ───────────────
+    // â”€â”€â”€ MenÃº contextual (clic derecho) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     canvas.addEventListener("contextmenu", (e) => {
         e.preventDefault();
         lastWorldMouse = worldPointFromEvent(e, canvas, camera);
 
-        // ¿Hay un item bajo el cursor?
+        // Â¿Hay un item bajo el cursor?
         const clickedItem = e.target.closest?.(".mapItem");
         const itemId = clickedItem?.dataset.id;
 
         if (itemId) {
-            // Asegurar que está seleccionado
+            // Asegurar que estÃ¡ seleccionado
             if (!selectedIds.has(itemId)) setSingleSelection(itemId);
 
             const it = getItemById(itemId);
             const prefix = it ? getTypePrefix(it.type) : null;
 
             showContextMenu(e.clientX, e.clientY, [
-                { icon: "📋", label: "Copiar", action: () => copySelected() },
-                { icon: "🔃", label: "Duplicar", action: () => duplicateSelected() },
+                { icon: "ðŸ“‹", label: "Copiar", action: () => copySelected() },
+                { icon: "ðŸ”ƒ", label: "Duplicar", action: () => duplicateSelected() },
                 "---",
                 ...(prefix ? [{
-                    icon: "#️⃣", label: "Editar número",
+                    icon: "#ï¸âƒ£", label: "Editar nÃºmero",
                     action: async () => {
                         const current = String(it.data?.numero ?? "");
                         pushHistory();
@@ -1342,17 +1288,17 @@ function setupEvents() {
                         afterAnyChange();
                     }
                 }] : []),
-                { icon: "↩", label: "Rotar izquierda", action: () => rotateSelected(-1) },
-                { icon: "↪", label: "Rotar derecha", action: () => rotateSelected(1) },
+                { icon: "â†©", label: "Rotar izquierda", action: () => rotateSelected(-1) },
+                { icon: "â†ª", label: "Rotar derecha", action: () => rotateSelected(1) },
                 "---",
-                { icon: "🗑", label: "Eliminar", danger: true, action: () => deleteSelected() },
+                { icon: "ðŸ—‘", label: "Eliminar", danger: true, action: () => deleteSelected() },
             ]);
         } else {
-            // Clic derecho en canvas vacío
+            // Clic derecho en canvas vacÃ­o
             showContextMenu(e.clientX, e.clientY, [
-                { icon: "📋", label: "Pegar", disabled: clipboard.length === 0, action: () => pasteClipboard() },
+                { icon: "ðŸ“‹", label: "Pegar", disabled: clipboard.length === 0, action: () => pasteClipboard() },
                 {
-                    icon: "☐", label: "Seleccionar todo", action: () => {
+                    icon: "â˜", label: "Seleccionar todo", action: () => {
                         (map.items || []).forEach((it) => selectedIds.add(it.id));
                         updateSelectionUI();
                     }
@@ -1361,7 +1307,7 @@ function setupEvents() {
         }
     });
 
-    // ─── Pointerdown: pan o marquee ──────────────────────────
+    // â”€â”€â”€ Pointerdown: pan o marquee â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     canvas.addEventListener("pointerdown", (e) => {
         if (e.button !== 0) return;
         preventTouchGesture(e);
@@ -1409,7 +1355,7 @@ function setupEvents() {
         updateMarqueeSelection();
     });
 
-    // ─── Pointermove: pan, drag items, marquee ───────────────
+    // â”€â”€â”€ Pointermove: pan, drag items, marquee â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     canvas.addEventListener("pointermove", (e) => {
         if (isTouchPointer(e) && activeTouchPointers.has(e.pointerId)) {
             activeTouchPointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
@@ -1430,7 +1376,7 @@ function setupEvents() {
             return;
         }
 
-        // DRAG de items (grupo) — con snapping corregido
+        // DRAG de items (grupo) â€” con snapping corregido
         if (dragging) {
             preventTouchGesture(e);
             const p = worldPointFromEvent(e, canvas, camera);
@@ -1459,7 +1405,7 @@ function setupEvents() {
             dx = Math.min(dx, worldW - maxGroupX);
             dy = Math.min(dy, worldH - maxGroupY);
 
-            // ── Snap con el nuevo sistema ────────────────────
+            // â”€â”€ Snap con el nuevo sistema â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             // Preparar items movidos con posiciones tentativas
             const movedItems = dragging.origins
                 .map((o) => {
@@ -1476,10 +1422,10 @@ function setupEvents() {
                 useGrid: !e.altKey,
             });
 
-            // ── Guías (múltiples por eje) ─────────────────
+            // â”€â”€ GuÃ­as (mÃºltiples por eje) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             showGuides(snap.guidesX, snap.guidesY);
 
-            // ── Aplicar posición final (uniforme a todo el grupo) ──
+            // â”€â”€ Aplicar posiciÃ³n final (uniforme a todo el grupo) â”€â”€
             dragging.origins.forEach((o) => {
                 const it = getItemById(o.id);
                 if (!it) return;
@@ -1514,7 +1460,7 @@ function setupEvents() {
         }
     });
 
-    // ─── Pointerup: cerrar pan / marquee ─────────────────────
+    // â”€â”€â”€ Pointerup: cerrar pan / marquee â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     canvas.addEventListener("pointerup", (e) => {
         preventTouchGesture(e);
         if (isTouchPointer(e)) {
@@ -1562,7 +1508,7 @@ function setupEvents() {
         }
     });
 
-    // Click en vacío: deseleccionar
+    // Click en vacÃ­o: deseleccionar
     canvas.addEventListener("click", (e) => {
         if (suppressNextCanvasClick) return;
         if (getEffectiveMode() !== "select") return;
@@ -1600,7 +1546,7 @@ function setupEvents() {
     btnNewMap?.addEventListener("click", async () => {
         if (hasChanges()) {
             const wantsSave = await Notify.confirm(
-                "Tienes cambios sin guardar. ¿Quieres guardarlos antes de crear un mapa nuevo?",
+                "Tienes cambios sin guardar. Â¿Quieres guardarlos antes de crear un mapa nuevo?",
                 { title: "Cambios sin guardar", okText: "Guardar" }
             );
             if (wantsSave) {
@@ -1639,7 +1585,7 @@ function setupEvents() {
         afterAnyChange();
     });
 
-    // Resolución: usa el select común de la aplicación.
+    // ResoluciÃ³n: usa el select comÃºn de la aplicaciÃ³n.
     resolutionSelect?.addEventListener("change", () => {
         if (syncingResolutionSelect) return;
         const [w, h] = resolutionSelect.value.split("x").map(Number);
@@ -1655,9 +1601,9 @@ function setupEvents() {
     syncResolutionControl(map?.width || 1920, map?.height || 1080);
 }
 
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Init
-// ─────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function init() {
     await loadOrCreate();
     await setupPicker();
@@ -1681,13 +1627,13 @@ async function init() {
         if (e.code !== "Space") return;
         e.preventDefault();
 
-        // Ctrl + Space → cambio permanente de modo
+        // Ctrl + Space â†’ cambio permanente de modo
         if (e.ctrlKey || e.metaKey) {
             setMode(panMode ? "select" : "pan");
             return;
         }
 
-        // Space solo → inversión temporal mientras se mantiene
+        // Space solo â†’ inversiÃ³n temporal mientras se mantiene
         if (!spaceDown) {
             spaceDown = true;
             updatePanReadyCursor();
@@ -1702,7 +1648,7 @@ async function init() {
         updateToolButtons();
     });
 
-    // Atajos de teclado (cuando no se está en input)
+    // Atajos de teclado (cuando no se estÃ¡ en input)
     window.addEventListener("keydown", (e) => {
         const tag = document.activeElement?.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA") return;
@@ -1765,7 +1711,7 @@ async function init() {
     });
 }
 
-// ES modules se ejecutan después del parsing del DOM (deferred),
+// ES modules se ejecutan despuÃ©s del parsing del DOM (deferred),
 // pero usamos DOMContentLoaded por seguridad.
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
