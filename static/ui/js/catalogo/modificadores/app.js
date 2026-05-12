@@ -1,4 +1,10 @@
 import { initManualTools } from './manual_tools.js';
+import {
+    csrfHeaders,
+    escapeHtml,
+    getCsrfToken,
+    jsonHeaders,
+} from './utils.js';
 
 /**
  * modificadores.js
@@ -427,14 +433,14 @@ function initModificadoresApp() {
     // ==========================================
     // UTILIDADES
     // ==========================================
-    function escapeHtml(str) {
+    function escapeHtmlLegacy(str) {
         if (!str) return '';
         const p = document.createElement('p');
         p.textContent = str;
         return p.innerHTML;
     }
 
-    function getCsrfToken() {
+    function getCsrfTokenLegacy() {
         const cookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
         return cookie ? cookie.split('=')[1] : '';
     }
@@ -661,7 +667,7 @@ const Notify = window.Notify;
 
         try {
             const resp = await fetch(url, {
-                method, headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                method, headers: jsonHeaders(),
                 body: JSON.stringify(payload)
             });
             if (!resp.ok) throw new Error('Error al guardar');
@@ -699,7 +705,7 @@ const Notify = window.Notify;
         if (!confirmed) return;
         try {
             await fetch(`/api/perfiles-comentarios/${id}/`, {
-                method: 'DELETE', headers: { 'X-CSRFToken': getCsrfToken() }
+                method: 'DELETE', headers: csrfHeaders()
             });
             loadPerfilesComentarios();
             loadComentarios();
@@ -830,7 +836,7 @@ const Notify = window.Notify;
 
         try {
             const resp = await fetch(url, {
-                method, headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                method, headers: jsonHeaders(),
                 body: JSON.stringify(payload)
             });
             if (!resp.ok) throw new Error('Error al guardar');
@@ -850,7 +856,7 @@ const Notify = window.Notify;
         if (!confirmed) return;
         try {
             await fetch(`/api/comentarios/${id}/`, {
-                method: 'DELETE', headers: { 'X-CSRFToken': getCsrfToken() }
+                method: 'DELETE', headers: csrfHeaders()
             });
             loadComentarios();
             loadPerfilesComentarios();
@@ -1066,7 +1072,7 @@ const Notify = window.Notify;
 
         try {
             const resp = await fetch(url, {
-                method, headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                method, headers: jsonHeaders(),
                 body: JSON.stringify(payload)
             });
             if (!resp.ok) throw new Error('Error al guardar');
@@ -1104,7 +1110,7 @@ const Notify = window.Notify;
         if (!confirmed) return;
         try {
             await fetch(`/api/perfiles-suplementos/${id}/`, {
-                method: 'DELETE', headers: { 'X-CSRFToken': getCsrfToken() }
+                method: 'DELETE', headers: csrfHeaders()
             });
             loadPerfilesSuplementos();
             loadSuplementos();
@@ -1249,7 +1255,7 @@ const Notify = window.Notify;
 
         try {
             const resp = await fetch(url, {
-                method, headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                method, headers: jsonHeaders(),
                 body: JSON.stringify(payload)
             });
             if (!resp.ok) throw new Error('Error al guardar');
@@ -1269,7 +1275,7 @@ const Notify = window.Notify;
         if (!confirmed) return;
         try {
             await fetch(`/api/suplementos/${id}/`, {
-                method: 'DELETE', headers: { 'X-CSRFToken': getCsrfToken() }
+                method: 'DELETE', headers: csrfHeaders()
             });
             loadSuplementos();
             loadPerfilesSuplementos();

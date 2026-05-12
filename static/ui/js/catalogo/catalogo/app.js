@@ -19,6 +19,12 @@ import {
     initCatalogoFilters,
     syncFilterState,
 } from './filters.js';
+import { initProductUI } from './product_ui.js';
+import {
+    initColorPickers,
+    resetColor as resetPickerColor,
+    syncSwatches,
+} from './color_pickers.js';
 
 /* ============================================================
    GESTIÓN DEL CATÁLOGO TPV (SPA)
@@ -243,7 +249,7 @@ function initCatalogoApp() {
     // ==========================================
     // 4. LÓGICA DE UI ESPECÍFICA (PRODUCTOS)
     // ==========================================
-    function initProductUI() {
+    function initProductUILegacy() {
         const prodNombre = document.getElementById('prod_nombre');
         const prodFactura = document.getElementById('prod_nombre_factura');
         const prodComanda = document.getElementById('prod_nombre_comanda');
@@ -295,6 +301,9 @@ function initCatalogoApp() {
                 el.addEventListener('change', updateLivePreview);
             }
         });
+
+        initColorPickers(updateLivePreview);
+        return;
 
         // --- Paletas de Colores (Nueva Lógica Popover) ---
         document.querySelectorAll('.color-swatch-btn').forEach(trigger => {
@@ -357,7 +366,7 @@ function initCatalogoApp() {
         });
     }
 
-    function syncSwatches(inputId) {
+    function syncSwatchesLegacy(inputId) {
         const input = document.getElementById(inputId);
         if (!input) return;
         const val = input.value.toLowerCase();
@@ -382,12 +391,7 @@ function initCatalogoApp() {
     }
 
     window.resetColor = function (inputId, defaultColor) {
-        const input = document.getElementById(inputId);
-        if (input) {
-            input.value = defaultColor;
-            syncSwatches(inputId);
-            updateLivePreview();
-        }
+        resetPickerColor(inputId, defaultColor, updateLivePreview);
     };
 
     window.closeModal = function (modalId) {

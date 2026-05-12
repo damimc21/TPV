@@ -1,3 +1,16 @@
+import {
+    UNIT_OPTIONS,
+    escapeHtml,
+    formatStockValue,
+    getCookie,
+    getStateLabel,
+    getStepForUnit,
+    getStockState,
+    getUnitOptionsHtml,
+    getUnitString,
+    parseDecimalInput,
+} from './utils.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const Notify = window.Notify;
     let allArticulos = [];
@@ -17,16 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let plantillaCurrentId = '';
     let plantillaOpenGroups = {};
     let plantillaSelected = {};
-
-    const UNIT_OPTIONS = [
-        ['ud', 'Unidades'],
-        ['pack', 'Packs'],
-        ['caja', 'Cajas'],
-        ['kg', 'Kilos'],
-        ['g', 'Gramos'],
-        ['l', 'Litros'],
-        ['ml', 'Mililitros'],
-    ];
 
     async function loadData() {
         try {
@@ -210,8 +213,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('containerFilters').classList.remove('is-active');
     };
 
-    // --- Helpers ---
-    function getStockState(art) {
+    // --- Helpers legacy (kept unreachable after extraction) ---
+    function getStockStateLegacy(art) {
         const sActual = parseFloat(art.stock_actual);
         const sMin = parseFloat(art.stock_minimo);
         if (sActual < 0) return 'review';
@@ -220,38 +223,38 @@ document.addEventListener('DOMContentLoaded', function() {
         return 'ok';
     }
 
-    function getStateLabel(state) {
+    function getStateLabelLegacy(state) {
         return { ok: 'En Stock', low: 'Stock Bajo', out: 'Agotado', review: 'Revisar' }[state];
     }
 
-    function getUnitString(u) {
+    function getUnitStringLegacy(u) {
         return { ud:'ud', pack:'pack', caja:'caja', kg:'kg', g:'g', l:'L', ml:'ml' }[u] || u;
     }
 
-    function getStepForUnit(u) {
+    function getStepForUnitLegacy(u) {
         if (u === 'kg' || u === 'l') return 0.5;
         if (u === 'g' || u === 'ml') return 100;
         return 1;
     }
 
-    function getUnitOptionsHtml(selected) {
+    function getUnitOptionsHtmlLegacy(selected) {
         const defaultUnit = UNIT_OPTIONS.some(([value]) => value === selected) ? selected : 'ud';
         return UNIT_OPTIONS.map(([value, label]) => (
             `<option value="${value}" ${value === defaultUnit ? 'selected' : ''}>${label}</option>`
         )).join('');
     }
 
-    function formatStockValue(val) {
+    function formatStockValueLegacy(val) {
         const n = parseFloat(val);
         if (isNaN(n)) return '0';
         return n % 1 === 0 ? n.toString() : n.toFixed(2);
     }
 
-    function parseDecimalInput(value) {
+    function parseDecimalInputLegacy(value) {
         return parseFloat(String(value || '').replace(',', '.'));
     }
 
-    function escapeHtml(str) {
+    function escapeHtmlLegacy(str) {
         return String(str || '')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -1108,7 +1111,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.filterStock = renderView;
 
-    function getCookie(name) {
+    function getCookieLegacy(name) {
         return window.TpvUtils ? window.TpvUtils.getCookie(name) : null;
     }
 
@@ -1116,4 +1119,3 @@ document.addEventListener('DOMContentLoaded', function() {
     initSortControl();
     loadData();
 });
-
