@@ -8,6 +8,11 @@ import {
     saveProductoApi,
 } from './api.js';
 import { escapeHtml, getCookie } from './utils.js';
+import {
+    renderDepartamentosTable,
+    renderProductosTable,
+    updateDepartmentSelects,
+} from './tables.js';
 
 /* ============================================================
    GESTIÓN DEL CATÁLOGO TPV (SPA)
@@ -459,53 +464,17 @@ function initCatalogoApp() {
     }
 
     function renderDepartamentos() {
-        const tbody = document.getElementById('tbody-departamentos');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        // Leer estado de filtros directamente del DOM
         syncFilterState();
-
-        // 1. Filtrar
-        let filtered = departamentosData.filter(d => {
+        const filtered = applySorting(departamentosData.filter(d => {
             if (searchString) {
                 return String(d.id).includes(searchString) || d.nombre.toLowerCase().includes(searchString);
             }
             return true;
-        });
-
-        // 2. Ordenar
-        filtered = applySorting(filtered);
-
-        if (filtered.length === 0) {
-            if (isInitialLoadDepto) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">${t('catalogo.departments.loading', 'Cargando departamentos...')}</td></tr>`;
-            } else {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">${t('catalogo.departments.empty', 'No se encontraron departamentos.')}</td></tr>`;
-            }
-            return;
-        }
-
-        filtered.forEach((d) => {
-            const statusHtml = d.activo
-                ? `<span class="status-badge active">ACTIVO</span>`
-                : `<span class="status-badge inactive">INACTIVO</span>`;
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="text-muted">${d.id}</td>
-                <td class="font-weight-bold">${escapeHtml(d.nombre)}</td>
-                <td>${statusHtml}</td>
-                <td class="col-actions text-right">
-                    <button class="action-btn" title="Editar" onclick="editDepartamento(${d.id})">
-                        <img src="/static/ui/img/iconos/pencil.svg" alt="Editar">
-                    </button>
-                    <button class="action-btn action-btn--delete" title="Eliminar" onclick="deleteDepartamento(${d.id})">
-                        <img src="/static/ui/img/iconos/trash-2.svg" alt="Eliminar">
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
+        }));
+        renderDepartamentosTable({
+            departamentos: filtered,
+            isInitialLoad: isInitialLoadDepto,
+            t,
         });
     }
 
@@ -608,59 +577,17 @@ function initCatalogoApp() {
     }
 
     function renderProductos() {
-        const tbody = document.getElementById('tbody-productos');
-        if (!tbody) return;
-        tbody.innerHTML = ''; // Limpiar
-
-        // Leer estado de filtros directamente del DOM
         syncFilterState();
-
-        // 1. Filtrar
-        let filtered = productosData.filter(p => {
-            let matchesSearch = searchString ? (String(p.id).includes(searchString) || p.nombre.toLowerCase().includes(searchString)) : true;
-            let matchesDepto = deptoFilterId ? String(p.departamento) === deptoFilterId : true;
+        const filtered = applySorting(productosData.filter(p => {
+            const matchesSearch = searchString ? (String(p.id).includes(searchString) || p.nombre.toLowerCase().includes(searchString)) : true;
+            const matchesDepto = deptoFilterId ? String(p.departamento) === deptoFilterId : true;
             return matchesSearch && matchesDepto;
-        });
-
-        // 2. Ordenar
-        filtered = applySorting(filtered);
-
-        if (filtered.length === 0) {
-            if (isInitialLoadProd) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">${t('catalogo.products.loading', 'Cargando productos...')}</td></tr>`;
-            } else {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">${t('catalogo.products.empty', 'No se encontraron productos.')}</td></tr>`;
-            }
-            return;
-        }
-
-        filtered.forEach((p) => {
-            const statusHtml = p.activo
-                ? `<span class="status-badge active">ACTIVO</span>`
-                : `<span class="status-badge inactive">INACTIVO</span>`;
-
-            const deptoObj = departamentosData.find(d => d.id === p.departamento);
-            const deptoNombre = deptoObj ? escapeHtml(deptoObj.nombre) : '<span class="text-muted">Sin categoría</span>';
-
-            const precioFmt = parseFloat(p.precio).toFixed(2) + ' €';
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="text-muted">${p.id}</td>
-                <td class="font-weight-bold">${escapeHtml(p.nombre)}</td>
-                <td>${deptoNombre}</td>
-                <td class="text-right tabular-nums">${precioFmt}</td>
-                <td>${statusHtml}</td>
-                <td class="col-actions text-right">
-                    <button class="action-btn" title="Editar" onclick="editProducto(${p.id})">
-                        <img src="/static/ui/img/iconos/pencil.svg" alt="Editar">
-                    </button>
-                    <button class="action-btn action-btn--delete" title="Eliminar" onclick="deleteProducto(${p.id})">
-                        <img src="/static/ui/img/iconos/trash-2.svg" alt="Eliminar">
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
+        }));
+        renderProductosTable({
+            productos: filtered,
+            departamentos: departamentosData,
+            isInitialLoad: isInitialLoadProd,
+            t,
         });
     }
 
@@ -668,29 +595,7 @@ function initCatalogoApp() {
     // 8. UTILIDADES Y SELECTORES
     // ==========================================
     function updateDeptSelects() {
-        // selectModal sigue siendo nativo (está en un modal estándar de edición)
-        const selectModal = document.getElementById('prod_departamento');
-        const deptoOptions = document.getElementById('deptoOptions');
-        if (!selectModal || !deptoOptions) return;
-
-        // Reset Modal Select
-        selectModal.innerHTML = '<option value="">-- Seleccionar --</option>';
-
-        // Reset Filter Custom Select
-        deptoOptions.innerHTML = `<div class="custom-option is-selected" data-value="">${t('catalogo.allDepartments', '-- Todos los Deptos --')}</div>`;
-
-        departamentosData.forEach(d => {
-            // Para el modal (nativo)
-            const opt = `<option value="${d.id}">${escapeHtml(d.nombre)}</option>`;
-            selectModal.insertAdjacentHTML('beforeend', opt);
-
-            // Para el filtro (custom)
-            const div = document.createElement('div');
-            div.className = 'custom-option';
-            div.setAttribute('data-value', d.id);
-            div.textContent = d.nombre;
-            deptoOptions.appendChild(div);
-        });
+        updateDepartmentSelects({ departamentos: departamentosData, t });
     }
 
     window.openModalProducto = function () {
