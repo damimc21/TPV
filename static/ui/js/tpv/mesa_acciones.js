@@ -72,20 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function getCookie(name) {
-        return (window.TpvUtils && window.TpvUtils.getCookie(name)) || "";
-    }
-
     function logUiEvent(evento, detalle, nivel = "INFO", origen = "ui.tpv") {
-        fetch("/api/ficheros/logs/ui-evento/", {
-            method: "POST",
-            keepalive: true,
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken"),
-            },
-            body: JSON.stringify({ evento, detalle, nivel, origen }),
-        }).catch(() => { });
+        if (window.TpvUtils && typeof window.TpvUtils.logUiEvent === "function") {
+            window.TpvUtils.logUiEvent(evento, detalle, nivel, origen);
+        }
     }
 
     function setTPVTheme(theme) {

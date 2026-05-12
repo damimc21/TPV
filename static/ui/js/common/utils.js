@@ -13,6 +13,7 @@
  *   TpvUtils.csrfHeaders(extra?)     -> object con X-CSRFToken (+ extras)
  *   TpvUtils.jsonHeaders(extra?)     -> object con X-CSRFToken y Content-Type JSON
  *   TpvUtils.fetchJSON(url, opts?)   -> Promise<any> (lanza Error con .status)
+ *   TpvUtils.logUiEvent(...)         -> void (envio fire-and-forget)
  *
  * No hace falta importar nada: este script se carga en base.html.
  * ---------------------------------------------------------------
@@ -81,11 +82,27 @@
         return payload;
     }
 
+    function logUiEvent(evento, detalle, nivel, origen) {
+        if (typeof fetch !== "function") return;
+        fetch("/api/ficheros/logs/ui-evento/", {
+            method: "POST",
+            keepalive: true,
+            headers: jsonHeaders(),
+            body: JSON.stringify({
+                evento,
+                detalle,
+                nivel: nivel || "INFO",
+                origen: origen || "ui",
+            }),
+        }).catch(() => { });
+    }
+
     global.TpvUtils = Object.freeze({
         getCookie,
         getCSRFToken,
         csrfHeaders,
         jsonHeaders,
         fetchJSON,
+        logUiEvent,
     });
 })(typeof window !== "undefined" ? window : globalThis);
