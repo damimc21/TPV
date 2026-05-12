@@ -1,14 +1,8 @@
 import {
-    COLOR_HEADERS,
-    HEADERS_INVENTARIO,
-    HEADERS_PRODUCTOS,
-    formatDecimalValue,
-    hasText,
     isColorHeader,
     normalizeHeader,
     normalizeHexColor,
     parseCsvText,
-    parseDecimalValue,
 } from './parsing.js';
 import {
     buildTemplateUrl,
@@ -21,6 +15,12 @@ import {
     formatNameSample,
     safeClassName,
 } from './render_utils.js';
+import {
+    addRowError,
+    applyProductPreviewDefaults,
+    rowErrorList,
+    validateImportRows,
+} from './validation.js';
 
 /* ============================================================
    IMPORTAR PRODUCTOS / INVENTARIO - CSV y Excel
@@ -35,10 +35,6 @@ import {
     let verification = null;
     let fillProductDisplayNames = true;
     let hasBlockingErrors = false;
-
-    function expectedHeaders() {
-        return importType === 'productos' ? HEADERS_PRODUCTOS : HEADERS_INVENTARIO;
-    }
 
     window.setImportType = (type) => {
         importType = type;
@@ -140,142 +136,12 @@ import {
         validateRows();
     }
 
-    function addRowError(row, message) {
-        if (!row._errors) row._errors = [];
-        if (!row._errors.includes(message)) {
-            row._errors.push(message);
-        }
-        row._valid = false;
-        row._error = row._errors.join(' | ');
-    }
-
-    function rowErrorList(row) {
-        if (Array.isArray(row._errors) && row._errors.length > 0) return row._errors;
-        return row._error ? [row._error] : [];
-    }
-
-    function addFileError(message, blocking = true) {
-        if (!errors.includes(message)) {
-            errors.push(message);
-        }
-        if (blocking) {
-            hasBlockingErrors = true;
-        }
-    }
-
-    function hasAnyHeader(headers) {
-        return headers.some((header) => parsedHeaders.includes(header));
-    }
-
     function validateRows() {
-        errors = [];
-        warnings = [];
-        hasBlockingErrors = false;
-        const expected = expectedHeaders();
-        if (!parsedHeaders.includes('nombre')) {
-            addFileError('Falta la columna obligatoria "nombre".');
-        }
-
-        if (importType === 'inventario' && parsedHeaders.includes('departamento')) {
-            errors.push('Parece que has subido una plantilla de productos en la sección de inventario. Verifica el fichero.');
-        }
-
-        if (importType === 'productos' && (parsedHeaders.includes('categoria') || parsedHeaders.includes('stock_actual')) && !parsedHeaders.includes('departamento')) {
-            errors.push('Parece que has subido una plantilla de inventario en la sección de productos. Verifica el fichero.');
-        }
-
-        if (importType === 'productos' && !parsedHeaders.includes('departamento')) {
-            errors.push('Falta la columna obligatoria "departamento". Todo producto debe pertenecer a un departamento.');
-        }
-        if (importType === 'inventario' && !parsedHeaders.includes('categoria')) {
-            addFileError('Falta la columna obligatoria "categoria". La plantilla no encaja con inventario.');
-        }
-        if (parsedRows.length === 0) {
-            errors.push('El fichero no contiene filas de datos.');
-        }
-        if (errors.length > 0) {
-            hasBlockingErrors = true;
-        }
-
-        expected.forEach((header) => {
-            if (importType !== 'productos' && !['nombre', 'categoria'].includes(header) && !parsedHeaders.includes(header)) {
-                warnings.push(`Columna opcional no encontrada: ${header}. Se aplicara el valor por defecto.`);
-            }
-        });
-
-        if (importType === 'productos') {
-            if (!parsedHeaders.includes('activo')) {
-                warnings.push('No hay columna activo: los productos validos se importaran como activos (1/true).');
-            }
-            if (!parsedHeaders.includes('nombre_factura')) {
-                warnings.push('No hay nombre_factura: se usara el nombre del producto en factura.');
-            }
-            if (!parsedHeaders.includes('nombre_comanda')) {
-                warnings.push('No hay nombre_comanda: se usara el nombre del producto en comandas.');
-            }
-            if (!parsedHeaders.includes('color_boton') && !parsedHeaders.includes('color_texto')) {
-                warnings.push('La plantilla basica no incluye colores: los productos nuevos usaran colores por defecto.');
-            }
-            if (parsedHeaders.includes('eliminado')) {
-                warnings.push('La columna eliminado no se importa en modo basico; se gestiona desde Catalogo.');
-            }
-            if (parsedHeaders.includes('imagen') || parsedHeaders.includes('icono_boton')) {
-                warnings.push('Las imagenes no se importan desde esta plantilla; se mantienen las existentes al actualizar.');
-            }
-        }
-        if (hasBlockingErrors) {
-            warnings = [];
-        }
-
-        parsedRows.forEach((row) => {
-            row._valid = true;
-            row._error = '';
-            row._errors = [];
-
-            if (!hasText(row.nombre)) {
-                addRowError(row, 'Falta el nombre obligatorio.');
-            }
-
-            if (importType === 'productos') {
-                if (!hasText(row.departamento)) {
-                    addRowError(row, 'Falta el departamento obligatorio.');
-                }
-                if (hasText(row.precio) && formatDecimalValue(row.precio) === null) {
-                    addRowError(row, 'Precio invalido.');
-                }
-                if (hasText(row.activo)) {
-                    const activoVal = String(row.activo).trim().toLowerCase();
-                    const validBooleans = ['1', '0', 'true', 'false', 'si', 'no', 'yes', 'activo', 'inactivo'];
-                    if (!validBooleans.includes(activoVal)) {
-                        addRowError(row, 'Valor de activo invalido. Usa: 1/0, true/false, si/no o activo/inactivo.');
-                    }
-                }
-                COLOR_HEADERS.forEach((field) => {
-                    if (hasText(row[field]) && normalizeHexColor(row[field]) === null) {
-                        addRowError(row, `${field} invalido. Usa un color hexadecimal, por ejemplo #2ecc71.`);
-                    }
-                });
-            } else {
-                ['stock_actual', 'stock_minimo', 'precio_compra'].forEach((field) => {
-                    if (hasText(row[field]) && formatDecimalValue(row[field]) === null) {
-                        addRowError(row, `${field} invalido.`);
-                    }
-                });
-            }
-        });
-
-        if (hasBlockingErrors) {
-            const message = importType === 'productos'
-                ? 'La plantilla no encaja con productos.'
-                : 'La plantilla no encaja con inventario.';
-            parsedRows.forEach((row) => {
-                if (rowErrorList(row).length === 0) {
-                    addRowError(row, message);
-                }
-            });
-        }
-
-        validRows = hasBlockingErrors ? [] : parsedRows.filter((row) => row._valid);
+        const result = validateImportRows({ importType, parsedHeaders, parsedRows });
+        errors = result.errors;
+        warnings = result.warnings;
+        hasBlockingErrors = result.hasBlockingErrors;
+        validRows = result.validRows;
     }
 
     function refreshPreviewState() {
@@ -288,121 +154,13 @@ import {
     }
 
     function applyPreviewDefaults() {
-        parsedRows.forEach((row) => {
-            row._displayValues = {};
-            row._importValues = {};
-            row._defaultedFields = {};
-            row._normalizedFields = {};
+        warnings = applyProductPreviewDefaults({
+            importType,
+            parsedHeaders,
+            parsedRows,
+            warnings,
+            fillProductDisplayNames,
         });
-
-        if (importType !== 'productos') return;
-
-        let facturaDefaults = 0;
-        let comandaDefaults = 0;
-        let facturaBlanks = 0;
-        let comandaBlanks = 0;
-        let priceDefaults = 0;
-        let priceNormalized = 0;
-        let activeDefaults = 0;
-        let colorValues = 0;
-        let colorNormalized = 0;
-
-        parsedRows.forEach((row) => {
-            if (!row._valid || !hasText(row.nombre)) return;
-
-            if (parsedHeaders.includes('precio')) {
-                const normalizedPrice = hasText(row.precio) ? formatDecimalValue(row.precio) : '0.00';
-                if (normalizedPrice !== null) {
-                    row._displayValues.precio = normalizedPrice;
-                    row._importValues.precio = normalizedPrice;
-                    if (!hasText(row.precio)) {
-                        row._defaultedFields.precio = true;
-                        priceDefaults += 1;
-                    } else if (String(row.precio).trim() !== normalizedPrice) {
-                        row._normalizedFields.precio = true;
-                        priceNormalized += 1;
-                    }
-                }
-            }
-
-            if (parsedHeaders.includes('activo') && !hasText(row.activo)) {
-                row._displayValues.activo = '1';
-                row._importValues.activo = '1';
-                row._defaultedFields.activo = true;
-                activeDefaults += 1;
-            }
-
-            COLOR_HEADERS.forEach((field) => {
-                if (!parsedHeaders.includes(field) || !hasText(row[field])) return;
-                const normalizedColor = normalizeHexColor(row[field]);
-                if (!normalizedColor) return;
-
-                row._displayValues[field] = normalizedColor;
-                row._importValues[field] = normalizedColor;
-                colorValues += 1;
-                if (String(row[field]).trim() !== normalizedColor) {
-                    row._normalizedFields[field] = true;
-                    colorNormalized += 1;
-                }
-            });
-
-            if (!parsedHeaders.includes('nombre_factura') && fillProductDisplayNames) {
-                row._importValues.nombre_factura = row.nombre;
-            }
-            if (!parsedHeaders.includes('nombre_comanda') && fillProductDisplayNames) {
-                row._importValues.nombre_comanda = row.nombre;
-            }
-
-            if (parsedHeaders.includes('nombre_factura') && !hasText(row.nombre_factura)) {
-                if (fillProductDisplayNames) {
-                    row._displayValues.nombre_factura = row.nombre;
-                    row._importValues.nombre_factura = row.nombre;
-                    row._defaultedFields.nombre_factura = true;
-                    facturaDefaults += 1;
-                } else {
-                    facturaBlanks += 1;
-                }
-            }
-
-            if (parsedHeaders.includes('nombre_comanda') && !hasText(row.nombre_comanda)) {
-                if (fillProductDisplayNames) {
-                    row._displayValues.nombre_comanda = row.nombre;
-                    row._importValues.nombre_comanda = row.nombre;
-                    row._defaultedFields.nombre_comanda = true;
-                    comandaDefaults += 1;
-                } else {
-                    comandaBlanks += 1;
-                }
-            }
-        });
-
-        if (facturaDefaults > 0) {
-            warnings.push(`${facturaDefaults} filas sin nombre_factura usaran el nombre del producto. Puedes desactivar esta opcion si necesitas dejarlas en blanco.`);
-        }
-        if (comandaDefaults > 0) {
-            warnings.push(`${comandaDefaults} filas sin nombre_comanda usaran el nombre del producto. Puedes desactivar esta opcion si necesitas dejarlas en blanco.`);
-        }
-        if (!fillProductDisplayNames && facturaBlanks > 0) {
-            warnings.push(`${facturaBlanks} filas importaran nombre_factura en blanco porque la opcion de autocompletar esta desactivada.`);
-        }
-        if (!fillProductDisplayNames && comandaBlanks > 0) {
-            warnings.push(`${comandaBlanks} filas importaran nombre_comanda en blanco porque la opcion de autocompletar esta desactivada.`);
-        }
-        if (priceDefaults > 0) {
-            warnings.push(`${priceDefaults} filas sin precio se importaran con 0.00.`);
-        }
-        if (priceNormalized > 0) {
-            warnings.push(`${priceNormalized} precios se normalizaran a formato de dos decimales antes de importar.`);
-        }
-        if (activeDefaults > 0) {
-            warnings.push(`${activeDefaults} filas sin activo se importaran como activas (1/true).`);
-        }
-        if (colorValues > 0) {
-            warnings.push(`${colorValues} valores de color se importaran desde el fichero. Si un color viene vacio, se mantiene el existente o se usa el color por defecto en productos nuevos.`);
-        }
-        if (colorNormalized > 0) {
-            warnings.push(`${colorNormalized} colores se normalizaran a formato #rrggbb antes de importar.`);
-        }
     }
 
     async function verifyImportImpact() {
