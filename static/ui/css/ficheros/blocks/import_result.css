@@ -1,0 +1,25 @@
+/* ficheros — resultado de importación
+   Extraído de ficheros.css (refactor). */
+
+/* === RESULT === */
+.fich-result-summary {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.fich-result-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.fich-result-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin: 0 0 8px;
+}
+
+.fich-result-detail {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+

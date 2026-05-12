@@ -1,0 +1,12 @@
+/* =========================
+   6) Drag & drop
+   ========================= */
+
+.tool[draggable="true"] {
+  cursor: grab;
+}
+
+.tool[draggable="true"]:active {
+  cursor: grabbing;
+}
+

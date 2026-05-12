@@ -1,0 +1,13 @@
+/* =========================
+   10) Ghost preview al arrastrar desde sidebar
+   ========================= */
+
+.drag-ghost {
+  position: absolute;
+  pointer-events: none;
+  z-index: 300;
+  opacity: .5;
+  transition: opacity .1s;
+}
+
+

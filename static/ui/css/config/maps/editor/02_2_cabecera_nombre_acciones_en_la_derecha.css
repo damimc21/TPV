@@ -1,0 +1,188 @@
+/* =========================
+   2) Cabecera (nombre + acciones en la derecha)
+   ========================= */
+
+.editor__label {
+  font-size: .9rem;
+  opacity: .75;
+  margin-bottom: 0;
+}
+
+.editorDashboardHeader {
+  position: relative;
+  z-index: 80;
+}
+
+.editorControls {
+  align-items: flex-end;
+  padding: 14px 16px;
+  z-index: 70;
+}
+
+.editorNameField,
+.editorResolutionField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.editorNameField {
+  flex: 1 1 640px;
+  max-width: 860px;
+}
+
+.editorResolutionField {
+  flex: 0 0 340px;
+  margin-left: auto;
+}
+
+.editorResolutionField .tpv-select,
+.editorResolutionField .tpv-select__button {
+  width: 100%;
+}
+
+.editorResolutionField .tpv-select__button {
+  min-height: 44px;
+}
+
+.editor__resolutionSelect[data-ui-select]:not(.tpv-select__native) {
+  opacity: 0;
+}
+
+.editorControls__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.editorIconButton {
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+}
+
+.editorIconButton[disabled] {
+  opacity: .35;
+  cursor: not-allowed;
+  filter: grayscale(40%);
+}
+
+.editorIconButton[disabled]:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.editorIconButton.iconAction--saved {
+  border-color: rgba(16, 185, 129, .5);
+  background: rgba(16, 185, 129, .16);
+}
+
+.editorMapPicker {
+  flex: 0 0 auto;
+}
+
+.editor__nameRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.editor__hint {
+  align-self: center;
+  margin-top: 0;
+  color: #7ddc8a;
+  font-size: .9rem;
+  opacity: .7;
+  min-width: 116px;
+  white-space: nowrap;
+}
+
+.editorNameLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.editor__metaRow {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(420px, 50vw);
+}
+
+.editor__resInline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  white-space: nowrap;
+  position: relative;
+}
+
+
+.editor__selectInline option {
+  background: #0b0f16;
+  color: #e9eefc;
+}
+
+.editor__selectInline:hover {
+  background: rgba(255, 255, 255, .09);
+  border-color: rgba(255, 255, 255, .18);
+}
+
+.editor__selectInline:focus {
+  border-color: rgba(120, 160, 255, .55);
+  box-shadow: 0 0 0 2px rgba(120, 160, 255, .15);
+}
+
+/* Picker pequeño (para resolución) */
+.picker--small .picker__btn {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 14px;
+}
+
+#btnResPicker {
+  width: 130px;
+  /* Hace que no se mueva el layout con los cambios de tamaño en el seleccionador */
+}
+
+.picker--small .picker__drop {
+  top: 44px;
+  min-width: 180px;
+}
+
+/* Grid en cabecera: izquierda (nombre) / derecha (acciones) */
+.editorHead {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: start;
+}
+
+.editorHead__left {
+  min-width: 0;
+}
+
+.editorHead__right {
+  display: flex;
+  gap: 12px;
+  padding-right: 8px;
+  align-items: start;
+}
+
+/* Apilado: Mis mapas + Volver */
+.editorHead__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+

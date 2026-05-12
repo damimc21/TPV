@@ -1,0 +1,4 @@
+/* stock — ajustes de dark mode */
+
+    /* Dark mode SVG icon inversion */
+    .svg-icon { filter: brightness(0) invert(1); }

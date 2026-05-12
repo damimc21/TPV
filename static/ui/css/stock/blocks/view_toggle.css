@@ -1,0 +1,31 @@
+/* stock — toggle de vista cards/tabla */
+
+    /* === VIEW TOGGLE === */
+    .view-toggle {
+        display: flex;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+    }
+    .view-toggle-btn {
+        padding: 8px 12px;
+        background: transparent;
+        border: none;
+        color: #64748b;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+    .view-toggle-btn.active {
+        background: rgba(20, 184, 166, 0.15);
+        color: var(--accent-teal);
+    }
+    .view-toggle-btn:hover:not(.active) {
+        color: #94a3b8;
+        background: rgba(255,255,255,0.03);
+    }
+    .view-toggle-btn svg { width: 18px; height: 18px; }
+

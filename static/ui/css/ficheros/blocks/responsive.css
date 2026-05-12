@@ -1,0 +1,118 @@
+/* ficheros — media queries responsivas
+   Extraído de ficheros.css (refactor). */
+
+/* === RESPONSIVE === */
+@media (max-width: 1220px) {
+  .fich-logs-row--secondary {
+    justify-content: flex-start;
+  }
+
+  .fich-logs-row--secondary .fich-date-presets {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .fich-import-type-group {
+    flex-direction: column;
+  }
+
+  .fich-filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fich-logs-row,
+  .fich-logs-dates {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fich-search-wrapper {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .fich-logs-row--secondary {
+    justify-content: flex-start;
+  }
+
+  .fich-logs-row--secondary .fich-date-presets {
+    justify-content: flex-start;
+  }
+
+  .fich-audit-row,
+  .fich-audit-dates {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fich-audit-row--secondary {
+    justify-content: flex-start;
+  }
+
+  .fich-audit-search,
+  .fich-audit-row--primary .fich-custom-select {
+    flex: 1 1 auto;
+  }
+
+  .fich-filter-input,
+  .fich-select {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .fich-logs-row--primary .fich-select,
+  .fich-audit-row--primary .fich-custom-select {
+    flex: 1 1 auto;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .fich-custom-select {
+    flex: 1 1 auto;
+  }
+
+  .fich-export-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fich-filter-block--department,
+  .fich-custom-select--export {
+    max-width: none;
+    width: 100%;
+  }
+
+  .caja-invoice-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .fich-segmented__item span {
+    padding: 0 8px;
+    font-size: 0.78rem;
+  }
+
+  #modalPreviewInforme.modal {
+    padding: 10px;
+  }
+
+  #modalPreviewInforme .modal-box {
+    max-height: 95vh;
+  }
+
+  #modalPreviewInforme .preview-table-wrap {
+    padding: 0 10px 10px;
+  }
+
+  #modalPreviewInforme .modal-foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  #modalPreviewInforme .modal-foot .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

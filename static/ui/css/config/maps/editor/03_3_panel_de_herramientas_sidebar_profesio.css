@@ -1,0 +1,171 @@
+/* =========================
+   3) Panel de herramientas (sidebar profesional)
+   ========================= */
+
+.editor__panel {
+  padding: 14px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .10);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 160px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+/* ─── Secciones ─── */
+.panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.panel__heading {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgba(255, 255, 255, .35);
+  padding: 2px 4px 0;
+  user-select: none;
+}
+
+.panel__sep {
+  height: 1px;
+  background: rgba(255, 255, 255, .08);
+  margin: 6px 0;
+}
+
+/* ─── Grid de botones ─── */
+.panel__grid {
+  display: grid;
+  gap: 6px;
+}
+
+.panel__grid--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ─── Botón herramienta ─── */
+.tool {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 8px 4px 7px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .04);
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background .14s, border-color .14s, transform .1s;
+}
+
+.tool:hover {
+  background: rgba(255, 255, 255, .10);
+  border-color: rgba(255, 255, 255, .22);
+  transform: scale(1.05);
+  z-index: 20;
+}
+
+.tool.is-active {
+  background: rgba(120, 160, 255, .15);
+  border-color: rgba(120, 160, 255, .4);
+  box-shadow: 0 0 0 1px rgba(120, 160, 255, .15);
+}
+
+.tool.is-placement-active {
+  background: rgba(20, 184, 166, .18);
+  border-color: rgba(20, 184, 166, .55);
+  box-shadow:
+    0 0 0 1px rgba(20, 184, 166, .18),
+    0 10px 28px rgba(20, 184, 166, .12);
+}
+
+.tool--danger {
+  border-color: rgba(255, 80, 80, .25);
+}
+
+.tool--danger:hover {
+  background: rgba(255, 80, 80, .12);
+  border-color: rgba(255, 80, 80, .45);
+}
+
+/* ─── Icono ─── */
+.tool__icon {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 1.35rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.tool__label {
+  display: block;
+  max-width: 100%;
+  color: rgba(255, 255, 255, .68);
+  font-size: .66rem;
+  font-weight: 800;
+  line-height: 1;
+  overflow: hidden;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tool.is-active .tool__label,
+.tool.is-placement-active .tool__label {
+  color: rgba(255, 255, 255, .92);
+}
+
+.tool:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.tool:disabled:hover {
+  background: rgba(255, 255, 255, .04);
+  border-color: rgba(255, 255, 255, .12);
+  transform: none;
+}
+
+/* ─── Tooltip profesional (::before) ─── */
+.tool[data-tip]::before {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(10, 14, 22, .95);
+  border: 1px solid rgba(255, 255, 255, .14);
+  color: rgba(255, 255, 255, .95);
+  font-size: .85rem;
+  font-weight: 600;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s ease;
+  z-index: 500;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .5);
+}
+
+/* Si tiene shortcut: nombre  ·  atajo */
+.tool[data-shortcut]::before {
+  content: attr(data-tip) "   ·   " attr(data-shortcut);
+}
+
+.tool[data-tip]:hover::before {
+  opacity: 1;
+}
+

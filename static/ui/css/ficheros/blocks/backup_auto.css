@@ -1,0 +1,33 @@
+/* ficheros — auto-backup
+   Extraído de ficheros.css (refactor). */
+
+/* === BACKUP AUTO === */
+.fich-backup-auto {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fich-backup-auto h4 {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fich-auto-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fich-auto-status {
+  font-size: 0.78rem;
+  color: #34d399;
+  font-weight: 700;
+}
+

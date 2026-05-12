@@ -1,0 +1,31 @@
+/* =========================
+   1) Layout general
+   ========================= */
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(100%, 1840px);
+  margin: 0 auto;
+  padding: 20px 24px 28px;
+  overscroll-behavior: contain;
+}
+
+.editor__head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  overflow: visible;
+}
+
+.editor__body {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 20px;
+  min-height: calc(100vh - 238px);
+}
+

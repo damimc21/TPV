@@ -1,0 +1,122 @@
+/* =========================
+   9) Modales (reemplazo de alert/confirm/prompt)
+   ========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, .55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn .18s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-card {
+  background: rgba(18, 22, 30, .96);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 18px;
+  padding: 28px 32px 22px;
+  min-width: 340px;
+  max-width: min(460px, 90vw);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .5);
+  animation: modalSlideUp .2s ease;
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, .92);
+}
+
+.modal-message {
+  font-size: .95rem;
+  color: rgba(255, 255, 255, .75);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(0, 0, 0, .25);
+  color: #eee;
+  font-size: .95rem;
+  outline: none;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+}
+
+.modal-input:focus {
+  border-color: rgba(120, 160, 255, .55);
+  box-shadow: 0 0 0 2px rgba(120, 160, 255, .15);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  padding: 9px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06);
+  color: rgba(255, 255, 255, .9);
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+
+.modal-btn:hover {
+  background: rgba(255, 255, 255, .12);
+}
+
+.modal-btn--primary {
+  background: rgba(100, 140, 255, .2);
+  border-color: rgba(100, 140, 255, .4);
+  font-weight: 600;
+}
+
+.modal-btn--primary:hover {
+  background: rgba(100, 140, 255, .3);
+}
+
+.modal-btn--danger {
+  background: rgba(255, 70, 70, .15);
+  border-color: rgba(255, 70, 70, .35);
+}
+
+.modal-btn--danger:hover {
+  background: rgba(255, 70, 70, .25);
+}
+
+

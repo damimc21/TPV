@@ -1,0 +1,207 @@
+/* =========================
+   4) Canvas y elementos
+   ========================= */
+
+.editor__canvasWrap {
+  position: relative;
+  border-radius: 20px;
+  height: 100%;
+  min-height: 560px;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, .08);
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .04), transparent 40%);
+  scrollbar-color: rgba(255, 255, 255, .18) rgba(255, 255, 255, .03);
+}
+
+.marquee {
+  position: absolute;
+  border: 1px dashed rgba(255, 255, 255, .55);
+  background: rgba(120, 160, 255, .14);
+  pointer-events: none;
+  border-radius: 10px;
+  z-index: 99;
+  box-shadow: 0 0 0 1px rgba(120, 160, 255, .28) inset;
+}
+
+/* HTML usa #canvas con clase editor__canvas */
+.editor__canvas {
+  position: relative;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  width: 100%;
+  min-height: 560px;
+  /* como antes */
+  height: 100%;
+  /* para que rellene el wrap si tiene altura */
+}
+
+.editor__canvas.is-placement-ready {
+  cursor: crosshair;
+}
+
+.editor__world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  --itemScale: 1;
+
+  background:
+    radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px);
+  background-size: 22px 22px;
+
+  border: 1px solid rgba(255, 255, 255, .18);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .4) inset;
+}
+
+/* Elementos colocados */
+.mapItem {
+  position: absolute;
+  user-select: none;
+  touch-action: none;
+  cursor: grab;
+  box-sizing: border-box;
+}
+
+.mapItem.has-skin {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.mapItem.has-skin-error {
+  background: rgba(255, 255, 255, .10);
+  border-color: rgba(255, 255, 255, .18);
+}
+
+.mapItem.is-selected {
+  outline: 2px solid rgba(255, 255, 255, .35);
+  border-radius: 12px;
+}
+
+.item__skin {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.mapItem.has-skin .item__label {
+  color: rgba(255, 255, 255, .96);
+  font-weight: 900;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, .65),
+    0 0 5px rgba(0, 0, 0, .35);
+}
+
+.item--planta.has-skin .item__skin {
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+}
+
+/* número centrado general */
+.item__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(calc(-1 * var(--rot, 0deg)));
+  font-size: calc(16px * var(--itemScale));
+  font-weight: 700;
+  opacity: .95;
+  pointer-events: none;
+  user-select: none;
+  color: rgba(255, 255, 255, .95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+
+/* Tipos de item */
+.item--mesa_normal {
+  width: calc(70px * var(--itemScale));
+  height: calc(70px * var(--itemScale));
+  border-radius: calc(14px * var(--itemScale));
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+
+.item--mesa_grande {
+  width: calc(140px * var(--itemScale));
+  height: calc(70px * var(--itemScale));
+  border-radius: calc(14px * var(--itemScale));
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+
+
+.item--taburete {
+  width: calc(54px * var(--itemScale));
+  height: calc(54px * var(--itemScale));
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+
+.item--llevar {
+  width: calc(58px * var(--itemScale));
+  height: calc(58px * var(--itemScale));
+  border-radius: calc(16px * var(--itemScale));
+  background: rgba(255, 255, 255, .08);
+  border: 1px dashed rgba(255, 255, 255, .22);
+}
+
+.item--planta {
+  width: calc(35px * var(--itemScale));
+  height: calc(35px * var(--itemScale));
+  background-image: url("/static/ui/img/map_icons/planta.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.mapItem.has-skin {
+  background: transparent;
+  background-image: none;
+  border-color: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.mapItem.has-skin.is-selected {
+  outline: none;
+  border-radius: 0;
+}
+
+.mapItem.has-skin.is-selected .item__skin {
+  filter:
+    drop-shadow(1px 0 0 rgba(255, 255, 255, .35))
+    drop-shadow(-1px 0 0 rgba(255, 255, 255, .35))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, .35))
+    drop-shadow(0 -1px 0 rgba(255, 255, 255, .35));
+}
+
+.mapItem.has-skin-error.is-selected {
+  outline: 2px solid rgba(255, 255, 255, .35);
+  border-radius: 12px;
+}
+

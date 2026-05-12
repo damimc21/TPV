@@ -1,0 +1,519 @@
+/* ============================================================
+   Catálogo — estilos base / SPA
+   Extraído de catalogo.css (refactor).
+   ============================================================ */
+
+/* ========================================
+   Catálogo - SPA Styles
+   ======================================== */
+
+.catalogo-app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 18px;
+    scrollbar-gutter: stable;
+    /* Previene saltos laterales al aparecer/desaparecer el scroll */
+}
+
+.catalogo-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.catalogo-tabs--section {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 10px;
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    background: var(--glass-bg);
+    box-shadow: var(--glass-shadow);
+}
+
+.tab-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--muted);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+}
+
+.tab-btn.is-active {
+    background: rgba(20, 184, 166, 0.16);
+    color: #5eead4;
+    border-color: rgba(20, 184, 166, 0.42);
+    box-shadow: inset 0 0 0 1px rgba(20, 184, 166, 0.08);
+}
+
+.tab-icon {
+    font-size: 1.1rem;
+}
+
+/* --- Contenido --- */
+.catalogo-content {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+.tab-view {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Tablas --- */
+.table-container {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-y: auto;
+    overflow-x: auto;
+    flex: 1;
+}
+
+.catalogo-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.catalogo-table th,
+.catalogo-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.catalogo-table th {
+    background: rgba(0, 0, 0, 0.3);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+.catalogo-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.catalogo-table td {
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+/* --- Estados (Activo/Inactivo) --- */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.status-badge.active {
+    background: rgba(80, 200, 120, 0.15);
+    color: #50c878;
+    border: 1px solid rgba(80, 200, 120, 0.3);
+}
+
+.status-badge.inactive {
+    background: rgba(255, 99, 71, 0.15);
+    color: #ff6347;
+    border: 1px solid rgba(255, 99, 71, 0.3);
+}
+
+/* --- Acciones de Fila --- */
+.col-actions {
+    text-align: right;
+    white-space: nowrap !important;
+}
+
+/* El propio td de acciones se comporta como flex para alinear items en una linea */
+.catalogo-table td.col-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    width: 160px;
+    /* Suficiente para 3 botones + gap */
+    min-width: 160px;
+}
+
+.action-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.action-btn img {
+    width: 18px;
+    height: 18px;
+    display: block;
+    pointer-events: none;
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+[data-theme="light"] .action-btn img {
+    filter: none;
+    opacity: 0.7;
+}
+
+.action-btn:hover img {
+    opacity: 1;
+}
+
+/* Iconos en pestañas y botones generales */
+.tab-btn img,
+.subtab-btn img,
+.btn img {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin-right: 8px;
+    filter: brightness(0) invert(1);
+}
+
+.card__icon img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    transition: transform 0.3s ease;
+}
+
+[data-theme="light"] :is(.tab-btn, .subtab-btn, .btn, .card__icon) img {
+    filter: none;
+    opacity: 0.8;
+}
+
+/* Efecto premium para los iconos de las cards */
+.card:hover .card__icon img {
+    transform: scale(1.1);
+    filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+}
+
+/* --- Nuevos Filtros Popover (Rediseño Premium) --- */
+/* catalogo-filters → usa dashboard-toolbar de section-layout.css */
+/* search-wrapper, search-input, .icon → ver section-layout.css */
+.catalogo-filters {
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 200;
+}
+
+.filter-button-wrapper {
+    position: relative;
+}
+
+.btn--filter-toggle {
+    height: 38px;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn--filter-toggle img {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+.btn--filter-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.filter-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 260px;
+    background: #111827;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    animation: popoverFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popoverFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.filter-popover.is-active {
+    display: flex;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.filter-group label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.08em;
+    margin-left: 2px;
+    margin-bottom: 2px;
+}
+
+/* --- Custom Select Component --- */
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select-trigger {
+    height: 34px;
+    /* Slightly more compact */
+    padding: 0 6px 0 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-select-trigger:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.custom-select-trigger span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.custom-select-trigger img {
+    width: 12px;
+    height: 12px;
+    opacity: 0.3;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 2px 2px 2px 8px;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    margin-left: 6px;
+    box-sizing: content-box;
+}
+
+.custom-select.is-active .custom-select-trigger img {
+    transform: rotate(180deg);
+    opacity: 0.6;
+}
+
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #1a202c;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 1100;
+    display: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.custom-select.is-active .custom-select-options {
+    display: block;
+}
+
+.custom-option {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.custom-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.custom-option.is-selected {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+
+/* Botón Dirección / Ordenar */
+.btn-sort-option {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-sort-option img {
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+    filter: brightness(0) invert(1);
+}
+
+.filter-popover-footer {
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    gap: 8px;
+}
+
+.btn--clear-filters,
+.btn--apply-filters {
+    flex: 1;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    border: none;
+}
+
+.btn--clear-filters {
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.btn--clear-filters:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.btn--apply-filters {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn--apply-filters:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn--apply-filters:active {
+    transform: translateY(0);
+}
+
+/* Modo LIGERO */
+[data-theme="light"] .filter-popover,
+[data-theme="light"] .custom-select-options {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .custom-select-trigger,
+[data-theme="light"] .btn-sort-option {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #111827;
+}
+
+[data-theme="light"] .custom-option {
+    color: #374151;
+}
+
+[data-theme="light"] .custom-option:hover {
+    background: var(--primary);
+    color: white;
+}
+
+[data-theme="light"] .search-icon,
+[data-theme="light"] .btn--filter-toggle img,
+[data-theme="light"] .btn-sort-option img,
+[data-theme="light"] .custom-select-trigger img {
+    filter: none;
+    opacity: 0.6;
+}
+
+.action-btn:hover img {
+    opacity: 1;
+}
+
+.action-btn--delete:hover {
+    background: rgba(255, 71, 87, 0.15);
+    border-color: #ff4757;
+}
+

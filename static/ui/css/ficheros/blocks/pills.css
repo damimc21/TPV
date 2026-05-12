@@ -1,0 +1,29 @@
+/* ficheros — pills de tipo y nivel de log
+   Extraído de ficheros.css (refactor). */
+
+/* === TYPE PILLS === */
+.fich-type-pill {
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.fich-type-pill--manual { background: rgba(59, 130, 246, 0.12); color: #60a5fa; }
+.fich-type-pill--auto { background: rgba(16, 185, 129, 0.12); color: #34d399; }
+
+/* Log level pills */
+.fich-level-pill {
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.fich-level-INFO { background: rgba(59, 130, 246, 0.12); color: #60a5fa; }
+.fich-level-WARN { background: rgba(251, 191, 36, 0.12); color: #fbbf24; }
+.fich-level-ERROR { background: rgba(248, 113, 113, 0.12); color: #f87171; }
+.fich-level-CRITICAL { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+

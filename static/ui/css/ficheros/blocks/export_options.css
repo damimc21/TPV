@@ -1,0 +1,143 @@
+/* ficheros — opciones de exportación
+   Extraído de ficheros.css (refactor). */
+
+/* === EXPORT OPTIONS === */
+.fich-export-options {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.fich-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fich-checkbox input[type="checkbox"] {
+  accent-color: #3b82f6;
+  width: 16px;
+  height: 16px;
+}
+
+.fich-export-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 16px;
+  align-items: end;
+  max-width: 920px;
+}
+
+.fich-filter-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fich-filter-block--department {
+  max-width: 360px;
+}
+
+.fich-filter-label {
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fich-segmented {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+    rgba(0, 0, 0, 0.18);
+}
+
+.fich-segmented__item {
+  min-width: 0;
+  cursor: pointer;
+}
+
+.fich-segmented__item input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fich-segmented__item span {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0 12px;
+  border-radius: 10px;
+  color: rgba(226, 232, 240, 0.68);
+  font-size: 0.82rem;
+  font-weight: 850;
+  white-space: nowrap;
+  transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.fich-segmented__item:hover span {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.fich-segmented__item input:checked + span {
+  color: #eaf4ff;
+  background:
+    linear-gradient(180deg, rgba(59, 130, 246, 0.32), rgba(59, 130, 246, 0.18)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 8px 18px rgba(37, 99, 235, 0.16);
+}
+
+.fich-custom-select--export {
+  width: min(100%, 360px);
+  flex: none;
+}
+
+.fich-custom-select--export .fich-custom-select__trigger {
+  height: 46px;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
+    rgba(0, 0, 0, 0.18);
+  font-size: 0.9rem;
+}
+
+.fich-card--export .fich-custom-select__menu,
+.fich-card--export .fich-export__menu {
+  z-index: 4000;
+}
+
+.fich-card--export .fich-custom-select__menu.is-floating-layer,
+.fich-card--export .fich-export__menu.is-floating-layer {
+  position: fixed;
+  top: var(--floating-top);
+  left: var(--floating-left);
+  right: auto;
+  bottom: auto;
+  width: var(--floating-width);
+  max-width: calc(100vw - 24px);
+  z-index: 4000;
+}
+
+.fich-filter-summary {
+  margin: 14px 0 0;
+  color: rgba(226, 232, 240, 0.66);
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+

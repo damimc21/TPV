@@ -1,0 +1,46 @@
+/* =========================
+   8) Guías de alineación
+   ========================= */
+
+.align-guide-x,
+.align-guide-y {
+  position: absolute;
+  background: rgba(120, 160, 255, .8);
+  pointer-events: none;
+  z-index: 200;
+  display: block;
+}
+
+.align-guide-x {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+}
+
+.align-guide-y {
+  height: 1px;
+  left: 0;
+  right: 0;
+}
+
+
+/* Modo pan (mover mapa) */
+.editor__canvas.pan,
+.editor__world.pan {
+  cursor: grab;
+}
+
+.editor__canvas.pan:active,
+.editor__world.pan:active {
+  cursor: grabbing;
+}
+
+
+/* Etiquetas con dos líneas (ej: prefijo + número) */
+.item__label--split {
+  white-space: pre-line;
+  line-height: 1.05;
+  text-align: center;
+}
+
+

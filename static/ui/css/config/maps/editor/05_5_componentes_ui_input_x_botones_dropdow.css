@@ -1,0 +1,231 @@
+/* =========================
+   5) Componentes UI (input X, botones, dropdown)
+   ========================= */
+
+.editor__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(0, 0, 0, .18);
+  color: inherit;
+  outline: none;
+}
+
+.editor__input:focus {
+  border-color: var(--accent-teal, #14b8a6);
+  background: rgba(0, 0, 0, .32);
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, .1);
+}
+
+/* Input con X dentro */
+.inputWrap {
+  display: block;
+  position: relative;
+  flex: 1 1 420px;
+  width: auto;
+  max-width: 620px;
+  min-width: 240px;
+}
+
+.inputWrap .editor__input {
+  padding-right: 44px;
+}
+
+/* Cancelar (X) */
+.inputWrap__clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06);
+  color: inherit;
+  cursor: pointer;
+}
+
+.inputWrap__clear:hover {
+  background: rgba(255, 255, 255, .12);
+}
+
+/* Botón icono (guardar) */
+.iconAction {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Botón guardar contextual */
+.iconAction[disabled] {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.iconAction--saved {
+  border-color: rgba(80, 255, 120, .35);
+  background: rgba(80, 255, 120, .10);
+}
+
+.iconAction:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  filter: grayscale(40%);
+}
+
+.iconAction:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Borrar */
+.iconAction--danger {
+  border-color: rgba(255, 80, 80, .35);
+}
+
+.iconAction--danger:hover {
+  background: rgba(255, 80, 80, .15);
+}
+
+
+/* Dropdown “Mis mapas” */
+.picker {
+  position: relative;
+}
+
+.picker__btn {
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.picker__chevron {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  opacity: .85;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform .18s ease;
+}
+
+.picker.is-drop-open .picker__chevron {
+  transform: rotate(225deg) translateY(-1px);
+}
+
+.picker__drop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 260px;
+  width: max-content;
+  max-height: min(320px, calc(100vh - 220px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .22) transparent;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(15, 23, 42, .96);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+  padding: 8px;
+  z-index: 900;
+  transform: translateY(-6px) scale(.98);
+  opacity: 0;
+  transition:
+    transform .18s ease,
+    opacity .25s ease;
+  pointer-events: none;
+}
+
+.picker__drop::-webkit-scrollbar {
+  width: 10px;
+}
+
+.picker__drop::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .18);
+  border-radius: 999px;
+}
+
+.picker__drop.is-open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.picker__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.picker__header {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, .10);
+  font-size: .82rem;
+  font-weight: 800;
+  color: rgba(180, 200, 255, .85);
+  text-decoration: none;
+  transition: color .14s;
+}
+
+.picker__header:hover {
+  color: rgba(200, 220, 255, 1);
+}
+
+.picker__item:hover {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 255, 255, .08);
+}
+
+.picker__empty {
+  padding: 10px 12px;
+  color: rgba(255, 255, 255, .58);
+  font-size: .88rem;
+}
+
+/* Resolución debajo del nombre */
+.editor__labelSmall {
+  font-size: .85rem;
+  opacity: .75;
+  white-space: nowrap;
+}
+
+.editor__select:hover {
+  background: rgba(0, 0, 0, .45);
+}
+
+.editor__select:focus {
+  border-color: rgba(120, 160, 255, .5);
+  box-shadow: 0 0 0 2px rgba(120, 160, 255, .15);
+}
+
+.picker__item.is-current {
+  font-weight: 600;
+  background: rgba(120, 160, 255, .08);
+  border-left: 3px solid rgba(120, 160, 255, .6);
+  padding-left: 11px;
+}
+

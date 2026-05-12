@@ -1,0 +1,310 @@
+/* ============================================================
+   Catálogo — modales
+   Extraído de catalogo.css (refactor).
+   ============================================================ */
+
+/* ========================================
+   MODALES (Pop-ups de edición)
+   ======================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    /* Centrado vertical */
+    justify-content: center;
+    /* Centrado horizontal */
+    padding: 24px;
+    box-sizing: border-box;
+    z-index: 9999;
+}
+
+.modal {
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: calc(100vh - 48px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal--w600 {
+    max-width: 600px;
+}
+
+.modal--w800 {
+    max-width: 800px;
+}
+
+.modal--confirm {
+    max-width: 360px;
+}
+
+/* Reducido de 400px a 360px */
+
+@keyframes modalPop {
+    from {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal__header {
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal__header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.modal__close {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal__body {
+    padding: 24px 28px !important;
+    /* Ahora respira */
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    /* Espacio entre grupos de formulario */
+    flex: 1 !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+}
+
+/* Estilos para Modales de Confirmación/Alerta */
+.modal__body--center {
+    text-align: center;
+    padding: 24px 20px;
+    /* Reducido de 30px */
+    align-items: center;
+}
+
+.modal-dialog-icon {
+    width: 60px;
+    /* Reducido de 64px */
+    height: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    /* Reducido de 20px */
+}
+
+.modal-dialog-icon img {
+    width: 28px;
+    height: 28px;
+    filter: brightness(0) invert(1) !important;
+    opacity: 1 !important;
+}
+
+.modal-dialog-icon--danger {
+    background: rgba(220, 53, 69, 0.25);
+}
+
+.modal-dialog-icon--lock {
+    background: rgba(0, 122, 255, 0.25);
+}
+
+.modal-dialog-icon--warning {
+    background: rgba(255, 193, 7, 0.15);
+}
+
+.modal-dialog-text {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 18px 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.05);
+    flex: 0 0 auto;
+}
+
+/* Ajustes finos para móviles */
+@media (max-width: 520px) {
+    .modal-overlay {
+        padding: 14px 10px;
+    }
+
+    .modal__body {
+        padding: 16px;
+    }
+
+    .modal__footer,
+    .modal__header {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* --- Formularios internos Modal --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1 1 150px;
+    min-width: 0;
+}
+
+/* Sistema de columnas simple para form-row (con gap 15px) */
+.col-6 {
+    flex: 0 0 calc(50% - 7.5px) !important;
+    width: calc(50% - 7.5px) !important;
+    min-width: 0 !important;
+}
+
+.col-3 {
+    flex: 0 0 calc(25% - 11.25px) !important;
+    width: calc(25% - 11.25px) !important;
+    min-width: 0 !important;
+}
+
+.prod-active-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 34px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* Fila de filtros compacta (Específica para Modificadores y otros buscadores) */
+.filters-row--compact {
+    align-items: flex-end;
+    gap: 8px;
+    flex-wrap: nowrap;
+    /* Forzar línea única en pantallas de escritorio */
+    overflow-x: auto;
+    /* Permitir scroll si no caben realmente */
+    padding-bottom: 5px;
+}
+
+.filters-row--compact .form-group {
+    flex: 1 1 auto;
+    min-width: 80px;
+}
+
+/* El buscador se queda fijo para que no baile al ocultar/mostrar filtros secundarios */
+.filters-row--compact .form-group--search {
+    flex: 0 0 240px;
+}
+
+/* Los selects se achican un poco */
+.filters-row--compact .form-group--filter {
+    flex: 1 1 160px;
+}
+
+.filters-row--compact .form-group.flex-auto {
+    flex: 0 0 auto;
+    min-width: unset;
+}
+
+.filters-row--compact .form-control {
+    padding: 6px 8px;
+    /* Un poco más compacto */
+    font-size: 0.9rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 10px;
+    /* Más espacio bajo la etiqueta */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-control {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+/* Ocultar flechas en inputs numéricos */
+.form-control[type=number]::-webkit-inner-spin-button,
+.form-control[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form-control[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+}
+
+.form-row .form-check {
+    padding-top: 18px;
+    margin-bottom: 0;
+}
+
+.form-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
