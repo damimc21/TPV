@@ -10,6 +10,17 @@ import {
     parseCsvText,
     parseDecimalValue,
 } from './parsing.js';
+import {
+    buildTemplateUrl,
+    importRows,
+    previewUploadedFile,
+    verifyImportRows,
+} from './api.js';
+import {
+    escHtml,
+    formatNameSample,
+    safeClassName,
+} from './render_utils.js';
 
 /* ============================================================
    IMPORTAR PRODUCTOS / INVENTARIO - CSV y Excel
@@ -24,10 +35,6 @@ import {
     let verification = null;
     let fillProductDisplayNames = true;
     let hasBlockingErrors = false;
-
-    function getCookie(name) {
-        return window.TpvUtils ? window.TpvUtils.getCookie(name) : null;
-    }
 
     function expectedHeaders() {
         return importType === 'productos' ? HEADERS_PRODUCTOS : HEADERS_INVENTARIO;
@@ -114,18 +121,7 @@ import {
     }
 
     async function parseUploadedFile(file) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('tipo', importType);
-
-        const resp = await fetch('/api/ficheros/importar-previsualizar/', {
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCookie('csrftoken') },
-            body: formData,
-        });
-        const data = await resp.json();
-        if (!resp.ok) throw new Error(data.error || 'No se pudo previsualizar el fichero');
-
+        const data = await previewUploadedFile(file, importType);
         parsedHeaders = (data.headers || []).map(normalizeHeader);
         parsedRows = (data.rows || []).map((row, index) => ({ ...row, _line: index + 2 }));
         validateRows();
@@ -421,21 +417,7 @@ import {
         if (parsedRows.length === 0 || hasBlockingErrors) return;
 
         try {
-            const resp = await fetch('/api/ficheros/importar-verificar/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                body: JSON.stringify({
-                    tipo: importType,
-                    rows: parsedRows.map(cleanRowForVerification),
-                }),
-            });
-            const data = await resp.json();
-            if (!resp.ok) throw new Error(data.error || 'No se pudo verificar el fichero');
-
-            verification = data;
+            verification = await verifyImportRows(importType, parsedRows.map(cleanRowForVerification));
             applyVerification();
             addVerificationWarnings();
         } catch (err) {
@@ -516,12 +498,6 @@ import {
                 : 'Se crearan automaticamente al importar filas validas que los usen.';
             warnings.push(`${summary.proveedores_nuevos} proveedores ${verb}${names ? `: ${names}.` : '.'} ${hint}`);
         }
-    }
-
-    function formatNameSample(names, total) {
-        if (!Array.isArray(names) || names.length === 0) return '';
-        const shown = names.slice(0, 5).join(', ');
-        return total > names.length ? `${shown}...` : shown;
     }
 
     function renderImpactSummary() {
@@ -623,10 +599,6 @@ import {
             <span class="fich-impact-badge fich-impact-badge--${impactClass}">${escHtml(row._impactLabel || 'OK')}</span>
             ${notes ? `<small>${escHtml(notes)}</small>` : ''}
         </td>`;
-    }
-
-    function safeClassName(value) {
-        return String(value || '').replace(/[^a-z0-9_-]/gi, '') || 'ok';
     }
 
     function showPreview() {
@@ -733,31 +705,16 @@ import {
         btn.disabled = true;
         btn.textContent = 'Importando...';
 
-        const endpoint = importType === 'productos'
-            ? '/api/ficheros/importar-productos/'
-            : '/api/ficheros/importar-inventario/';
-
         try {
-            const resp = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                body: JSON.stringify({
-                    rows: validRows.map(cleanRowForImport),
-                    opciones: {
-                        rellenar_nombres_producto: fillProductDisplayNames,
-                    },
-                }),
+            const result = await importRows(importType, validRows.map(cleanRowForImport), {
+                rellenar_nombres_producto: fillProductDisplayNames,
             });
-
-            const data = await resp.json();
+            const data = result.data;
 
             document.getElementById('stepPreview').classList.add('hidden');
             document.getElementById('stepResult').classList.remove('hidden');
 
-            if (resp.ok) {
+            if (result.ok) {
                 document.getElementById('resultSummary').innerHTML = `
                     <div class="fich-result-icon">OK</div>
                     <h3 class="fich-result-title">Importacion completada</h3>
@@ -786,15 +743,11 @@ import {
 
     window.descargarPlantillaFormato = (event, formato) => {
         event.stopPropagation();
-        window.location.href = `/api/ficheros/importar-plantilla/?tipo=${encodeURIComponent(importType)}&format=${encodeURIComponent(formato)}`;
+        window.location.href = buildTemplateUrl(importType, formato);
     };
 
     window.descargarPlantilla = () => {
-        window.location.href = `/api/ficheros/importar-plantilla/?tipo=${encodeURIComponent(importType)}&format=csv`;
+        window.location.href = buildTemplateUrl(importType, 'csv');
     };
 
-    function escHtml(str) {
-        if (str === null || str === undefined) return '';
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
 })();
