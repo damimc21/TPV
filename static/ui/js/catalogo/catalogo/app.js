@@ -1,4 +1,13 @@
 import { initCatalogoExtras } from './extras.js';
+import {
+    deleteDepartamentoApi,
+    deleteProductoApi,
+    fetchDepartamentos,
+    fetchProductos,
+    saveDepartamentoApi,
+    saveProductoApi,
+} from './api.js';
+import { escapeHtml, getCookie } from './utils.js';
 
 /* ============================================================
    GESTIÓN DEL CATÁLOGO TPV (SPA)
@@ -438,9 +447,7 @@ function initCatalogoApp() {
     async function loadDepartamentos() {
         const tbody = document.getElementById('tbody-departamentos');
         try {
-            const resp = await fetch('/api/departamentos/');
-            if (!resp.ok) throw new Error('Error en API departamentos');
-            departamentosData = await resp.json();
+            departamentosData = await fetchDepartamentos();
             isInitialLoadDepto = false;
             updateDeptSelects();
             renderDepartamentos();
@@ -533,18 +540,8 @@ function initCatalogoApp() {
         }
 
         const payload = { nombre, activo };
-        const method = id ? 'PUT' : 'POST';
-        const url = id ? `/api/departamentos/${id}/` : '/api/departamentos/';
-
         try {
-            const resp = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify(payload)
-            });
+            const resp = await saveDepartamentoApi(id, payload);
 
             if (resp.ok) {
                 closeModal('modalDepartamento');
@@ -585,10 +582,7 @@ function initCatalogoApp() {
         if (!confirmed) return;
 
         try {
-            const resp = await fetch(`/api/departamentos/${id}/`, {
-                method: 'DELETE',
-                headers: { 'X-CSRFToken': getCookie('csrftoken') }
-            });
+            const resp = await deleteDepartamentoApi(id);
             if (resp.ok) {
                 loadDepartamentos();
             } else {
@@ -603,9 +597,7 @@ function initCatalogoApp() {
     async function loadProductos() {
         const tbody = document.getElementById('tbody-productos');
         try {
-            const resp = await fetch('/api/productos/');
-            if (!resp.ok) throw new Error('Error en API productos');
-            productosData = await resp.json(); // Cache
+            productosData = await fetchProductos(); // Cache
             isInitialLoadProd = false;
             renderProductos();
 
@@ -836,18 +828,8 @@ function initCatalogoApp() {
             es_configurable
         };
 
-        const method = id ? 'PUT' : 'POST';
-        const url = id ? `/api/productos/${id}/` : '/api/productos/';
-
         try {
-            const resp = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify(payload)
-            });
+            const resp = await saveProductoApi(id, payload);
 
             if (resp.ok) {
                 closeModal('modalProducto');
@@ -878,12 +860,7 @@ function initCatalogoApp() {
         if (!confirmed) return;
 
         try {
-            const resp = await fetch(`/api/productos/${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken')
-                }
-            });
+            const resp = await deleteProductoApi(id);
             if (resp.ok) {
                 loadProductos();
             } else {
@@ -894,21 +871,6 @@ function initCatalogoApp() {
         }
     };
 
-    function getCookie(name) {
-        return window.TpvUtils ? window.TpvUtils.getCookie(name) : null;
-    }
-
-    function escapeHtml(unsafe) {
-        if (!unsafe) return '';
-        return unsafe
-            .toString()
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
 }
 
 if (document.readyState === 'loading') {
@@ -916,7 +878,3 @@ if (document.readyState === 'loading') {
 } else {
     initCatalogoApp();
 }
-
-
-
-
