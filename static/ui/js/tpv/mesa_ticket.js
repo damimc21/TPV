@@ -281,16 +281,15 @@ function actualizarUIBotonInvita() {
     const btnInvita = document.getElementById("btnInvita");
     if (!btnInvita) return;
 
-    const seleccionadas = getLineasSeleccionadasActivas();
-    let objetivo = (seleccionadas.length === 0) ? tpvState.lineas.filter(l => !l.anulado) : seleccionadas;
-
-    if (objetivo.length === 0) {
-        btnInvita.textContent = "🎁 Invitar";
+    const label = btnInvita.querySelector(".accion__label");
+    if (label) {
+        label.textContent = btnInvita.dataset.labelFull || "Invitar";
+        if (typeof window.adaptActionLabels === "function") {
+            window.adaptActionLabels();
+        }
         return;
     }
-
-    const todosInvitados = objetivo.every(l => l.descuento === 100);
-    btnInvita.textContent = todosInvitados ? "❌ Invitar" : "🎁 Invitar";
+    btnInvita.textContent = btnInvita.dataset.labelFull || "Invitar";
 }
 
 // Muestra los totales en la parte inferior del ticket

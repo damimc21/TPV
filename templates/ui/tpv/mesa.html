@@ -1,5 +1,5 @@
 {% extends "ui/base_sinlateral.html" %}
-{% load i18n static %}
+{% load i18n static tpv_icons %}
 
 {% block title %}{% blocktrans %}Mesa {{ numero }}{% endblocktrans %}{% endblock %}
 
@@ -77,11 +77,11 @@
     <!-- Barra de botones integrada -->
     <div class="calc__barra">
       <button class="calc__barraBtn" type="button" id="btnMesa">
-        🪑
+        {% icon "armchair" cls="icono icono--btn" %}
         {% trans "Mesa" %}
       </button>
       <button class="calc__barraBtn" type="button" id="btnTraspasar">
-        ↔️
+        {% icon "arrow-left-right" cls="icono icono--btn" %}
         {% trans "Traspasar" %}
       </button>
     </div>
@@ -118,91 +118,87 @@
 
   <!-- ═══ ACCIONES TPV (derecha, altura completa) ═══ -->
   <div class="mesa__acciones">
-    <button class="accion accion--cobrar" type="button" id="btnCobrar">
-      💰 {% trans "Total" %}
+    <button class="accion accion--cobrar" type="button" id="btnCobrar" data-label-full="{% trans 'Total' %}" data-label-short="{% trans 'Total' %}">
+      {% icon "hand-coins" cls="icono icono--btn" %}
+      <span class="accion__label">{% trans "Total" %}</span>
     </button>
-    <button class="accion accion--comprobante" type="button" id="btnComprobante">
-      🧾 {% trans "Comprobante" %}
+    <button class="accion accion--comprobante" type="button" id="btnComprobante" data-label-full="{% trans 'Comprobante' %}" data-label-short="{% trans 'Comp.' %}">
+      {% icon "receipt-text" cls="icono icono--btn" %}
+      <span class="accion__label">{% trans "Comprobante" %}</span>
     </button>
 
     <div class="acciones__fila acciones__fila--mt">
-      <button class="accion" type="button" id="btnReimprimir">
-        🖨️
-        {% trans "Reimpr." %}
+      <button class="accion" type="button" id="btnReimprimir" data-label-full="{% trans 'Reimpr.' %}" data-label-short="{% trans 'Reimp.' %}">
+        {% icon "printer" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Reimpr." %}</span>
       </button>
-      <button class="accion" type="button" id="btnFactura">
-        📄
-        {% trans "Factura" %}
+      <button class="accion" type="button" id="btnFactura" data-label-full="{% trans 'Factura' %}" data-label-short="{% trans 'Fact.' %}">
+        {% icon "notepad-text" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Factura" %}</span>
       </button>
     </div>
     <div class="acciones__fila">
-      <button class="accion" type="button" id="btnDescuento">
-        🏷️
-        {% trans "Dto." %}
+      <button class="accion" type="button" id="btnDescuento" data-label-full="{% trans 'Dto.' %}" data-label-short="{% trans 'Dto.' %}">
+        {% icon "tag" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Dto." %}</span>
       </button>
-      <button class="accion" type="button" id="btnInvita">
-        🎁
-        {% trans "Invitar" %}
+      <button class="accion" type="button" id="btnInvita" data-label-full="{% trans 'Invitar' %}" data-label-short="{% trans 'Inv.' %}">
+        {% icon "gift" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Invitar" %}</span>
       </button>
     </div>
-    <button class="accion accion--peligro" type="button" id="btnAnularLinea">
-      ✂️
-      {% trans "Anular" %}
+    <button class="accion accion--peligro" type="button" id="btnAnularLinea" data-label-full="{% trans 'Anular' %}" data-label-short="{% trans 'Anul.' %}">
+      {% icon "scissors" cls="icono icono--btn" %}
+      <span class="accion__label">{% trans "Anular" %}</span>
     </button>
     <div class="acciones__sep"></div>
-    <button class="accion accion--peligro" type="button" id="btnBorrarComanda">
-      🗑️
-      {% trans "Borrar comanda" %}
+    <button class="accion accion--peligro" type="button" id="btnBorrarComanda" data-label-full="{% trans 'Borrar comanda' %}" data-label-short="{% trans 'Borrar' %}">
+      {% icon "trash-2" cls="icono icono--btn" %}
+      <span class="accion__label">{% trans "Borrar comanda" %}</span>
     </button>
     <div class="acciones__fila">
-      <button class="accion" type="button" id="btnSepararProductos">
-        🔀
-        {% trans "Separar" %}
+      <button class="accion" type="button" id="btnSepararProductos" data-label-full="{% trans 'Separar' %}" data-label-short="{% trans 'Sep.' %}">
+        {% icon "split" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Separar" %}</span>
       </button>
-      <button class="accion" type="button" id="btnJuntarProductos">
-        🔗
-        {% trans "Juntar" %}
-      </button>
-    </div>
-    <div class="acciones__fila">
-      <button class="accion" type="button" id="btnSideComentario">
-        💬
-        {% trans "Comentario" %}
-      </button>
-      <button class="accion" type="button" id="btnSideSuplemento">
-        ➕
-        {% trans "Suplemento" %}
+      <button class="accion" type="button" id="btnJuntarProductos" data-label-full="{% trans 'Juntar' %}" data-label-short="{% trans 'Junt.' %}">
+        {% icon "merge" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Juntar" %}</span>
       </button>
     </div>
     <div class="acciones__fila">
-      <button class="accion" type="button" id="btnCliente">
-        👤
-        {% trans "Cliente" %}
+      <button class="accion" type="button" id="btnSideComentario" title="{% trans 'Comentario' %}" data-label-full="{% trans 'Comentario' %}" data-label-short="{% trans 'Coment.' %}">
+        {% icon "message-circle-more" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Comentario" %}</span>
       </button>
-      <button class="accion" id="btnNota">
-        📝
-        {% trans "Nota" %}
+      <button class="accion" type="button" id="btnSideSuplemento" title="{% trans 'Suplemento' %}" data-label-full="{% trans 'Suplemento' %}" data-label-short="{% trans 'Supl.' %}">
+        {% icon "circle-plus" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Suplemento" %}</span>
       </button>
     </div>
+    <button class="accion" type="button" id="btnCliente" data-label-full="{% trans 'Cliente' %}" data-label-short="{% trans 'Cliente' %}">
+      {% icon "user-round" cls="icono icono--btn" %}
+      <span class="accion__label">{% trans "Cliente" %}</span>
+    </button>
     <div class="acciones__sep"></div>
-    <button class="accion" type="button" id="btnDividirCuenta">
-      ➗
-      {% trans "Dividir cuenta" %}
+    <button class="accion" type="button" id="btnDividirCuenta" data-label-full="{% trans 'Dividir cuenta' %}" data-label-short="{% trans 'Dividir' %}">
+      {% icon "chart-pie" cls="icono icono--btn" %}
+      <span class="accion__label">{% trans "Dividir cuenta" %}</span>
     </button>
     <div class="acciones__fila">
-      <button class="accion" type="button" id="btnCajon">
-        🗄️
-        {% trans "Cajón" %}
+      <button class="accion" type="button" id="btnCajon" data-label-full="{% trans 'Cajón' %}" data-label-short="{% trans 'Cajón' %}">
+        {% icon "drawer" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Cajón" %}</span>
       </button>
-      <button class="accion" type="button" id="btnOpciones">
-        ⚙️
-        {% trans "Opciones" %}
+      <button class="accion" type="button" id="btnOpciones" title="{% trans 'Opciones' %}" data-label-full="{% trans 'Opciones' %}" data-label-short="{% trans 'Opc.' %}">
+        {% icon "cog" cls="icono icono--btn" %}
+        <span class="accion__label">{% trans "Opciones" %}</span>
       </button>
     </div>
     <div class="acciones__sep"></div>
-    <button class="accion" type="button" id="btnSalir">
-      🚪
-      {% trans "Salir" %}
+    <button class="accion" type="button" id="btnSalir" data-label-full="{% trans 'Salir' %}" data-label-short="{% trans 'Salir' %}">
+      {% icon "log-out" cls="icono icono--btn" %}
+      <span class="accion__label">{% trans "Salir" %}</span>
     </button>
   </div>
 

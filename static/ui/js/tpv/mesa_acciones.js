@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     const Notify = window.Notify;
+    initAdaptiveActionLabels();
     // Arrancar módulos
     initCalculator();
     initModalCobro();
@@ -494,3 +495,36 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+function initAdaptiveActionLabels() {
+    const buttons = Array.from(document.querySelectorAll(".accion[data-label-full][data-label-short]"));
+    if (buttons.length === 0) return;
+
+    const updateButton = (button) => {
+        const label = button.querySelector(".accion__label");
+        if (!label) return;
+
+        label.textContent = button.dataset.labelFull || label.textContent;
+        if (label.scrollWidth > label.clientWidth) {
+            label.textContent = button.dataset.labelShort || label.textContent;
+        }
+    };
+
+    const updateAll = () => {
+        buttons.forEach(updateButton);
+    };
+
+    requestAnimationFrame(updateAll);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(updateAll);
+    }
+
+    if (window.ResizeObserver) {
+        const observer = new ResizeObserver(updateAll);
+        buttons.forEach(button => observer.observe(button));
+    } else {
+        window.addEventListener("resize", updateAll);
+    }
+
+    window.adaptActionLabels = updateAll;
+}

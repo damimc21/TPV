@@ -939,3 +939,30 @@ img, a {
   }
 }
 
+/* ============================================================
+   ICONOS SVG INLINE ({% icon "nombre" %})
+   Los SVGs se inyectan con stroke="currentColor" y sin width/height,
+   asi heredan el color del texto del contenedor (boton, link, etc.)
+   y escalan con la variante de tamano.
+   ============================================================ */
+.icono {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* Tamano grande para iconos dentro de botones de accion del TPV */
+.icono--btn {
+  width: 1.25rem;
+  height: 1.25rem;
+  vertical-align: middle;
+  margin-right: 0.35em;
+}
+
+/* Variantes adicionales por si las necesitas en el futuro */
+.icono--mini { width: 0.85em; height: 0.85em; }
+.icono--lg   { width: 1.6rem; height: 1.6rem; }

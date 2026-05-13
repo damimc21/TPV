@@ -545,10 +545,23 @@ html, body {
     text-align: center;
     cursor: pointer;
     transition: all .12s ease;
+    line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
     width: 100%;
+    min-width: 0;
+}
+
+.accion .icono--btn {
+    margin-right: 0;
+}
+
+.accion__label {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .accion:hover {
@@ -599,6 +612,12 @@ html, body {
     grid-template-columns: 1fr 1fr;
     gap: 5px;
     width: 100%;
+}
+
+.acciones__fila .accion {
+    gap: 5px;
+    padding-inline: 6px;
+    font-size: .80rem;
 }
 
 .acciones__sep {
