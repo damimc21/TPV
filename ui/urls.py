@@ -47,6 +47,7 @@ urlpatterns = [
     path("api/caja/reabrir/<int:sesion_id>/", views.api_caja_reabrir, name="api_caja_reabrir"),
     path("api/dia/reabrir/<int:dia_id>/", views.api_dia_reabrir, name="api_dia_reabrir"),
     path("api/configuracion/update/", views.api_configuracion_update, name="api_configuracion_update"),
+    path("api/configuracion/tpv-iconos/", views.api_tpv_iconos, name="api_tpv_iconos"),
 
     path("albaranes-facturas/", views.albaranes_facturas, name="albaranes_facturas"),
     path("albaranes-facturas/albaranes/", views.albaranes, name="albaranes"),
@@ -55,6 +56,7 @@ urlpatterns = [
     path("config/usuarios/", views.config_usuarios, name="config_usuarios"),
     path("config/permisos/", views.config_permisos, name="config_permisos"),
     path("config/seguridad/", views.config_seguridad, name="config_seguridad"),
+    path("config/tpv-diseno/", views.config_tpv_diseno, name="config_tpv_diseno"),
     path("ayuda/", views.ayuda, name="ayuda"),
 
     # CONFIG

@@ -1,3 +1,7 @@
+const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+    ? window.gettext
+    : (text) => text;
+
 export async function previewUploadedFile(file, importType) {
     const formData = new FormData();
     formData.append('file', file);
@@ -9,7 +13,7 @@ export async function previewUploadedFile(file, importType) {
         body: formData,
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'No se pudo previsualizar el fichero');
+    if (!resp.ok) throw new Error(data.error || gettext('No se pudo previsualizar el fichero.'));
     return data;
 }
 
@@ -20,7 +24,7 @@ export async function verifyImportRows(importType, rows) {
         body: JSON.stringify({ tipo: importType, rows }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'No se pudo verificar el fichero');
+    if (!resp.ok) throw new Error(data.error || gettext('No se pudo verificar el fichero.'));
     return data;
 }
 

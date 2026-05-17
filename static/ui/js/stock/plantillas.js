@@ -4,6 +4,10 @@ import {
     getUnitOptionsHtml,
 } from './utils.js';
 
+const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+    ? window.gettext
+    : (text) => text;
+
 function normalizePlantillaSections(plantillas, productos) {
     const sections = [];
     plantillas.forEach(grupo => {
@@ -29,7 +33,7 @@ function normalizePlantillaSections(plantillas, productos) {
     const productosPorDepto = {};
     productos.forEach(p => {
         if (p.eliminado === true) return;
-        const depto = p.departamento_nombre || p.departamento || 'Sin departamento';
+        const depto = p.departamento_nombre || p.departamento || gettext('Sin departamento');
         if (!productosPorDepto[depto]) productosPorDepto[depto] = [];
         productosPorDepto[depto].push(p);
     });
@@ -38,13 +42,13 @@ function normalizePlantillaSections(plantillas, productos) {
         sections.push({
             id: `tpv-${String(depto).replace(/\s+/g, '-').toLowerCase()}`,
             groupId: 'tpv',
-            groupName: 'Productos TPV',
+            groupName: gettext('Productos TPV'),
             name: depto,
             source: 'tpv',
             items: productosDepto.map(p => ({
                 id: `tpv-${p.id}`,
                 nombre: p.nombre,
-                categoria: 'Productos TPV',
+                categoria: gettext('Productos TPV'),
                 unidad: 'ud',
                 sourceLabel: `TPV / ${depto}`,
                 source: 'tpv',
@@ -66,7 +70,11 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
     function updatePlantillasSelectedCount() {
         const count = Object.keys(plantillaSelected).length;
         const el = document.getElementById('plantillasSelectedCount');
-        if (el) el.textContent = `${count} seleccionado${count === 1 ? '' : 's'}`;
+        if (el) {
+            el.textContent = count === 1
+                ? gettext('1 seleccionado')
+                : gettext('%s seleccionados').replace('%s', count);
+        }
     }
 
     function renderPlantillaTree() {
@@ -114,7 +122,7 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
 
         const section = plantillaSections.find(s => s.id === plantillaCurrentId);
         if (!section) {
-            container.innerHTML = '<div class="tpl-empty">Selecciona una subcategoría del lateral.</div>';
+            container.innerHTML = `<div class="tpl-empty">${gettext('Selecciona una subcategoría del lateral.')}</div>`;
             return;
         }
 
@@ -124,12 +132,12 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
         if (title) title.textContent = section.name;
         if (subtitle) {
             subtitle.textContent = section.source === 'tpv'
-                ? 'Productos existentes del TPV. Por defecto se importan en Unidades; cámbialo si lo prefieres.'
-                : `${section.groupName}. Por defecto se importa en Unidades; cámbiala antes de importar.`;
+                ? gettext('Productos existentes del TPV. Por defecto se importan en unidades. Cámbialo si lo prefieres.')
+                : gettext('%s. Por defecto se importa en unidades. Cámbiala antes de importar.').replace('%s', section.groupName);
         }
 
         if (items.length === 0) {
-            container.innerHTML = '<div class="tpl-empty">No hay elementos con esa búsqueda.</div>';
+            container.innerHTML = `<div class="tpl-empty">${gettext('No hay elementos con esa búsqueda.')}</div>`;
             return;
         }
 
@@ -148,23 +156,23 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
                         </div>
                     </div>
                     <label class="tpl-field tpl-field-unit">
-                        <span class="tpl-field-label">Unidad</span>
+                        <span class="tpl-field-label">${gettext('Unidad')}</span>
                         <select ${disabled} onchange="updatePlantillaItem('${item.id}', 'unidad', this.value)">
                             ${getUnitOptionsHtml(state.unidad)}
                         </select>
                     </label>
                     <label class="tpl-field">
-                        <span class="tpl-field-label">Stock inicial</span>
+                        <span class="tpl-field-label">${gettext('Stock inicial')}</span>
                         <input ${disabled} type="number" step="0.01" value="${state.stock_actual || 0}" onchange="updatePlantillaItem('${item.id}', 'stock_actual', this.value)">
                     </label>
                     <label class="tpl-field">
-                        <span class="tpl-field-label">Stock mínimo</span>
+                        <span class="tpl-field-label">${gettext('Stock mínimo')}</span>
                         <input ${disabled} type="number" step="0.01" value="${state.stock_minimo || 0}" onchange="updatePlantillaItem('${item.id}', 'stock_minimo', this.value)">
                     </label>
                     <div class="tpl-auto-wrap">
-                        <label class="tpl-auto" title="Descontar al vender el producto TPV vinculado">
+                        <label class="tpl-auto" title="${gettext('Descontar al vender el producto TPV vinculado')}">
                             <input type="checkbox" ${autoToggleDisabled} ${state.auto_descontar ? 'checked' : ''} onchange="updatePlantillaItem('${item.id}', 'auto_descontar', this.checked)">
-                            <span>Auto TPV</span>
+                            <span>${gettext('Auto TPV')}</span>
                         </label>
                     </div>
                 </div>
@@ -173,11 +181,11 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
 
         const legendHtml = `
             <div class="tpl-legend">
-                <span>Artículo</span>
-                <span>Unidad</span>
-                <span>Inicial</span>
-                <span>Mínimo</span>
-                <span>Auto TPV</span>
+                <span>${gettext('Artículo')}</span>
+                <span>${gettext('Unidad')}</span>
+                <span>${gettext('Inicial')}</span>
+                <span>${gettext('Mínimo')}</span>
+                <span>${gettext('Auto TPV')}</span>
             </div>
         `;
 
@@ -237,8 +245,8 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
     async function loadPlantillas() {
         const container = document.getElementById('plantillasContainer');
         const tree = document.getElementById('plantillasTree');
-        if (container) container.innerHTML = '<div class="tpl-empty">Cargando plantillas...</div>';
-        if (tree) tree.innerHTML = '<div class="p-10 text-center opacity-50">Cargando...</div>';
+        if (container) container.innerHTML = `<div class="tpl-empty">${gettext('Cargando plantillas...')}</div>`;
+        if (tree) tree.innerHTML = `<div class="p-10 text-center opacity-50">${gettext('Cargando...')}</div>`;
 
         try {
             const resp = await fetch('/api/plantillas-inventario/');
@@ -254,7 +262,7 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
             }
         } catch (e) {
             if (container) {
-                container.innerHTML = '<div class="tpl-empty text-rose-500">Error al cargar plantillas</div>';
+                container.innerHTML = `<div class="tpl-empty text-rose-500">${gettext('Error al cargar plantillas')}</div>`;
             }
         }
     }
@@ -272,7 +280,7 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
         }));
 
         if (artsToImport.length === 0) {
-            Notify.info('Selecciona al menos un articulo para importar.');
+            Notify.info(gettext('Selecciona al menos un artículo para importar.'));
             return;
         }
 
@@ -287,7 +295,7 @@ export function initPlantillasInventario({ Notify, fetchProductosBase, loadData,
                 closeModal('modalPlantillas');
                 loadData();
             } else {
-                Notify.error('No se pudo importar la seleccion.');
+                Notify.error(gettext('No se pudo importar la selección.'));
             }
         } catch (e) { console.error(e); }
     };

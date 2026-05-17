@@ -1,8 +1,5 @@
-/* maps.js (BD/API)
-   Pantalla: "Tus mapas TPV"
-   - Lista mapas guardados en BD (API)
-   - Activar un mapa (API) y refrescar UI
-   - Editar (link al editor)
+/* maps_list.js
+   Pantalla de mapas guardados.
 */
 
 (function () {
@@ -10,6 +7,19 @@
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const Notify = window.Notify;
+  const gettext = typeof window.gettext === "function" ? window.gettext : (text) => text;
+  const ICON_BASE = "/static/ui/img/iconos/";
+
+  function formatText(text, values = {}) {
+    return Object.entries(values).reduce(
+      (current, [key, value]) => current.replace(new RegExp(`%\\(${key}\\)s`, "g"), String(value)),
+      gettext(text)
+    );
+  }
+
+  function icon(name) {
+    return `<img src="${ICON_BASE}${name}.svg" class="svg-icon" width="24" alt="">`;
+  }
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({
@@ -29,7 +39,7 @@
   const BASE = basePath();
 
   function getCSRFToken() {
-      return window.TpvUtils ? window.TpvUtils.getCSRFToken() : "";
+    return window.TpvUtils ? window.TpvUtils.getCSRFToken() : "";
   }
 
   async function apiListMaps() {
@@ -56,6 +66,65 @@
     return await res.json();
   }
 
+  function renderError(grid) {
+    grid.innerHTML = `
+      <article class="card">
+        <div class="card__icon">${icon("circle-alert")}</div>
+        <div class="card__body">
+          <h2 class="card__title">${gettext("Error cargando mapas")}</h2>
+          <p class="card__desc">${gettext("Revisa la consola y el endpoint /api/maps/")}</p>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderEmpty(grid) {
+    grid.innerHTML = `
+      <article class="card">
+        <div class="card__icon">${icon("map-plus")}</div>
+        <div class="card__body">
+          <h2 class="card__title">${gettext("Aún no hay mapas")}</h2>
+          <p class="card__desc">${gettext("Crea tu primer mapa para empezar a usar el TPV por mesas.")}</p>
+        </div>
+        <div class="card__cta">
+          <a href="${BASE}/config/maps/create/" style="text-decoration:none; color:inherit;">${gettext("Crear")}</a>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderCards(grid, maps) {
+    grid.innerHTML = maps.map((m) => {
+      const isActive = Boolean(m.is_active);
+      const count = Number(m.items_count || 0);
+      const countText = count === 1
+        ? gettext("1 elemento")
+        : formatText("%(count)s elementos", { count });
+
+      return `
+        <article class="card" data-id="${escapeHtml(m.id)}">
+          <div class="card__icon">${icon(isActive ? "check" : "map")}</div>
+          <div class="card__body">
+            <h2 class="card__title">${escapeHtml(m.name || gettext("Mapa sin nombre"))}</h2>
+            <p class="card__desc">
+              ${isActive ? gettext("Mapa activo") : gettext("Mapa no activo")} ·
+              ${countText}
+            </p>
+          </div>
+          <div class="card__cta" style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn--mini ${isActive ? "btn--success" : ""}" data-action="activate" ${isActive ? "disabled" : ""}>
+              ${isActive ? gettext("Activo") : gettext("Activar")}
+            </button>
+            <a class="btn btn--mini" href="${BASE}/config/maps/create/?id=${encodeURIComponent(m.id)}">${gettext("Editar")}</a>
+            <button class="btn btn--mini btn--danger" data-action="delete" ${isActive ? `disabled title="${escapeHtml(gettext("No puedes borrar el mapa activo"))}"` : ""}>
+              ${icon("trash-2")} ${gettext("Eliminar")}
+            </button>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
   async function render() {
     const grid = $("#mapsGrid");
     if (!grid) return;
@@ -65,59 +134,17 @@
       payload = await apiListMaps();
     } catch (e) {
       console.error(e);
-      grid.innerHTML = `
-        <article class="card">
-          <div class="card__icon">⚠️</div>
-          <div class="card__body">
-            <h2 class="card__title">Error cargando mapas</h2>
-            <p class="card__desc">Revisa la consola y el endpoint /api/maps/</p>
-          </div>
-        </article>
-      `;
+      renderError(grid);
       return;
     }
 
     const maps = payload.maps || [];
     if (!maps.length) {
-      grid.innerHTML = `
-        <article class="card">
-          <div class="card__icon">🗂️</div>
-          <div class="card__body">
-            <h2 class="card__title">Aun no hay mapas</h2>
-            <p class="card__desc">Crea tu primer mapa para empezar a usar el TPV por mesas.</p>
-          </div>
-          <div class="card__cta">
-            <a href="${BASE}/config/maps/create/" style="text-decoration:none; color:inherit;">Crear →</a>
-          </div>
-        </article>
-      `;
+      renderEmpty(grid);
       return;
     }
 
-    grid.innerHTML = maps.map((m) => {
-      const isActive = Boolean(m.is_active);
-      return `
-        <article class="card" data-id="${escapeHtml(m.id)}">
-          <div class="card__icon">${isActive ? "✅" : "🗺️"}</div>
-          <div class="card__body">
-            <h2 class="card__title">${escapeHtml(m.name || "Mapa sin nombre")}</h2>
-            <p class="card__desc">
-              ${isActive ? "Mapa activo" : "Mapa no activo"} ·
-              ${Number(m.items_count || 0)} elementos
-            </p>
-          </div>
-          <div class="card__cta" style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="btn btn--mini ${isActive ? "btn--success" : ""}" data-action="activate" ${isActive ? "disabled" : ""}>
-              ${isActive ? "Activo" : "Activar"}
-            </button>
-            <a class="btn btn--mini" href="${BASE}/config/maps/create/?id=${encodeURIComponent(m.id)}">Editar</a>
-            <button class="btn btn--mini btn--danger" data-action="delete" ${isActive ? "disabled title='No puedes borrar el mapa activo'" : ""}>
-              🗑️ Eliminar
-            </button>
-          </div>
-        </article>
-      `;
-    }).join("");
+    renderCards(grid, maps);
 
     grid.querySelectorAll(".card[data-id]").forEach((card) => {
       const id = card.getAttribute("data-id");
@@ -140,10 +167,15 @@
           }
 
           if (action === "delete") {
-            const name = card.querySelector(".card__title")?.textContent?.trim() || "este mapa";
+            const name = card.querySelector(".card__title")?.textContent?.trim() || gettext("este mapa");
             const ok = await Notify.confirmDanger(
-              `¿Estas seguro de que quieres eliminar "${name}"?\nEsta accion no se puede deshacer.`,
-              { title: "Eliminar mapa", variant: "danger" }
+              formatText("¿Seguro que quieres eliminar \"%(name)s\"? Esta acción no se puede deshacer.", { name }),
+              {
+                title: gettext("Eliminar mapa"),
+                okText: gettext("Eliminar"),
+                cancelText: gettext("Cancelar"),
+                variant: "danger",
+              }
             );
             if (!ok) {
               btn.disabled = false;
@@ -158,7 +190,7 @@
           btn.disabled = false;
         } catch (err) {
           console.error(err);
-          await Notify.error("No se pudo completar la accion");
+          await Notify.error(gettext("No se pudo completar la acción"));
           btn.disabled = false;
         }
       });

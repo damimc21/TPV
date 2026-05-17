@@ -10,6 +10,7 @@ window.TPV_CONEXION = window.TPV_CONEXION ?? tpvMesaConfig.conexion ?? "LOCAL";
 window.TPV_CAJA_ESTADO = window.TPV_CAJA_ESTADO ?? tpvMesaConfig.cajaEstado ?? "—";
 window.TPV_JORNADA_ESTADO = window.TPV_JORNADA_ESTADO ?? tpvMesaConfig.jornadaEstado ?? "—";
 window.TPV_INDEX_URL = window.TPV_INDEX_URL ?? tpvMesaConfig.indexUrl ?? "/";
+window.TPV_SIDEBAR_LAYOUT = window.TPV_SIDEBAR_LAYOUT ?? tpvMesaConfig.sidebarLayout ?? {};
 
 // Fallback para gettext si no está cargado el catálogo de Django
 if (typeof gettext === 'undefined') {

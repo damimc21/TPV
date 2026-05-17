@@ -3,16 +3,18 @@ Reexportadas desde ui.views.__init__ para mantener compatibilidad.
 """
 import json
 import math
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404, JsonResponse, HttpResponseBadRequest
 from decimal import Decimal
 from datetime import datetime
-from django.views.decorators.http import require_POST, require_http_methods
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
+from django.contrib.staticfiles.storage import staticfiles_storage
 from ..models import TPVMap, TPVMapItem
 from tpvapp.models import Factura, Pago, SesionCaja, DiaContable, ConfiguracionTPV, LineaComanda, Comanda, Proveedor, MovimientoStock, DocumentoProveedor
 from tpvapp.auditoria import log_info, log_warn, log_error, registrar
@@ -49,6 +51,40 @@ from ._helpers import (
 def config(request):
     _require_permission_or_403(request, "manage_configuration")
     return render(request, "ui/config/index.html")
+
+
+@login_required
+def config_tpv_diseno(request):
+    _require_permission_or_403(request, "manage_configuration")
+    raw_config = ConfiguracionTPV.objects.filter(clave="tpv_sidebar_layout").values_list("valor", flat=True).first()
+    try:
+        sidebar_config = json.loads(raw_config) if raw_config else {}
+    except (TypeError, json.JSONDecodeError):
+        sidebar_config = {}
+    return render(
+        request,
+        "ui/config/tpv_diseno.html",
+        {
+            "sidebar_config_json": json.dumps(sidebar_config, ensure_ascii=False),
+        },
+    )
+
+
+@login_required
+@require_GET
+def api_tpv_iconos(request):
+    _require_permission_or_403(request, "manage_configuration")
+    icon_dir = settings.BASE_DIR / "static" / "ui" / "img" / "iconos"
+    iconos = []
+    if icon_dir.exists():
+        for icon_path in sorted(icon_dir.glob("*.svg")):
+            iconos.append(
+                {
+                    "name": icon_path.stem,
+                    "url": staticfiles_storage.url(f"ui/img/iconos/{icon_path.name}"),
+                }
+            )
+    return JsonResponse({"ok": True, "iconos": iconos})
 
 
 def _post_bool(post, key):
@@ -494,4 +530,3 @@ def config_permisos(request):
 
 def ayuda(request):
     return render(request, "ui/ayuda/index.html")
-

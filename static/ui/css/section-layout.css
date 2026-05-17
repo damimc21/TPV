@@ -22,34 +22,35 @@
 /* ── Contenedor principal de sección ── */
 .section-dashboard,
 .stock-dashboard {
-  width: min(100%, 1480px);
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   min-width: 0;
   min-height: calc(100dvh - 54px);
   color: #f8fafc;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
 }
 
 /* ── Header: título centrado + back izquierda + acciones derecha ── */
 .dashboard-header {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas:
-    "title title title"
-    "back  spacer actions";
+  grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
+  grid-template-areas: "back title actions";
   align-items: center;
-  row-gap: 16px;
+  row-gap: 0;
   column-gap: 14px;
   border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 16px;
+  padding-bottom: 12px;
+  min-height: 52px;
   min-width: 0;
 }
 
 .header-info {
   grid-area: title;
   text-align: center;
+  align-self: center;
   min-width: 0;
 }
 
@@ -58,6 +59,7 @@
   display: flex;
   align-items: center;
   justify-self: start;
+  align-self: center;
   min-width: 0;
 }
 
@@ -68,6 +70,7 @@
   align-items: center;
   justify-content: flex-end;
   justify-self: end;
+  align-self: center;
   position: relative;
   z-index: 600;
   flex-wrap: nowrap;
@@ -84,6 +87,7 @@
 }
 
 .header-info p {
+  display: none;
   color: #94a3b8;
   font-size: 0.95rem;
   margin: 4px 0 0;
@@ -232,22 +236,22 @@ input[type=number] {
 .animated.fadeIn     { animation: sl-fadeIn     0.4s ease both; }
 
 /* ── Responsive ── */
-@media (max-width: 1180px) {
+@media (max-width: 760px) {
   .dashboard-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
     grid-template-areas:
-      "title"
-      "back"
-      "actions";
+      "title title"
+      "back actions";
+    min-height: auto;
   }
 
   .header-left {
-    justify-self: center;
+    justify-self: start;
   }
 
   .header-actions {
-    justify-self: center;
-    justify-content: center;
+    justify-self: end;
+    justify-content: flex-end;
     flex-wrap: wrap;
   }
 }

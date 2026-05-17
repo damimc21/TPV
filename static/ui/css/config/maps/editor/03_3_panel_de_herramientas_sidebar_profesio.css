@@ -100,12 +100,19 @@
 
 /* ─── Icono ─── */
 .tool__icon {
-  display: block;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   width: 100%;
   text-align: center;
   font-size: 1.35rem;
   line-height: 1;
   pointer-events: none;
+}
+
+.tool__icon img {
+  display: block;
+  filter: brightness(0) invert(1);
 }
 
 .tool__label {
@@ -168,4 +175,3 @@
 .tool[data-tip]:hover::before {
   opacity: 1;
 }
-

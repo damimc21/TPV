@@ -19,6 +19,7 @@ from django.db import connection
 from django.db.models import Sum, Count, F, Q, Min
 from django.http import JsonResponse, HttpResponse, FileResponse
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST, require_GET
 from tpvapp.models import (
     Producto, Departamento, BackupRegistro, LogSistema, EventoAuditoria,
@@ -277,28 +278,28 @@ def _parse_import_xlsx(uploaded_file):
 def _import_template_instruction_rows(tipo):
     if tipo == "inventario":
         return [
-            ["Uso", "Rellena la hoja Datos y conserva los nombres de columna."],
-            ["nombre", "Obligatorio. Si ya existe, se actualiza el articulo."],
-            ["categoria", "Opcional. Si no existe, se crea automaticamente."],
-            ["unidad", "Opcional. Valores admitidos: ud, pack, caja, kg, g, l, ml. Si falta, se usa ud."],
-            ["stock_actual", "Opcional. Si falta, se usa 0."],
-            ["stock_minimo", "Opcional. Si falta, se usa 0."],
-            ["proveedor", "Opcional. Si no existe, se crea automaticamente y queda disponible en Stock."],
-            ["precio_compra", "Opcional. Si falta, se usa 0."],
-            ["Formatos", "Puedes importar CSV separado por punto y coma o Excel .xlsx."],
+            [_("Uso"), _("Rellena la hoja Datos y conserva los nombres de columna.")],
+            ["nombre", _("Obligatorio. Si ya existe, se actualiza el artículo.")],
+            ["categoria", _("Opcional. Si no existe, se crea automáticamente.")],
+            ["unidad", _("Opcional. Valores admitidos: ud, pack, caja, kg, g, l, ml. Si falta, se usa ud.")],
+            ["stock_actual", _("Opcional. Si falta, se usa 0.")],
+            ["stock_minimo", _("Opcional. Si falta, se usa 0.")],
+            ["proveedor", _("Opcional. Si no existe, se crea automáticamente y queda disponible en Stock.")],
+            ["precio_compra", _("Opcional. Si falta, se usa 0.")],
+            [_("Formatos"), _("Puedes importar CSV separado por punto y coma o Excel .xlsx.")],
         ]
     return [
-        ["Uso", "Rellena la hoja Datos y conserva los nombres de columna."],
-        ["nombre", "Obligatorio. Si ya existe, se actualiza el producto."],
-        ["departamento", "Obligatorio. Todo producto debe pertenecer a un departamento. Si no existe, se crea automaticamente."],
-        ["precio", "Opcional. Si falta, se usa 0.00. Puedes usar punto o coma decimal."],
-        ["activo", "Opcional. Usa 1/0, si/no o true/false. Si falta, se importa como activo."],
-        ["nombre_factura", "Opcional. Si falta, se usa el nombre del producto."],
-        ["nombre_comanda", "Opcional. Si falta, se usa el nombre del producto."],
-        ["Colores", "La plantilla basica no pide colores. Los productos nuevos usan el color por defecto del catalogo."],
-        ["Eliminado", "No se importa en modo basico. La eliminacion se gestiona desde el catalogo."],
-        ["Imagenes", "No se importan desde esta plantilla. Se mantienen las imagenes existentes si actualizas productos."],
-        ["Formatos", "Puedes importar CSV separado por punto y coma o Excel .xlsx."],
+        [_("Uso"), _("Rellena la hoja Datos y conserva los nombres de columna.")],
+        ["nombre", _("Obligatorio. Si ya existe, se actualiza el producto.")],
+        ["departamento", _("Obligatorio. Todo producto debe pertenecer a un departamento. Si no existe, se crea automáticamente.")],
+        ["precio", _("Opcional. Si falta, se usa 0.00. Puedes usar punto o coma decimal.")],
+        ["activo", _("Opcional. Usa 1/0, sí/no o true/false. Si falta, se importa como activo.")],
+        ["nombre_factura", _("Opcional. Si falta, se usa el nombre del producto.")],
+        ["nombre_comanda", _("Opcional. Si falta, se usa el nombre del producto.")],
+        [_("Colores"), _("La plantilla básica no pide colores. Los productos nuevos usan el color por defecto del catálogo.")],
+        [_("Eliminado"), _("No se importa en modo básico. La eliminación se gestiona desde el catálogo.")],
+        [_("Imágenes"), _("No se importan desde esta plantilla. Se mantienen las imágenes existentes si actualizas productos.")],
+        [_("Formatos"), _("Puedes importar CSV separado por punto y coma o Excel .xlsx.")],
     ]
 
 
@@ -315,8 +316,8 @@ def importar_plantilla(request):
             filename,
             headers,
             [],
-            sheet_name="Datos",
-            extra_sheets=[("Instrucciones", ["Campo", "Detalle"], _import_template_instruction_rows(tipo))],
+            sheet_name=_("Datos"),
+            extra_sheets=[(_("Instrucciones"), [_("Campo"), _("Detalle")], _import_template_instruction_rows(tipo))],
         )
     return _csv_response(filename, headers, [])
 
@@ -327,7 +328,7 @@ def importar_plantilla(request):
 def importar_previsualizar(request):
     uploaded_file = request.FILES.get("file")
     if not uploaded_file:
-        return JsonResponse({"error": "No se ha recibido ningun fichero."}, status=400)
+        return JsonResponse({"error": _("No se ha recibido ningún fichero.")}, status=400)
 
     suffix = Path(uploaded_file.name).suffix.lower()
     try:
@@ -336,14 +337,14 @@ def importar_previsualizar(request):
         elif suffix == ".csv":
             headers, rows = _parse_import_csv(uploaded_file)
         else:
-            return JsonResponse({"error": "Formato no soportado. Usa CSV o Excel .xlsx."}, status=400)
+            return JsonResponse({"error": _("Formato no soportado. Usa CSV o Excel .xlsx.")}, status=400)
     except Exception as e:
         log_error(
             "ficheros.importar_previsualizar",
             f"usuario={_actor_username(request)} accion=previsualizar_importacion_error archivo={uploaded_file.name}",
             exc=e,
         )
-        return JsonResponse({"error": "No se pudo leer el fichero."}, status=400)
+        return JsonResponse({"error": _("No se pudo leer el fichero.")}, status=400)
 
     return JsonResponse({"headers": headers, "rows": rows})
 
@@ -356,38 +357,38 @@ def importar_verificar(request):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
-        return JsonResponse({"error": "Datos de verificacion invalidos."}, status=400)
+        return JsonResponse({"error": _("Datos de verificación inválidos.")}, status=400)
 
     tipo = data.get("tipo", "productos")
     rows = data.get("rows", [])
     if not isinstance(rows, list):
-        return JsonResponse({"error": "Formato de filas invalido."}, status=400)
+        return JsonResponse({"error": _("Formato de filas inválido.")}, status=400)
 
     if tipo == "inventario":
         item_lookup = _verification_lookup(ArticuloInventario)
         group_lookup = _verification_group_lookup(CategoriaInventario)
         provider_lookup = _verification_group_lookup(Proveedor)
         group_field = "categoria"
-        group_singular = "categoria"
-        group_label = "categorias"
-        group_existing_text = "Categoria existente"
-        group_new_text = "Categoria nueva"
-        group_empty_text = "Sin categoria"
-        entity_singular = "articulo"
-        entity_plural = "articulos"
+        group_singular = _("categoría")
+        group_label = _("categorías")
+        group_existing_text = _("Categoría existente")
+        group_new_text = _("Categoría nueva")
+        group_empty_text = _("Sin categoría")
+        entity_singular = _("artículo")
+        entity_plural = _("artículos")
     else:
         tipo = "productos"
         item_lookup = _verification_lookup(Producto, "eliminado")
         group_lookup = _verification_group_lookup(Departamento)
         provider_lookup = {}
         group_field = "departamento"
-        group_singular = "departamento"
-        group_label = "departamentos"
-        group_existing_text = "Departamento existente"
-        group_new_text = "Departamento nuevo"
-        group_empty_text = "Sin departamento"
-        entity_singular = "producto"
-        entity_plural = "productos"
+        group_singular = _("departamento")
+        group_label = _("departamentos")
+        group_existing_text = _("Departamento existente")
+        group_new_text = _("Departamento nuevo")
+        group_empty_text = _("Sin departamento")
+        entity_singular = _("producto")
+        entity_plural = _("productos")
 
     name_counts = {}
     for row in rows:
@@ -430,38 +431,38 @@ def importar_verificar(request):
         group_key = _normalize_import_key(group_name)
         notes = []
         action = "create"
-        action_label = "Crear"
+        action_label = _("Crear")
         impact_class = "create"
 
         if not name_key:
             action = "error"
-            action_label = "Error"
+            action_label = _("Error")
             impact_class = "error"
-            notes.append("Falta el nombre obligatorio.")
+            notes.append(_("Falta el nombre obligatorio."))
             summary["errores"] += 1
         elif name_counts.get(name_key, 0) > 1:
             action = "duplicate"
-            action_label = "Duplicado"
+            action_label = _("Duplicado")
             impact_class = "review"
-            notes.append("Ese nombre aparece mas de una vez en el fichero; revisa cual debe importarse.")
+            notes.append(_("Ese nombre aparece más de una vez en el fichero. Revisa cuál debe importarse."))
             summary["duplicados_archivo"] += 1
             summary["revisar"] += 1
         elif name_key in item_lookup:
             existing = item_lookup[name_key]
             action = "update"
-            action_label = "Actualizar"
+            action_label = _("Actualizar")
             impact_class = "update"
-            notes.append(f"Ya existe como {existing.get('nombre')}; se actualizara.")
+            notes.append(_("Ya existe como %(name)s. Se actualizará.") % {"name": existing.get("nombre")})
             summary["actualizar"] += 1
             if tipo == "productos" and existing.get("eliminado"):
                 action = "update_deleted"
-                action_label = "Actualizar eliminado"
+                action_label = _("Actualizar eliminado")
                 impact_class = "review"
-                notes.append("Esta coincidencia esta eliminada en Catalogo; se actualizara, pero seguira eliminada.")
+                notes.append(_("Esta coincidencia está eliminada en Catálogo. Se actualizará, pero seguirá eliminada."))
                 summary["eliminados_existentes"] += 1
                 summary["revisar"] += 1
         else:
-            notes.append(f"No existe, se creara un {entity_singular} nuevo.")
+            notes.append(_("No existe. Se creará un %(entity)s nuevo.") % {"entity": entity_singular})
             summary["crear"] += 1
 
         if group_name:
@@ -478,28 +479,28 @@ def importar_verificar(request):
                 elif action in ("update", "update_deleted"):
                     summary["actualizar"] -= 1
                 action = "error"
-                action_label = "Error"
+                action_label = _("Error")
                 impact_class = "error"
-                notes.append("Falta el departamento obligatorio. Todo producto debe pertenecer a un departamento.")
+                notes.append(_("Falta el departamento obligatorio. Todo producto debe pertenecer a un departamento."))
                 summary["errores"] += 1
             else:
-                notes.append(f"{group_empty_text}, se guardara sin asignar.")
+                notes.append(_("%(group)s. Se guardará sin asignar.") % {"group": group_empty_text})
 
         if tipo == "inventario":
             unidad = str(row.get("unidad") or "").strip().lower()
             if unidad and unidad not in {"ud", "pack", "caja", "kg", "g", "l", "ml"}:
-                notes.append("Unidad no reconocida; al importar se usara ud.")
+                notes.append(_("Unidad no reconocida. Al importar se usará ud."))
                 summary["unidades_corregidas"] += 1
             proveedor_name = str(row.get("proveedor") or "").strip()
             proveedor_key = _normalize_import_key(proveedor_name)
             if proveedor_name:
                 if proveedor_key in provider_lookup:
-                    notes.append(f"Proveedor existente: {provider_lookup[proveedor_key]}.")
+                    notes.append(_("Proveedor existente: %(name)s.") % {"name": provider_lookup[proveedor_key]})
                 else:
-                    notes.append(f"Proveedor nuevo: {proveedor_name}.")
+                    notes.append(_("Proveedor nuevo: %(name)s.") % {"name": proveedor_name})
                     new_provider_keys[proveedor_key] = proveedor_name
         elif row.get("color_boton") or row.get("color_texto"):
-            notes.append("Se aplicaran los colores indicados en el fichero.")
+            notes.append(_("Se aplicarán los colores indicados en el fichero."))
 
         verified_rows.append({
             "line": line,
@@ -693,4 +694,3 @@ def importar_inventario(request):
             exc=e,
         )
         return JsonResponse({"error": str(e)}, status=500)
-

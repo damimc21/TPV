@@ -1,4 +1,4 @@
-{% load static %}
+{% load i18n static %}
 <div
   class="fich-export{% if export_direction %} fich-export--{{ export_direction }}{% endif %}"
   {% if export_id %}id="{{ export_id }}"{% endif %}
@@ -12,7 +12,7 @@
     {% if export_icon %}
       <img src="{% static export_icon %}" width="{{ export_icon_width|default:'16' }}" class="svg-icon" alt="">
     {% endif %}
-    <span>{{ export_label|default:"Exportar" }}</span>
+    <span>{% if export_label %}{{ export_label }}{% else %}{% trans "Exportar" %}{% endif %}</span>
   </button>
   <div class="fich-export__menu hidden" {% if export_menu_id %}id="{{ export_menu_id }}"{% endif %} role="menu">
     {% if not export_hide_pdf %}

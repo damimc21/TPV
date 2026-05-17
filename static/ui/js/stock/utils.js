@@ -1,11 +1,15 @@
+const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+    ? window.gettext
+    : (text) => text;
+
 export const UNIT_OPTIONS = [
-    ['ud', 'Unidades'],
-    ['pack', 'Packs'],
-    ['caja', 'Cajas'],
-    ['kg', 'Kilos'],
-    ['g', 'Gramos'],
-    ['l', 'Litros'],
-    ['ml', 'Mililitros'],
+    ['ud', gettext('Unidades')],
+    ['pack', gettext('Packs')],
+    ['caja', gettext('Cajas')],
+    ['kg', gettext('Kilos')],
+    ['g', gettext('Gramos')],
+    ['l', gettext('Litros')],
+    ['ml', gettext('Mililitros')],
 ];
 
 export function getStockState(art) {
@@ -18,7 +22,12 @@ export function getStockState(art) {
 }
 
 export function getStateLabel(state) {
-    return { ok: 'En Stock', low: 'Stock Bajo', out: 'Agotado', review: 'Revisar' }[state];
+    return {
+        ok: gettext('En stock'),
+        low: gettext('Stock bajo'),
+        out: gettext('Agotado'),
+        review: gettext('Revisar'),
+    }[state];
 }
 
 export function getUnitString(u) {

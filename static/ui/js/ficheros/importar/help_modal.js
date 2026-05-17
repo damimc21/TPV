@@ -1,3 +1,7 @@
+const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+    ? window.gettext
+    : (text) => text;
+
 export function showImportHelp(importType) {
     const modal = document.getElementById('modalImportHelp');
     const helpProductos = document.getElementById('helpProductos');
@@ -6,11 +10,11 @@ export function showImportHelp(importType) {
     if (importType === 'inventario') {
         helpProductos?.classList.add('hidden');
         helpInventario?.classList.remove('hidden');
-        if (title) title.textContent = 'Formato de importacion - Inventario';
+        if (title) title.textContent = gettext('Formato de importación - Inventario');
     } else {
         helpProductos?.classList.remove('hidden');
         helpInventario?.classList.add('hidden');
-        if (title) title.textContent = 'Formato de importacion - Productos';
+        if (title) title.textContent = gettext('Formato de importación - Productos');
     }
     modal?.classList.remove('hidden');
 }

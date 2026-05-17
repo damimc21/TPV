@@ -2,13 +2,17 @@
    EXPORTAR DATOS — Lógica JS
    ============================================================ */
 (function () {
+    const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+        ? window.gettext
+        : (text) => text;
+
     document.addEventListener('DOMContentLoaded', async () => {
         initCustomSelect({
             triggerId: 'expProdDeptoTrigger',
             menuId: 'expProdDeptoOptions',
             inputId: 'expProdDepto',
             labelId: 'expProdDeptoLabel',
-            defaultLabel: 'Todos los departamentos',
+            defaultLabel: gettext('Todos los departamentos'),
         });
 
         document.addEventListener('click', (event) => {
@@ -189,17 +193,17 @@
         const eliminados = selectedValue('expProdEliminados') || 'exclude';
 
         const estadoText = {
-            active: 'activos',
-            inactive: 'inactivos',
-            all: 'activos e inactivos',
+            active: gettext('activos'),
+            inactive: gettext('inactivos'),
+            all: gettext('activos e inactivos'),
         }[estado];
         const eliminadoText = {
-            exclude: 'sin eliminados',
-            include: 'incluyendo eliminados',
-            only: 'solo eliminados',
+            exclude: gettext('sin eliminados'),
+            include: gettext('incluyendo eliminados'),
+            only: gettext('solo eliminados'),
         }[eliminados];
 
-        summary.textContent = `Se exportarán productos ${estadoText}, ${eliminadoText}.`;
+        summary.textContent = `${gettext('Se exportarán productos')} ${estadoText}, ${eliminadoText}.`;
     }
 
     function buildInventarioUrl(formato) {
@@ -211,7 +215,7 @@
         closeAllExportMenus();
         if (formato === 'pdf') {
             await descargarPDF({
-                title: 'Productos del catálogo',
+                title: gettext('Productos del catálogo'),
                 url: buildProductosUrl('json'),
                 landscape: true,
             });
@@ -225,7 +229,7 @@
         closeAllExportMenus();
         if (formato === 'pdf') {
             await descargarPDF({
-                title: 'Artículos de inventario',
+                title: gettext('Artículos de inventario'),
                 url: buildInventarioUrl('json'),
                 landscape: true,
             });
@@ -237,7 +241,7 @@
     async function descargarPDF({ title, url, landscape }) {
         const printWindow = window.open('', '_blank');
         if (!printWindow) {
-            if (window.Notify) await Notify.error('El navegador ha bloqueado la ventana de PDF.');
+            if (window.Notify) await Notify.error(gettext('El navegador ha bloqueado la ventana de PDF.'));
             return;
         }
 
@@ -252,7 +256,7 @@
                     .loading { min-height: 180px; display:flex; align-items:center; justify-content:center; color:#566174; font-size:14px; }
                 </style>
             </head>
-            <body><div class="loading">Preparando PDF...</div></body>
+            <body><div class="loading">${gettext('Preparando PDF...')}</div></body>
             </html>
         `);
         printWindow.document.close();
@@ -265,13 +269,13 @@
             const headers = data.headers || [];
 
             if (!rows.length) {
-                if (window.Notify) await Notify.info('No hay datos para exportar con el filtro seleccionado.');
+                if (window.Notify) await Notify.info(gettext('No hay datos para exportar con el filtro seleccionado.'));
                 printWindow.close();
                 return;
             }
 
             const tableHtml = buildPrintTable(headers, rows);
-            const generatedAt = new Date().toLocaleString('es-ES');
+            const generatedAt = new Date().toLocaleString(document.documentElement.lang || undefined);
             printWindow.document.open();
             printWindow.document.write(`
                 <!doctype html>
@@ -297,7 +301,7 @@
                 <body onload="setTimeout(function(){ window.print(); window.close(); }, 500);">
                     <div class="head">
                         <h1>${esc(title)}</h1>
-                        <div class="meta">TPV Hostelería<br>Generado: ${esc(generatedAt)}</div>
+                        <div class="meta">${gettext('TPV Hostelería')}<br>${gettext('Generado')}: ${esc(generatedAt)}</div>
                     </div>
                     ${tableHtml}
                 </body>
@@ -307,7 +311,7 @@
         } catch (e) {
             console.error(e);
             printWindow.close();
-            if (window.Notify) await Notify.error('No se pudo generar el PDF.');
+            if (window.Notify) await Notify.error(gettext('No se pudo generar el PDF.'));
         }
     }
 

@@ -22,6 +22,10 @@ import {
     resetRowImpact,
 } from './verification.js';
 
+const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+    ? window.gettext
+    : (text) => text;
+
 /* ============================================================
    IMPORTAR PRODUCTOS / INVENTARIO - CSV y Excel
    ============================================================ */
@@ -46,11 +50,11 @@ import {
         const dropZone = document.getElementById('dropZone');
 
         if (type === 'inventario') {
-            if (uploadHint) uploadHint.innerHTML = 'Destino: <strong style="color: #34d399;">Artículos de Inventario</strong>';
+            if (uploadHint) uploadHint.innerHTML = `${gettext('Destino')}: <strong style="color: #34d399;">${gettext('Artículos de inventario')}</strong>`;
             dropZone?.classList.add('fich-upload-zone--inventario');
             dropZone?.classList.remove('fich-upload-zone--productos');
         } else {
-            if (uploadHint) uploadHint.innerHTML = 'Destino: <strong style="color: #60a5fa;">Productos (Catálogo)</strong>';
+            if (uploadHint) uploadHint.innerHTML = `${gettext('Destino')}: <strong style="color: #60a5fa;">${gettext('Productos (Catálogo)')}</strong>`;
             dropZone?.classList.add('fich-upload-zone--productos');
             dropZone?.classList.remove('fich-upload-zone--inventario');
         }
@@ -102,7 +106,7 @@ import {
             showPreview();
         } catch (e) {
             console.error(e);
-            await Notify.error('No se pudo leer el fichero seleccionado.');
+            await Notify.error(gettext('No se pudo leer el fichero seleccionado.'));
             input.value = '';
         }
     };
@@ -175,7 +179,7 @@ import {
             addVerificationWarnings();
         } catch (err) {
             console.error(err);
-            warnings.push('No se pudo verificar contra la base de datos. Revisa manualmente antes de importar.');
+            warnings.push(gettext('No se pudo verificar contra la base de datos. Revisa manualmente antes de importar.'));
         }
     }
 
@@ -237,7 +241,7 @@ import {
     window.confirmarImportacion = async () => {
         const btn = document.getElementById('btnConfirmImport');
         btn.disabled = true;
-        btn.textContent = 'Importando...';
+        btn.textContent = gettext('Importando...');
 
         try {
             const result = await importRows(importType, validRows.map(cleanRowForImport), {

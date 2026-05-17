@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     const Notify = window.Notify;
+    initSidebarDesign();
     initAdaptiveActionLabels();
     // Arrancar módulos
     initCalculator();
@@ -100,6 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (form && input) {
             input.value = lang;
+            const nextInput = form.querySelector("input[name='next']");
+            if (nextInput && targetLang) {
+                nextInput.value = window.location.pathname.replace(/^\/(es|en)(?=\/|$)/i, `/${targetLang}`) + window.location.search;
+            }
             form.submit();
         }
     }
@@ -527,4 +532,136 @@ function initAdaptiveActionLabels() {
     }
 
     window.adaptActionLabels = updateAll;
+}
+
+function initSidebarDesign() {
+    const config = window.TPV_SIDEBAR_LAYOUT || {};
+    const buttonsConfig = config.buttons || {};
+    const localizedLabels = {
+        btnCobrar: { label: gettext("Total"), short: gettext("Total"), known: ["Total"] },
+        btnComprobante: { label: gettext("Comprobante"), short: gettext("Comp."), known: ["Comprobante", "Comp."] },
+        btnReimprimir: { label: gettext("Reimprimir"), short: gettext("Reimp."), known: ["Reimpr.", "Reimprimir", "Reimp."] },
+        btnFactura: { label: gettext("Factura"), short: gettext("Fact."), known: ["Factura", "Fact."] },
+        btnDescuento: { label: gettext("Descuento"), short: gettext("Dto."), known: ["Dto.", "Descuento"] },
+        btnInvita: { label: gettext("Invitar"), short: gettext("Inv."), known: ["Invitar", "Inv."] },
+        btnAnularLinea: { label: gettext("Anular"), short: gettext("Anul."), known: ["Anular", "Anul."] },
+        btnBorrarComanda: { label: gettext("Borrar comanda"), short: gettext("Borrar"), known: ["Borrar comanda", "Borrar"] },
+        btnSepararProductos: { label: gettext("Separar"), short: gettext("Sep."), known: ["Separar", "Sep."] },
+        btnJuntarProductos: { label: gettext("Juntar"), short: gettext("Junt."), known: ["Juntar", "Junt."] },
+        btnSideComentario: { label: gettext("Comentario"), short: gettext("Coment."), known: ["Comentario", "Coment."] },
+        btnSideSuplemento: { label: gettext("Suplemento"), short: gettext("Supl."), known: ["Suplemento", "Supl."] },
+        btnCliente: { label: gettext("Cliente"), short: gettext("Cliente"), known: ["Cliente"] },
+        btnDividirCuenta: { label: gettext("Dividir cuenta"), short: gettext("Dividir"), known: ["Dividir cuenta", "Dividir"] },
+        btnCajon: { label: gettext("Cajón"), short: gettext("Cajón"), known: ["Cajón", "Caj\u00f3n"] },
+        btnOpciones: { label: gettext("Opciones"), short: gettext("Opc."), known: ["Opciones", "Opc."] },
+        btnSalir: { label: gettext("Salir"), short: gettext("Salir"), known: ["Salir"] },
+    };
+    const defaultItems = [
+        { type: "button", id: "btnCobrar" },
+        { type: "button", id: "btnComprobante" },
+        { type: "button", id: "btnReimprimir" },
+        { type: "button", id: "btnFactura" },
+        { type: "button", id: "btnDescuento" },
+        { type: "button", id: "btnInvita" },
+        { type: "button", id: "btnAnularLinea" },
+        { type: "sep", id: "sepLinea" },
+        { type: "button", id: "btnBorrarComanda" },
+        { type: "button", id: "btnSepararProductos" },
+        { type: "button", id: "btnJuntarProductos" },
+        { type: "button", id: "btnSideComentario" },
+        { type: "button", id: "btnSideSuplemento" },
+        { type: "button", id: "btnCliente" },
+        { type: "sep", id: "sepCliente" },
+        { type: "button", id: "btnDividirCuenta" },
+        { type: "button", id: "btnCajon" },
+        { type: "button", id: "btnOpciones" },
+        { type: "sep", id: "sepOpciones" },
+        { type: "button", id: "btnSalir" },
+    ];
+
+    const localizeConfiguredLabel = (buttonId, value, field) => {
+        const text = typeof value === "string" ? value.trim() : "";
+        const labels = localizedLabels[buttonId];
+        if (!labels) return text;
+        return labels.known.includes(text) ? labels[field] : text;
+    };
+
+    normalizeSidebarItems(config.items, defaultItems).forEach((item, index) => {
+        const element = item.type === "sep"
+            ? document.querySelector(`[data-sidebar-item="${item.id}"]`)
+            : document.getElementById(item.id);
+        if (element) element.style.order = String((index + 1) * 10);
+    });
+
+    Object.entries(buttonsConfig).forEach(([buttonId, settings]) => {
+        const button = document.getElementById(buttonId);
+        if (!button || !settings) return;
+
+        const span = Number(settings.span) === 1 ? 1 : 2;
+        button.style.gridColumn = `span ${span}`;
+
+        if (settings.bg) {
+            button.style.setProperty("background", settings.bg, "important");
+        }
+        if (settings.color) {
+            button.style.setProperty("color", settings.color, "important");
+        }
+        if (settings.border) {
+            button.style.setProperty("border-color", settings.border, "important");
+        }
+
+        if (typeof settings.label === "string" && settings.label.trim()) {
+            const label = localizeConfiguredLabel(buttonId, settings.label, "label");
+            const shortSource = typeof settings.short === "string" && settings.short.trim() ? settings.short.trim() : settings.label;
+            const short = localizeConfiguredLabel(buttonId, shortSource, "short") || label;
+            const labelElement = button.querySelector(".accion__label");
+            button.dataset.labelFull = label;
+            button.dataset.labelShort = short;
+            if (labelElement) labelElement.textContent = label;
+            if (button.hasAttribute("title")) button.setAttribute("title", label);
+        }
+
+        if (typeof settings.icon === "string" && settings.icon.trim()) {
+            applySidebarButtonIcon(button, settings.icon.trim());
+        }
+    });
+}
+
+function normalizeSidebarItems(rawItems, defaultItems) {
+    const valid = new Map(defaultItems.map(item => [item.id, item]));
+    const source = Array.isArray(rawItems) ? rawItems : defaultItems;
+    const seen = new Set();
+    const items = [];
+
+    source.forEach(rawItem => {
+        const id = typeof rawItem === "string" ? rawItem : rawItem?.id;
+        const item = valid.get(id);
+        if (!item || seen.has(id)) return;
+        seen.add(id);
+        items.push({ ...item });
+    });
+
+    defaultItems.forEach(item => {
+        if (!seen.has(item.id)) items.push({ ...item });
+    });
+
+    return items;
+}
+
+function applySidebarButtonIcon(button, iconName) {
+    if (!/^[a-z0-9-]+$/i.test(iconName)) return;
+    let icon = button.querySelector(".accion__icon-mask");
+    const currentIcon = button.querySelector(".icono--btn");
+
+    if (!icon) {
+        icon = document.createElement("span");
+        icon.className = "icono icono--btn accion__icon-mask";
+        if (currentIcon) {
+            currentIcon.replaceWith(icon);
+        } else {
+            button.prepend(icon);
+        }
+    }
+
+    icon.style.setProperty("--icon-url", `url("/static/ui/img/iconos/${iconName}.svg")`);
 }

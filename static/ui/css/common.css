@@ -117,7 +117,7 @@ img, a {
 /* Contenedor principal con scroll */
 .main {
   flex: 1;
-  padding: 18px 18px 14px;
+  padding: 8px 8px 10px;
   overflow: auto;
 }
 
@@ -137,7 +137,10 @@ img, a {
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  min-height: 52px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
 }
 
 .h1 {
@@ -480,8 +483,9 @@ img, a {
 .home-menu-grid {
   --home-card-min: 260px;
   --home-card-min-height: 182px;
-  width: min(100%, 1600px);
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--home-card-min)), 1fr));
   grid-auto-rows: minmax(var(--home-card-min-height), auto);
   gap: clamp(14px, 1.2vw, 22px);
@@ -573,7 +577,6 @@ img, a {
   .home-menu-grid {
     --home-card-min: 300px;
     --home-card-min-height: 190px;
-    max-width: 1000px;
   }
 }
 

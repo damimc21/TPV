@@ -8,7 +8,7 @@
 */
 
 import {
-    $, $$, escapeHtml, clamp, snapToGrid, uid, getQuery, overlap1D,
+    $, $$, clamp, snapToGrid, uid, getQuery, overlap1D,
     GRID, SNAP_THRESHOLD, getTypePrefix, isNumberedType, normalizeNumero
 } from './utils.js';
 import { apiSaveMap, apiLoadMap, apiListMaps, apiDeleteMap } from './api.js';
@@ -60,6 +60,14 @@ const CFG = cfgEl
     ? JSON.parse(cfgEl.textContent)
     : { mapsListUrl: "/config/maps/", editorUrl: "/config/maps/create/" };
 const Notify = window.Notify;
+const gettext = typeof window.gettext === "function" ? window.gettext : (text) => text;
+
+function formatText(text, values = {}) {
+    return Object.entries(values).reduce(
+        (current, [key, value]) => current.replace(new RegExp(`%\\(${key}\\)s`, "g"), String(value)),
+        gettext(text)
+    );
+}
 
 // Seguridad: si se carga en una pÃ¡gina sin editor, no hacemos nada
 if (!canvas || !world || !mapName) {
@@ -199,16 +207,16 @@ function updateSaveUI() {
     if (btnDeleteMap) btnDeleteMap.disabled = !hasSaved;
 
     if (!nameOk) {
-        saveState.textContent = "â€¢ Sin nombre";
+        saveState.textContent = `• ${gettext("Sin nombre")}`;
         saveState.style.color = "rgba(255,255,255,.6)";
         return;
     }
     if (dirty) {
-        saveState.textContent = "â€¢ Sin guardar";
+        saveState.textContent = `• ${gettext("Sin guardar")}`;
         saveState.style.color = "rgba(255,210,90,.9)";
         return;
     }
-    saveState.textContent = "âœ“ Guardado";
+    saveState.textContent = `✓ ${gettext("Guardado")}`;
     saveState.style.color = "rgba(120,255,160,.9)";
 }
 
@@ -442,9 +450,9 @@ function nextFreeNumero(prefix) {
 async function askNumeroRequired(prefix, current = "", opts = {}) {
     const { excludeId = null, reserved = [] } = opts;
     while (true) {
-        const r = await showPrompt(`Numero para ${prefix}:`, current, {
-            title: `Numero ${prefix}`,
-            placeholder: "1-999",
+        const r = await showPrompt(formatText("Número para %(prefix)s", { prefix }), current, {
+            title: formatText("Número %(prefix)s", { prefix }),
+            placeholder: gettext("1-999"),
             digitsOnly: true,
             minValue: 1,
             maxValue: 999,
@@ -455,11 +463,11 @@ async function askNumeroRequired(prefix, current = "", opts = {}) {
         const n = normalizeNumero(r);
         if (!n) continue;
         if (reserved.map(String).includes(String(n))) {
-            await Notify.info("Ese numero ya esta usado en esta seleccion. Elige otro.");
+            await Notify.info(gettext("Ese número ya está usado en esta selección. Elige otro."));
             continue;
         }
         if (isNumeroUsed(prefix, n, excludeId)) {
-            await Notify.info(`${prefix} ${n} ya existe. Elige otro.`);
+            await Notify.info(formatText("%(prefix)s %(number)s ya existe. Elige otro.", { prefix, number: n }));
             continue;
         }
         return n;
@@ -712,8 +720,12 @@ function rotateSelected(direction = 1) {
 async function deleteSelected() {
     if (selectedIds.size === 0) return;
     const ok = await Notify.confirmDanger(
-        `Â¿Eliminar ${selectedIds.size} elemento(s) seleccionado(s)?`,
-        { title: "Eliminar elementos", okText: "Eliminar" }
+        formatText("¿Eliminar %(count)s elemento(s) seleccionado(s)?", { count: selectedIds.size }),
+        {
+            title: gettext("Eliminar elementos"),
+            okText: gettext("Eliminar"),
+            cancelText: gettext("Cancelar"),
+        }
     );
     if (!ok) return;
     pushHistory();
@@ -933,13 +945,13 @@ async function setupPicker() {
             const header = document.createElement("a");
             header.className = "picker__header";
             header.href = CFG.mapsListUrl;
-            header.textContent = "Gestionar mapas";
+            header.textContent = gettext("Gestionar mapas");
             drop.appendChild(header);
 
             if (maps.length === 0) {
                 const empty = document.createElement("div");
                 empty.className = "picker__empty";
-                empty.textContent = "No hay mapas guardados";
+                empty.textContent = gettext("No hay mapas guardados");
                 drop.appendChild(empty);
                 return;
             }
@@ -949,13 +961,17 @@ async function setupPicker() {
                 item.className = "picker__item";
                 if (map?.id && m.id === map.id) item.classList.add("is-current");
                 item.type = "button";
-                item.textContent = escapeHtml(m.name || `Mapa #${m.id}`);
+                item.textContent = m.name || formatText("Mapa #%(id)s", { id: m.id });
 
                 item.addEventListener("click", async () => {
                     if (hasChanges()) {
                         const wantsSave = await Notify.confirm(
-                            "Tienes cambios sin guardar. Â¿Quieres guardarlos antes de abrir otro mapa?",
-                            { title: "Cambios sin guardar", okText: "Guardar" }
+                            gettext("Tienes cambios sin guardar. ¿Quieres guardarlos antes de abrir otro mapa?"),
+                            {
+                                title: gettext("Cambios sin guardar"),
+                                okText: gettext("Guardar"),
+                                cancelText: gettext("No guardar"),
+                            }
                         );
                         if (wantsSave) {
                             const saved = await saveCurrentMap();
@@ -1023,7 +1039,7 @@ async function loadOrCreate() {
             return;
         } catch (err) {
             console.error("Error al cargar mapa:", err);
-            await Notify.error("No se pudo cargar el mapa.");
+            await Notify.error(gettext("No se pudo cargar el mapa."));
         }
     }
 
@@ -1037,7 +1053,7 @@ async function loadOrCreate() {
 
 async function saveCurrentMap() {
     const name = mapName.value.trim();
-    if (!name) { await Notify.info("Escribe un nombre para el mapa."); return false; }
+    if (!name) { await Notify.info(gettext("Escribe un nombre para el mapa.")); return false; }
 
     const payload = {
         name,
@@ -1070,7 +1086,7 @@ async function saveCurrentMap() {
         return true;
     } catch (err) {
         console.error("Error al guardar:", err);
-        await Notify.error("Error al guardar el mapa.");
+        await Notify.error(gettext("Error al guardar el mapa."));
         return false;
     }
 }
@@ -1078,8 +1094,12 @@ async function saveCurrentMap() {
 async function deleteMap() {
     if (!map?.id) return;
     const ok = await Notify.confirmDanger(
-        "Â¿Seguro que quieres eliminar este mapa? Esta acciÃ³n no se puede deshacer.",
-        { title: "Eliminar mapa", okText: "Eliminar" }
+        gettext("¿Seguro que quieres eliminar este mapa? Esta acción no se puede deshacer."),
+        {
+            title: gettext("Eliminar mapa"),
+            okText: gettext("Eliminar"),
+            cancelText: gettext("Cancelar"),
+        }
     );
     if (!ok) return;
 
@@ -1100,15 +1120,19 @@ async function deleteMap() {
         mapName.focus();
     } catch (err) {
         console.error("Error al borrar mapa:", err);
-        await Notify.error("Error al borrar el mapa.");
+        await Notify.error(gettext("Error al borrar el mapa."));
     }
 }
 
 async function confirmLeave() {
     if (!hasChanges()) return true;
     return await Notify.confirmDanger(
-        "Tienes cambios sin guardar. Â¿Quieres salir sin guardar?",
-        { title: "Cambios sin guardar" }
+        gettext("Tienes cambios sin guardar. ¿Quieres salir sin guardar?"),
+        {
+            title: gettext("Cambios sin guardar"),
+            okText: gettext("Salir sin guardar"),
+            cancelText: gettext("Cancelar"),
+        }
     );
 }
 
@@ -1272,11 +1296,11 @@ function setupEvents() {
             const prefix = it ? getTypePrefix(it.type) : null;
 
             showContextMenu(e.clientX, e.clientY, [
-                { icon: "ðŸ“‹", label: "Copiar", action: () => copySelected() },
-                { icon: "ðŸ”ƒ", label: "Duplicar", action: () => duplicateSelected() },
+                { label: gettext("Copiar"), action: () => copySelected() },
+                { label: gettext("Duplicar"), action: () => duplicateSelected() },
                 "---",
                 ...(prefix ? [{
-                    icon: "#ï¸âƒ£", label: "Editar nÃºmero",
+                    label: gettext("Editar número"),
                     action: async () => {
                         const current = String(it.data?.numero ?? "");
                         pushHistory();
@@ -1288,17 +1312,17 @@ function setupEvents() {
                         afterAnyChange();
                     }
                 }] : []),
-                { icon: "â†©", label: "Rotar izquierda", action: () => rotateSelected(-1) },
-                { icon: "â†ª", label: "Rotar derecha", action: () => rotateSelected(1) },
+                { label: gettext("Rotar izquierda"), action: () => rotateSelected(-1) },
+                { label: gettext("Rotar derecha"), action: () => rotateSelected(1) },
                 "---",
-                { icon: "ðŸ—‘", label: "Eliminar", danger: true, action: () => deleteSelected() },
+                { label: gettext("Eliminar"), danger: true, action: () => deleteSelected() },
             ]);
         } else {
             // Clic derecho en canvas vacÃ­o
             showContextMenu(e.clientX, e.clientY, [
-                { icon: "ðŸ“‹", label: "Pegar", disabled: clipboard.length === 0, action: () => pasteClipboard() },
+                { label: gettext("Pegar"), disabled: clipboard.length === 0, action: () => pasteClipboard() },
                 {
-                    icon: "â˜", label: "Seleccionar todo", action: () => {
+                    label: gettext("Seleccionar todo"), action: () => {
                         (map.items || []).forEach((it) => selectedIds.add(it.id));
                         updateSelectionUI();
                     }
@@ -1546,8 +1570,12 @@ function setupEvents() {
     btnNewMap?.addEventListener("click", async () => {
         if (hasChanges()) {
             const wantsSave = await Notify.confirm(
-                "Tienes cambios sin guardar. Â¿Quieres guardarlos antes de crear un mapa nuevo?",
-                { title: "Cambios sin guardar", okText: "Guardar" }
+                gettext("Tienes cambios sin guardar. ¿Quieres guardarlos antes de crear un mapa nuevo?"),
+                {
+                    title: gettext("Cambios sin guardar"),
+                    okText: gettext("Guardar"),
+                    cancelText: gettext("No guardar"),
+                }
             );
             if (wantsSave) {
                 const saved = await saveCurrentMap();

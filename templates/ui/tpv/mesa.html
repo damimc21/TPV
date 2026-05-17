@@ -151,7 +151,7 @@
       {% icon "scissors" cls="icono icono--btn" %}
       <span class="accion__label">{% trans "Anular" %}</span>
     </button>
-    <div class="acciones__sep"></div>
+    <div class="acciones__sep" data-sidebar-item="sepLinea"></div>
     <button class="accion accion--peligro" type="button" id="btnBorrarComanda" data-label-full="{% trans 'Borrar comanda' %}" data-label-short="{% trans 'Borrar' %}">
       {% icon "trash-2" cls="icono icono--btn" %}
       <span class="accion__label">{% trans "Borrar comanda" %}</span>
@@ -180,7 +180,7 @@
       {% icon "user-round" cls="icono icono--btn" %}
       <span class="accion__label">{% trans "Cliente" %}</span>
     </button>
-    <div class="acciones__sep"></div>
+    <div class="acciones__sep" data-sidebar-item="sepCliente"></div>
     <button class="accion" type="button" id="btnDividirCuenta" data-label-full="{% trans 'Dividir cuenta' %}" data-label-short="{% trans 'Dividir' %}">
       {% icon "chart-pie" cls="icono icono--btn" %}
       <span class="accion__label">{% trans "Dividir cuenta" %}</span>
@@ -195,7 +195,7 @@
         <span class="accion__label">{% trans "Opciones" %}</span>
       </button>
     </div>
-    <div class="acciones__sep"></div>
+    <div class="acciones__sep" data-sidebar-item="sepOpciones"></div>
     <button class="accion" type="button" id="btnSalir" data-label-full="{% trans 'Salir' %}" data-label-short="{% trans 'Salir' %}">
       {% icon "log-out" cls="icono icono--btn" %}
       <span class="accion__label">{% trans "Salir" %}</span>
@@ -747,7 +747,8 @@
   "conexion": "{{ conexion|default:'LOCAL'|escapejs }}",
   "cajaEstado": "{{ global_estado_caja|default:'—'|escapejs }}",
   "jornadaEstado": "{{ global_estado_jornada|default:'—'|escapejs }}",
-  "indexUrl": "{% url 'ui:index' %}"
+  "indexUrl": "{% url 'ui:index' %}",
+  "sidebarLayout": {{ sidebar_config_json|default:"{}"|safe }}
 }
 </script>
 <script src="{% static 'ui/js/tpv/mesa_utils.js' %}"></script>

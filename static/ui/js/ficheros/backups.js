@@ -2,6 +2,10 @@
    BACKUPS - Logica JS
    ============================================================ */
 (function () {
+    const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+        ? window.gettext
+        : (text) => text;
+
     document.addEventListener("DOMContentLoaded", () => {
         initAutoBackupSelect();
     });
@@ -22,7 +26,7 @@
             || menu.querySelector(".fich-custom-select__option");
         if (selected) {
             input.value = selected.dataset.value || "0";
-            label.textContent = selected.textContent || "Deshabilitado";
+            label.textContent = selected.textContent || gettext("Deshabilitado");
             selected.classList.add("is-selected");
         }
 
@@ -40,7 +44,7 @@
             const option = event.target.closest(".fich-custom-select__option");
             if (!option) return;
             input.value = option.dataset.value || "0";
-            label.textContent = option.textContent || "Deshabilitado";
+            label.textContent = option.textContent || gettext("Deshabilitado");
             menu.querySelectorAll(".fich-custom-select__option").forEach((opt) => {
                 opt.classList.toggle("is-selected", opt === option);
             });
@@ -62,18 +66,18 @@
 
     window.crearBackup = async () => {
         const ok = await Notify.confirm(
-            "Se creara una copia completa de la base de datos y se guardara en el servidor. Puedes descargarla desde el historial cuando termine.",
+            gettext("Se creará una copia completa de la base de datos y se guardará en el servidor. Puedes descargarla desde el historial cuando termine."),
             {
-                title: "Crear backup",
-                confirmText: "Crear backup",
-                cancelText: "Cancelar",
+                title: gettext("Crear backup"),
+                confirmText: gettext("Crear backup"),
+                cancelText: gettext("Cancelar"),
             }
         );
         if (!ok) return;
 
         const btn = document.getElementById("btnCrearBackup");
         btn.disabled = true;
-        btn.textContent = "Creando backup...";
+        btn.textContent = gettext("Creando backup...");
 
         try {
             const resp = await fetch("/api/ficheros/backup/crear/", {
@@ -82,16 +86,16 @@
             });
             const data = await resp.json();
             if (data.ok) {
-                await Notify.success(`Backup creado: ${data.nombre}`, { title: "Backup" });
+                await Notify.success(`${gettext("Backup creado")}: ${data.nombre}`, { title: gettext("Backup") });
                 location.reload();
             } else {
-                await Notify.error(`Error: ${data.error}`);
+                await Notify.error(`${gettext("Error")}: ${data.error}`);
             }
         } catch (e) {
-            await Notify.error("Error de conexion");
+            await Notify.error(gettext("Error de conexión"));
         } finally {
             btn.disabled = false;
-            btn.textContent = "Crear backup ahora";
+            btn.textContent = gettext("Crear backup ahora");
         }
     };
 
@@ -101,14 +105,14 @@
 
     window.restaurarBackup = async (filename) => {
         const firstConfirm = await Notify.confirmDanger(
-            `ATENCION: Esto restaurara la base de datos al estado del backup "${filename}".\n\nSe creara un backup de seguridad del estado actual antes de restaurar.\n\n¿Estas seguro?`,
-            { title: "Restaurar backup" }
+            `${gettext("Atención")}: ${gettext("Esto restaurará la base de datos al estado del backup")} "${filename}".\n\n${gettext("Se creará un backup de seguridad del estado actual antes de restaurar.")}\n\n${gettext("¿Estás seguro?")}`,
+            { title: gettext("Restaurar backup") }
         );
         if (!firstConfirm) return;
 
         const secondConfirm = await Notify.confirmDanger(
-            "CONFIRMACION FINAL: Esta operacion es irreversible.\n\n¿Continuar con la restauracion?",
-            { title: "Confirmacion final" }
+            `${gettext("Confirmación final")}: ${gettext("Esta operación es irreversible.")}\n\n${gettext("¿Continuar con la restauración?")}`,
+            { title: gettext("Confirmación final") }
         );
         if (!secondConfirm) return;
 
@@ -127,13 +131,13 @@
             });
             const data = await resp.json();
             if (data.ok) {
-                await Notify.success("Backup restaurado correctamente. La pagina se recargara.", { title: "Backup" });
+                await Notify.success(gettext("Backup restaurado correctamente. La página se recargará."), { title: gettext("Backup") });
                 location.reload();
             } else {
-                await Notify.error(`Error: ${data.error}`);
+                await Notify.error(`${gettext("Error")}: ${data.error}`);
             }
         } catch (e) {
-            await Notify.error("Error de conexion");
+            await Notify.error(gettext("Error de conexión"));
         }
     }
 
@@ -150,13 +154,13 @@
                 body: JSON.stringify({ clave: "backup_auto_intervalo", valor: intervalo }),
             });
             if (resp.ok) {
-                status.textContent = intervalo === "0" ? "Deshabilitado" : "Guardado";
+                status.textContent = intervalo === "0" ? gettext("Deshabilitado") : gettext("Guardado");
                 setTimeout(() => {
                     status.textContent = "";
                 }, 2000);
             }
         } catch (e) {
-            status.textContent = "Error";
+            status.textContent = gettext("Error");
         }
     };
 })();

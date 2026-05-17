@@ -52,7 +52,7 @@
                     <span class="inputWrap">
                         <input id="mapName" class="editor__input" type="text" placeholder="{% trans 'Ej: Salón' %}">
                         <button class="inputWrap__clear hidden" id="btnNameCancel" type="button"
-                            aria-label="{% trans 'Cancelar cambios del nombre' %}">×</button>
+                            aria-label="{% trans 'Cancelar cambios del nombre' %}">&times;</button>
                     </span>
 
                     <span id="saveState" class="editor__hint"></span>
@@ -95,13 +95,17 @@
                 <div class="panel__heading">{% trans "Herramientas" %}</div>
                 <div class="panel__grid panel__grid--2">
                     <button class="tool" type="button" id="btnPanMode" data-tip="{% trans 'Mover mapa' %}"
-                        data-shortcut="Espacio" aria-label="{% trans 'Mover mapa' %}">
-                        <span class="tool__icon">👋</span>
+                        data-shortcut="{% trans 'Espacio' %}" aria-label="{% trans 'Mover mapa' %}">
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/iconos/move.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Mover" %}</span>
                     </button>
                     <button class="tool is-active" type="button" data-tool="select" data-tip="{% trans 'Seleccionar' %}"
-                        data-shortcut="Espacio" aria-label="{% trans 'Seleccionar' %}">
-                        <span class="tool__icon">🖱️</span>
+                        data-shortcut="{% trans 'Espacio' %}" aria-label="{% trans 'Seleccionar' %}">
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/iconos/mouse-pointer-click.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Selec." %}</span>
                     </button>
                 </div>
@@ -115,22 +119,30 @@
                 <div class="panel__grid panel__grid--2">
                     <button class="tool" type="button" data-tool="mesa_normal" draggable="true"
                         data-tip="{% trans 'Mesa normal' %}" aria-label="{% trans 'Mesa normal' %}">
-                        <span class="tool__icon">🪑</span>
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/map_editor_icons/table-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Mesa" %}</span>
                     </button>
                     <button class="tool" type="button" data-tool="mesa_grande" draggable="true"
                         data-tip="{% trans 'Mesa grande' %}" aria-label="{% trans 'Mesa grande' %}">
-                        <span class="tool__icon">🧩</span>
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/map_editor_icons/table-solid-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Grande" %}</span>
                     </button>
                     <button class="tool" type="button" data-tool="taburete" draggable="true"
                         data-tip="{% trans 'Taburete' %}" aria-label="{% trans 'Taburete' %}">
-                        <span class="tool__icon">🟠</span>
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/map_editor_icons/stool-2-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Tab." %}</span>
                     </button>
                     <button class="tool" type="button" data-tool="llevar" draggable="true"
                         data-tip="{% trans 'Llevar' %}" aria-label="{% trans 'Llevar' %}">
-                        <span class="tool__icon">👜</span>
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/map_editor_icons/take-away-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Llevar" %}</span>
                     </button>
                 </div>
@@ -142,9 +154,11 @@
             <div class="panel__section">
                 <div class="panel__heading">{% trans "Decoración" %}</div>
                 <div class="panel__grid panel__grid--2">
-                    <button class="tool" type="button" data-tool="planta" draggable="true" data-tip="Planta"
+                    <button class="tool" type="button" data-tool="planta" draggable="true" data-tip="{% trans 'Planta' %}"
                         aria-label="{% trans 'Planta' %}">
-                        <span class="tool__icon">🌿</span>
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/map_editor_icons/plant-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Planta" %}</span>
                     </button>
                 </div>
@@ -159,23 +173,31 @@
                     <button class="tool tool--action" id="btnRotateL" type="button"
                         data-tip="{% trans 'Girar izquierda' %}" data-shortcut="Shift + R"
                         aria-label="{% trans 'Girar izquierda' %}">
-                        <span class="tool__icon">↺</span>
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/iconos/rotate-ccw.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Izq." %}</span>
                     </button>
                     <button class="tool tool--action" id="btnRotateR" type="button"
                         data-tip="{% trans 'Girar derecha' %}" data-shortcut="R"
                         aria-label="{% trans 'Girar derecha' %}">
-                        <span class="tool__icon">↻</span>
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/iconos/rotate-cw.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Der." %}</span>
                     </button>
                     <button class="tool tool--action" id="btnEditNumber" type="button"
                         data-tip="{% trans 'Editar número' %}" aria-label="{% trans 'Editar número' %}">
-                        <span class="tool__icon">✍️</span>
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/iconos/square-pen.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Núm." %}</span>
                     </button>
                     <button class="tool tool--danger" id="btnDelete" type="button" data-tip="{% trans 'Eliminar' %}"
-                        data-shortcut="Supr" aria-label="{% trans 'Eliminar' %}">
-                        <span class="tool__icon">🗑️</span>
+                        data-shortcut="{% trans 'Supr' %}" aria-label="{% trans 'Eliminar' %}">
+                        <span class="tool__icon">
+                            <img src="{% static 'ui/img/iconos/trash-2.svg' %}" class="svg-icon" width="22" alt="">
+                        </span>
                         <span class="tool__label">{% trans "Borrar" %}</span>
                     </button>
                 </div>

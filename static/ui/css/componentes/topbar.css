@@ -104,6 +104,26 @@
   cursor: pointer;
   text-align: left;
   font-weight: 850;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.dropdown__icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, .08);
+  flex: 0 0 auto;
+}
+
+.dropdown__icon img {
+  width: 15px;
+  height: 15px;
 }
 
 /* Estado seleccionado en el menú hamburguesa */
@@ -162,15 +182,17 @@
 
 .userMenu__dropdown{
   position: absolute;
-  top: calc(100% + 14px);
+  top: calc(100% + 12px);
   right: 0;
-  min-width: 260px;
-  padding: 12px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: rgba(20,20,30,.92);
-  box-shadow: 0 18px 50px rgba(0,0,0,.45);
-  backdrop-filter: blur(14px);
+  min-width: 318px;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background:
+    linear-gradient(145deg, rgba(27, 29, 46, .96), rgba(16, 20, 34, .96));
+  box-shadow: 0 22px 60px rgba(0,0,0,.52), inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   z-index: 4000;
   display: none;
   opacity: 0;
@@ -187,25 +209,27 @@
   width: 16px;
   height: 16px;
   transform: rotate(45deg);
-  background: rgba(20,20,30,.92);
-  border-left: 1px solid var(--border);
-  border-top: 1px solid var(--border);
+  background: rgba(27, 29, 46, .96);
+  border-left: 1px solid rgba(255, 255, 255, .12);
+  border-top: 1px solid rgba(255, 255, 255, .12);
 }
 
 
 [data-theme="light"] .userMenu__dropdown{
-  background: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.96);
   box-shadow: 0 18px 50px rgba(0,0,0,.18);
+  border-color: rgba(0,0,0,.08);
 }
 
 [data-theme="light"] .userMenu__dropdown::before{
-  background: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.96);
+  border-color: rgba(0,0,0,.08);
 }
 
 
 .userMenu__dropdown.is-open{
   display: grid;
-  gap: 10px;
+  gap: 8px;
   opacity: 1;
   transform: translateY(0) scale(1);
 }
@@ -213,49 +237,102 @@
 
 .userMenu__item{
   all: unset;
-  display: flex;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 
-  padding: 12px 14px;
-  border-radius: 14px;
+  min-height: 64px;
+  padding: 10px;
+  border-radius: 16px;
   cursor: pointer;
 
   color: var(--text);
-  font-weight: 850;
+  font-weight: 900;
   font-size: 14px;
 
-  background: rgba(255,255,255,.06);
-  border: 1px solid transparent;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.06);
+  transition: transform .14s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease;
 }
 
 .userMenu__item:hover{
-  background: rgba(255,255,255,.10);
-  border-color: var(--border);
+  background: rgba(255,255,255,.095);
+  border-color: rgba(255,255,255,.14);
   transform: translateY(-1px);
-  transition: transform .12s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+.userMenu__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 184, 166, .12);
+  border: 1px solid rgba(20, 184, 166, .18);
+}
+
+.userMenu__icon img {
+  width: 21px;
+  height: 21px;
+}
+
+.userMenu__itemText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.userMenu__itemTitle {
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.userMenu__itemHint {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.15;
 }
 
 [data-theme="light"] .userMenu__item{
   background: rgba(0,0,0,.05);
+  border-color: rgba(0,0,0,.06);
 }
 
 [data-theme="light"] .userMenu__item:hover{
   background: rgba(0,0,0,.08);
+  border-color: rgba(0,0,0,.12);
 }
 
 .userMenu__item--danger{
+  background: rgba(255,59,48,.10);
+  border-color: rgba(255,59,48,.22);
+}
+
+.userMenu__item--danger .userMenu__icon {
   background: rgba(255,59,48,.12);
-  border-color: rgba(255,59,48,.25);
+  border-color: rgba(255,59,48,.22);
+}
+
+.userMenu__item--danger .userMenu__itemTitle {
+  color: #fecaca;
 }
 
 .userMenu__item--danger:hover{
-  background: rgba(255,59,48,.16);
+  background: rgba(255,59,48,.15);
+  border-color: rgba(255,59,48,.34);
 }
 
 .meta--button.is-active{
-  border-color: rgba(255,255,255,.16);
-  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.48);
+  background: rgba(255,255,255,.10);
+  box-shadow: 0 0 0 2px rgba(255,255,255,.10);
 }
 
 [data-theme="light"] .meta--button.is-active{
@@ -320,14 +397,41 @@
   color: var(--text);
   cursor: pointer;
   font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon-btn:hover {
   background: var(--panel2);
 }
 
+.icon-btn.is-active {
+  border-color: rgba(255,255,255,.22);
+  background: rgba(255,255,255,.10);
+}
+
+.icon-btn img {
+  width: 22px;
+  height: 22px;
+}
+
 @media (max-width: 760px) {
   .brand__name { font-size: 16px; }
+}
+
+@media (max-width: 520px) {
+  .userMenu__dropdown {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    top: 68px;
+    min-width: 0;
+  }
+
+  .userMenu__dropdown::before {
+    display: none;
+  }
 }
 
 .topbar__logout-form {
@@ -337,4 +441,4 @@
 .dropdown__item--full {
     width: 100%;
     text-align: left;
-}
+}

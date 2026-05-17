@@ -10,11 +10,16 @@
 } from './utils.js';
 import { initPlantillasInventario } from './plantillas.js';
 
+const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+    ? window.gettext
+    : (text) => text;
+const currentLocale = document.documentElement.lang || 'es';
+
 document.addEventListener('DOMContentLoaded', function() {
     const Notify = window.Notify;
     let allArticulos = [];
     let allCategorias = [];
-    let allProductos = []; // Para el combo de vinculaciÃ³n
+    let allProductos = [];
     let allProveedores = [];
     const STOCK_VIEW_STORAGE_KEY = 'tpv.stock.inventory.view';
     let currentView = localStorage.getItem(STOCK_VIEW_STORAGE_KEY) === 'table' ? 'table' : 'cards';
@@ -58,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const proveedores = await resp.json();
             allProveedores = proveedores
                 .filter(p => p.activo !== false)
-                .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+                .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', currentLocale, { sensitivity: 'base' }));
             renderProveedorSelect();
         } catch (err) {
             console.error("Error loading providers:", err);
@@ -73,18 +78,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const options = allProveedores.map(p => (
             `<option value="${p.id}">${escapeHtml(p.nombre)}</option>`
         )).join('');
-        select.innerHTML = `<option value="">Sin proveedor</option>${options}`;
+        select.innerHTML = `<option value="">${gettext('Sin proveedor')}</option>${options}`;
         select.value = value;
     }
 
     function initSortControl() {
         const labels = {
-            name_asc: 'Nombre A-Z',
-            name_desc: 'Nombre Z-A',
-            stock_desc: 'Stock mayor',
-            stock_asc: 'Stock menor',
-            min_desc: 'MÃ­nimo mayor',
-            state_priority: 'Prioridad stock',
+            name_asc: gettext('Nombre A-Z'),
+            name_desc: gettext('Nombre Z-A'),
+            stock_desc: gettext('Stock mayor'),
+            stock_asc: gettext('Stock menor'),
+            min_desc: gettext('Mínimo mayor'),
+            state_priority: gettext('Prioridad stock'),
         };
         if (!labels[currentSort]) currentSort = 'name_asc';
 
@@ -100,15 +105,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function initFilterControls() {
         const cat = allCategorias.find(c => String(c.id) === String(currentCat));
-        selectCat(cat ? String(cat.id) : '', cat ? cat.nombre : 'Todas las CategorÃ­as', false);
+        selectCat(cat ? String(cat.id) : '', cat ? cat.nombre : gettext('Todas las Categorías'), false);
 
         const statusLabels = {
-            all: 'Todos',
-            order: 'Para pedir',
-            review: 'Revisar',
-            ok: 'En stock',
-            low: 'Stock bajo',
-            out: 'Sin stock',
+            all: gettext('Todos'),
+            order: gettext('Para pedir'),
+            review: gettext('Revisar'),
+            ok: gettext('En stock'),
+            low: gettext('Stock bajo'),
+            out: gettext('Sin stock'),
         };
         if (!statusLabels[currentStatus]) currentStatus = 'all';
         selectStatus(currentStatus, statusLabels[currentStatus], false);
@@ -121,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const active = [catName, statusName].filter(Boolean).length;
         const display = document.getElementById('selectedFilterName');
         if (!display) return;
-        const sortActive = sortName && sortName !== 'Nombre A-Z';
+        const sortActive = sortName && sortName !== gettext('Nombre A-Z');
         const count = active + (sortActive ? 1 : 0);
         display.innerText = count ? String(count) : '';
         display.classList.toggle('is-visible', count > 0);
@@ -129,17 +134,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCatDropdown() {
         const dropdown = document.getElementById('dropdownCat');
-        let html = '<div class="custom-option is-selected" onclick="selectCat(\'\', \'Todas las CategorÃ­as\')">Todas las CategorÃ­as</div>';
+        const allCategories = gettext('Todas las Categorías');
+        let html = `<div class="custom-option is-selected" data-cat-id="" data-cat-name="${escapeHtml(allCategories)}">${escapeHtml(allCategories)}</div>`;
         allCategorias.forEach(c => {
-            html += `<div class="custom-option" onclick="selectCat('${c.id}', '${c.nombre}')">${c.nombre}</div>`;
+            html += `<div class="custom-option" data-cat-id="${c.id}" data-cat-name="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</div>`;
         });
         dropdown.innerHTML = html;
 
-        // TambiÃ©n actualizar el select del modal de nuevo artÃ­culo
         const selectCat = document.getElementById('art_categoria');
         if (selectCat) {
-            selectCat.innerHTML = '<option value="">Seleccionar...</option>' +
-                allCategorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+            selectCat.innerHTML = `<option value="">${gettext('Seleccionar...')}</option>` +
+                allCategorias.map(c => `<option value="${c.id}">${escapeHtml(c.nombre)}</option>`).join('');
         }
     }
 
@@ -172,6 +177,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (shouldRender) renderView();
     };
 
+    document.getElementById('dropdownCat')?.addEventListener('click', (event) => {
+        const option = event.target.closest('.custom-option');
+        if (!option) return;
+        selectCat(option.dataset.catId || '', option.dataset.catName || option.textContent.trim());
+    });
+
     window.selectStatus = (id, nombre, shouldRender = true) => {
         const input = document.getElementById('filterStatus');
         input.value = id;
@@ -203,9 +214,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.resetStockFilters = () => {
-        selectCat('', 'Todas las CategorÃ­as', false);
-        selectStatus('all', 'Todos', false);
-        selectSort('name_asc', 'Nombre A-Z');
+        selectCat('', gettext('Todas las Categorías'), false);
+        selectStatus('all', gettext('Todos'), false);
+        selectSort('name_asc', gettext('Nombre A-Z'));
         document.getElementById('containerFilters').classList.remove('is-active');
     };
 
@@ -236,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const stateRank = { review: 0, out: 1, low: 2, ok: 3 };
         const sortId = currentSort || document.getElementById('filterSort')?.value || 'name_asc';
         return [...items].sort((a, b) => {
-            const nameA = (a.nombre || '').localeCompare(b.nombre || '', 'es', { sensitivity: 'base' });
+            const nameA = (a.nombre || '').localeCompare(b.nombre || '', currentLocale, { sensitivity: 'base' });
             const stockA = parseFloat(a.stock_actual) || 0;
             const stockB = parseFloat(b.stock_actual) || 0;
             const minA = parseFloat(a.stock_minimo) || 0;
@@ -302,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="inventory-empty__icon">
                             <img src="/static/ui/img/iconos/package-search.svg" class="svg-icon" alt="">
                         </div>
-                        <p class="inventory-empty__title">Cargando inventario...</p>
+                        <p class="inventory-empty__title">${gettext('Cargando inventario...')}</p>
                     </div>
                 </div>
             `;
@@ -316,11 +327,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="inventory-empty__icon">
                             <img src="/static/ui/img/iconos/package-search.svg" class="svg-icon" alt="">
                         </div>
-                        <p class="inventory-empty__title">Tu inventario estÃ¡ vacÃ­o</p>
-                        <p class="inventory-empty__text">Empieza aÃ±adiendo materias primas, bebidas o usa una plantilla para crear solo lo que quieras controlar.</p>
+                        <p class="inventory-empty__title">${gettext('Tu inventario está vacío')}</p>
+                        <p class="inventory-empty__text">${gettext('Empieza añadiendo materias primas, bebidas o usa una plantilla para crear solo lo que quieras controlar.')}</p>
                         <div class="inventory-empty__actions">
-                            <button onclick="openModal('modalPlantillas')" class="btn-fast btn-fast-secondary">Usar plantilla</button>
-                            <button onclick="openModal('modalArticulo')" class="btn-fast btn-fast-primary">+ Nuevo artÃ­culo</button>
+                            <button onclick="openModal('modalPlantillas')" class="btn-fast btn-fast-secondary">${gettext('Usar plantilla')}</button>
+                            <button onclick="openModal('modalArticulo')" class="btn-fast btn-fast-primary">+ ${gettext('Nuevo artículo')}</button>
                         </div>
                     </div>
                 </div>
@@ -335,8 +346,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="inventory-empty__icon">
                             <img src="/static/ui/img/iconos/package-search.svg" class="svg-icon" alt="">
                         </div>
-                        <p class="inventory-empty__title">No hay coincidencias</p>
-                        <p class="inventory-empty__text">Prueba a cambiar la bÃºsqueda, la categorÃ­a o el estado seleccionado.</p>
+                        <p class="inventory-empty__title">${gettext('No hay coincidencias')}</p>
+                        <p class="inventory-empty__text">${gettext('Prueba a cambiar la búsqueda, la categoría o el estado seleccionado.')}</p>
                     </div>
                 </div>
             `;
@@ -348,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const sMin = parseFloat(a.stock_minimo);
             const state = getStockState(a);
             const stateLabel = getStateLabel(state);
-            const catName = a.categoria_nombre || 'General';
+            const catName = a.categoria_nombre || gettext('General');
             const safeName = a.nombre.replace(/'/g, "\\'");
             const step = getStepForUnit(a.unidad);
             const minValueText = sMin > 0 ? formatStockValue(sMin) : '--';
@@ -359,10 +370,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Format stock value for display (drop decimal if 0)
             const stockDisplay = formatStockValue(sActual);
             const autoHtml = (a.auto_descontar && a.producto_vinculado_nombre)
-                ? `<div class="stock-auto-pill" title="Descuento automatico activado">Auto: ${escapeHtml(a.producto_vinculado_nombre)}</div>`
-                : '<div class="stock-auto-pill stock-auto-pill--ghost" aria-hidden="true">Auto TPV</div>';
+                ? `<div class="stock-auto-pill" title="${gettext('Descuento automático activado')}">${gettext('Auto')}: ${escapeHtml(a.producto_vinculado_nombre)}</div>`
+                : `<div class="stock-auto-pill stock-auto-pill--ghost" aria-hidden="true">${gettext('Auto TPV')}</div>`;
             const providerHtml = a.proveedor_nombre
-                ? `<div class="stock-provider-pill" title="Proveedor">${escapeHtml(a.proveedor_nombre)}</div>`
+                ? `<div class="stock-provider-pill" title="${gettext('Proveedor')}">${escapeHtml(a.proveedor_nombre)}</div>`
                 : '';
 
             const card = document.createElement('div');
@@ -377,8 +388,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="card-auto-slot">${providerHtml}${autoHtml}</div>
 
-                <button type="button" class="stock-hero" onclick="openAjuste(${a.id}, '${safeName}', ${sActual})" title="Ajustar stock">
-                    <span class="stock-hero-kicker">Stock actual</span>
+                <button type="button" class="stock-hero" onclick="openAjuste(${a.id}, '${safeName}', ${sActual})" title="${gettext('Ajustar stock')}">
+                    <span class="stock-hero-kicker">${gettext('Stock actual')}</span>
                     <div class="stock-hero-main">
                         <span class="stock-hero-value val-${state}">${stockDisplay}</span>
                         <span class="stock-hero-unit">${getUnitString(a.unidad)}</span>
@@ -388,28 +399,28 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="badge-dot"></span>
                             ${stateLabel}
                         </span>
-                        <span class="stock-hero-min${stockMinClass}">Min. <span class="min-value">${minValueText}</span></span>
+                        <span class="stock-hero-min${stockMinClass}">${gettext('Min.')} <span class="min-value">${minValueText}</span></span>
                     </div>
                 </button>
 
                 <div class="card-controls">
                     <div class="stepper">
-                        <button class="stepper-btn s-sub" onclick="quickAdjust(${a.id}, ${sActual}, -${step})" title="Salida rapida ${step}">
+                        <button class="stepper-btn s-sub" onclick="quickAdjust(${a.id}, ${sActual}, -${step})" title="${gettext('Salida rápida')} ${step}">
                             ${SVG.minus}
                         </button>
                         <span class="stepper-value" id="stepper-${a.id}">${stockDisplay}</span>
-                        <button class="stepper-btn s-add" onclick="quickAdjust(${a.id}, ${sActual}, ${step})" title="Entrada rapida ${step}">
+                        <button class="stepper-btn s-add" onclick="quickAdjust(${a.id}, ${sActual}, ${step})" title="${gettext('Entrada rápida')} ${step}">
                             ${SVG.plus}
                         </button>
                     </div>
                     <div class="card-actions">
-                        <button class="ctrl-btn ctrl-log" onclick="viewHistory(${a.id})" title="Historial">
+                        <button class="ctrl-btn ctrl-log" onclick="viewHistory(${a.id})" title="${gettext('Historial')}">
                             ${SVG.log}
-                            <span>Hist.</span>
+                            <span>${gettext('Hist.')}</span>
                         </button>
-                        <button class="ctrl-btn ctrl-cfg" onclick="editArticulo(${a.id})" title="Editar articulo">
+                        <button class="ctrl-btn ctrl-cfg" onclick="editArticulo(${a.id})" title="${gettext('Editar artículo')}">
                             ${SVG.gear}
-                            <span>Editar</span>
+                            <span>${gettext('Editar')}</span>
                         </button>
                     </div>
                 </div>
@@ -432,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="inventory-empty__icon">
                                     <img src="/static/ui/img/iconos/package-search.svg" class="svg-icon" alt="">
                                 </div>
-                                <p class="inventory-empty__title">Cargando inventario...</p>
+                                <p class="inventory-empty__title">${gettext('Cargando inventario...')}</p>
                             </div>
                         </div>
                     </td>
@@ -451,16 +462,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="inventory-empty__icon">
                                     <img src="/static/ui/img/iconos/package-search.svg" class="svg-icon" alt="">
                                 </div>
-                                <p class="inventory-empty__title">${isInventoryEmpty ? 'Tu inventario estÃ¡ vacÃ­o' : 'No hay coincidencias'}</p>
+                                <p class="inventory-empty__title">${isInventoryEmpty ? gettext('Tu inventario está vacío') : gettext('No hay coincidencias')}</p>
                                 <p class="inventory-empty__text">
                                     ${isInventoryEmpty
-                                        ? 'Empieza aÃ±adiendo materias primas, bebidas o usa una plantilla para crear solo lo que quieras controlar.'
-                                        : 'Prueba a cambiar la bÃºsqueda, la categorÃ­a o el estado seleccionado.'}
+                                        ? gettext('Empieza añadiendo materias primas, bebidas o usa una plantilla para crear solo lo que quieras controlar.')
+                                        : gettext('Prueba a cambiar la búsqueda, la categoría o el estado seleccionado.')}
                                 </p>
                                 ${isInventoryEmpty ? `
                                     <div class="inventory-empty__actions">
-                                        <button onclick="openModal('modalPlantillas')" class="btn-fast btn-fast-secondary">Usar plantilla</button>
-                                        <button onclick="openModal('modalArticulo')" class="btn-fast btn-fast-primary">+ Nuevo artÃ­culo</button>
+                                        <button onclick="openModal('modalPlantillas')" class="btn-fast btn-fast-secondary">${gettext('Usar plantilla')}</button>
+                                        <button onclick="openModal('modalArticulo')" class="btn-fast btn-fast-primary">+ ${gettext('Nuevo artículo')}</button>
                                     </div>
                                 ` : ''}
                             </div>
@@ -474,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
         filtered.forEach(a => {
             const sActual = parseFloat(a.stock_actual);
             const state = getStockState(a);
-            const catName = a.categoria_nombre || 'General';
+            const catName = a.categoria_nombre || gettext('General');
             const step = getStepForUnit(a.unidad);
 
             const stockDisplay = formatStockValue(sActual);
@@ -503,8 +514,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="td-actions">
                         <button class="tbl-btn tbl-add" onclick="quickAdjust(${a.id}, ${sActual}, ${step})">+${step}</button>
                         <button class="tbl-btn tbl-sub" onclick="quickAdjust(${a.id}, ${sActual}, -${step})">-${step}</button>
-                        <button class="tbl-btn tbl-log" onclick="viewHistory(${a.id})">Log</button>
-                        <button class="tbl-btn" onclick="editArticulo(${a.id})">Editar</button>
+                        <button class="tbl-btn tbl-log" onclick="viewHistory(${a.id})">${gettext('Log')}</button>
+                        <button class="tbl-btn" onclick="editArticulo(${a.id})">${gettext('Editar')}</button>
                     </div>
                 </td>
             `;
@@ -523,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('art_proveedor').value = '';
             document.getElementById('art_stock').value = '0';
             document.getElementById('art_minimo').value = '0';
-            document.getElementById('modalArtTitle').innerText = 'Nuevo ArtÃ­culo';
+            document.getElementById('modalArtTitle').innerText = gettext('Nuevo Artículo');
 
             document.getElementById('art_auto_desc').checked = false;
             document.getElementById('art_producto_vinculado').value = '';
@@ -570,12 +581,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const productos = await res.json();
                 allProductos = productos
                     .filter(p => p.eliminado !== true)
-                    .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+                    .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', currentLocale, { sensitivity: 'base' }));
                 const sel = document.getElementById('art_producto_vinculado');
-                let html = '<option value="">Producto TPV opcional...</option>';
+                let html = `<option value="">${gettext('Producto TPV opcional...')}</option>`;
                 allProductos.forEach(p => {
-                    const estado = p.activo === false ? ' (inactivo)' : '';
-                    html += `<option value="${p.id}">${p.nombre}${estado}</option>`;
+                    const estado = p.activo === false ? ` (${gettext('inactivo')})` : '';
+                    html += `<option value="${p.id}">${escapeHtml(p.nombre)}${estado}</option>`;
                 });
                 sel.innerHTML = html;
             }
@@ -600,12 +611,12 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         if (!data.nombre) {
-      Notify.info('El nombre es obligatorio');
+            Notify.info(gettext('El nombre es obligatorio'));
             return;
         }
 
         if (autoDescontar && !productoVinculado) {
-      Notify.info('Elige un producto TPV para activar el descuento automatico.');
+            Notify.info(gettext('Elige un producto TPV para activar el descuento automático.'));
             return;
         }
 
@@ -630,7 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const firstError = err && typeof err === 'object'
                     ? Object.values(err).flat().join('\n')
                     : null;
-        Notify.error(firstError || "Error guardando el articulo.");
+                Notify.error(firstError || gettext('Error guardando el artículo.'));
             }
         } catch (e) { console.error(e); }
     };
@@ -652,7 +663,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleAutoDesc();
             document.getElementById('art_producto_vinculado').value = art.producto_vinculado || '';
 
-            document.getElementById('modalArtTitle').innerText = 'Editar ArtÃ­culo';
+            document.getElementById('modalArtTitle').innerText = gettext('Editar Artículo');
             document.getElementById('modalArticulo').classList.remove('hidden');
         });
     };
@@ -674,21 +685,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({
                     cantidad: delta,
                     tipo: delta > 0 ? 'entrada' : 'salida',
-                    motivo: delta > 0 ? 'Entrada rapida' : 'Salida rapida'
+                    motivo: delta > 0 ? gettext('Entrada rápida') : gettext('Salida rápida')
                 })
             });
             if (resp.ok) loadData();
         } catch (err) { console.error(err); }
     };
 
-    // Modal Ajuste Manual (Abre el modal existente)
     window.openAjuste = (id, nombre, actual) => {
         document.getElementById('ajuste_prod_id').value = id;
         document.getElementById('ajuste_prod_nombre').innerText = nombre;
         document.getElementById('ajuste_stock_actual').innerText = formatStockValue(actual);
         document.getElementById('ajuste_cantidad').value = '0';
         document.getElementById('ajuste_motivo').value = '';
-        selectAjusteTipo('entrada', 'Entrada');
+        selectAjusteTipo('entrada', gettext('Entrada'));
         document.getElementById('modalAjuste').classList.remove('hidden');
     };
 
@@ -721,14 +731,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadData();
             } else {
                 const err = await resp.json().catch(() => null);
-      Notify.error((err && (err.error || Object.values(err).flat().join('\n'))) || 'No se pudo guardar el movimiento.');
+                Notify.error((err && (err.error || Object.values(err).flat().join('\n'))) || gettext('No se pudo guardar el movimiento.'));
             }
         } catch (err) { console.error(err); }
     };
 
     window.viewHistory = async (id) => {
         const list = document.getElementById('movHistoryList');
-        list.innerHTML = `<div class="p-10 text-center opacity-50">Cargando bitÃ¡cora...</div>`;
+        list.innerHTML = `<div class="p-10 text-center opacity-50">${gettext('Cargando bitácora...')}</div>`;
         document.getElementById('modalHistorial').classList.remove('hidden');
 
         try {
@@ -736,7 +746,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (resp.ok) {
                 const data = await resp.json();
                 if (data.length === 0) {
-                    list.innerHTML = '<div class="p-10 text-center text-slate-500">No hay registros histÃ³ricos.</div>';
+                    list.innerHTML = `<div class="p-10 text-center text-slate-500">${gettext('No hay registros históricos.')}</div>`;
                     return;
                 }
                 list.innerHTML = '';
@@ -760,7 +770,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <span class="text-xs text-slate-500">${fecha}</span>
                                 </div>
                                 <div class="text-xs text-slate-400">${m.motivo || '-'}</div>
-                                <div class="text-[0.65rem] text-slate-600 mt-1">De ${formatStockValue(m.anterior)} a ${formatStockValue(m.nuevo)}</div>
+                                <div class="text-[0.65rem] text-slate-600 mt-1">${gettext('De')} ${formatStockValue(m.anterior)} ${gettext('a')} ${formatStockValue(m.nuevo)}</div>
                             </div>
                             <div class="text-right text-lg font-black" style="color: ${color}">
                                 ${sign}${formatStockValue(valReal)}
@@ -769,7 +779,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                 });
             }
-        } catch (err) { list.innerHTML = '<div class="text-center text-rose-500">Error</div>'; }
+        } catch (err) { list.innerHTML = `<div class="text-center text-rose-500">${gettext('Error')}</div>`; }
     };
 
     window.selectAjusteTipo = (id, nombre) => {

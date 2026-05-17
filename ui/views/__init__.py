@@ -85,6 +85,8 @@ from .albaranes_facturas import (
 
 from .config import (
     config,
+    config_tpv_diseno,
+    api_tpv_iconos,
     _post_bool,
     config_seguridad,
     config_impresoras,
@@ -140,6 +142,8 @@ __all__ = [
     "catalogo_articulos",
     "catalogo_modificadores",
     "config",
+    "config_tpv_diseno",
+    "api_tpv_iconos",
     "_post_bool",
     "config_seguridad",
     "config_impresoras",

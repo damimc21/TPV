@@ -44,6 +44,17 @@
         <div class="card__cta">{% trans "Configurar" %} →</div>
     </a>
 
+    <a class="card" href="tpv-diseno/">
+        <div class="card__icon">
+            <img src="{% static 'ui/img/iconos/sliders-horizontal.svg' %}" alt="">
+        </div>
+        <div class="card__body">
+            <h2 class="card__title">{% trans "Diseño TPV" %}</h2>
+            <p class="card__desc">{% trans "Personaliza tamaño, color y texto de los botones laterales de mesa." %}</p>
+        </div>
+        <div class="card__cta">{% trans "Editar" %} &rarr;</div>
+    </a>
+
     <a class="card" href="{% url 'ui:config_usuarios' %}">
         <div class="card__icon">
             <img src="{% static 'ui/img/iconos/user-round-cog.svg' %}" alt="">

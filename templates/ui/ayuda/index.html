@@ -1,19 +1,317 @@
+{% extends "ui/base_sinlateral.html" %}
 {% load i18n static %}
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{% trans "Ayuda" %}</title>
-  <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
-</head>
-<body>
-  <div class="app">
-    <main class="main">
-      <h1 class="h1">{% trans "Ayuda" %}</h1>
-      <p class="hint">{% trans "Sección en construcción." %}</p>
-      <a class="meta meta--button" href="{% url 'ui:index' %}">{% trans "Volver" %}</a>
+
+{% block title %}{% trans "Ayuda" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/ayuda/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="section-dashboard help-dashboard">
+  <header class="dashboard-header">
+    <div class="header-left">
+      <a class="sync-btn sync-btn--ghost" href="{% url 'ui:index' %}">
+        <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+        <span>{% trans "Inicio" %}</span>
+      </a>
+    </div>
+    <div class="header-info">
+      <h1>{% trans "Ayuda" %}</h1>
+    </div>
+    <div class="header-actions">
+      <a class="sync-btn sync-btn--ghost" href="#inicio-rapido">
+        <img src="{% static 'ui/img/iconos/search.svg' %}" class="svg-icon" width="18" alt="">
+        <span>{% trans "Buscar" %}</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="help-layout">
+    <aside class="help-index" aria-label="{% trans 'Índice de ayuda' %}">
+      <div class="help-index__head">
+        <img src="{% static 'ui/img/iconos/table-of-contents.svg' %}" alt="">
+        <span>{% trans "Índice" %}</span>
+      </div>
+      <nav class="help-nav">
+        <a href="#inicio-rapido" class="help-nav__section">{% trans "Buscar" %}</a>
+
+        <a href="#tpv" class="help-nav__section">TPV</a>
+        <a href="#tpv-mesas">{% trans "Mapa de mesas" %}</a>
+        <a href="#tpv-mesa">{% trans "Pantalla de mesa" %}</a>
+        <a href="#tpv-productos">{% trans "Selector de productos" %}</a>
+        <a href="#tpv-acciones">{% trans "Botones laterales" %}</a>
+        <a href="#tpv-cobro">{% trans "Cobro y tickets" %}</a>
+
+        <a href="#ficheros" class="help-nav__section">{% trans "Ficheros" %}</a>
+        <a href="#ficheros-importar">{% trans "Importar" %}</a>
+        <a href="#ficheros-exportar">{% trans "Exportar" %}</a>
+        <a href="#ficheros-backups">Backups</a>
+        <a href="#ficheros-auditoria">{% trans "Auditoría y logs" %}</a>
+
+        <a href="#catalogo" class="help-nav__section">{% trans "Catálogo" %}</a>
+        <a href="#catalogo-productos">{% trans "Productos" %}</a>
+        <a href="#catalogo-modificadores">{% trans "Modificadores" %}</a>
+        <a href="#catalogo-impresion">{% trans "Impresoras por producto" %}</a>
+
+        <a href="#stock" class="help-nav__section">Stock</a>
+        <a href="#stock-inventario">{% trans "Inventario" %}</a>
+        <a href="#stock-proveedores">{% trans "Proveedores" %}</a>
+        <a href="#stock-movimientos">{% trans "Movimientos" %}</a>
+
+        <a href="#caja" class="help-nav__section">{% trans "Caja y cierres" %}</a>
+        <a href="#caja-apertura">{% trans "Abrir caja" %}</a>
+        <a href="#caja-cierre">{% trans "Cerrar caja y día" %}</a>
+        <a href="#caja-facturas">{% trans "Facturas y estadísticas" %}</a>
+
+        <a href="#albaranes" class="help-nav__section">{% trans "Albaranes y facturas" %}</a>
+        <a href="#albaranes-proveedor">{% trans "Documentos de proveedor" %}</a>
+        <a href="#albaranes-estados">{% trans "Estados" %}</a>
+
+        <a href="#configuracion" class="help-nav__section">{% trans "Configuración" %}</a>
+        <a href="#configuracion-usuarios">{% trans "Usuarios y permisos" %}</a>
+        <a href="#configuracion-mapas">{% trans "Mapas de mesas" %}</a>
+        <a href="#configuracion-diseno">{% trans "Diseño TPV" %}</a>
+        <a href="#configuracion-seguridad">{% trans "Seguridad" %}</a>
+
+        <a href="#buenas-practicas" class="help-nav__section">{% trans "Buenas prácticas" %}</a>
+      </nav>
+    </aside>
+
+    <main class="help-content">
+      <section class="help-search dashboard-toolbar" id="inicio-rapido" aria-label="{% trans 'Buscar en ayuda' %}">
+        <div class="search-wrapper">
+          <img src="{% static 'ui/img/iconos/search.svg' %}" class="icon" alt="">
+          <input
+            type="search"
+            class="search-input"
+            id="helpSearchInput"
+            placeholder="{% trans 'Buscar en la ayuda...' %}"
+            autocomplete="off">
+        </div>
+        <button type="button" class="sync-btn sync-btn--ghost help-search__clear" id="helpSearchClear" hidden>
+          <img src="{% static 'ui/img/iconos/x.svg' %}" class="svg-icon" width="16" alt="">
+          <span>{% trans "Limpiar" %}</span>
+        </button>
+        <span class="help-search__meta" id="helpSearchMeta" aria-live="polite"></span>
+      </section>
+
+      <article class="help-card" id="tpv">
+        <header>
+          <img src="{% static 'ui/img/iconos/store.svg' %}" alt="">
+          <div>
+            <span>{% trans "Módulo" %}</span>
+            <h2>TPV</h2>
+          </div>
+        </header>
+        <section id="tpv-mesas">
+          <h3>{% trans "Mapa de mesas" %}</h3>
+          <p>{% trans "Desde el mapa ves qué mesas están libres y cuáles tienen una comanda abierta. Pulsa una mesa para entrar y seguir trabajando." %}</p>
+          <ul>
+            <li>{% trans "Una mesa libre se abre al pulsarla." %}</li>
+            <li>{% trans "Una mesa ocupada recupera la comanda que ya estaba abierta." %}</li>
+            <li>{% trans "El diseño del mapa se cambia desde Configuración." %}</li>
+          </ul>
+        </section>
+        <section id="tpv-mesa">
+          <h3>{% trans "Pantalla de mesa" %}</h3>
+          <p>{% trans "Aquí está casi todo lo que se usa durante el servicio: ticket, calculadora, productos y acciones de la mesa." %}</p>
+          <ul>
+            <li>{% trans "Usa las líneas del ticket para seleccionar productos ya añadidos." %}</li>
+            <li>{% trans "Deshacer y rehacer ayudan a corregir cambios recientes." %}</li>
+            <li>{% trans "La mesa se sincroniza al cobrar o al ejecutar acciones importantes." %}</li>
+          </ul>
+        </section>
+        <section id="tpv-productos">
+          <h3>{% trans "Selector de productos" %}</h3>
+          <p>{% trans "Los departamentos filtran los productos. Al pulsar un producto se añade al ticket. Si necesita opciones, el selector se abre antes de añadirlo." %}</p>
+        </section>
+        <section id="tpv-acciones">
+          <h3>{% trans "Botones laterales" %}</h3>
+          <p>{% trans "La barra lateral reúne las acciones que más se usan en mesa: cobrar, imprimir, aplicar descuentos, invitar, separar productos o asignar cliente." %}</p>
+          <ul>
+            <li>{% blocktrans %}<strong>Total</strong> abre el flujo de cobro.{% endblocktrans %}</li>
+            <li>{% blocktrans %}<strong>Dto.</strong> aplica descuentos a líneas seleccionadas o a toda la mesa.{% endblocktrans %}</li>
+            <li>{% blocktrans %}<strong>Invitar</strong> aplica o retira descuento del 100%.{% endblocktrans %}</li>
+            <li>{% blocktrans %}<strong>Separar</strong> divide cantidades para cobrar o editar unidades sueltas.{% endblocktrans %}</li>
+          </ul>
+        </section>
+        <section id="tpv-cobro">
+          <h3>{% trans "Cobro y tickets" %}</h3>
+          <p>{% trans "En el cobro eliges método de pago, decides si imprimir ticket y cierras la mesa cuando todo está correcto." %}</p>
+        </section>
+      </article>
+
+      <article class="help-card" id="ficheros">
+        <header>
+          <img src="{% static 'ui/img/iconos/folders.svg' %}" alt="">
+          <div>
+            <span>{% trans "Módulo" %}</span>
+            <h2>{% trans "Ficheros" %}</h2>
+          </div>
+        </header>
+        <section id="ficheros-importar">
+          <h3>{% trans "Importar" %}</h3>
+          <p>{% trans "Úsalo para cargar datos desde archivos preparados. Antes de confirmar, conviene revisar la vista previa y los avisos." %}</p>
+        </section>
+        <section id="ficheros-exportar">
+          <h3>{% trans "Exportar" %}</h3>
+          <p>{% trans "Sirve para sacar información del sistema y trabajarla fuera cuando haga falta." %}</p>
+        </section>
+        <section id="ficheros-backups">
+          <h3>Backups</h3>
+          <p>{% trans "Haz una copia antes de cambios grandes, importaciones o pruebas con muchos datos." %}</p>
+        </section>
+        <section id="ficheros-auditoria">
+          <h3>{% trans "Auditoría y logs" %}</h3>
+          <p>{% trans "Auditoría recoge acciones importantes. Logs ayuda a revisar incidencias técnicas o errores del sistema." %}</p>
+        </section>
+      </article>
+
+      <article class="help-card" id="catalogo">
+        <header>
+          <img src="{% static 'ui/img/iconos/package-search.svg' %}" alt="">
+          <div>
+            <span>{% trans "Módulo" %}</span>
+            <h2>{% trans "Catálogo" %}</h2>
+          </div>
+        </header>
+        <section id="catalogo-productos">
+          <h3>{% trans "Productos" %}</h3>
+          <p>{% trans "Cada producto tiene su nombre, precio, departamento, colores, icono, impresora y opciones si las necesita." %}</p>
+          <ul>
+            <li>{% trans "El departamento decide dónde aparece el producto en el TPV." %}</li>
+            <li>{% trans "Los colores ayudan a encontrar artículos rápido." %}</li>
+            <li>{% trans "Un producto configurable pide opciones antes de añadirse al ticket." %}</li>
+          </ul>
+        </section>
+        <section id="catalogo-modificadores">
+          <h3>{% trans "Modificadores" %}</h3>
+          <p>{% trans "Los modificadores añaden comentarios, suplementos u opciones reutilizables para productos y comandas." %}</p>
+        </section>
+        <section id="catalogo-impresion">
+          <h3>{% trans "Impresoras por producto" %}</h3>
+          <p>{% trans "Asignar impresora permite enviar cada producto al punto correcto, como cocina, barra u otra zona de preparación." %}</p>
+        </section>
+      </article>
+
+      <article class="help-card" id="stock">
+        <header>
+          <img src="{% static 'ui/img/iconos/warehouse.svg' %}" alt="">
+          <div>
+            <span>{% trans "Módulo" %}</span>
+            <h2>Stock</h2>
+          </div>
+        </header>
+        <section id="stock-inventario">
+          <h3>{% trans "Inventario" %}</h3>
+          <p>{% trans "El inventario muestra artículos, cantidades, costes y avisos. Úsalo para controlar existencias y preparar reposiciones." %}</p>
+        </section>
+        <section id="stock-proveedores">
+          <h3>{% trans "Proveedores" %}</h3>
+          <p>{% trans "Los proveedores se vinculan a artículos y documentos de compra para mantener trazabilidad." %}</p>
+        </section>
+        <section id="stock-movimientos">
+          <h3>{% trans "Movimientos" %}</h3>
+          <p>{% trans "Entradas, salidas y ajustes mantienen el stock al día. En ajustes manuales, deja siempre un motivo claro." %}</p>
+        </section>
+      </article>
+
+      <article class="help-card" id="caja">
+        <header>
+          <img src="{% static 'ui/img/iconos/drawer.svg' %}" alt="">
+          <div>
+            <span>{% trans "Módulo" %}</span>
+            <h2>{% trans "Caja y cierres" %}</h2>
+          </div>
+        </header>
+        <section id="caja-apertura">
+          <h3>{% trans "Abrir caja" %}</h3>
+          <p>{% trans "La apertura inicia la sesión de trabajo. Revisa el estado de caja antes de empezar a vender." %}</p>
+        </section>
+        <section id="caja-cierre">
+          <h3>{% trans "Cerrar caja y día" %}</h3>
+          <p>{% trans "El cierre agrupa ventas, pagos y movimientos. Antes de cerrar, revisa importes, tickets pendientes y efectivo declarado." %}</p>
+        </section>
+        <section id="caja-facturas">
+          <h3>{% trans "Facturas y estadísticas" %}</h3>
+          <p>{% trans "Estas vistas ayudan a localizar documentos emitidos, revisar ventas y consultar actividad por periodo." %}</p>
+        </section>
+      </article>
+
+      <article class="help-card" id="albaranes">
+        <header>
+          <img src="{% static 'ui/img/iconos/notepad-text.svg' %}" alt="">
+          <div>
+            <span>{% trans "Módulo" %}</span>
+            <h2>{% trans "Albaranes y facturas" %}</h2>
+          </div>
+        </header>
+        <section id="albaranes-proveedor">
+          <h3>{% trans "Documentos de proveedor" %}</h3>
+          <p>{% trans "Registra albaranes y facturas recibidas para relacionar compras, proveedores y stock." %}</p>
+        </section>
+        <section id="albaranes-estados">
+          <h3>{% trans "Estados" %}</h3>
+          <p>{% trans "Los estados ayudan a distinguir documentos pendientes, revisados o completados." %}</p>
+        </section>
+      </article>
+
+      <article class="help-card" id="configuracion">
+        <header>
+          <img src="{% static 'ui/img/iconos/cog.svg' %}" alt="">
+          <div>
+            <span>{% trans "Módulo" %}</span>
+            <h2>{% trans "Configuración" %}</h2>
+          </div>
+        </header>
+        <section id="configuracion-usuarios">
+          <h3>{% trans "Usuarios y permisos" %}</h3>
+          <p>{% trans "Desde aquí se crean usuarios, se asignan roles y se limitan funciones sensibles según la responsabilidad de cada persona." %}</p>
+        </section>
+        <section id="configuracion-mapas">
+          <h3>{% trans "Mapas de mesas" %}</h3>
+          <p>{% trans "El editor de mapas permite crear salas, colocar mesas y adaptar el plano al local." %}</p>
+        </section>
+        <section id="configuracion-diseno">
+          <h3>{% trans "Diseño TPV" %}</h3>
+          <p>{% trans "Permite personalizar la barra lateral de la mesa: orden, ancho, colores, nombre e icono de cada acción." %}</p>
+        </section>
+        <section id="configuracion-seguridad">
+          <h3>{% trans "Seguridad" %}</h3>
+          <p>{% trans "La seguridad de acceso controla intentos de login, bloqueos temporales y protecciones adicionales." %}</p>
+        </section>
+      </article>
+
+      <article class="help-card" id="buenas-practicas">
+        <header>
+          <img src="{% static 'ui/img/iconos/check-line.svg' %}" alt="">
+          <div>
+            <span>{% trans "Referencia" %}</span>
+            <h2>{% trans "Buenas prácticas" %}</h2>
+          </div>
+        </header>
+        <div class="help-tips">
+          <div>
+            <h3>{% trans "Antes de cambios grandes" %}</h3>
+            <p>{% trans "Haz backup, revisa permisos y prueba con pocos datos antes de importar o modificar el catálogo completo." %}</p>
+          </div>
+          <div>
+            <h3>{% trans "Durante el servicio" %}</h3>
+            <p>{% trans "Evita cambios de configuración mientras haya muchas comandas abiertas salvo que sea imprescindible." %}</p>
+          </div>
+          <div>
+            <h3>{% trans "Al cerrar" %}</h3>
+            <p>{% trans "Comprueba caja, tickets pendientes y documentos antes de cerrar el día contable." %}</p>
+          </div>
+        </div>
+      </article>
     </main>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/ayuda/index.js' %}"></script>
+{% endblock %}

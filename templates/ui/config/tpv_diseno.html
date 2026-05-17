@@ -1,0 +1,80 @@
+{% extends "ui/base_sinlateral.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Diseño TPV" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/config/tpv_diseno.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="section-dashboard tpv-design">
+  <header class="dashboard-header">
+    <div class="header-left">
+      <a class="sync-btn sync-btn--ghost" href="{% url 'ui:config' %}">
+        <img src="{% static 'ui/img/iconos/move-left.svg' %}" class="svg-icon" width="18" alt="">
+        <span>{% trans "Configuración" %}</span>
+      </a>
+    </div>
+    <div class="header-info">
+      <h1>{% trans "Diseño TPV" %}</h1>
+    </div>
+    <div class="header-actions">
+      <span class="tpv-design-save-state" id="sidebarDesignStatus"></span>
+      <button class="sync-btn sync-btn--ghost" type="button" id="btnResetSidebarDesign">
+        {% trans "Restablecer" %}
+      </button>
+      <button class="sync-btn sync-btn--primary" type="button" id="btnSaveSidebarDesign">
+        {% trans "Guardar" %}
+      </button>
+    </div>
+  </header>
+
+  <div class="tpv-design__layout">
+    <section class="tpv-design__panel">
+      <div class="tpv-design__panel-head tpv-design__column-head">
+        <span>{% trans "Botón" %}</span>
+        <span>{% trans "Ancho" %}</span>
+        <span>{% trans "Fondo" %}</span>
+        <span>{% trans "Texto" %}</span>
+        <span>{% trans "Borde" %}</span>
+        <span>{% trans "Orden" %}</span>
+        <span></span>
+      </div>
+      <div class="tpv-design__list" id="sidebarDesignList"></div>
+    </section>
+
+    <aside class="tpv-design__preview-wrap">
+      <div class="tpv-design__preview-head">
+        <h2>{% trans "Vista previa" %}</h2>
+      </div>
+      <div class="tpv-design__preview" id="sidebarDesignPreview"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="tpv-icon-modal hidden" id="sidebarIconModal" aria-hidden="true">
+  <div class="tpv-icon-modal__card" role="dialog" aria-modal="true" aria-labelledby="sidebarIconTitle">
+    <div class="tpv-icon-modal__head">
+      <h2 id="sidebarIconTitle">{% trans "Icono" %}</h2>
+      <button class="tpv-icon-modal__close" type="button" id="sidebarIconClose" aria-label="{% trans 'Cerrar' %}">&times;</button>
+    </div>
+    <input class="tpv-icon-search" id="sidebarIconSearch" type="search" placeholder="{% trans 'Buscar icono' %}" autocomplete="off">
+    <div class="tpv-icon-grid" id="sidebarIconGrid"></div>
+  </div>
+</div>
+
+<script id="tpv-sidebar-design-config" type="application/json">
+{
+  "saveUrl": "{% url 'ui:api_configuracion_update' %}",
+  "iconsUrl": "{% url 'ui:api_tpv_iconos' %}",
+  "iconsBaseUrl": "{% static 'ui/img/iconos/' %}",
+  "current": {{ sidebar_config_json|default:"{}"|safe }}
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/config/tpv_diseno.js' %}"></script>
+{% endblock %}

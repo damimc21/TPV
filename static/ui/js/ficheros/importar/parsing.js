@@ -19,6 +19,10 @@ export const HEADERS_INVENTARIO = [
 
 export const COLOR_HEADERS = ['color_boton', 'color_texto'];
 
+const gettext = typeof window !== 'undefined' && typeof window.gettext === 'function'
+    ? window.gettext
+    : (text) => text;
+
 export function normalizeHeader(value) {
     return String(value || '')
         .trim()
@@ -38,7 +42,7 @@ export function parseCsvText(text) {
         return {
             headers: [],
             rows: [],
-            errors: ['El fichero esta vacio o solo contiene cabeceras.'],
+            errors: [gettext('El fichero está vacío o solo contiene cabeceras.')],
         };
     }
 

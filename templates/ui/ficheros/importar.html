@@ -1,7 +1,7 @@
 {% extends "ui/base.html" %}
 {% load static i18n %}
 
-{% block title %}{% trans "Importar Productos" %} | Ficheros{% endblock %}
+{% block title %}{% trans "Importar Productos" %} | {% trans "Ficheros" %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
@@ -10,6 +10,7 @@
 
 {% block content %}
 <div class="section-dashboard">
+{% trans "Descargar plantilla" as t_download_template %}
 
 <header class="dashboard-header">
   <div class="header-left">
@@ -36,25 +37,25 @@
         <label class="fich-radio-card active" id="typeProductos">
           <input type="radio" name="importType" value="productos" checked onchange="setImportType('productos')">
           <img src="{% static 'ui/img/iconos/package-search.svg' %}" alt="" class="fich-radio-icon">
-          <span>Productos (Catalogo)</span>
+          <span>{% trans "Productos (Catálogo)" %}</span>
         </label>
         <label class="fich-radio-card" id="typeInventario">
           <input type="radio" name="importType" value="inventario" onchange="setImportType('inventario')">
           <img src="{% static 'ui/img/iconos/warehouse.svg' %}" alt="" class="fich-radio-icon">
-          <span>Articulos Inventario</span>
+          <span>{% trans "Artículos de inventario" %}</span>
         </label>
       </div>
 
       <div class="fich-upload-zone fich-upload-zone--productos" id="dropZone">
         <img src="{% static 'ui/img/iconos/clipboard-plus.svg' %}" class="fich-upload-icon" alt="">
-        <p class="fich-upload-text">Arrastra un fichero <strong>.csv</strong> o <strong>.xlsx</strong> aqui o haz clic para seleccionar</p>
-        <p class="fich-upload-hint" id="uploadHint">Destino: <strong style="color: #60a5fa;">Productos (Catálogo)</strong></p>
+        <p class="fich-upload-text">{% blocktrans trimmed %}Arrastra un fichero <strong>.csv</strong> o <strong>.xlsx</strong> aquí o haz clic para seleccionar{% endblocktrans %}</p>
+        <p class="fich-upload-hint" id="uploadHint">{% trans "Destino" %}: <strong style="color: #60a5fa;">{% trans "Productos (Catálogo)" %}</strong></p>
         <input type="file" id="csvFileInput" accept=".csv,.xlsx" style="display:none" onchange="handleFileSelect(this)">
       </div>
 
       <div class="fich-actions-row">
-        {% include "ui/componentes/export_menu.html" with export_handler="descargarPlantillaFormato" export_direction="down" export_button_class="btn--ghost" export_icon="ui/img/iconos/file-down.svg" export_label="Descargar plantilla" export_hide_pdf=True %}
-        <button class="btn btn--ghost" type="button" onclick="mostrarAyudaImportacion()">Formato esperado</button>
+        {% include "ui/componentes/export_menu.html" with export_handler="descargarPlantillaFormato" export_direction="down" export_button_class="btn--ghost" export_icon="ui/img/iconos/file-down.svg" export_label=t_download_template export_hide_pdf=True %}
+        <button class="btn btn--ghost" type="button" onclick="mostrarAyudaImportacion()">{% trans "Formato esperado" %}</button>
       </div>
     </div>
   </div>
@@ -73,13 +74,13 @@
           <input type="checkbox" id="fillProductNamesOption" checked onchange="setProductNameFallback(this.checked)">
           <span class="fich-option-toggle__box"></span>
           <span class="fich-option-toggle__text">
-            <strong>Completar factura y comanda con el nombre</strong>
-            <small>Si esos campos vienen vacios, se importan con el nombre del producto. Desmarcalo para dejarlos en blanco.</small>
+            <strong>{% trans "Completar factura y comanda con el nombre" %}</strong>
+            <small>{% trans "Si esos campos vienen vacíos, se importan con el nombre del producto. Desmárcalo para dejarlos en blanco." %}</small>
           </span>
         </label>
       </div>
       <div class="fich-preview-guidance hidden" id="previewWarnings">
-        <h4>Avisos antes de importar</h4>
+        <h4>{% trans "Avisos antes de importar" %}</h4>
         <ul id="warningList"></ul>
       </div>
       <div class="fich-preview-table-wrap">
@@ -89,14 +90,14 @@
         </table>
       </div>
       <div class="fich-preview-errors hidden" id="previewErrors">
-        <h4>Errores a corregir</h4>
+        <h4>{% trans "Errores a corregir" %}</h4>
         <ul id="errorList"></ul>
       </div>
     </div>
     <div class="fich-card__footer">
-      <button class="btn btn--ghost" onclick="resetImport()">Cancelar</button>
+      <button class="btn btn--ghost" onclick="resetImport()">{% trans "Cancelar" %}</button>
       <button class="btn btn--success" id="btnConfirmImport" onclick="confirmarImportacion()">
-        Importar <span id="importCount">0</span> registros
+        {% trans "Importar" %} <span id="importCount">0</span> {% trans "registros" %}
       </button>
     </div>
   </div>
@@ -110,8 +111,8 @@
       <div class="fich-result-summary" id="resultSummary"></div>
     </div>
     <div class="fich-card__footer">
-      <button class="btn btn--ghost" onclick="resetImport()">Nueva importacion</button>
-      <a class="btn btn--success" href="{% url 'ui:ficheros' %}">Volver a Ficheros</a>
+      <button class="btn btn--ghost" onclick="resetImport()">{% trans "Nueva importación" %}</button>
+      <a class="btn btn--success" href="{% url 'ui:ficheros' %}">{% trans "Volver a Ficheros" %}</a>
     </div>
   </div>
 
@@ -119,53 +120,53 @@
 
 <div id="modalImportHelp" class="modal-overlay-generic hidden">
   <div class="modal-container-generic fich-help-modal">
-    <h2 id="helpModalTitle">Formato de importacion</h2>
+    <h2 id="helpModalTitle">{% trans "Formato de importación" %}</h2>
     <div class="fich-help-content">
 
       <!-- Contenido para Productos -->
       <div id="helpProductos">
-        <p>Usa la plantilla basica para altas y actualizaciones de productos. Si un producto ya existe por nombre, se actualiza; si no existe, se crea.</p>
+        <p>{% trans "Usa la plantilla básica para altas y actualizaciones de productos. Si un producto ya existe por nombre, se actualiza. Si no existe, se crea." %}</p>
         <table class="fich-help-table">
           <thead>
-            <tr><th>Campo</th><th>Regla</th></tr>
+            <tr><th>{% trans "Campo" %}</th><th>{% trans "Regla" %}</th></tr>
           </thead>
           <tbody>
-            <tr><td>nombre</td><td>Obligatorio. Si ya existe, se actualiza el producto.</td></tr>
-            <tr><td>departamento</td><td>Obligatorio. Todo producto debe pertenecer a un departamento. Si no existe, se crea automaticamente.</td></tr>
-            <tr><td>precio</td><td>Opcional. Acepta punto o coma decimal. Si falta, se usa 0.00.</td></tr>
-            <tr><td>activo</td><td>Opcional. Acepta 1/0, si/no, yes/no, true/false o activo/inactivo. Cualquier otro valor se rechaza. Si falta, se importa como activo.</td></tr>
-            <tr><td>nombre_factura</td><td>Opcional. Si falta, se usa el nombre del producto salvo que desactives esa opcion en la vista previa.</td></tr>
-            <tr><td>nombre_comanda</td><td>Opcional. Si falta, se usa el nombre del producto salvo que desactives esa opcion en la vista previa.</td></tr>
-            <tr><td>color_boton / color_texto</td><td>Opcional. Si vienen en una exportacion completa, se importan y se normalizan a formato #rrggbb. Si vienen vacios, se mantiene el color existente o se usa el color por defecto en productos nuevos.</td></tr>
-            <tr><td>imagenes</td><td>No se importan desde esta plantilla. Se gestionan desde Catalogo.</td></tr>
-            <tr><td>eliminado</td><td>No se importa. La eliminacion se gestiona desde Catalogo.</td></tr>
+            <tr><td>nombre</td><td>{% trans "Obligatorio. Si ya existe, se actualiza el producto." %}</td></tr>
+            <tr><td>departamento</td><td>{% trans "Obligatorio. Todo producto debe pertenecer a un departamento. Si no existe, se crea automáticamente." %}</td></tr>
+            <tr><td>precio</td><td>{% trans "Opcional. Acepta punto o coma decimal. Si falta, se usa 0.00." %}</td></tr>
+            <tr><td>activo</td><td>{% trans "Opcional. Acepta 1/0, si/no, yes/no, true/false o activo/inactivo. Cualquier otro valor se rechaza. Si falta, se importa como activo." %}</td></tr>
+            <tr><td>nombre_factura</td><td>{% trans "Opcional. Si falta, se usa el nombre del producto salvo que desactives esa opción en la vista previa." %}</td></tr>
+            <tr><td>nombre_comanda</td><td>{% trans "Opcional. Si falta, se usa el nombre del producto salvo que desactives esa opción en la vista previa." %}</td></tr>
+            <tr><td>color_boton / color_texto</td><td>{% trans "Opcional. Si vienen en una exportación completa, se importan y se normalizan a formato #rrggbb. Si vienen vacíos, se mantiene el color existente o se usa el color por defecto en productos nuevos." %}</td></tr>
+            <tr><td>imagenes</td><td>{% trans "No se importan desde esta plantilla. Se gestionan desde Catálogo." %}</td></tr>
+            <tr><td>eliminado</td><td>{% trans "No se importa. La eliminación se gestiona desde Catálogo." %}</td></tr>
           </tbody>
         </table>
       </div>
 
       <!-- Contenido para Inventario -->
       <div id="helpInventario" class="hidden">
-        <p>Usa la plantilla basica para altas y actualizaciones de articulos de inventario. Si un articulo ya existe por nombre, se actualiza; si no existe, se crea.</p>
+        <p>{% trans "Usa la plantilla básica para altas y actualizaciones de artículos de inventario. Si un artículo ya existe por nombre, se actualiza. Si no existe, se crea." %}</p>
         <table class="fich-help-table">
           <thead>
-            <tr><th>Campo</th><th>Regla</th></tr>
+            <tr><th>{% trans "Campo" %}</th><th>{% trans "Regla" %}</th></tr>
           </thead>
           <tbody>
-            <tr><td>nombre</td><td>Obligatorio. Si ya existe, se actualiza el articulo.</td></tr>
-            <tr><td>categoria</td><td>Opcional. Si no existe, se crea automaticamente.</td></tr>
-            <tr><td>unidad</td><td>Opcional. Valores admitidos: ud, pack, caja, kg, g, l, ml. Si falta o no se reconoce, se usa ud.</td></tr>
-            <tr><td>stock_actual</td><td>Opcional. Si falta, se usa 0.</td></tr>
-            <tr><td>stock_minimo</td><td>Opcional. Si falta, se usa 0.</td></tr>
-            <tr><td>proveedor</td><td>Opcional.</td></tr>
-            <tr><td>precio_compra</td><td>Opcional. Si falta, se usa 0.</td></tr>
+            <tr><td>nombre</td><td>{% trans "Obligatorio. Si ya existe, se actualiza el artículo." %}</td></tr>
+            <tr><td>categoria</td><td>{% trans "Opcional. Si no existe, se crea automáticamente." %}</td></tr>
+            <tr><td>unidad</td><td>{% trans "Opcional. Valores admitidos: ud, pack, caja, kg, g, l, ml. Si falta o no se reconoce, se usa ud." %}</td></tr>
+            <tr><td>stock_actual</td><td>{% trans "Opcional. Si falta, se usa 0." %}</td></tr>
+            <tr><td>stock_minimo</td><td>{% trans "Opcional. Si falta, se usa 0." %}</td></tr>
+            <tr><td>proveedor</td><td>{% trans "Opcional." %}</td></tr>
+            <tr><td>precio_compra</td><td>{% trans "Opcional. Si falta, se usa 0." %}</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>El Excel incluye una hoja de instrucciones. En CSV, conserva la primera fila con los nombres de columna.</p>
+      <p>{% trans "El Excel incluye una hoja de instrucciones. En CSV, conserva la primera fila con los nombres de columna." %}</p>
     </div>
     <div class="modal-footer-generic">
-      <button class="modal-btn-generic modal-btn-generic--primary" type="button" onclick="cerrarAyudaImportacion()">Entendido</button>
+      <button class="modal-btn-generic modal-btn-generic--primary" type="button" onclick="cerrarAyudaImportacion()">{% trans "Entendido" %}</button>
     </div>
   </div>
 </div><!-- /.modal-overlay-generic -->

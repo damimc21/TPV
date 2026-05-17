@@ -54,6 +54,7 @@
     const form = $("#langForm");
     const input = $("#langInput");
     if (!form || !input) return;
+    const nextInput = form.querySelector("input[name='next']");
 
     const currentLang = (document.documentElement.lang || "unknown").toLowerCase().split("-")[0];
     const targetLang = (lang || "").toLowerCase();
@@ -67,6 +68,9 @@
     }
 
     input.value = lang;
+    if (nextInput && targetLang) {
+      nextInput.value = window.location.pathname.replace(/^\/(es|en)(?=\/|$)/i, `/${targetLang}`) + window.location.search;
+    }
     form.submit();
   }
 
@@ -105,12 +109,19 @@
     function close() {
       dropdown.classList.remove(openClass);
       dropdown.setAttribute("aria-hidden", "true");
+      button.classList.remove("is-active");
+      button.setAttribute("aria-expanded", "false");
     }
 
     function toggle() {
       const isOpen = dropdown.classList.toggle(openClass);
       dropdown.setAttribute("aria-hidden", isOpen ? "false" : "true");
+      button.classList.toggle("is-active", isOpen);
+      button.setAttribute("aria-expanded", isOpen ? "true" : "false");
     }
+
+    button.setAttribute("aria-haspopup", "menu");
+    button.setAttribute("aria-expanded", "false");
 
     button.addEventListener("click", (e) => {
       e.preventDefault();

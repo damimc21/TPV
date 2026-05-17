@@ -1,7 +1,7 @@
 {% extends "ui/base.html" %}
 {% load static i18n %}
 
-{% block title %}{% trans "Backups" %} | Ficheros{% endblock %}
+{% block title %}{% trans "Backups" %} | {% trans "Ficheros" %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
@@ -30,25 +30,25 @@
   <div class="fich-card">
     <div class="fich-card__header">
       <img src="{% static 'ui/img/iconos/database-backup.svg' %}" width="20" class="svg-icon" alt="">
-      <h2 class="fich-card__title">Crear Backup</h2>
+      <h2 class="fich-card__title">{% trans "Crear backup" %}</h2>
     </div>
     <div class="fich-card__body">
-      <p class="fich-desc">Genera una copia de seguridad completa de la base de datos. Se almacena en el servidor y puedes descargarla.</p>
+      <p class="fich-desc">{% trans "Genera una copia de seguridad completa de la base de datos. Se almacena en el servidor y puedes descargarla." %}</p>
       <div class="fich-backup-auto">
-        <h4>Autoguardado</h4>
+        <h4>{% trans "Autoguardado" %}</h4>
         <div class="fich-auto-row">
           <div class="fich-custom-select" id="autoBackupSelect">
             <button type="button" class="fich-custom-select__trigger" id="autoBackupTrigger" aria-haspopup="listbox" aria-expanded="false">
-              <span id="autoBackupLabel">Deshabilitado</span>
+              <span id="autoBackupLabel">{% trans "Deshabilitado" %}</span>
               <img src="{% static 'ui/img/iconos/move-down.svg' %}" alt="">
             </button>
             <div class="fich-custom-select__menu hidden" id="autoBackupOptions" role="listbox">
-              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '0' %} is-selected{% endif %}" data-value="0">Deshabilitado</button>
-              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '60' %} is-selected{% endif %}" data-value="60">Cada hora</button>
-              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '360' %} is-selected{% endif %}" data-value="360">Cada 6 horas</button>
-              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '720' %} is-selected{% endif %}" data-value="720">Cada 12 horas</button>
-              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '1440' %} is-selected{% endif %}" data-value="1440">Cada 24 horas</button>
-              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '10080' %} is-selected{% endif %}" data-value="10080">Semanal</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '0' %} is-selected{% endif %}" data-value="0">{% trans "Deshabilitado" %}</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '60' %} is-selected{% endif %}" data-value="60">{% trans "Cada hora" %}</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '360' %} is-selected{% endif %}" data-value="360">{% trans "Cada 6 horas" %}</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '720' %} is-selected{% endif %}" data-value="720">{% trans "Cada 12 horas" %}</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '1440' %} is-selected{% endif %}" data-value="1440">{% trans "Cada 24 horas" %}</button>
+              <button type="button" class="fich-custom-select__option{% if auto_intervalo == '10080' %} is-selected{% endif %}" data-value="10080">{% trans "Semanal" %}</button>
             </div>
           </div>
           <input type="hidden" id="autoBackupIntervalo" value="{{ auto_intervalo }}">
@@ -59,7 +59,7 @@
     <div class="fich-card__footer">
       <button class="btn btn--success" id="btnCrearBackup" onclick="crearBackup()">
         <img src="{% static 'ui/img/iconos/database-backup.svg' %}" width="16" class="svg-icon" alt="">
-        Crear backup ahora
+        {% trans "Crear backup ahora" %}
       </button>
     </div>
   </div>
@@ -68,7 +68,7 @@
   <div class="fich-card">
     <div class="fich-card__header">
       <img src="{% static 'ui/img/iconos/file-clock.svg' %}" width="20" class="svg-icon" alt="">
-      <h2 class="fich-card__title">Historial de Backups</h2>
+      <h2 class="fich-card__title">{% trans "Historial de backups" %}</h2>
       <span class="fich-count-badge" id="backupCount">{{ backups|length }}</span>
     </div>
     <div class="fich-card__body fich-card__body--table">
@@ -76,11 +76,11 @@
       <table class="fich-table">
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Archivo</th>
-            <th>Tamaño</th>
-            <th>Tipo</th>
-            <th>Acciones</th>
+            <th>{% trans "Fecha" %}</th>
+            <th>{% trans "Archivo" %}</th>
+            <th>{% trans "Tamaño" %}</th>
+            <th>{% trans "Tipo" %}</th>
+            <th>{% trans "Acciones" %}</th>
           </tr>
         </thead>
         <tbody id="backupTableBody">
@@ -92,10 +92,10 @@
             <td><span class="fich-type-pill fich-type-pill--{{ b.tipo }}">{{ b.get_tipo_display }}</span></td>
             <td>
               <div class="fich-cell-actions">
-                <button class="btn btn--mini btn--ghost" onclick="descargarBackup('{{ b.nombre_archivo }}')" title="Descargar">
+                <button class="btn btn--mini btn--ghost" onclick="descargarBackup('{{ b.nombre_archivo }}')" title="{% trans 'Descargar' %}">
                   <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="14" class="svg-icon" alt="">
                 </button>
-                <button class="btn btn--mini btn--danger" onclick="restaurarBackup('{{ b.nombre_archivo }}')" title="Restaurar">
+                <button class="btn btn--mini btn--danger" onclick="restaurarBackup('{{ b.nombre_archivo }}')" title="{% trans 'Restaurar' %}">
                   <img src="{% static 'ui/img/iconos/refresh-ccw.svg' %}" width="14" class="svg-icon" alt="">
                 </button>
               </div>
@@ -106,7 +106,7 @@
       </table>
       {% else %}
       <div class="fich-empty">
-        <p>No hay backups aún. Crea el primero.</p>
+        <p>{% trans "No hay backups aún. Crea el primero." %}</p>
       </div>
       {% endif %}
     </div>

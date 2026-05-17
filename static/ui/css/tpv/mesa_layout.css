@@ -521,8 +521,9 @@ html, body {
 
 .mesa__acciones {
     grid-area: acciones;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
     gap: 5px;
     padding: 6px;
     overflow-y: auto;
@@ -550,10 +551,18 @@ html, body {
     overflow: hidden;
     width: 100%;
     min-width: 0;
+    grid-column: span 2;
 }
 
 .accion .icono--btn {
     margin-right: 0;
+}
+
+.accion__icon-mask {
+    display: inline-block;
+    background: currentColor;
+    -webkit-mask: var(--icon-url) center / contain no-repeat;
+    mask: var(--icon-url) center / contain no-repeat;
 }
 
 .accion__label {
@@ -608,19 +617,18 @@ html, body {
 }
 
 .acciones__fila {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-    width: 100%;
+    display: contents;
 }
 
 .acciones__fila .accion {
+    grid-column: span 1;
     gap: 5px;
     padding-inline: 6px;
     font-size: .80rem;
 }
 
 .acciones__sep {
+    grid-column: 1 / -1;
     height: 1px;
     margin: 4px 0;
     background: var(--border);

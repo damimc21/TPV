@@ -1,11 +1,12 @@
-{% load i18n %}
+{% load i18n static %}
 
 <header class="topbar">
     <div class="topbar__left">
         <div class="menu-wrap">
-            <button class="icon-btn" id="btnMenu" aria-label="Menú">☰</button>
+            <button class="icon-btn" id="btnMenu" aria-label="{% trans 'Menú' %}" type="button">
+                <img src="{% static 'ui/img/iconos/list.svg' %}" class="svg-icon" width="22" alt="">
+            </button>
 
-            <!-- Dropdown del botón ☰ -->
             <div class="dropdown" id="menuDropdown" aria-hidden="true">
                 <div class="dropdown__section">
                     <div class="dropdown__title">{% trans "Tema" %}</div>
@@ -33,15 +34,22 @@
 
                 <div class="dropdown__section">
                     {% if user.is_authenticated %}
-                    <!-- Logout por POST (evita errores) -->
                     <form method="post" action="{% url 'ui:logout' %}" class="topbar__logout-form">
                         {% csrf_token %}
                         <button type="submit" class="dropdown__item dropdown__item--full">
-                            ⏻ {% trans "Cerrar sesión" %}
+                            <span class="dropdown__icon">
+                                <img src="{% static 'ui/img/iconos/log-out.svg' %}" alt="">
+                            </span>
+                            <span>{% trans "Cerrar sesión" %}</span>
                         </button>
                     </form>
                     {% else %}
-                    <a class="dropdown__item" href="{% url 'ui:login' %}">🔐 {% trans "Iniciar sesión" %}</a>
+                    <a class="dropdown__item" href="{% url 'ui:login' %}">
+                        <span class="dropdown__icon">
+                            <img src="{% static 'ui/img/iconos/log-in.svg' %}" alt="">
+                        </span>
+                        <span>{% trans "Iniciar sesión" %}</span>
+                    </a>
                     {% endif %}
                 </div>
             </div>
@@ -66,14 +74,25 @@
             <div class="userMenu__dropdown" id="userDropdown" aria-hidden="true">
                 <a class="userMenu__item"
                     href="{% url 'ui:login' %}?switch=1&next={{ request.get_full_path|urlencode }}">
-                    🔁 {% trans "Cambiar usuario" %}
+                    <span class="userMenu__icon">
+                        <img src="{% static 'ui/img/iconos/user-round-cog.svg' %}" alt="">
+                    </span>
+                    <span class="userMenu__itemText">
+                        <span class="userMenu__itemTitle">{% trans "Cambiar usuario" %}</span>
+                        <span class="userMenu__itemHint">{% trans "Entrar con otra cuenta" %}</span>
+                    </span>
                 </a>
 
-                <!-- Logout por POST (correcto) -->
                 <form class="userMenu__form" method="post" action="{% url 'ui:logout' %}">
                     {% csrf_token %}
                     <button type="submit" class="userMenu__item userMenu__item--danger">
-                        ⏻ {% trans "Cerrar sesión" %}
+                        <span class="userMenu__icon">
+                            <img src="{% static 'ui/img/iconos/log-out.svg' %}" alt="">
+                        </span>
+                        <span class="userMenu__itemText">
+                            <span class="userMenu__itemTitle">{% trans "Cerrar sesión" %}</span>
+                            <span class="userMenu__itemHint">{% trans "Salir de esta cuenta" %}</span>
+                        </span>
                     </button>
                 </form>
             </div>

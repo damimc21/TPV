@@ -100,12 +100,19 @@ def mesa(request, numero):
     else:
         caja_estado = "CERRADA"
     
+    raw_sidebar_config = ConfiguracionTPV.objects.filter(clave="tpv_sidebar_layout").values_list("valor", flat=True).first()
+    try:
+        sidebar_config = json.loads(raw_sidebar_config) if raw_sidebar_config else {}
+    except (TypeError, json.JSONDecodeError):
+        sidebar_config = {}
+
     return render(request, "ui/tpv/mesa.html", {
         "numero": numero,
         "terminal_id": "1",
         "turno_numero": turno_numero,
         "fecha_jornada": fecha_jornada,
         "caja_estado": caja_estado,
+        "sidebar_config_json": json.dumps(sidebar_config, ensure_ascii=False),
     })
 
 
@@ -261,4 +268,3 @@ def comprobante(request, comanda_id):
         print(f"Error al marcar comprobante como impreso: {e}")
     
     return render(request, "ui/tpv/ticket.html", {"comanda_provisional": comanda})
-
