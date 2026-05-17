@@ -25,6 +25,7 @@ db.sqlite3
 /staticfiles/
 /media/
 *.mo
+!locale/**/LC_MESSAGES/*.mo
 
 # --- Configuracion sensible ---
 .env

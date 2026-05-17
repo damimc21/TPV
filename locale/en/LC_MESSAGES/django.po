@@ -3,247 +3,1714 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-05 12:49+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2026-05-15 18:10+0200\n"
+"PO-Revision-Date: 2026-05-15 10:45+0200\n"
+"Last-Translator: TPV Hosteleria\n"
+"Language-Team: English\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\templates\ui\albaranes_facturas\index.html:7
-#: .\templates\ui\albaranes_facturas\index.html:13
-#: .\templates\ui\componentes\sidebar.html:40 .\templates\ui\index.html:62
+#: .\templates\ui\albaranes_facturas\albaranes.html:4
+#: .\templates\ui\albaranes_facturas\albaranes.html:23
+#: .\templates\ui\albaranes_facturas\index.html:17
+msgid "Albaranes"
+msgstr "Delivery Notes"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:4
+#: .\templates\ui\albaranes_facturas\albaranes.html:19
+#: .\templates\ui\albaranes_facturas\facturas.html:4
+#: .\templates\ui\albaranes_facturas\facturas.html:19
+#: .\templates\ui\albaranes_facturas\index.html:4
+#: .\templates\ui\albaranes_facturas\index.html:8
+#: .\templates\ui\componentes\sidebar.html:52 .\templates\ui\home\index.html:84
 msgid "Albaranes y Facturas"
-msgstr "Deliveries/Invoices"
+msgstr "Delivery Notes and Invoices"
 
-#: .\templates\ui\albaranes_facturas\index.html:14
-#: .\templates\ui\ayuda\index.html:14 .\templates\ui\caja\index.html:14
-#: .\templates\ui\ficheros\index.html:14 .\templates\ui\stock\index.html:8
-#, fuzzy
-#| msgid "Pantalla TPV (en construcción)."
-msgid "Sección en construcción."
-msgstr "POS Screen (under construction)."
+#: .\templates\ui\albaranes_facturas\albaranes.html:28
+msgid "Nuevo Albarán"
+msgstr "New Delivery Note"
 
-#: .\templates\ui\albaranes_facturas\index.html:15
-#: .\templates\ui\ayuda\index.html:15 .\templates\ui\caja\index.html:15
-#: .\templates\ui\config\index.html:35 .\templates\ui\config\index.html:38
-#: .\templates\ui\ficheros\index.html:15 .\templates\ui\mesa.html:18
-msgid "Volver"
-msgstr "Back"
+#: .\templates\ui\albaranes_facturas\albaranes.html:37
+msgid "Buscar albarán..."
+msgstr "Search delivery note..."
 
-#: .\templates\ui\ayuda\index.html:7 .\templates\ui\ayuda\index.html:13
-#: .\templates\ui\componentes\sidebar.html:62 .\templates\ui\index.html:80
+#: .\templates\ui\albaranes_facturas\albaranes.html:40
+#: .\templates\ui\albaranes_facturas\facturas.html:40
+msgid "Todos los estados"
+msgstr "All statuses"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:41
+#: .\templates\ui\albaranes_facturas\albaranes.html:127
+msgid "Recibido"
+msgstr "Received"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:42
+#: .\templates\ui\albaranes_facturas\albaranes.html:128
+msgid "Pendiente"
+msgstr "Pending"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:43
+#: .\templates\ui\albaranes_facturas\albaranes.html:129
+msgid "Contabilizado"
+msgstr "Posted"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:52
+#: .\templates\ui\albaranes_facturas\albaranes.html:96
+#: .\templates\ui\albaranes_facturas\facturas.html:52
+#: .\templates\ui\albaranes_facturas\facturas.html:96
+#: .\templates\ui\stock\inventario.html:186
+#: .\templates\ui\stock\inventario.html:420
+msgid "Proveedor"
+msgstr "Supplier"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:53
+#: .\templates\ui\albaranes_facturas\albaranes.html:109
+msgid "N. albarán"
+msgstr "Delivery note no."
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:54
+#: .\templates\ui\albaranes_facturas\albaranes.html:113
+#: .\templates\ui\albaranes_facturas\facturas.html:54
+#: .\templates\ui\albaranes_facturas\facturas.html:113
+#: .\templates\ui\caja\cierres.html:31 .\templates\ui\caja\cierres.html:69
+#: .\templates\ui\caja\facturas.html:57 .\templates\ui\caja\reaperturas.html:32
+#: .\templates\ui\ficheros\backups.html:79 .\templates\ui\tpv\tpv.html:37
+msgid "Fecha"
+msgstr "Date"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:55
+#: .\templates\ui\albaranes_facturas\albaranes.html:117
+#: .\templates\ui\albaranes_facturas\facturas.html:55
+#: .\templates\ui\albaranes_facturas\facturas.html:121
+msgid "Concepto"
+msgstr "Concept"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:56
+#: .\templates\ui\albaranes_facturas\albaranes.html:125
+#: .\templates\ui\albaranes_facturas\facturas.html:56
+#: .\templates\ui\albaranes_facturas\facturas.html:137
+#: .\templates\ui\caja\estadisticas.html:38
+#: .\templates\ui\caja\facturas.html:60
+#: .\templates\ui\catalogo\catalogo.html:137
+#: .\templates\ui\catalogo\catalogo.html:270
+#: .\templates\ui\catalogo\modificadores.html:117
+#: .\templates\ui\config\usuarios.html:145
+#: .\templates\ui\config\usuarios.html:169
+#: .\templates\ui\ficheros\exportar.html:42
+#: .\templates\ui\stock\inventario.html:66
+#: .\templates\ui\stock\inventario.html:182
+msgid "Estado"
+msgstr "Status"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:57
+msgid "Importe"
+msgstr "Amount"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:72
+msgid "Aún no hay albaranes registrados."
+msgstr "No delivery notes recorded yet."
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:77
+#: .\templates\ui\albaranes_facturas\facturas.html:77
+msgid "No hay resultados para esta búsqueda."
+msgstr "No results for this search."
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:88
+msgid "Nuevo albarán recibido"
+msgstr "New received delivery note"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:98
+#: .\templates\ui\albaranes_facturas\facturas.html:98
+msgid "Seleccionar proveedor"
+msgstr "Select supplier"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:105
+#: .\templates\ui\albaranes_facturas\facturas.html:105
+msgid "O escribir proveedor"
+msgstr "Or type a supplier"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:121
+msgid "Importe estimado"
+msgstr "Estimated amount"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:133
+#: .\templates\ui\albaranes_facturas\facturas.html:145
+#: .\templates\ui\stock\inventario.html:236
+#: .\templates\ui\stock\proveedores.html:98
+msgid "Notas"
+msgstr "Notes"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:139
+#: .\templates\ui\albaranes_facturas\facturas.html:151
+#: .\templates\ui\caja\gestion.html:191 .\templates\ui\caja\gestion.html:211
+#: .\templates\ui\catalogo\catalogo.html:232
+#: .\templates\ui\catalogo\catalogo.html:500
+#: .\templates\ui\catalogo\catalogo.html:533
+#: .\templates\ui\catalogo\catalogo.html:653
+#: .\templates\ui\catalogo\catalogo.html:657
+#: .\templates\ui\catalogo\modificadores.html:347
+#: .\templates\ui\catalogo\modificadores.html:385
+#: .\templates\ui\catalogo\modificadores.html:428
+#: .\templates\ui\catalogo\modificadores.html:474
+#: .\templates\ui\catalogo\modificadores.html:508
+#: .\templates\ui\catalogo\modificadores.html:528
+#: .\templates\ui\componentes\js_i18n_common.html:3
+#: .\templates\ui\componentes\modals_genericos.html:9
+#: .\templates\ui\componentes\modals_genericos.html:45
+#: .\templates\ui\config\usuarios.html:126
+#: .\templates\ui\config\usuarios.html:279
+#: .\templates\ui\config\usuarios.html:318
+#: .\templates\ui\ficheros\importar.html:98
+#: .\templates\ui\stock\inventario.html:306
+#: .\templates\ui\stock\inventario.html:374
+#: .\templates\ui\stock\inventario.html:460
+#: .\templates\ui\stock\proveedores.html:112 .\templates\ui\tpv\mesa.html:491
+#: .\templates\ui\tpv\mesa.html:631 .\templates\ui\tpv\mesa.html:692
+msgid "Cancelar"
+msgstr "Cancel"
+
+#: .\templates\ui\albaranes_facturas\albaranes.html:140
+msgid "Guardar albarán"
+msgstr "Save delivery note"
+
+#: .\templates\ui\albaranes_facturas\facturas.html:4
+#: .\templates\ui\albaranes_facturas\facturas.html:23
+#: .\templates\ui\albaranes_facturas\index.html:30
+msgid "Facturas de proveedor"
+msgstr "Supplier invoices"
+
+#: .\templates\ui\albaranes_facturas\facturas.html:28
+msgid "Nueva Factura"
+msgstr "New Invoice"
+
+#: .\templates\ui\albaranes_facturas\facturas.html:37
+msgid "Buscar factura..."
+msgstr "Search invoice..."
+
+#: .\templates\ui\albaranes_facturas\facturas.html:53
+#: .\templates\ui\albaranes_facturas\facturas.html:109
+msgid "N. factura"
+msgstr "Invoice no."
+
+#: .\templates\ui\albaranes_facturas\facturas.html:57
+#: .\templates\ui\albaranes_facturas\facturas.html:133
+#: .\templates\ui\caja\facturas.html:61 .\templates\ui\tpv\mesa.html:45
+#: .\templates\ui\tpv\mesa.html:121 .\templates\ui\tpv\mesa.html:123
+msgid "Total"
+msgstr "Total"
+
+#: .\templates\ui\albaranes_facturas\facturas.html:72
+msgid "Aún no hay facturas de proveedor registradas."
+msgstr "No supplier invoices recorded yet."
+
+#: .\templates\ui\albaranes_facturas\facturas.html:88
+msgid "Nueva factura recibida"
+msgstr "New received invoice"
+
+#: .\templates\ui\albaranes_facturas\facturas.html:117
+msgid "Vencimiento"
+msgstr "Due date"
+
+#: .\templates\ui\albaranes_facturas\facturas.html:125
+msgid "Base"
+msgstr "Base"
+
+#: .\templates\ui\albaranes_facturas\facturas.html:129
+msgid "Impuestos"
+msgstr "Taxes"
+
+#: .\templates\ui\albaranes_facturas\facturas.html:152
+msgid "Guardar factura"
+msgstr "Save invoice"
+
+#: .\templates\ui\albaranes_facturas\index.html:19
+#, python-format
+msgid ""
+"Control de entregas de proveedor y entradas de stock. Este mes: %(entradas)s "
+"entradas registradas."
+msgstr ""
+"Supplier delivery tracking and stock entries. This month: %(entradas)s "
+"entries recorded."
+
+#: .\templates\ui\albaranes_facturas\index.html:22
+#: .\templates\ui\config\index.html:22
+msgid "Abrir"
+msgstr "Open"
+
+#: .\templates\ui\albaranes_facturas\index.html:32
+#, python-format
+msgid ""
+"Registro de facturas recibidas: Coca-Cola, Mercadona, Catunambu, Apolo y "
+"otros proveedores. Proveedores: %(proveedores)s."
+msgstr ""
+"Received invoice register: Coca-Cola, Mercadona, Catunambu, Apolo and other "
+"suppliers. Suppliers: %(proveedores)s."
+
+#: .\templates\ui\albaranes_facturas\index.html:35
+#: .\templates\ui\caja\index.html:80 .\templates\ui\ficheros\index.html:80
+msgid "Consultar"
+msgstr "View"
+
+#: .\templates\ui\auth\login.html:10 .\templates\ui\auth\login.html:17
+#: .\templates\ui\componentes\sidebar.html:71
+#: .\templates\ui\componentes\topbar.html:51
+#: .\templates\ui\componentes\topbar.html:103
+msgid "Iniciar sesión"
+msgstr "Log in"
+
+#: .\templates\ui\auth\login.html:18
+msgid "Accede con tu usuario para entrar al TPV."
+msgstr "Sign in with your username to enter the POS."
+
+#: .\templates\ui\auth\login.html:23 .\templates\ui\caja\gestion.html:78
+#: .\templates\ui\componentes\topbar.html:70
+#: .\templates\ui\componentes\topbar.html:102
+#: .\templates\ui\config\permisos.html:51
+#: .\templates\ui\config\usuarios.html:142
+#: .\templates\ui\config\usuarios.html:152
+msgid "Usuario"
+msgstr "User"
+
+#: .\templates\ui\auth\login.html:26 .\templates\ui\config\usuarios.html:88
+msgid "Contraseña"
+msgstr "Password"
+
+#: .\templates\ui\auth\login.html:41
+msgid "Usuario o contraseña incorrectos."
+msgstr "Incorrect username or password."
+
+#: .\templates\ui\auth\login.html:45 .\templates\ui\caja\index.html:23
+#: .\templates\ui\catalogo\index.html:20 .\templates\ui\catalogo\index.html:32
+#: .\templates\ui\home\index.html:24 .\templates\ui\home\index.html:37
+#: .\templates\ui\home\index.html:50 .\templates\ui\home\index.html:63
+#: .\templates\ui\home\index.html:76 .\templates\ui\home\index.html:89
+#: .\templates\ui\home\index.html:102 .\templates\ui\home\index.html:115
+#: .\templates\ui\stock\index.html:23
+msgid "Entrar"
+msgstr "Enter"
+
+#: .\templates\ui\auth\login.html:47
+msgid "Volver al inicio"
+msgstr "Back to Home"
+
+#: .\templates\ui\ayuda\index.html:4 .\templates\ui\ayuda\index.html:21
+#: .\templates\ui\componentes\sidebar.html:80
+#: .\templates\ui\home\index.html:110
 msgid "Ayuda"
 msgstr "Help"
 
-#: .\templates\ui\caja\index.html:7 .\templates\ui\caja\index.html:13
-#: .\templates\ui\componentes\sidebar.html:34 .\templates\ui\index.html:53
+#: .\templates\ui\ayuda\index.html:17
+msgid "Inicio"
+msgstr "Home"
+
+#: .\templates\ui\ayuda\index.html:26 .\templates\ui\ayuda\index.html:38
+msgid "Buscar"
+msgstr "Search"
+
+#: .\templates\ui\ayuda\index.html:32
+msgid "Índice de ayuda"
+msgstr "Help index"
+
+#: .\templates\ui\ayuda\index.html:35
+msgid "Índice"
+msgstr "Index"
+
+#: .\templates\ui\ayuda\index.html:41 .\templates\ui\ayuda\index.html:109
+msgid "Mapa de mesas"
+msgstr "Table Map"
+
+#: .\templates\ui\ayuda\index.html:42 .\templates\ui\ayuda\index.html:118
+msgid "Pantalla de mesa"
+msgstr "Table Screen"
+
+#: .\templates\ui\ayuda\index.html:43 .\templates\ui\ayuda\index.html:127
+msgid "Selector de productos"
+msgstr "Product Selector"
+
+#: .\templates\ui\ayuda\index.html:44 .\templates\ui\ayuda\index.html:131
+msgid "Botones laterales"
+msgstr "Side Buttons"
+
+#: .\templates\ui\ayuda\index.html:45 .\templates\ui\ayuda\index.html:141
+msgid "Cobro y tickets"
+msgstr "Payment and Receipts"
+
+#: .\templates\ui\ayuda\index.html:47 .\templates\ui\ayuda\index.html:151
+#: .\templates\ui\componentes\sidebar.html:20
+#: .\templates\ui\ficheros\auditoria.html:18
+#: .\templates\ui\ficheros\backups.html:4
+#: .\templates\ui\ficheros\backups.html:18
+#: .\templates\ui\ficheros\exportar.html:4
+#: .\templates\ui\ficheros\exportar.html:21
+#: .\templates\ui\ficheros\importar.html:4
+#: .\templates\ui\ficheros\importar.html:19
+#: .\templates\ui\ficheros\index.html:4 .\templates\ui\ficheros\index.html:8
+#: .\templates\ui\ficheros\informes.html:18
+#: .\templates\ui\ficheros\logs.html:18 .\templates\ui\home\index.html:32
+msgid "Ficheros"
+msgstr "Files"
+
+#: .\templates\ui\ayuda\index.html:48 .\templates\ui\ayuda\index.html:155
+#: .\templates\ui\ficheros\importar.html:100
+#: .\templates\ui\ficheros\index.html:24
+msgid "Importar"
+msgstr "Import"
+
+#: .\templates\ui\ayuda\index.html:49 .\templates\ui\ayuda\index.html:159
+#: .\templates\ui\componentes\export_menu.html:15
+#: .\templates\ui\ficheros\index.html:38
+msgid "Exportar"
+msgstr "Export"
+
+#: .\templates\ui\ayuda\index.html:51 .\templates\ui\ayuda\index.html:167
+msgid "Auditoría y logs"
+msgstr "Audit and Logs"
+
+#: .\templates\ui\ayuda\index.html:53 .\templates\ui\ayuda\index.html:177
+#: .\templates\ui\catalogo\catalogo.html:77
+#: .\templates\ui\catalogo\index.html:4 .\templates\ui\catalogo\index.html:8
+#: .\templates\ui\catalogo\modificadores.html:4
+#: .\templates\ui\catalogo\modificadores.html:42
+#: .\templates\ui\componentes\sidebar.html:28 .\templates\ui\home\index.html:45
+msgid "Catálogo"
+msgstr "Catalog"
+
+#: .\templates\ui\ayuda\index.html:54 .\templates\ui\ayuda\index.html:181
+#: .\templates\ui\catalogo\catalogo.html:93
+msgid "Productos"
+msgstr "Products"
+
+#: .\templates\ui\ayuda\index.html:55 .\templates\ui\ayuda\index.html:190
+#: .\templates\ui\catalogo\modificadores.html:4
+#: .\templates\ui\tpv\mesa.html:450
+msgid "Modificadores"
+msgstr "Modifiers"
+
+#: .\templates\ui\ayuda\index.html:56 .\templates\ui\ayuda\index.html:194
+msgid "Impresoras por producto"
+msgstr "Printers by Product"
+
+#: .\templates\ui\ayuda\index.html:59 .\templates\ui\ayuda\index.html:208
+#: .\templates\ui\stock\index.html:18 .\templates\ui\stock\inventario.html:4
+msgid "Inventario"
+msgstr "Inventory"
+
+#: .\templates\ui\ayuda\index.html:60 .\templates\ui\ayuda\index.html:212
+#: .\templates\ui\stock\index.html:31 .\templates\ui\stock\inventario.html:202
+#: .\templates\ui\stock\proveedores.html:4
+#: .\templates\ui\stock\proveedores.html:22
+msgid "Proveedores"
+msgstr "Suppliers"
+
+#: .\templates\ui\ayuda\index.html:61 .\templates\ui\ayuda\index.html:216
+msgid "Movimientos"
+msgstr "Movements"
+
+#: .\templates\ui\ayuda\index.html:63 .\templates\ui\ayuda\index.html:226
+#: .\templates\ui\caja\facturas.html:4 .\templates\ui\caja\index.html:4
+#: .\templates\ui\caja\index.html:8 .\templates\ui\componentes\sidebar.html:44
+#: .\templates\ui\home\index.html:71
 msgid "Caja y cierres"
 msgstr "Till & Closing"
+
+#: .\templates\ui\ayuda\index.html:64 .\templates\ui\ayuda\index.html:230
+msgid "Abrir caja"
+msgstr "Open Register"
+
+#: .\templates\ui\ayuda\index.html:65 .\templates\ui\ayuda\index.html:234
+msgid "Cerrar caja y día"
+msgstr "Close Register and Day"
+
+#: .\templates\ui\ayuda\index.html:66 .\templates\ui\ayuda\index.html:238
+msgid "Facturas y estadísticas"
+msgstr "Invoices and Statistics"
+
+#: .\templates\ui\ayuda\index.html:68 .\templates\ui\ayuda\index.html:248
+msgid "Albaranes y facturas"
+msgstr "Delivery Notes and Invoices"
+
+#: .\templates\ui\ayuda\index.html:69 .\templates\ui\ayuda\index.html:252
+msgid "Documentos de proveedor"
+msgstr "Supplier Documents"
+
+#: .\templates\ui\ayuda\index.html:70 .\templates\ui\ayuda\index.html:256
+msgid "Estados"
+msgstr "Statuses"
+
+#: .\templates\ui\ayuda\index.html:72 .\templates\ui\ayuda\index.html:266
+#: .\templates\ui\catalogo\catalogo.html:311
+#: .\templates\ui\componentes\sidebar.html:60
+#: .\templates\ui\config\impresoras.html:17 .\templates\ui\config\index.html:4
+#: .\templates\ui\config\index.html:9
+#: .\templates\ui\config\maps\maps_list.html:17
+#: .\templates\ui\config\permisos.html:18
+#: .\templates\ui\config\seguridad.html:18
+#: .\templates\ui\config\tpv_diseno.html:17
+#: .\templates\ui\config\usuarios.html:18 .\templates\ui\home\index.html:97
+msgid "Configuración"
+msgstr "Configuration"
+
+#: .\templates\ui\ayuda\index.html:73 .\templates\ui\ayuda\index.html:270
+msgid "Usuarios y permisos"
+msgstr "Users and Permissions"
+
+#: .\templates\ui\ayuda\index.html:74 .\templates\ui\ayuda\index.html:274
+msgid "Mapas de mesas"
+msgstr "Table Maps"
+
+#: .\templates\ui\ayuda\index.html:75 .\templates\ui\ayuda\index.html:278
+#: .\templates\ui\config\index.html:52 .\templates\ui\config\tpv_diseno.html:4
+#: .\templates\ui\config\tpv_diseno.html:21
+msgid "Diseño TPV"
+msgstr "POS Design"
+
+#: .\templates\ui\ayuda\index.html:76 .\templates\ui\ayuda\index.html:282
+msgid "Seguridad"
+msgstr "Security"
+
+#: .\templates\ui\ayuda\index.html:78 .\templates\ui\ayuda\index.html:292
+msgid "Buenas prácticas"
+msgstr "Best Practices"
+
+#: .\templates\ui\ayuda\index.html:83
+msgid "Buscar en ayuda"
+msgstr "Search help"
+
+#: .\templates\ui\ayuda\index.html:90
+msgid "Buscar en la ayuda..."
+msgstr "Search the help..."
+
+#: .\templates\ui\ayuda\index.html:95 .\templates\ui\catalogo\catalogo.html:152
+#: .\templates\ui\catalogo\modificadores.html:132
+#: .\templates\ui\stock\inventario.html:245
+msgid "Limpiar"
+msgstr "Clear"
+
+#: .\templates\ui\ayuda\index.html:104 .\templates\ui\ayuda\index.html:150
+#: .\templates\ui\ayuda\index.html:176 .\templates\ui\ayuda\index.html:203
+#: .\templates\ui\ayuda\index.html:225 .\templates\ui\ayuda\index.html:247
+#: .\templates\ui\ayuda\index.html:265
+msgid "Módulo"
+msgstr "Module"
+
+#: .\templates\ui\ayuda\index.html:110
+msgid ""
+"Desde el mapa ves qué mesas están libres y cuáles tienen una comanda "
+"abierta. Pulsa una mesa para entrar y seguir trabajando."
+msgstr ""
+"The map shows which tables are free and which ones already have an open "
+"order. Press a table to enter and keep working."
+
+#: .\templates\ui\ayuda\index.html:112
+msgid "Una mesa libre se abre al pulsarla."
+msgstr "A free table opens when you press it."
+
+#: .\templates\ui\ayuda\index.html:113
+msgid "Una mesa ocupada recupera la comanda que ya estaba abierta."
+msgstr "An occupied table restores the order that was already open."
+
+#: .\templates\ui\ayuda\index.html:114
+msgid "El diseño del mapa se cambia desde Configuración."
+msgstr "The map layout is changed from Configuration."
+
+#: .\templates\ui\ayuda\index.html:119
+msgid ""
+"Aquí está casi todo lo que se usa durante el servicio: ticket, calculadora, "
+"productos y acciones de la mesa."
+msgstr ""
+"Most service work happens here: receipt, calculator, products, and table "
+"actions."
+
+#: .\templates\ui\ayuda\index.html:121
+msgid "Usa las líneas del ticket para seleccionar productos ya añadidos."
+msgstr "Use receipt lines to select products that are already added."
+
+#: .\templates\ui\ayuda\index.html:122
+msgid "Deshacer y rehacer ayudan a corregir cambios recientes."
+msgstr "Undo and redo help correct recent changes."
+
+#: .\templates\ui\ayuda\index.html:123
+msgid "La mesa se sincroniza al cobrar o al ejecutar acciones importantes."
+msgstr "The table syncs when you take payment or run important actions."
+
+#: .\templates\ui\ayuda\index.html:128
+msgid ""
+"Los departamentos filtran los productos. Al pulsar un producto se añade al "
+"ticket. Si necesita opciones, el selector se abre antes de añadirlo."
+msgstr ""
+"Departments filter the products. Pressing a product adds it to the receipt. "
+"If it needs options, the selector opens before adding it."
+
+#: .\templates\ui\ayuda\index.html:132
+msgid ""
+"La barra lateral reúne las acciones que más se usan en mesa: cobrar, "
+"imprimir, aplicar descuentos, invitar, separar productos o asignar cliente."
+msgstr ""
+"The side bar groups the actions used most at the table: payment, printing, "
+"discounts, comps, product splitting, and customer assignment."
+
+#: .\templates\ui\ayuda\index.html:134
+msgid "<strong>Total</strong> abre el flujo de cobro."
+msgstr "<strong>Total</strong> opens the payment flow."
+
+#: .\templates\ui\ayuda\index.html:135
+msgid ""
+"<strong>Dto.</strong> aplica descuentos a líneas seleccionadas o a toda la "
+"mesa."
+msgstr ""
+"<strong>Disc.</strong> applies discounts to selected lines or the whole "
+"table."
+
+#: .\templates\ui\ayuda\index.html:136
+#, python-format
+msgid "<strong>Invitar</strong> aplica o retira descuento del 100%%."
+msgstr "<strong>Comp</strong> applies or removes a 100%% discount."
+
+#: .\templates\ui\ayuda\index.html:137
+msgid ""
+"<strong>Separar</strong> divide cantidades para cobrar o editar unidades "
+"sueltas."
+msgstr ""
+"<strong>Split</strong> separates quantities so you can charge or edit "
+"individual units."
+
+#: .\templates\ui\ayuda\index.html:142
+msgid ""
+"En el cobro eliges método de pago, decides si imprimir ticket y cierras la "
+"mesa cuando todo está correcto."
+msgstr ""
+"During payment you choose the payment method, decide whether to print the "
+"receipt, and close the table when everything is correct."
+
+#: .\templates\ui\ayuda\index.html:156
+msgid ""
+"Úsalo para cargar datos desde archivos preparados. Antes de confirmar, "
+"conviene revisar la vista previa y los avisos."
+msgstr ""
+"Use it to load data from prepared files. Before confirming, review the "
+"preview and any warnings."
+
+#: .\templates\ui\ayuda\index.html:160
+msgid ""
+"Sirve para sacar información del sistema y trabajarla fuera cuando haga "
+"falta."
+msgstr ""
+"Use it to export information from the system and work with it elsewhere when "
+"needed."
+
+#: .\templates\ui\ayuda\index.html:164
+msgid ""
+"Haz una copia antes de cambios grandes, importaciones o pruebas con muchos "
+"datos."
+msgstr ""
+"Make a backup before large changes, imports, or tests with a lot of data."
+
+#: .\templates\ui\ayuda\index.html:168
+msgid ""
+"Auditoría recoge acciones importantes. Logs ayuda a revisar incidencias "
+"técnicas o errores del sistema."
+msgstr ""
+"Audit records important actions. Logs help review technical incidents or "
+"system errors."
+
+#: .\templates\ui\ayuda\index.html:182
+msgid ""
+"Cada producto tiene su nombre, precio, departamento, colores, icono, "
+"impresora y opciones si las necesita."
+msgstr ""
+"Each product has its name, price, department, colors, icon, printer, and "
+"options if needed."
+
+#: .\templates\ui\ayuda\index.html:184
+msgid "El departamento decide dónde aparece el producto en el TPV."
+msgstr "The department decides where the product appears in the POS."
+
+#: .\templates\ui\ayuda\index.html:185
+msgid "Los colores ayudan a encontrar artículos rápido."
+msgstr "Colors help you find items quickly."
+
+#: .\templates\ui\ayuda\index.html:186
+msgid "Un producto configurable pide opciones antes de añadirse al ticket."
+msgstr ""
+"A configurable product asks for options before it is added to the receipt."
+
+#: .\templates\ui\ayuda\index.html:191
+msgid ""
+"Los modificadores añaden comentarios, suplementos u opciones reutilizables "
+"para productos y comandas."
+msgstr ""
+"Modifiers add reusable notes, extras, or options for products and orders."
+
+#: .\templates\ui\ayuda\index.html:195
+msgid ""
+"Asignar impresora permite enviar cada producto al punto correcto, como "
+"cocina, barra u otra zona de preparación."
+msgstr ""
+"Assigning a printer sends each product to the correct point, such as "
+"kitchen, bar, or another preparation area."
+
+#: .\templates\ui\ayuda\index.html:209
+msgid ""
+"El inventario muestra artículos, cantidades, costes y avisos. Úsalo para "
+"controlar existencias y preparar reposiciones."
+msgstr ""
+"Inventory shows items, quantities, costs, and warnings. Use it to control "
+"stock and prepare replenishment."
+
+#: .\templates\ui\ayuda\index.html:213
+msgid ""
+"Los proveedores se vinculan a artículos y documentos de compra para mantener "
+"trazabilidad."
+msgstr ""
+"Suppliers are linked to items and purchase documents to keep traceability."
+
+#: .\templates\ui\ayuda\index.html:217
+msgid ""
+"Entradas, salidas y ajustes mantienen el stock al día. En ajustes manuales, "
+"deja siempre un motivo claro."
+msgstr ""
+"Entries, exits, and adjustments keep stock up to date. For manual "
+"adjustments, always leave a clear reason."
+
+#: .\templates\ui\ayuda\index.html:231
+msgid ""
+"La apertura inicia la sesión de trabajo. Revisa el estado de caja antes de "
+"empezar a vender."
+msgstr ""
+"Opening starts the work session. Check the register status before you start "
+"selling."
+
+#: .\templates\ui\ayuda\index.html:235
+msgid ""
+"El cierre agrupa ventas, pagos y movimientos. Antes de cerrar, revisa "
+"importes, tickets pendientes y efectivo declarado."
+msgstr ""
+"Closing groups sales, payments, and movements. Before closing, review "
+"amounts, pending receipts, and declared cash."
+
+#: .\templates\ui\ayuda\index.html:239
+msgid ""
+"Estas vistas ayudan a localizar documentos emitidos, revisar ventas y "
+"consultar actividad por periodo."
+msgstr ""
+"These views help find issued documents, review sales, and check activity by "
+"period."
+
+#: .\templates\ui\ayuda\index.html:253
+msgid ""
+"Registra albaranes y facturas recibidas para relacionar compras, proveedores "
+"y stock."
+msgstr ""
+"Register received delivery notes and invoices to connect purchases, "
+"suppliers, and stock."
+
+#: .\templates\ui\ayuda\index.html:257
+msgid ""
+"Los estados ayudan a distinguir documentos pendientes, revisados o "
+"completados."
+msgstr "Statuses help distinguish pending, reviewed, or completed documents."
+
+#: .\templates\ui\ayuda\index.html:271
+msgid ""
+"Desde aquí se crean usuarios, se asignan roles y se limitan funciones "
+"sensibles según la responsabilidad de cada persona."
+msgstr ""
+"From here you create users, assign roles, and limit sensitive functions "
+"according to each person’s responsibility."
+
+#: .\templates\ui\ayuda\index.html:275
+msgid ""
+"El editor de mapas permite crear salas, colocar mesas y adaptar el plano al "
+"local."
+msgstr ""
+"The map editor lets you create rooms, place tables, and adapt the plan to "
+"the venue."
+
+#: .\templates\ui\ayuda\index.html:279
+msgid ""
+"Permite personalizar la barra lateral de la mesa: orden, ancho, colores, "
+"nombre e icono de cada acción."
+msgstr ""
+"It lets you customize the table side bar: order, width, colors, name, and "
+"icon for each action."
+
+#: .\templates\ui\ayuda\index.html:283
+msgid ""
+"La seguridad de acceso controla intentos de login, bloqueos temporales y "
+"protecciones adicionales."
+msgstr ""
+"Access security controls login attempts, temporary blocks, and additional "
+"protections."
+
+#: .\templates\ui\ayuda\index.html:291
+msgid "Referencia"
+msgstr "Reference"
+
+#: .\templates\ui\ayuda\index.html:297
+msgid "Antes de cambios grandes"
+msgstr "Before Large Changes"
+
+#: .\templates\ui\ayuda\index.html:298
+msgid ""
+"Haz backup, revisa permisos y prueba con pocos datos antes de importar o "
+"modificar el catálogo completo."
+msgstr ""
+"Make a backup, check permissions, and test with a small amount of data "
+"before importing or changing the full catalog."
+
+#: .\templates\ui\ayuda\index.html:301
+msgid "Durante el servicio"
+msgstr "During Service"
+
+#: .\templates\ui\ayuda\index.html:302
+msgid ""
+"Evita cambios de configuración mientras haya muchas comandas abiertas salvo "
+"que sea imprescindible."
+msgstr ""
+"Avoid configuration changes while many orders are open unless it is "
+"essential."
+
+#: .\templates\ui\ayuda\index.html:305
+msgid "Al cerrar"
+msgstr "At Closing"
+
+#: .\templates\ui\ayuda\index.html:306
+msgid ""
+"Comprueba caja, tickets pendientes y documentos antes de cerrar el día "
+"contable."
+msgstr ""
+"Check the register, pending receipts, and documents before closing the "
+"accounting day."
+
+#: .\templates\ui\caja\cierres.html:4 .\templates\ui\caja\cierres.html:15
+msgid "Historial de Cierres"
+msgstr "Closing History"
+
+#: .\templates\ui\caja\cierres.html:21
+msgid "Cierres Z (Días)"
+msgstr "Z Reports (Days)"
+
+#: .\templates\ui\caja\cierres.html:22
+msgid "Cierres de Turno"
+msgstr "Shift Closings"
+
+#: .\templates\ui\caja\cierres.html:32 .\templates\ui\caja\cierres.html:70
+msgid "Horario"
+msgstr "Time"
+
+#: .\templates\ui\caja\cierres.html:33 .\templates\ui\caja\cierres.html:71
+msgid "Responsable"
+msgstr "Responsible user"
+
+#: .\templates\ui\caja\cierres.html:34
+msgid "Total Z"
+msgstr "Z Total"
+
+#: .\templates\ui\caja\cierres.html:35 .\templates\ui\caja\cierres.html:74
+#: .\templates\ui\tpv\mesa.html:54 .\templates\ui\tpv\ticket.html:7
+msgid "Ticket"
+msgstr "Ticket"
+
+#: .\templates\ui\caja\cierres.html:46
+msgid "Imprimir reporte Z"
+msgstr "Print Z report"
+
+#: .\templates\ui\caja\cierres.html:54
+msgid "No hay jornadas registradas."
+msgstr "No business days recorded."
+
+#: .\templates\ui\caja\cierres.html:72
+msgid "Ventas (Z)"
+msgstr "Sales (Z)"
+
+#: .\templates\ui\caja\cierres.html:73
+msgid "Real (Arqueo)"
+msgstr "Actual (Cash Count)"
+
+#: .\templates\ui\caja\cierres.html:86 .\templates\ui\caja\gestion.html:121
+msgid "Imprimir reporte de turno"
+msgstr "Print shift report"
+
+#: .\templates\ui\caja\cierres.html:94
+msgid "No hay turnos registrados."
+msgstr "No shifts recorded."
+
+#: .\templates\ui\caja\estadisticas.html:4
+msgid "Estadísticas TPV"
+msgstr "POS Statistics"
+
+#: .\templates\ui\caja\estadisticas.html:16
+msgid "Estadísticas de Negocio"
+msgstr "Business Statistics"
+
+#: .\templates\ui\caja\estadisticas.html:23
+msgid "Ventas Hoy"
+msgstr "Sales Today"
+
+#: .\templates\ui\caja\estadisticas.html:25
+msgid "Tickets emitidos"
+msgstr "Tickets issued"
+
+#: .\templates\ui\caja\estadisticas.html:28
+msgid "Ticket Medio"
+msgstr "Average Ticket"
+
+#: .\templates\ui\caja\estadisticas.html:30
+msgid "Promedio por cliente"
+msgstr "Average per customer"
+
+#: .\templates\ui\caja\estadisticas.html:33
+msgid "Ventas Mes"
+msgstr "Monthly Sales"
+
+#: .\templates\ui\caja\estadisticas.html:35
+msgid "Acumulado mensual"
+msgstr "Monthly total"
+
+#: .\templates\ui\caja\estadisticas.html:39
+msgid "Operativo"
+msgstr "Operational"
+
+#: .\templates\ui\caja\estadisticas.html:40
+msgid "Datos actualizados"
+msgstr "Data updated"
+
+#: .\templates\ui\caja\estadisticas.html:52
+msgid "Tendencia de Ventas (Últimos 14 días)"
+msgstr "Sales Trend (Last 14 Days)"
+
+#: .\templates\ui\caja\estadisticas.html:65
+msgid "Distribución de Cobros (Hoy)"
+msgstr "Payment Breakdown (Today)"
+
+#: .\templates\ui\caja\estadisticas.html:78
+msgid "Ventas por Categoría (Hoy)"
+msgstr "Sales by Category (Today)"
+
+#: .\templates\ui\caja\estadisticas.html:91
+msgid "Top 5 Productos (Mes)"
+msgstr "Top 5 Products (Month)"
+
+#: .\templates\ui\caja\estadisticas.html:109
+msgid "Ventas (€)"
+msgstr "Sales (€)"
+
+#: .\templates\ui\caja\estadisticas.html:110
+#: .\templates\ui\stock\inventario.html:408
+msgid "Unidades"
+msgstr "Units"
+
+#: .\templates\ui\caja\facturas.html:4 .\templates\ui\caja\facturas.html:22
+#: .\templates\ui\caja\index.html:75
+msgid "Facturas emitidas"
+msgstr "Issued invoices"
+
+#: .\templates\ui\caja\facturas.html:18
+msgid "Caja"
+msgstr "Cash"
+
+#: .\templates\ui\caja\facturas.html:31
+msgid "Hoy"
+msgstr "Today"
+
+#: .\templates\ui\caja\facturas.html:33
+msgid "pagados"
+msgstr "paid"
+
+#: .\templates\ui\caja\facturas.html:40
+msgid "Pendientes"
+msgstr "Pending"
+
+#: .\templates\ui\caja\facturas.html:42
+msgid "facturas emitidas pendientes"
+msgstr "pending issued invoices"
+
+#: .\templates\ui\caja\facturas.html:50
+msgid "Ultimas facturas de cliente"
+msgstr "Latest customer invoices"
+
+#: .\templates\ui\caja\facturas.html:56 .\templates\ui\tpv\mesa.html:135
+#: .\templates\ui\tpv\mesa.html:137
+msgid "Factura"
+msgstr "Invoice"
+
+#: .\templates\ui\caja\facturas.html:58 .\templates\ui\tpv\mesa.html:179
+#: .\templates\ui\tpv\mesa.html:181 .\templates\ui\tpv\mesa.html:396
+msgid "Cliente"
+msgstr "Customer"
+
+#: .\templates\ui\caja\facturas.html:59 .\templates\ui\ficheros\backups.html:82
+msgid "Tipo"
+msgstr "Type"
+
+#: .\templates\ui\caja\facturas.html:76
+msgid "Aun no hay facturas emitidas."
+msgstr "No issued invoices yet."
+
+#: .\templates\ui\caja\gestion.html:4 .\templates\ui\caja\gestion.html:15
+msgid "Gestión de Caja"
+msgstr "Cash Management"
+
+#: .\templates\ui\caja\gestion.html:22
+msgid "Estado del día"
+msgstr "Day status"
+
+#: .\templates\ui\caja\gestion.html:24
+msgid "Jornada Abierta"
+msgstr "Business day open"
+
+#: .\templates\ui\caja\gestion.html:26
+msgid "Jornada Cerrada"
+msgstr "Business day closed"
+
+#: .\templates\ui\caja\gestion.html:33
+msgid "Turno actual"
+msgstr "Current shift"
+
+#: .\templates\ui\caja\gestion.html:35
+#: .\templates\ui\catalogo\catalogo.html:167
+#: .\templates\ui\catalogo\catalogo.html:189
+#: .\templates\ui\catalogo\modificadores.html:160
+#: .\templates\ui\catalogo\modificadores.html:197
+#: .\templates\ui\catalogo\modificadores.html:243
+#: .\templates\ui\catalogo\modificadores.html:281
+#: .\templates\ui\catalogo\modificadores.html:332
+#: .\templates\ui\catalogo\modificadores.html:378
+#: .\templates\ui\catalogo\modificadores.html:467
+#: .\templates\ui\config\usuarios.html:120
+#: .\templates\ui\config\usuarios.html:171
+#: .\templates\ui\config\usuarios.html:269
+msgid "Activo"
+msgstr "Active"
+
+#: .\templates\ui\caja\gestion.html:37
+msgid "Sin turno"
+msgstr "No shift"
+
+#: .\templates\ui\caja\gestion.html:46
+msgid "Fondo predeterminado"
+msgstr "Default cash float"
+
+#: .\templates\ui\caja\gestion.html:53
+msgid "Guardar ajuste"
+msgstr "Save adjustment"
+
+#: .\templates\ui\caja\gestion.html:65
+msgid "Sesión de caja"
+msgstr "Cash session"
+
+#: .\templates\ui\caja\gestion.html:78 .\templates\ui\caja\gestion.html:108
+msgid "Abre"
+msgstr "Opens"
+
+#: .\templates\ui\caja\gestion.html:81
+msgid "Esperando jornada"
+msgstr "Waiting for business day"
+
+#: .\templates\ui\caja\gestion.html:87
+msgid "Recuento Total Día"
+msgstr "Total Day Count"
+
+#: .\templates\ui\caja\gestion.html:96
+msgid "Historial de turnos"
+msgstr "Shift history"
+
+#: .\templates\ui\caja\gestion.html:102
+#: .\templates\ui\componentes\footer.html:14 .\templates\ui\tpv\tpv.html:41
+msgid "Turno"
+msgstr "Shift"
+
+#: .\templates\ui\caja\gestion.html:104
+msgid "En curso"
+msgstr "In progress"
+
+#: .\templates\ui\caja\gestion.html:111
+msgid "Cierre"
+msgstr "Closing"
+
+#: .\templates\ui\caja\gestion.html:117
+msgid "Total turno"
+msgstr "Shift total"
+
+#: .\templates\ui\caja\gestion.html:129
+msgid "Sin turnos hoy."
+msgstr "No shifts today."
+
+#: .\templates\ui\caja\gestion.html:145
+msgid "Abrir jornada"
+msgstr "Open business day"
+
+#: .\templates\ui\caja\gestion.html:153
+msgid "Abrir turno"
+msgstr "Open shift"
+
+#: .\templates\ui\caja\gestion.html:159
+msgid "Entrar Dinero"
+msgstr "Add Cash"
+
+#: .\templates\ui\caja\gestion.html:163
+msgid "Registrar Gasto"
+msgstr "Record Expense"
+
+#: .\templates\ui\caja\gestion.html:169
+msgid "Cerrar turno"
+msgstr "Close shift"
+
+#: .\templates\ui\caja\gestion.html:176
+msgid "Cerrar jornada"
+msgstr "Close business day"
+
+#: .\templates\ui\caja\gestion.html:188
+#: .\templates\ui\catalogo\catalogo.html:529
+#: .\templates\ui\componentes\js_i18n_common.html:10
+#: .\templates\ui\componentes\modals_genericos.html:21
+msgid "Aviso"
+msgstr "Notice"
+
+#: .\templates\ui\caja\gestion.html:189
+#: .\templates\ui\catalogo\catalogo.html:530
+msgid "¿Estás seguro?"
+msgstr "Are you sure?"
+
+#: .\templates\ui\caja\gestion.html:192
+#: .\templates\ui\catalogo\catalogo.html:534
+#: .\templates\ui\catalogo\modificadores.html:531
+#: .\templates\ui\componentes\js_i18n_common.html:2
+#: .\templates\ui\componentes\modals_genericos.html:12
+#: .\templates\ui\componentes\modals_genericos.html:48
+#: .\templates\ui\tpv\mesa.html:695
+msgid "Aceptar"
+msgstr "Accept"
+
+#: .\templates\ui\caja\gestion.html:202
+msgid "Arqueo de Turno"
+msgstr "Shift Cash Count"
+
+#: .\templates\ui\caja\gestion.html:203
+msgid "Verifica el efectivo físico en el cajón."
+msgstr "Check the cash physically in the drawer."
+
+#: .\templates\ui\caja\gestion.html:206
+msgid "Efectivo Contado (€)"
+msgstr "Cash Counted (€)"
+
+#: .\templates\ui\caja\gestion.html:212
+msgid "Confirmar Cierre"
+msgstr "Confirm Closing"
+
+#: .\templates\ui\caja\gestion.html:223
+msgid "Movimiento de Caja"
+msgstr "Cash Movement"
+
+#: .\templates\ui\caja\gestion.html:224
+msgid "Registra un ingreso o gasto manual."
+msgstr "Record a manual income or expense."
+
+#: .\templates\ui\caja\gestion.html:230
+msgid "Concepto / Motivo"
+msgstr "Concept / Reason"
+
+#: .\templates\ui\caja\gestion.html:235
+msgid "Importe (€)"
+msgstr "Amount (€)"
+
+#: .\templates\ui\caja\gestion.html:241
+#: .\templates\ui\catalogo\catalogo.html:593
+msgid "Volver"
+msgstr "Back"
+
+#: .\templates\ui\caja\gestion.html:242
+#: .\templates\ui\catalogo\catalogo.html:235
+#: .\templates\ui\catalogo\catalogo.html:501
+#: .\templates\ui\catalogo\modificadores.html:350
+#: .\templates\ui\catalogo\modificadores.html:388
+#: .\templates\ui\catalogo\modificadores.html:431
+#: .\templates\ui\catalogo\modificadores.html:477
+#: .\templates\ui\componentes\js_i18n_common.html:5
+#: .\templates\ui\config\maps\map_editor.html:62
+#: .\templates\ui\config\tpv_diseno.html:29
+#: .\templates\ui\stock\inventario.html:461
+msgid "Guardar"
+msgstr "Save"
+
+#: .\templates\ui\caja\gestion.html:247
+msgid "¿Estás seguro de cerrar el día?"
+msgstr "Are you sure you want to close the day?"
+
+#: .\templates\ui\caja\gestion.html:248
+msgid "Introduce el efectivo real"
+msgstr "Enter the actual cash amount"
+
+#: .\templates\ui\caja\index.html:18
+msgid "Gestión"
+msgstr "Management"
+
+#: .\templates\ui\caja\index.html:20
+msgid "Abrir/Cerrar día y sesión de caja (arqueo)."
+msgstr "Open/close day and cash session (cash count)."
+
+#: .\templates\ui\caja\index.html:32
+msgid "Cierres"
+msgstr "Closings"
+
+#: .\templates\ui\caja\index.html:34
+msgid "Consulta y revisa cierres por turno o día."
+msgstr "View and review closings by shift or day."
+
+#: .\templates\ui\caja\index.html:37 .\templates\ui\caja\index.html:51
+#: .\templates\ui\caja\index.html:66 .\templates\ui\config\index.html:33
+#: .\templates\ui\config\index.html:66 .\templates\ui\ficheros\index.html:52
+#: .\templates\ui\stock\index.html:36 .\templates\ui\stock\inventario.html:421
+msgid "Gestionar"
+msgstr "Manage"
+
+#: .\templates\ui\caja\index.html:46 .\templates\ui\caja\reaperturas.html:4
+msgid "Reaperturas"
+msgstr "Reopenings"
+
+#: .\templates\ui\caja\index.html:48
+msgid "Reapertura de caja"
+msgstr "Cash reopening"
+
+#: .\templates\ui\caja\index.html:61
+msgid "Estadísticas"
+msgstr "Statistics"
+
+#: .\templates\ui\caja\index.html:63
+msgid "Visualiza métricas clave y evolución de ventas."
+msgstr "View key metrics and sales trends."
+
+#: .\templates\ui\caja\index.html:77
+msgid "Consulta facturas de clientes generadas desde el TPV."
+msgstr "View customer invoices generated from the POS."
+
+#: .\templates\ui\caja\reaperturas.html:16
+msgid "Herramientas de Reapertura"
+msgstr "Reopening Tools"
+
+#: .\templates\ui\caja\reaperturas.html:22
+msgid "Jornadas Cerradas"
+msgstr "Closed Business Days"
+
+#: .\templates\ui\caja\reaperturas.html:23
+msgid "Turnos Cerrados"
+msgstr "Closed Shifts"
+
+#: .\templates\ui\caja\reaperturas.html:33
+#: .\templates\ui\caja\reaperturas.html:67
+msgid "Responsable Cierre"
+msgstr "Closing Responsible"
+
+#: .\templates\ui\caja\reaperturas.html:34
+#: .\templates\ui\caja\reaperturas.html:68
+msgid "Acción"
+msgstr "Action"
+
+#: .\templates\ui\caja\reaperturas.html:44
+msgid "Reabrir Jornada"
+msgstr "Reopen Business Day"
+
+#: .\templates\ui\caja\reaperturas.html:51
+msgid "No hay jornadas cerradas recientemente."
+msgstr "No recently closed business days."
+
+#: .\templates\ui\caja\reaperturas.html:66
+msgid "Fecha / Turno"
+msgstr "Date / Shift"
+
+#: .\templates\ui\caja\reaperturas.html:81
+msgid "Reabrir Turno"
+msgstr "Reopen Shift"
+
+#: .\templates\ui\caja\reaperturas.html:88
+msgid "No hay turnos cerrados recientemente."
+msgstr "No recently closed shifts."
+
+#: .\templates\ui\caja\reaperturas.html:103
+msgid ""
+"¿Estás seguro de que quieres reabrir esta jornada? Esto permitirá volver a "
+"operar en esta fecha."
+msgstr ""
+"Are you sure you want to reopen this business day? This will allow operation "
+"on this date again."
+
+#: .\templates\ui\caja\reaperturas.html:104
+msgid ""
+"¿Estás seguro de que quieres reabrir este turno? Se borrarán los datos del "
+"arqueo previo para permitir una nueva entrada."
+msgstr ""
+"Are you sure you want to reopen this shift? Previous cash count data will be "
+"deleted to allow a new entry."
+
+#: .\templates\ui\caja\reaperturas.html:105
+msgid "Jornada reabierta correctamente."
+msgstr "Business day reopened successfully."
+
+#: .\templates\ui\caja\reaperturas.html:106
+msgid "Turno reabierto correctamente."
+msgstr "Shift reopened successfully."
+
+#: .\templates\ui\caja\reaperturas.html:107
+msgid "Error al reabrir la jornada."
+msgstr "Error reopening the business day."
+
+#: .\templates\ui\caja\reaperturas.html:108
+msgid "Error al reabrir el turno."
+msgstr "Error reopening the shift."
+
+#: .\templates\ui\caja\reaperturas.html:109
+msgid "Error de conexión al reabrir la jornada."
+msgstr "Connection error while reopening the business day."
+
+#: .\templates\ui\caja\reaperturas.html:110
+msgid "Error de conexión al reabrir el turno."
+msgstr "Connection error while reopening the shift."
+
+#: .\templates\ui\caja\reaperturas.html:111
+msgid "Éxito"
+msgstr "Success"
+
+#: .\templates\ui\caja\reaperturas.html:112
+#: .\templates\ui\componentes\js_i18n_common.html:11
+msgid "Atención"
+msgstr "Attention"
+
+#: .\templates\ui\caja\reaperturas.html:113
+#: .\templates\ui\componentes\js_i18n_common.html:9
+#: .\ui\ficheros_api\importacion.py:439 .\ui\ficheros_api\importacion.py:482
+msgid "Error"
+msgstr "Error"
 
 #: .\templates\ui\catalogo\catalogo.html:4
 msgid "Catálogo - Departamentos y Productos"
 msgstr "Catalog - Departments and Products"
 
-#: .\templates\ui\catalogo\catalogo.html:16
-#: .\templates\ui\catalogo\modificadores.html:15
-#, fuzzy
-#| msgid "Catálogo"
-msgid "Volver al Catálogo"
-msgstr "Catalog"
-
-#: .\templates\ui\catalogo\catalogo.html:20
-msgid "Departamentos"
-msgstr "Departments"
-
-#: .\templates\ui\catalogo\catalogo.html:23
-msgid "Productos"
-msgstr "Products"
-
-#: .\templates\ui\catalogo\catalogo.html:30
-#: .\templates\ui\catalogo\catalogo.html:118
+#: .\templates\ui\catalogo\catalogo.html:13
+#: .\templates\ui\catalogo\catalogo.html:205
 msgid "Nuevo Departamento"
 msgstr "Add Department"
 
-#: .\templates\ui\catalogo\catalogo.html:42
-#: .\templates\ui\catalogo\modificadores.html:28
-msgid "Buscar por nombre o ID..."
-msgstr "Search by name or ID..."
-
-#: .\templates\ui\catalogo\catalogo.html:46
-msgid "-- Todos los Deptos --"
-msgstr "-- All Departments --"
-
-#: .\templates\ui\catalogo\catalogo.html:51
-#: .\templates\ui\catalogo\modificadores.html:32
-msgid "Ordenar: ID"
-msgstr "Sort by: ID"
-
-#: .\templates\ui\catalogo\catalogo.html:52
-#: .\templates\ui\catalogo\modificadores.html:33
-msgid "Ordenar: Nombre"
-msgstr "Sort by: Name"
-
-#: .\templates\ui\catalogo\catalogo.html:53
-msgid "Ordenar: Precio"
-msgstr "Sort by: Price"
-
-#: .\templates\ui\catalogo\catalogo.html:54
-msgid "Ordenar: Estado"
-msgstr "Sort by: Status"
-
-#: .\templates\ui\catalogo\catalogo.html:70
-#: .\templates\ui\catalogo\catalogo.html:92
-#: .\templates\ui\catalogo\modificadores.html:52
-#: .\templates\ui\catalogo\modificadores.html:75
-#: .\templates\ui\catalogo\modificadores.html:100
-#: .\templates\ui\catalogo\modificadores.html:123
-msgid "ID"
-msgstr "ID"
-
-#: .\templates\ui\catalogo\catalogo.html:71
-#: .\templates\ui\catalogo\modificadores.html:53
-#: .\templates\ui\catalogo\modificadores.html:101
-#: .\templates\ui\catalogo\modificadores.html:124
-msgid "Nombre"
-msgstr "Name"
-
-#: .\templates\ui\catalogo\catalogo.html:72
-#: .\templates\ui\catalogo\catalogo.html:96
-#: .\templates\ui\catalogo\modificadores.html:55
-#: .\templates\ui\catalogo\modificadores.html:79
-#: .\templates\ui\catalogo\modificadores.html:103
-#: .\templates\ui\catalogo\modificadores.html:128
-#: .\templates\ui\catalogo\modificadores.html:160
-#: .\templates\ui\catalogo\modificadores.html:209
-#: .\templates\ui\catalogo\modificadores.html:239
-#: .\templates\ui\catalogo\modificadores.html:293
-msgid "Activo"
-msgstr "Active"
-
-#: .\templates\ui\catalogo\catalogo.html:73
-#: .\templates\ui\catalogo\catalogo.html:97
-#: .\templates\ui\catalogo\modificadores.html:56
-#: .\templates\ui\catalogo\modificadores.html:80
-#: .\templates\ui\catalogo\modificadores.html:104
-#: .\templates\ui\catalogo\modificadores.html:129
-#: .\templates\ui\config\maps\map_editor.html:148
-msgid "Acciones"
-msgstr "Actions"
-
-#: .\templates\ui\catalogo\catalogo.html:79
-#: .\templates\ui\catalogo\modificadores.html:61
-#: .\templates\ui\catalogo\modificadores.html:85
-#: .\templates\ui\catalogo\modificadores.html:109
-#: .\templates\ui\catalogo\modificadores.html:134
-msgid "Cargando..."
-msgstr "Loading..."
-
-#: .\templates\ui\catalogo\catalogo.html:93
-msgid "Producto"
-msgstr "Product"
-
-#: .\templates\ui\catalogo\catalogo.html:94
-#: .\templates\ui\catalogo\catalogo.html:161
-msgid "Departamento"
-msgstr "Department"
-
-#: .\templates\ui\catalogo\catalogo.html:95
-#: .\templates\ui\catalogo\modificadores.html:125
-#: .\templates\ui\catalogo\modificadores.html:275 .\templates\ui\mesa.html:24
-msgid "Precio"
-msgstr "Price"
-
-#: .\templates\ui\catalogo\catalogo.html:125
-msgid "Nombre del Departamento"
-msgstr "Department Name"
-
-#: .\templates\ui\catalogo\catalogo.html:130
-msgid "Departamento Activo (Visible en TPV)"
-msgstr "Active Department (Visible in POS)"
-
-#: .\templates\ui\catalogo\catalogo.html:136
-#: .\templates\ui\catalogo\catalogo.html:239
-msgid "Cancelar"
-msgstr "Cancel"
-
-#: .\templates\ui\catalogo\catalogo.html:138
-#: .\templates\ui\catalogo\catalogo.html:240
-#: .\templates\ui\catalogo\modificadores.html:218
-#: .\templates\ui\catalogo\modificadores.html:302
-#: .\templates\ui\config\maps\map_editor.html:33
-#: .\templates\ui\config\maps\map_editor.html:34
-msgid "Guardar"
-msgstr "Save"
-
-#: .\templates\ui\catalogo\catalogo.html:147
+#: .\templates\ui\catalogo\catalogo.html:14
+#: .\templates\ui\catalogo\catalogo.html:245
 msgid "Nuevo Producto"
 msgstr "Add Product"
 
-#: .\templates\ui\catalogo\catalogo.html:155
-msgid "Nombre del Producto"
-msgstr "Product Name"
+#: .\templates\ui\catalogo\catalogo.html:15
+#: .\templates\ui\catalogo\catalogo.html:117
+#: .\templates\ui\catalogo\catalogo.html:121
+msgid "-- Todos los Deptos --"
+msgstr "-- All Departments --"
 
-#: .\templates\ui\catalogo\catalogo.html:167
-msgid "Precio de Venta (€)"
-msgstr "Sale Price (€)"
-
-#: .\templates\ui\catalogo\catalogo.html:174
-msgid "Descripción Factura"
-msgstr "Invoice Description"
-
-#: .\templates\ui\catalogo\catalogo.html:178
-msgid "Descripción Comanda"
-msgstr "Order Description"
-
+#: .\templates\ui\catalogo\catalogo.html:16
+#: .\templates\ui\catalogo\catalogo.html:130
+#: .\templates\ui\catalogo\catalogo.html:134
+#: .\templates\ui\catalogo\catalogo.html:165
 #: .\templates\ui\catalogo\catalogo.html:185
-msgid "Impresora Auxiliar"
-msgstr "Secondary Printer"
+#: .\templates\ui\catalogo\modificadores.html:111
+#: .\templates\ui\catalogo\modificadores.html:115
+#: .\templates\ui\catalogo\modificadores.html:157
+#: .\templates\ui\catalogo\modificadores.html:194
+#: .\templates\ui\catalogo\modificadores.html:240
+#: .\templates\ui\catalogo\modificadores.html:277
+msgid "ID"
+msgstr "ID"
 
-#: .\templates\ui\catalogo\catalogo.html:192
-msgid "Color Fondo Botón"
-msgstr "Button Background Color"
+#: .\templates\ui\catalogo\catalogo.html:17
+msgid "Error al cargar datos."
+msgstr "Error loading data."
 
-#: .\templates\ui\catalogo\catalogo.html:197
-#: .\templates\ui\catalogo\catalogo.html:207
-msgid "Reiniciar"
-msgstr "Reset"
+#: .\templates\ui\catalogo\catalogo.html:18
+msgid "Cargando departamentos..."
+msgstr "Loading departments..."
 
-#: .\templates\ui\catalogo\catalogo.html:202
-msgid "Color Texto Botón"
-msgstr "Button text color"
+#: .\templates\ui\catalogo\catalogo.html:19
+msgid "No se encontraron departamentos."
+msgstr "No departments found."
 
-#: .\templates\ui\catalogo\catalogo.html:215
-msgid "Icono Botón TPV"
-msgstr "POS Button Icon"
+#: .\templates\ui\catalogo\catalogo.html:20
+msgid "Error al guardar el departamento"
+msgstr "Error saving department"
 
-#: .\templates\ui\catalogo\catalogo.html:222
-#: .\templates\ui\catalogo\catalogo.html:249
-#: .\templates\ui\catalogo\catalogo.html:265
+#: .\templates\ui\catalogo\catalogo.html:21
+msgid "¿Seguro que deseas eliminar este departamento? No contiene productos."
+msgstr ""
+"Are you sure you want to delete this department? It contains no products."
+
+#: .\templates\ui\catalogo\catalogo.html:22
+msgid "Eliminar Departamento"
+msgstr "Delete Department"
+
+#: .\templates\ui\catalogo\catalogo.html:23
+msgid "Error al eliminar"
+msgstr "Error deleting"
+
+#: .\templates\ui\catalogo\catalogo.html:24
+msgid "Error al cargar productos."
+msgstr "Error loading products."
+
+#: .\templates\ui\catalogo\catalogo.html:25
+msgid "Cargando productos..."
+msgstr "Loading products..."
+
+#: .\templates\ui\catalogo\catalogo.html:26
+msgid "No se encontraron productos."
+msgstr "No products found."
+
+#: .\templates\ui\catalogo\catalogo.html:27
+msgid "El importe del producto es 0. ¿Estás seguro?"
+msgstr "The product price is 0. Are you sure?"
+
+#: .\templates\ui\catalogo\catalogo.html:28
+msgid "Precio en 0"
+msgstr "Price is 0"
+
+#: .\templates\ui\catalogo\catalogo.html:29
+msgid "No ha seleccionado ninguna impresora (factura/comanda). ¿Está seguro?"
+msgstr "You have not selected any printer (invoice/order). Are you sure?"
+
+#: .\templates\ui\catalogo\catalogo.html:30
+msgid "Sin impresora"
+msgstr "No printer"
+
+#: .\templates\ui\catalogo\catalogo.html:31
+msgid "Error al guardar el producto"
+msgstr "Error saving product"
+
+#: .\templates\ui\catalogo\catalogo.html:32
+msgid "Error al guardar"
+msgstr "Error saving"
+
+#: .\templates\ui\catalogo\catalogo.html:33
+msgid "¿Seguro que deseas eliminar este producto?"
+msgstr "Are you sure you want to delete this product?"
+
+#: .\templates\ui\catalogo\catalogo.html:34
+msgid "Eliminar producto"
+msgstr "Delete product"
+
+#: .\templates\ui\catalogo\catalogo.html:35
+msgid "Error al eliminar producto"
+msgstr "Error deleting product"
+
+#: .\templates\ui\catalogo\catalogo.html:36
+msgid "Primero guarda el producto para poder editar su plantilla."
+msgstr "Save the product first to edit its template."
+
+#: .\templates\ui\catalogo\catalogo.html:37
+msgid "Plantilla guardada correctamente."
+msgstr "Template saved successfully."
+
+#: .\templates\ui\catalogo\catalogo.html:38
+msgid "Error al guardar la plantilla."
+msgstr "Error saving template."
+
+#: .\templates\ui\catalogo\catalogo.html:75
+#: .\templates\ui\catalogo\modificadores.html:40
+msgid "Volver al Catálogo"
+msgstr "Back to Catalog"
+
+#: .\templates\ui\catalogo\catalogo.html:81
+msgid "Departamentos y productos"
+msgstr "Departments and Products"
+
+#: .\templates\ui\catalogo\catalogo.html:88
+msgid "Secciones de catálogo"
+msgstr "Catalog sections"
+
+#: .\templates\ui\catalogo\catalogo.html:90
+msgid "Departamentos"
+msgstr "Departments"
+
+#: .\templates\ui\catalogo\catalogo.html:103
+#: .\templates\ui\catalogo\modificadores.html:71
+msgid "Buscar por nombre o ID..."
+msgstr "Search by name or ID..."
+
+#: .\templates\ui\catalogo\catalogo.html:109
+#: .\templates\ui\catalogo\modificadores.html:77
+#: .\templates\ui\stock\inventario.html:49
+msgid "Filtros"
+msgstr "Filters"
+
+#: .\templates\ui\catalogo\catalogo.html:114
+#: .\templates\ui\catalogo\catalogo.html:187
+#: .\templates\ui\catalogo\catalogo.html:283
+#: .\templates\ui\ficheros\exportar.html:78
+msgid "Departamento"
+msgstr "Department"
+
+#: .\templates\ui\catalogo\catalogo.html:127
+#: .\templates\ui\catalogo\modificadores.html:108
+#: .\templates\ui\stock\inventario.html:81
+msgid "Ordenar por"
+msgstr "Sort by"
+
+#: .\templates\ui\catalogo\catalogo.html:135
+#: .\templates\ui\catalogo\catalogo.html:166
+#: .\templates\ui\catalogo\catalogo.html:259
+#: .\templates\ui\catalogo\modificadores.html:116
+#: .\templates\ui\catalogo\modificadores.html:158
+#: .\templates\ui\catalogo\modificadores.html:241
+#: .\templates\ui\catalogo\modificadores.html:278
+#: .\templates\ui\stock\inventario.html:211
+#: .\templates\ui\stock\proveedores.html:73
+msgid "Nombre"
+msgstr "Name"
+
+#: .\templates\ui\catalogo\catalogo.html:136
+#: .\templates\ui\catalogo\catalogo.html:188
+#: .\templates\ui\catalogo\modificadores.html:279
+#: .\templates\ui\catalogo\modificadores.html:451
+#: .\templates\ui\tpv\mesa.html:44
+msgid "Precio"
+msgstr "Price"
+
+#: .\templates\ui\catalogo\catalogo.html:143
+#: .\templates\ui\catalogo\modificadores.html:123
+msgid "Ordenar"
+msgstr "Sort"
+
+#: .\templates\ui\catalogo\catalogo.html:146
+#: .\templates\ui\catalogo\modificadores.html:126
+#: .\templates\ui\componentes\js_i18n_common.html:17
+msgid "Ascendente"
+msgstr "Ascending"
+
+#: .\templates\ui\catalogo\catalogo.html:154
+#: .\templates\ui\catalogo\modificadores.html:134
+msgid "Listo"
+msgstr "Ready"
+
+#: .\templates\ui\catalogo\catalogo.html:168
+#: .\templates\ui\catalogo\catalogo.html:190
+#: .\templates\ui\catalogo\modificadores.html:161
+#: .\templates\ui\catalogo\modificadores.html:198
+#: .\templates\ui\catalogo\modificadores.html:244
+#: .\templates\ui\catalogo\modificadores.html:282
+#: .\templates\ui\config\maps\map_editor.html:171
+#: .\templates\ui\config\usuarios.html:146
+#: .\templates\ui\ficheros\backups.html:83
+#: .\templates\ui\stock\inventario.html:188
+msgid "Acciones"
+msgstr "Actions"
+
+#: .\templates\ui\catalogo\catalogo.html:173
+#: .\templates\ui\componentes\js_i18n_common.html:8
+#: .\templates\ui\stock\inventario.html:251
+#: .\templates\ui\stock\inventario.html:355
+#: .\templates\ui\stock\proveedores.html:50
+msgid "Cargando..."
+msgstr "Loading..."
+
+#: .\templates\ui\catalogo\catalogo.html:186
+#: .\templates\ui\stock\inventario.html:265
+msgid "Producto"
+msgstr "Product"
+
+#: .\templates\ui\catalogo\catalogo.html:214
+msgid "Nombre del Departamento"
+msgstr "Department Name"
+
+#: .\templates\ui\catalogo\catalogo.html:224
+msgid "Visible en TPV (Activo)"
+msgstr "Visible in POS (Active)"
+
+#: .\templates\ui\catalogo\catalogo.html:266
+msgid "P.V.P (€)"
+msgstr "Sale price (€)"
+
+#: .\templates\ui\catalogo\catalogo.html:287
+msgid "Impresora"
+msgstr "Printer"
+
+#: .\templates\ui\catalogo\catalogo.html:289
+msgid "-- Ninguna --"
+msgstr "-- None --"
+
+#: .\templates\ui\catalogo\catalogo.html:290
+msgid "Cocina"
+msgstr "Kitchen"
+
+#: .\templates\ui\catalogo\catalogo.html:291
+msgid "Barra"
+msgstr "Bar"
+
+#: .\templates\ui\catalogo\catalogo.html:292
+msgid "Terraza"
+msgstr "Terrace"
+
+#: .\templates\ui\catalogo\catalogo.html:300
+msgid "Nombre en factura"
+msgstr "Invoice name"
+
+#: .\templates\ui\catalogo\catalogo.html:304
+msgid "Nombre en comanda"
+msgstr "Order name"
+
+#: .\templates\ui\catalogo\catalogo.html:319
+msgid "Producto Configurable"
+msgstr "Configurable Product"
+
+#: .\templates\ui\catalogo\catalogo.html:323
+msgid "Editar Plantilla"
+msgstr "Edit Template"
+
+#: .\templates\ui\catalogo\catalogo.html:331
+msgid "Apariencia"
+msgstr "Appearance"
+
+#: .\templates\ui\catalogo\catalogo.html:338
+#: .\templates\ui\config\tpv_diseno.html:39
+msgid "Fondo"
+msgstr "Background"
+
+#: .\templates\ui\catalogo\catalogo.html:345
+msgid "Color de Fondo"
+msgstr "Background Color"
+
+#: .\templates\ui\catalogo\catalogo.html:394
+msgid "Restablecer fondo"
+msgstr "Reset background"
+
+#: .\templates\ui\catalogo\catalogo.html:403
+#: .\templates\ui\catalogo\modificadores.html:195
+#: .\templates\ui\config\tpv_diseno.html:40
+msgid "Texto"
+msgstr "Text"
+
+#: .\templates\ui\catalogo\catalogo.html:410
+msgid "Color de Texto"
+msgstr "Text Color"
+
+#: .\templates\ui\catalogo\catalogo.html:459
+msgid "Restablecer texto"
+msgstr "Reset text"
+
+#: .\templates\ui\catalogo\catalogo.html:469
+#: .\templates\ui\config\tpv_diseno.html:60
+msgid "Icono"
+msgstr "Icon"
+
+#: .\templates\ui\catalogo\catalogo.html:472
+msgid "Elegir icono"
+msgstr "Choose icon"
+
+#: .\templates\ui\catalogo\catalogo.html:473
+msgid "Elegir"
+msgstr "Choose"
+
+#: .\templates\ui\catalogo\catalogo.html:477
+msgid "Borrar icono"
+msgstr "Remove icon"
+
+#: .\templates\ui\catalogo\catalogo.html:489
+msgid "Vista en TPV"
+msgstr "POS Preview"
+
+#: .\templates\ui\catalogo\catalogo.html:493
+msgid "Así se verá en el TPV"
+msgstr "This is how it will look in the POS"
+
+#: .\templates\ui\catalogo\catalogo.html:511
 msgid "Seleccionar Icono"
 msgstr "Select Icon"
 
-#: .\templates\ui\catalogo\catalogo.html:226 .\templates\ui\mesa.html:94
-msgid "Borrar"
-msgstr "Delete"
+#: .\templates\ui\catalogo\catalogo.html:543
+msgid "Plantilla de Configuración"
+msgstr "Configuration Template"
 
-#: .\templates\ui\catalogo\catalogo.html:234
-msgid "Producto Activo"
-msgstr "Active Product"
+#: .\templates\ui\catalogo\catalogo.html:553
+msgid "FORMATOS"
+msgstr "FORMATS"
 
-#: .\templates\ui\catalogo\index.html:4 .\templates\ui\catalogo\index.html:8
-#: .\templates\ui\catalogo\modificadores.html:4
-#: .\templates\ui\componentes\sidebar.html:22 .\templates\ui\index.html:35
-msgid "Catálogo"
-msgstr "Catalog"
+#: .\templates\ui\catalogo\catalogo.html:554
+msgid "(Ej: Media/Entera)"
+msgstr "(e.g. Half/Full)"
+
+#: .\templates\ui\catalogo\catalogo.html:557
+#: .\templates\ui\config\seguridad.html:73
+msgid "Añadir"
+msgstr "Add"
+
+#: .\templates\ui\catalogo\catalogo.html:569
+msgid "GRUPOS DE OPCIONES"
+msgstr "OPTION GROUPS"
+
+#: .\templates\ui\catalogo\catalogo.html:572
+msgid "Añadir Grupo"
+msgstr "Add Group"
+
+#: .\templates\ui\catalogo\catalogo.html:582
+#: .\templates\ui\componentes\js_i18n_common.html:4
+#: .\templates\ui\config\permisos.html:32
+#: .\templates\ui\config\permisos.html:38
+#: .\templates\ui\config\permisos.html:44
+#: .\templates\ui\config\tpv_diseno.html:61
+#: .\templates\ui\config\usuarios.html:31
+#: .\templates\ui\config\usuarios.html:37
+#: .\templates\ui\stock\proveedores.html:57 .\templates\ui\tpv\mesa.html:339
+#: .\templates\ui\tpv\mesa.html:426 .\templates\ui\tpv\mesa.html:471
+#: .\templates\ui\tpv\mesa.html:532 .\templates\ui\tpv\mesa.html:729
+#: .\templates\ui\tpv\modal_modificadores_rapido.html:16
+msgid "Cerrar"
+msgstr "Close"
+
+#: .\templates\ui\catalogo\catalogo.html:583
+msgid "Guardar Cambios"
+msgstr "Save Changes"
+
+#: .\templates\ui\catalogo\catalogo.html:596
+msgid "Importar Perfil"
+msgstr "Import Profile"
+
+#: .\templates\ui\catalogo\catalogo.html:605
+msgid "Buscar perfil..."
+msgstr "Search profile..."
+
+#: .\templates\ui\catalogo\catalogo.html:606
+msgid "Ej. Cafés, Tostadas..."
+msgstr "E.g. Coffees, Toasts..."
+
+#: .\templates\ui\catalogo\catalogo.html:611
+#: .\templates\ui\catalogo\modificadores.html:62
+#: .\templates\ui\catalogo\modificadores.html:228
+#: .\templates\ui\catalogo\modificadores.html:272
+msgid "Suplementos"
+msgstr "Add-ons"
+
+#: .\templates\ui\catalogo\catalogo.html:615
+#: .\templates\ui\catalogo\modificadores.html:61
+#: .\templates\ui\catalogo\modificadores.html:145
+#: .\templates\ui\catalogo\modificadores.html:189
+msgid "Comentarios"
+msgstr "Comments"
+
+#: .\templates\ui\catalogo\catalogo.html:619
+msgid "Especiales"
+msgstr "Specials"
+
+#: .\templates\ui\catalogo\catalogo.html:629
+msgid "¿Importar todo el perfil?"
+msgstr "Import the whole profile?"
+
+#: .\templates\ui\catalogo\catalogo.html:634
+msgid "TODOS"
+msgstr "ALL"
+
+#: .\templates\ui\catalogo\catalogo.html:640
+msgid "Elementos en el perfil"
+msgstr "Items in the profile"
+
+#: .\templates\ui\catalogo\catalogo.html:658
+msgid "Importar Seleccionados"
+msgstr "Import Selected"
 
 #: .\templates\ui\catalogo\index.html:17
 msgid "Departamentos y Artículos"
@@ -255,15 +1722,6 @@ msgid ""
 msgstr ""
 "Create and manage departments, products, prices and associated printers"
 
-#: .\templates\ui\catalogo\index.html:20 .\templates\ui\catalogo\index.html:32
-#: .\templates\ui\index.html:20 .\templates\ui\index.html:29
-#: .\templates\ui\index.html:38 .\templates\ui\index.html:47
-#: .\templates\ui\index.html:56 .\templates\ui\index.html:65
-#: .\templates\ui\index.html:74 .\templates\ui\index.html:83
-#: .\templates\ui\login.html:46
-msgid "Entrar"
-msgstr "Enter"
-
 #: .\templates\ui\catalogo\index.html:27
 msgid "Comentarios, Suplementos y Perfiles"
 msgstr "Comments, Add-ons and Profiles"
@@ -273,1743 +1731,2384 @@ msgid ""
 "Configura comentarios y suplementos para tus productos y usa los perfiles "
 "para asociarlos."
 msgstr ""
-"Configure comments and add-ons for your products and use profiles "
-"to associate them."
+"Configure comments and add-ons for your products and use profiles to "
+"associate them."
 
-#: .\templates\ui\catalogo\modificadores.html:4
-msgid "Modificadores"
-msgstr "Modifiers"
+#: .\templates\ui\catalogo\modificadores.html:12
+msgid "Primero debes seleccionar un perfil para añadir esta herramienta."
+msgstr "You must select a profile first to add this tool."
+
+#: .\templates\ui\catalogo\modificadores.html:13
+msgid "Esta herramienta ya está creada en este perfil."
+msgstr "This tool is already created in this profile."
+
+#: .\templates\ui\catalogo\modificadores.html:14
+msgid "Operación exitosa"
+msgstr "Operation successful"
+
+#: .\templates\ui\catalogo\modificadores.html:15
+#, python-brace-format
+msgid ""
+"Has añadido correctamente la herramienta al perfil <strong style='color: "
+"#64ffda;'>{profile}</strong>."
+msgstr ""
+"You have successfully added the tool to the profile <strong style='color: "
+"#64ffda;'>{profile}</strong>."
+
+#: .\templates\ui\catalogo\modificadores.html:16
+msgid "Añadir comentario libre"
+msgstr "Add free comment"
+
+#: .\templates\ui\catalogo\modificadores.html:17
+msgid ""
+"Permite añadir observaciones personalizadas o notas manuales directamente "
+"desde el TPV."
+msgstr ""
+"Allows adding custom observations or manual notes directly from the POS."
 
 #: .\templates\ui\catalogo\modificadores.html:18
-#: .\templates\ui\catalogo\modificadores.html:70
-msgid "Comentarios"
-msgstr "Comments"
+msgid "Añadir comodín"
+msgstr "Add custom extra"
 
 #: .\templates\ui\catalogo\modificadores.html:19
-#: .\templates\ui\catalogo\modificadores.html:118
-msgid "Suplementos"
-msgstr "Add-ons"
+msgid ""
+"Permite añadir suplementos especiales o fuera de carta con precios "
+"personalizados."
+msgstr "Allows adding special off-menu extras with custom prices."
 
-#: .\templates\ui\catalogo\modificadores.html:21
-msgid "Nuevo Perfil"
-msgstr "Add Profile"
+#: .\templates\ui\catalogo\modificadores.html:20
+msgid ""
+"No existen perfiles disponibles. Crea uno para poder añadir esta herramienta."
+msgstr "No profiles are available. Create one to add this tool."
 
-#: .\templates\ui\catalogo\modificadores.html:47
-msgid "Perfiles de Comentarios"
-msgstr "Comment Profiles"
-
-#: .\templates\ui\catalogo\modificadores.html:54
-msgid "Nº Comentarios"
-msgstr "No. of Comments"
-
-#: .\templates\ui\catalogo\modificadores.html:76
-msgid "Texto"
-msgstr "Text"
-
-#: .\templates\ui\catalogo\modificadores.html:77
-#: .\templates\ui\catalogo\modificadores.html:126
-#: .\templates\ui\catalogo\modificadores.html:196
-#: .\templates\ui\catalogo\modificadores.html:280
-msgid "Perfil"
-msgstr "Profile"
-
-#: .\templates\ui\catalogo\modificadores.html:78
-#: .\templates\ui\catalogo\modificadores.html:127
-#: .\templates\ui\catalogo\modificadores.html:203
-#: .\templates\ui\catalogo\modificadores.html:287
-msgid "Orden"
-msgstr "Order"
-
-#: .\templates\ui\catalogo\modificadores.html:95
-msgid "Perfiles de Suplementos"
-msgstr "Add-on Profiles"
-
-#: .\templates\ui\catalogo\modificadores.html:102
-msgid "Nº Suplementos"
-msgstr "No. of Add-ons"
-
-#: .\templates\ui\catalogo\modificadores.html:148
-msgid "Nuevo Perfil de Comentarios"
-msgstr "Add Comment Profile"
-
-#: .\templates\ui\catalogo\modificadores.html:154
-#: .\templates\ui\catalogo\modificadores.html:233
-msgid "Nombre del Perfil"
-msgstr "Profile Name"
-
-#: .\templates\ui\catalogo\modificadores.html:164
-#: .\templates\ui\catalogo\modificadores.html:243
-msgid "Asociar a Departamentos"
-msgstr "Assign to Departments"
-
-#: .\templates\ui\catalogo\modificadores.html:168
-#: .\templates\ui\catalogo\modificadores.html:247
-msgid "Asociar a Productos"
-msgstr "Assign to Products"
-
-#: .\templates\ui\catalogo\modificadores.html:186
-msgid "Nuevo Comentario"
-msgstr "Add Comment"
-
-#: .\templates\ui\catalogo\modificadores.html:192
-msgid "Texto del Comentario"
-msgstr "Comment Text"
-
-#: .\templates\ui\catalogo\modificadores.html:198
-#: .\templates\ui\catalogo\modificadores.html:282
-#: .\templates\ui\config\maps\map_editor.html:100
+#: .\templates\ui\catalogo\modificadores.html:36
+#: .\templates\ui\catalogo\modificadores.html:372
+#: .\templates\ui\catalogo\modificadores.html:458
+#: .\templates\ui\config\maps\map_editor.html:104
+#: .\templates\ui\config\maps\map_editor.html:105
 msgid "Seleccionar"
 msgstr "Select"
 
+#: .\templates\ui\catalogo\modificadores.html:46
+msgid "Comentarios y suplementos"
+msgstr "Comments and extras"
+
+#: .\templates\ui\catalogo\modificadores.html:49
+msgid "Nuevo Perfil Comentarios"
+msgstr "New Comment Profile"
+
+#: .\templates\ui\catalogo\modificadores.html:51
+msgid "Comentario Libre"
+msgstr "Free Comment"
+
+#: .\templates\ui\catalogo\modificadores.html:54
+msgid "Comodín"
+msgstr "Custom Extra"
+
+#: .\templates\ui\catalogo\modificadores.html:56
+#: .\templates\ui\catalogo\modificadores.html:360
+msgid "Nuevo Comentario"
+msgstr "Add Comment"
+
+#: .\templates\ui\catalogo\modificadores.html:60
+msgid "Secciones de modificadores"
+msgstr "Modifier sections"
+
+#: .\templates\ui\catalogo\modificadores.html:82
+msgid "Filtro"
+msgstr "Filter"
+
+#: .\templates\ui\catalogo\modificadores.html:85
+#: .\templates\ui\catalogo\modificadores.html:89
+#: .\templates\ui\catalogo\modificadores.html:98
+#: .\templates\ui\catalogo\modificadores.html:102
+#: .\templates\ui\ficheros\exportar.html:54
+#: .\templates\ui\stock\inventario.html:69
+msgid "Todos"
+msgstr "All"
+
+#: .\templates\ui\catalogo\modificadores.html:95
+msgid "Filtro secundario"
+msgstr "Secondary filter"
+
+#: .\templates\ui\catalogo\modificadores.html:143
 #: .\templates\ui\catalogo\modificadores.html:227
+msgid "Perfiles"
+msgstr "Profiles"
+
+#: .\templates\ui\catalogo\modificadores.html:152
+msgid "Perfiles de Comentarios"
+msgstr "Comment Profiles"
+
+#: .\templates\ui\catalogo\modificadores.html:159
+msgid "Nº Comentarios"
+msgstr "No. of Comments"
+
+#: .\templates\ui\catalogo\modificadores.html:196
+#: .\templates\ui\catalogo\modificadores.html:280
+#: .\templates\ui\catalogo\modificadores.html:370
+#: .\templates\ui\catalogo\modificadores.html:456
+msgid "Perfil"
+msgstr "Profile"
+
+#: .\templates\ui\catalogo\modificadores.html:235
+msgid "Perfiles de Suplementos"
+msgstr "Add-on Profiles"
+
+#: .\templates\ui\catalogo\modificadores.html:242
+msgid "Nº Suplementos"
+msgstr "No. of Add-ons"
+
+#: .\templates\ui\catalogo\modificadores.html:320
+msgid "Nuevo Perfil de Comentarios"
+msgstr "Add Comment Profile"
+
+#: .\templates\ui\catalogo\modificadores.html:326
+#: .\templates\ui\catalogo\modificadores.html:404
+msgid "Nombre del Perfil"
+msgstr "Profile Name"
+
+#: .\templates\ui\catalogo\modificadores.html:336
+#: .\templates\ui\catalogo\modificadores.html:417
+msgid "Asociar a Departamentos"
+msgstr "Assign to Departments"
+
+#: .\templates\ui\catalogo\modificadores.html:340
+#: .\templates\ui\catalogo\modificadores.html:421
+msgid "Asociar a Productos"
+msgstr "Assign to Products"
+
+#: .\templates\ui\catalogo\modificadores.html:366
+msgid "Texto del Comentario"
+msgstr "Comment Text"
+
+#: .\templates\ui\catalogo\modificadores.html:398
 msgid "Nuevo Perfil de Suplementos"
 msgstr "Add Add-on Profile"
 
-#: .\templates\ui\catalogo\modificadores.html:265
+#: .\templates\ui\catalogo\modificadores.html:413
+msgid "Perfil Activo"
+msgstr "Active Profile"
+
+#: .\templates\ui\catalogo\modificadores.html:441
 msgid "Nuevo Suplemento"
 msgstr "Add Add-on"
 
-#: .\templates\ui\catalogo\modificadores.html:271
+#: .\templates\ui\catalogo\modificadores.html:447
 msgid "Nombre del Suplemento"
 msgstr "Add-on Name"
+
+#: .\templates\ui\catalogo\modificadores.html:487
+msgid "Añadir Comodín"
+msgstr "Add Custom Extra"
+
+#: .\templates\ui\catalogo\modificadores.html:497
+msgid "Asociar al Perfil"
+msgstr "Link to Profile"
+
+#: .\templates\ui\catalogo\modificadores.html:511
+#: .\templates\ui\stock\inventario.html:309
+msgid "Confirmar"
+msgstr "Confirm"
 
 #: .\templates\ui\componentes\footer.html:5
 msgid "Terminal"
 msgstr "Terminal"
 
-#: .\templates\ui\componentes\footer.html:10
-msgid "Conexión"
-msgstr "Conexion"
+#: .\templates\ui\componentes\footer.html:18
+#: .\templates\ui\config\maps\map_editor.html:125
+#: .\templates\ui\tpv\mesa.html:81 .\templates\ui\tpv\ticket.html:44
+msgid "Mesa"
+msgstr "Table"
 
-#: .\templates\ui\componentes\footer.html:11
-msgid "LOCAL"
-msgstr "LOCAL"
-
-#: .\templates\ui\componentes\footer.html:15
-msgid "Caja"
-msgstr "Cash"
-
-#: .\templates\ui\componentes\footer.html:16
-msgid "ABIERTA"
-msgstr "OPEN"
-
-#: .\templates\ui\componentes\footer.html:22
-msgid "Versión"
-msgstr "Version"
-
-#: .\templates\ui\componentes\sidebar.html:10 .\templates\ui\index.html:17
-#: .\templates\ui\tpv.html:20
-msgid "TPV"
-msgstr "POS"
-
-#: .\templates\ui\componentes\sidebar.html:16
-#: .\templates\ui\ficheros\index.html:7 .\templates\ui\ficheros\index.html:13
-#: .\templates\ui\index.html:26
-msgid "Ficheros"
-msgstr "Files"
-
-#: .\templates\ui\componentes\sidebar.html:28 .\templates\ui\index.html:44
-#: .\templates\ui\stock\index.html:4 .\templates\ui\stock\index.html:7
-msgid "Stock"
-msgstr "Stock"
-
-#: .\templates\ui\componentes\sidebar.html:46
-#: .\templates\ui\config\index.html:4 .\templates\ui\config\index.html:9
-#: .\templates\ui\index.html:71
-msgid "Configuración"
-msgstr "Configuration"
-
-#: .\templates\ui\componentes\sidebar.html:55
-#: .\templates\ui\componentes\topbar.html:44
-#: .\templates\ui\componentes\topbar.html:84 .\templates\ui\login.html:16
-#: .\templates\ui\login.html:23
-msgid "Iniciar sesión"
-msgstr "Log in"
-
-#: .\templates\ui\componentes\topbar.html:11
-msgid "Tema"
-msgstr "Theme"
-
-#: .\templates\ui\componentes\topbar.html:12
-msgid "Modo oscuro"
-msgstr "Dark mode"
-
-#: .\templates\ui\componentes\topbar.html:13
-msgid "Modo claro"
-msgstr "Light Mode"
-
-#: .\templates\ui\componentes\topbar.html:19
-msgid "Idioma"
-msgstr "Language"
-
-#: .\templates\ui\componentes\topbar.html:23
-msgid "ES Español"
-msgstr "ES Spanish"
-
-#: .\templates\ui\componentes\topbar.html:28
-msgid "EN Inglés"
-msgstr "EN English"
-
-#: .\templates\ui\componentes\topbar.html:40
-#: .\templates\ui\componentes\topbar.html:76
-msgid "Cerrar sesión"
-msgstr "Log out"
-
-#: .\templates\ui\componentes\topbar.html:52
-msgid "TPV Hostelería"
-msgstr "POS Hospitality"
-
-#: .\templates\ui\componentes\topbar.html:54
-msgid "DEMO"
-msgstr "DEMO"
-
-#: .\templates\ui\componentes\topbar.html:62
-#: .\templates\ui\componentes\topbar.html:83 .\templates\ui\login.html:29
-msgid "Usuario"
-msgstr "User"
-
-#: .\templates\ui\componentes\topbar.html:69
-msgid "Cambiar usuario"
-msgstr "Switch user"
-
-#: .\templates\ui\componentes\topbar.html:89
+#: .\templates\ui\componentes\footer.html:24
+#: .\templates\ui\componentes\topbar.html:108
 msgid "Hora"
 msgstr "Time"
 
-#: .\templates\ui\config\index.html:17
-#: .\templates\ui\config\maps\maps_list.html:4
-#: .\templates\ui\config\maps\maps_list.html:9
-msgid "Tus mapas TPV"
-msgstr "Your Floor Plan"
+#: .\templates\ui\componentes\footer.html:29
+msgid "Empleado"
+msgstr "Employee"
 
-#: .\templates\ui\config\index.html:18
-msgid "Gestiona, activa y organiza los mapas que has creado."
-msgstr "Manage, activate and organize your maps."
-
-#: .\templates\ui\config\index.html:20
-msgid "Abrir"
-msgstr "Open"
-
-#: .\templates\ui\config\index.html:26
-msgid "Crear mapa TPV"
-msgstr "Create Floor Plan"
-
-#: .\templates\ui\config\index.html:27
-msgid "Crea un mapa nuevo usando el editor de mesas."
-msgstr "Create a new map using the table editor."
-
-#: .\templates\ui\config\index.html:29
-msgid "Crear"
-msgstr "Create"
-
-#: .\templates\ui\config\index.html:36
-msgid "Regresa al menú principal."
-msgstr "Return to the Main Menu."
-
-#: .\templates\ui\config\maps\map_editor.html:8
-msgid "Editor de mapas TPV"
-msgstr "Floor Plan Editor"
-
-#: .\templates\ui\config\maps\map_editor.html:23
-msgid "Nombre del mapa"
-msgstr ""
-
-#: .\templates\ui\config\maps\map_editor.html:27
-msgid "Ej: Salón"
-msgstr "e.g. Dining Room"
-
-#: .\templates\ui\config\maps\map_editor.html:29
-msgid "Cancelar cambios del nombre"
-msgstr "Cancel Name Changes"
-
-#: .\templates\ui\config\maps\map_editor.html:40
-msgid "Eliminar mapa"
-msgstr "Delete map"
-
-#: .\templates\ui\config\maps\map_editor.html:49
-msgid "Resolución:"
-msgstr "Resolution:"
-
-#: .\templates\ui\config\maps\map_editor.html:94
-msgid "Herramientas"
-msgstr "Tools"
-
-#: .\templates\ui\config\maps\map_editor.html:96
-msgid "Mover mapa"
-msgstr "Pan Map"
-
-#: .\templates\ui\config\maps\map_editor.html:111
-msgid "Objetos"
-msgstr "Objects"
-
-#: .\templates\ui\config\maps\map_editor.html:114
-msgid "Mesa normal"
-msgstr "Standard Table"
-
-#: .\templates\ui\config\maps\map_editor.html:118
-msgid "Mesa grande"
-msgstr "Large Table"
-
-#: .\templates\ui\config\maps\map_editor.html:122
-msgid "Taburete"
-msgstr "Stool"
-
-#: .\templates\ui\config\maps\map_editor.html:126
-msgid "Llevar"
-msgstr "Takeaway"
-
-#: .\templates\ui\config\maps\map_editor.html:136
-msgid "Decoración"
-msgstr "Decoration"
-
-#: .\templates\ui\config\maps\map_editor.html:151
-msgid "Girar izquierda"
-msgstr "Rotate Left"
-
-#: .\templates\ui\config\maps\map_editor.html:155
-msgid "Girar derecha"
-msgstr "Rotate Right"
-
-#: .\templates\ui\config\maps\map_editor.html:159
-msgid "Editar número"
-msgstr "Edit Number"
-
-#: .\templates\ui\config\maps\map_editor.html:162
+#: .\templates\ui\componentes\js_i18n_common.html:6
+#: .\templates\ui\config\maps\map_editor.html:196
+#: .\templates\ui\config\maps\map_editor.html:197
+#: .\templates\ui\config\seguridad.html:55
+#: .\templates\ui\config\seguridad.html:129
+#: .\templates\ui\config\usuarios.html:193
+#: .\templates\ui\config\usuarios.html:194
 msgid "Eliminar"
 msgstr "Delete"
 
-#: .\templates\ui\config\maps\map_editor.html:173
-msgid "Lienzo del mapa"
-msgstr "Map Canvas"
+#: .\templates\ui\componentes\js_i18n_common.html:7
+#: .\templates\ui\config\index.html:55 .\templates\ui\config\usuarios.html:183
+#: .\templates\ui\config\usuarios.html:184
+msgid "Editar"
+msgstr "Edit"
 
-#: .\templates\ui\config\maps\maps_list.html:11
+#: .\templates\ui\componentes\js_i18n_common.html:12
+msgid "Correcto"
+msgstr "Correct"
+
+#: .\templates\ui\componentes\js_i18n_common.html:13
+#: .\templates\ui\componentes\modals_genericos.html:5
+#: .\templates\ui\componentes\modals_genericos.html:34
+msgid "Confirmación"
+msgstr "Confirmation"
+
+#: .\templates\ui\componentes\js_i18n_common.html:14
+msgid "Sí"
+msgstr "Yes"
+
+#: .\templates\ui\componentes\js_i18n_common.html:15
+msgid "No"
+msgstr "No"
+
+#: .\templates\ui\componentes\js_i18n_common.html:16
+msgid "Sin resultados"
+msgstr "No results"
+
+#: .\templates\ui\componentes\js_i18n_common.html:18
+msgid "Descendente"
+msgstr "Descending"
+
+#: .\templates\ui\componentes\modals_genericos.html:6
+msgid "¿Desea realizar esta acción?"
+msgstr "Do you want to perform this action?"
+
+#: .\templates\ui\componentes\modals_genericos.html:22
+msgid "Mensaje de alerta"
+msgstr "Alert message"
+
+#: .\templates\ui\componentes\modals_genericos.html:35
+msgid "Introduce un valor"
+msgstr "Enter a value"
+
+#: .\templates\ui\componentes\sidebar.html:12 .\templates\ui\home\index.html:19
+#: .\templates\ui\tpv\tpv.html:10
+msgid "TPV"
+msgstr "POS"
+
+#: .\templates\ui\componentes\sidebar.html:36 .\templates\ui\home\index.html:58
+#: .\templates\ui\stock\index.html:4 .\templates\ui\stock\index.html:8
+#: .\templates\ui\stock\inventario.html:17
+#: .\templates\ui\stock\proveedores.html:18
+msgid "Stock"
+msgstr "Stock"
+
+#: .\templates\ui\componentes\topbar.html:6
+msgid "Menú"
+msgstr "Menu"
+
+#: .\templates\ui\componentes\topbar.html:12
+msgid "Tema"
+msgstr "Theme"
+
+#: .\templates\ui\componentes\topbar.html:13
+msgid "Modo oscuro"
+msgstr "Dark mode"
+
+#: .\templates\ui\componentes\topbar.html:14
+msgid "Modo claro"
+msgstr "Light Mode"
+
+#: .\templates\ui\componentes\topbar.html:20
+msgid "Idioma"
+msgstr "Language"
+
+#: .\templates\ui\componentes\topbar.html:24
+msgid "ES Español"
+msgstr "ES Spanish"
+
+#: .\templates\ui\componentes\topbar.html:29
+msgid "EN Inglés"
+msgstr "EN English"
+
+#: .\templates\ui\componentes\topbar.html:43
+#: .\templates\ui\componentes\topbar.html:93
+msgid "Cerrar sesión"
+msgstr "Log out"
+
+#: .\templates\ui\componentes\topbar.html:60
+msgid "TPV Hostelería"
+msgstr "POS Hospitality"
+
+#: .\templates\ui\componentes\topbar.html:62
+msgid "DEMO"
+msgstr "DEMO"
+
+#: .\templates\ui\componentes\topbar.html:81
+msgid "Cambiar usuario"
+msgstr "Switch user"
+
+#: .\templates\ui\componentes\topbar.html:82
+msgid "Entrar con otra cuenta"
+msgstr "Sign in with another account"
+
+#: .\templates\ui\componentes\topbar.html:94
+msgid "Salir de esta cuenta"
+msgstr "Sign out of this account"
+
+#: .\templates\ui\config\impresoras.html:4
+msgid "Configurar Impresoras"
+msgstr "Configure Printers"
+
+#: .\templates\ui\config\impresoras.html:21
+msgid "Gestión de Impresoras"
+msgstr "Printer Management"
+
+#: .\templates\ui\config\impresoras.html:26
+msgid "Añadir Impresora (Admin)"
+msgstr "Add Printer (Admin)"
+
+#: .\templates\ui\config\impresoras.html:33
+msgid "Simulación y Arquitectura de Impresión"
+msgstr "Print Simulation and Architecture"
+
+#: .\templates\ui\config\impresoras.html:59
+msgid "Tipo:"
+msgstr "Type:"
+
+#: .\templates\ui\config\impresoras.html:63
+msgid "Red / Puerto:"
+msgstr "Network / Port:"
+
+#: .\templates\ui\config\impresoras.html:67
+msgid "Ancho papel:"
+msgstr "Paper width:"
+
+#: .\templates\ui\config\impresoras.html:75
+msgid "Editar (Admin)"
+msgstr "Edit (Admin)"
+
+#: .\templates\ui\config\impresoras.html:82
+msgid "No hay impresoras configuradas"
+msgstr "No printers configured"
+
+#: .\templates\ui\config\impresoras.html:83
+msgid ""
+"Las impresoras que registres aquí se cruzarán con los productos de tu "
+"catálogo para imprimir comandas automáticamente en cocina o barra."
+msgstr ""
+"The printers you register here are matched with products in your catalog to "
+"automatically print orders in kitchen or bar."
+
+#: .\templates\ui\config\index.html:19
+#: .\templates\ui\config\maps\maps_list.html:4
+#: .\templates\ui\config\maps\maps_list.html:21
+msgid "Tus mapas TPV"
+msgstr "Your Floor Plan"
+
+#: .\templates\ui\config\index.html:20
+msgid "Gestiona, activa y organiza los mapas que has creado."
+msgstr "Manage, activate and organize your maps."
+
+#: .\templates\ui\config\index.html:30
+msgid "Impresoras"
+msgstr "Printers"
+
+#: .\templates\ui\config\index.html:31
+msgid ""
+"Configura las impresoras de barra, cocina y caja, e indícales su tipo o IP."
+msgstr "Configure bar, kitchen and till printers and set their type or IP."
+
+#: .\templates\ui\config\index.html:41 .\templates\ui\config\seguridad.html:4
+#: .\templates\ui\config\seguridad.html:22
+msgid "Seguridad de acceso"
+msgstr "Access security"
+
+#: .\templates\ui\config\index.html:42
+msgid ""
+"Configura intentos de login, bloqueos temporales y protecciones adicionales."
+msgstr ""
+"Configure login attempts, temporary lockouts and additional protections."
+
+#: .\templates\ui\config\index.html:44 .\templates\ui\config\index.html:77
+msgid "Configurar"
+msgstr "Configure"
+
+#: .\templates\ui\config\index.html:53
+msgid "Personaliza tamaño, color y texto de los botones laterales de mesa."
+msgstr "Customize size, color and text of the table side buttons."
+
+#: .\templates\ui\config\index.html:63 .\templates\ui\config\usuarios.html:4
+#: .\templates\ui\config\usuarios.html:43
+msgid "Usuarios"
+msgstr "Users"
+
+#: .\templates\ui\config\index.html:64
+msgid "Crea, edita o elimina usuarios de la aplicacion."
+msgstr "Create, edit or delete users from the application."
+
+#: .\templates\ui\config\index.html:74 .\templates\ui\config\permisos.html:4
+msgid "Permisos"
+msgstr "Permissions"
+
+#: .\templates\ui\config\index.html:75
+msgid "Asigna packs de permisos y permisos avanzados por usuario."
+msgstr "Assign permission packs and advanced permissions by user."
+
+#: .\templates\ui\config\index.html:85
+msgid "Crear mapa TPV"
+msgstr "Create Floor Plan"
+
+#: .\templates\ui\config\index.html:86
+msgid "Crea un mapa nuevo usando el editor de mesas."
+msgstr "Create a new map using the table editor."
+
+#: .\templates\ui\config\index.html:88 .\ui\ficheros_api\importacion.py:434
+msgid "Crear"
+msgstr "Create"
+
+#: .\templates\ui\config\maps\map_editor.html:8
+#: .\templates\ui\config\maps\map_editor.html:29
+msgid "Editor de mapas TPV"
+msgstr "Floor Plan Editor"
+
+#: .\templates\ui\config\maps\map_editor.html:25
+msgid "Mapas"
+msgstr "Maps"
+
+#: .\templates\ui\config\maps\map_editor.html:36
+msgid "Mis mapas"
+msgstr "My maps"
+
+#: .\templates\ui\config\maps\map_editor.html:43
+#: .\templates\ui\config\maps\maps_list.html:26
 msgid "Crear mapa"
 msgstr "Create map"
 
-#: .\templates\ui\config\maps\maps_list.html:20
-msgid "Volver a Configuración"
-msgstr "Back to Settings"
+#: .\templates\ui\config\maps\map_editor.html:50
+msgid "Nombre del mapa"
+msgstr "Map name"
 
-#: .\templates\ui\index.html:4
+#: .\templates\ui\config\maps\map_editor.html:53
+msgid "Ej: Salón"
+msgstr "e.g. Dining Room"
+
+#: .\templates\ui\config\maps\map_editor.html:55
+msgid "Cancelar cambios del nombre"
+msgstr "Cancel Name Changes"
+
+#: .\templates\ui\config\maps\map_editor.html:66
+msgid "Eliminar mapa"
+msgstr "Delete map"
+
+#: .\templates\ui\config\maps\map_editor.html:74
+msgid "Resolución"
+msgstr "Resolution"
+
+#: .\templates\ui\config\maps\map_editor.html:95
+msgid "Herramientas"
+msgstr "Tools"
+
+#: .\templates\ui\config\maps\map_editor.html:97
+#: .\templates\ui\config\maps\map_editor.html:98
+msgid "Mover mapa"
+msgstr "Pan Map"
+
+#: .\templates\ui\config\maps\map_editor.html:98
+#: .\templates\ui\config\maps\map_editor.html:105
+msgid "Espacio"
+msgstr "Space"
+
+#: .\templates\ui\config\maps\map_editor.html:102
+msgid "Mover"
+msgstr "Move"
+
+#: .\templates\ui\config\maps\map_editor.html:109
+msgid "Selec."
+msgstr "Select"
+
+#: .\templates\ui\config\maps\map_editor.html:118
+msgid "Objetos"
+msgstr "Objects"
+
+#: .\templates\ui\config\maps\map_editor.html:121
+msgid "Mesa normal"
+msgstr "Standard Table"
+
+#: .\templates\ui\config\maps\map_editor.html:128
+msgid "Mesa grande"
+msgstr "Large Table"
+
+#: .\templates\ui\config\maps\map_editor.html:132
+msgid "Grande"
+msgstr "Large"
+
+#: .\templates\ui\config\maps\map_editor.html:135
+msgid "Taburete"
+msgstr "Stool"
+
+#: .\templates\ui\config\maps\map_editor.html:139
+msgid "Tab."
+msgstr "Stool"
+
+#: .\templates\ui\config\maps\map_editor.html:142
+#: .\templates\ui\config\maps\map_editor.html:146
+msgid "Llevar"
+msgstr "Takeaway"
+
+#: .\templates\ui\config\maps\map_editor.html:155
+msgid "Decoración"
+msgstr "Decoration"
+
+#: .\templates\ui\config\maps\map_editor.html:157
+#: .\templates\ui\config\maps\map_editor.html:158
+#: .\templates\ui\config\maps\map_editor.html:162
+msgid "Planta"
+msgstr "Plant"
+
+#: .\templates\ui\config\maps\map_editor.html:174
+#: .\templates\ui\config\maps\map_editor.html:175
+msgid "Girar izquierda"
+msgstr "Rotate Left"
+
+#: .\templates\ui\config\maps\map_editor.html:179
+msgid "Izq."
+msgstr "Left"
+
+#: .\templates\ui\config\maps\map_editor.html:182
+#: .\templates\ui\config\maps\map_editor.html:183
+msgid "Girar derecha"
+msgstr "Rotate Right"
+
+#: .\templates\ui\config\maps\map_editor.html:187
+msgid "Der."
+msgstr "Right"
+
+#: .\templates\ui\config\maps\map_editor.html:190
+msgid "Editar número"
+msgstr "Edit Number"
+
+#: .\templates\ui\config\maps\map_editor.html:194
+msgid "Núm."
+msgstr "No."
+
+#: .\templates\ui\config\maps\map_editor.html:197
+msgid "Supr"
+msgstr "Delete"
+
+#: .\templates\ui\config\maps\map_editor.html:201
+#: .\templates\ui\tpv\mesa.html:155
+msgid "Borrar"
+msgstr "Delete"
+
+#: .\templates\ui\config\maps\map_editor.html:210
+msgid "Lienzo del mapa"
+msgstr "Map Canvas"
+
+#: .\templates\ui\config\permisos.html:22
+msgid "Gestión de permisos"
+msgstr "Permission Management"
+
+#: .\templates\ui\config\permisos.html:43
+msgid "Faltan permisos en BD. Ejecuta migraciones para crear:"
+msgstr "Missing permissions in DB. Run migrations to create:"
+
+#: .\templates\ui\config\permisos.html:57
+#: .\templates\ui\config\permisos.html:84
+msgid "sistema"
+msgstr "system"
+
+#: .\templates\ui\config\permisos.html:57
+#: .\templates\ui\config\permisos.html:86
+msgid "superusuario"
+msgstr "superuser"
+
+#: .\templates\ui\config\permisos.html:57
+#: .\templates\ui\config\permisos.html:88
+msgid "staff"
+msgstr "staff"
+
+#: .\templates\ui\config\permisos.html:59
+#: .\templates\ui\config\permisos.html:76
+msgid "— Selecciona un usuario —"
+msgstr "-- Select a user --"
+
+#: .\templates\ui\config\permisos.html:65
+msgid "Seleccionar usuario"
+msgstr "Select user"
+
+#: .\templates\ui\config\permisos.html:69
+msgid "Buscar usuario..."
+msgstr "Search user..."
+
+#: .\templates\ui\config\permisos.html:70
+msgid "Buscar usuario"
+msgstr "Search user"
+
+#: .\templates\ui\config\permisos.html:103
+msgid "No puedes modificar tus propios permisos."
+msgstr "You cannot edit your own permissions."
+
+#: .\templates\ui\config\permisos.html:107
+msgid "Los permisos del usuario de sistema no se pueden modificar."
+msgstr "System user permissions cannot be edited."
+
+#: .\templates\ui\config\permisos.html:111
+msgid ""
+"Solo el usuario de sistema puede modificar permisos de otro superusuario."
+msgstr "Only the system user can edit another superuser's permissions."
+
+#: .\templates\ui\config\permisos.html:123
+#: .\templates\ui\config\usuarios.html:114
+#: .\templates\ui\config\usuarios.html:160
+#: .\templates\ui\config\usuarios.html:262
+msgid "Superusuario"
+msgstr "Superuser"
+
+#: .\templates\ui\config\permisos.html:125
+#: .\templates\ui\config\usuarios.html:108
+#: .\templates\ui\config\usuarios.html:162
+#: .\templates\ui\config\usuarios.html:255
+msgid "Staff"
+msgstr "Staff"
+
+#: .\templates\ui\config\permisos.html:131
+msgid "Packs de permisos"
+msgstr "Permission packs"
+
+#: .\templates\ui\config\permisos.html:132
+msgid ""
+"Selecciona perfiles de alto nivel para asignar varios permisos de una vez."
+msgstr "Select high-level profiles to assign several permissions at once."
+
+#: .\templates\ui\config\permisos.html:146
+msgid "Contiene permisos que no puedes otorgar."
+msgstr "Contains permissions you cannot grant."
+
+#: .\templates\ui\config\permisos.html:156
+msgid "Permisos individuales"
+msgstr "Individual permissions"
+
+#: .\templates\ui\config\permisos.html:157
+msgid ""
+"Ajusta permisos de forma detallada. Los permisos en gris no están "
+"disponibles para tu nivel de acceso."
+msgstr ""
+"Adjust permissions in detail. Grey permissions are not available for your "
+"access level."
+
+#: .\templates\ui\config\permisos.html:180
+msgid "Guardar permisos"
+msgstr "Save permissions"
+
+#: .\templates\ui\config\permisos.html:192
+msgid "Selecciona un usuario para gestionar sus permisos."
+msgstr "Select a user to manage their permissions."
+
+#: .\templates\ui\config\seguridad.html:30
+msgid "Configuración guardada correctamente."
+msgstr "Settings saved successfully."
+
+#: .\templates\ui\config\seguridad.html:42
+msgid "Activar protección de login"
+msgstr "Enable login protection"
+
+#: .\templates\ui\config\seguridad.html:47
+msgid ""
+"Define escalones de protección. Cada fila aplica un bloqueo al alcanzar su "
+"número de intentos fallidos."
+msgstr ""
+"Define protection steps. Each row applies a lockout when its number of "
+"failed attempts is reached."
+
+#: .\templates\ui\config\seguridad.html:59
+#: .\templates\ui\config\seguridad.html:133
+msgid "Intentos por ciclo"
+msgstr "Attempts per cycle"
+
+#: .\templates\ui\config\seguridad.html:63
+#: .\templates\ui\config\seguridad.html:137
+msgid "Bloqueo (segundos)"
+msgstr "Lockout (seconds)"
+
+#: .\templates\ui\config\seguridad.html:83
+msgid "Activar bloqueo de usuario"
+msgstr "Enable user lockout"
+
+#: .\templates\ui\config\seguridad.html:89
+msgid "Bloquear usuario a partir de (fallos)"
+msgstr "Lock user after (failures)"
+
+#: .\templates\ui\config\seguridad.html:94
+msgid "Duración bloqueo usuario (segundos)"
+msgstr "User lockout duration (seconds)"
+
+#: .\templates\ui\config\seguridad.html:104
+msgid "Bloqueo permanente (hasta desbloqueo manual o admin)"
+msgstr "Permanent lockout (until manual or admin unlock)"
+
+#: .\templates\ui\config\seguridad.html:108
+msgid ""
+"En modo permanente, el usuario queda bloqueado hasta desbloqueo manual o de "
+"administrador."
+msgstr ""
+"In permanent mode, the user remains locked until manual or admin unlock."
+
+#: .\templates\ui\config\seguridad.html:115
+#: .\templates\ui\config\seguridad.html:117
+#: .\templates\ui\config\tpv_diseno.html:26
+msgid "Restablecer"
+msgstr "Reset"
+
+#: .\templates\ui\config\seguridad.html:116
+msgid "Cancelar cambios"
+msgstr "Cancel changes"
+
+#: .\templates\ui\config\seguridad.html:119
+msgid "Guardar seguridad"
+msgstr "Save security"
+
+#: .\templates\ui\config\tpv_diseno.html:37
+msgid "Botón"
+msgstr "Button"
+
+#: .\templates\ui\config\tpv_diseno.html:38
+msgid "Ancho"
+msgstr "Width"
+
+#: .\templates\ui\config\tpv_diseno.html:41
+msgid "Borde"
+msgstr "Border"
+
+#: .\templates\ui\config\tpv_diseno.html:42
+msgid "Orden"
+msgstr "Order"
+
+#: .\templates\ui\config\tpv_diseno.html:50
+#: .\templates\ui\ficheros\importar.html:66
+msgid "Vista previa"
+msgstr "Preview"
+
+#: .\templates\ui\config\tpv_diseno.html:63
+msgid "Buscar icono"
+msgstr "Search icon"
+
+#: .\templates\ui\config\usuarios.html:22
+msgid "Gestión de usuarios"
+msgstr "User Management"
+
+#: .\templates\ui\config\usuarios.html:50
+msgid "Roles"
+msgstr "Roles"
+
+#: .\templates\ui\config\usuarios.html:65
+msgid "Añadir usuario"
+msgstr "Add user"
+
+#: .\templates\ui\config\usuarios.html:79
+msgid "Nuevo usuario"
+msgstr "New user"
+
+#: .\templates\ui\config\usuarios.html:83
+msgid "Nombre de usuario"
+msgstr "Username"
+
+#: .\templates\ui\config\usuarios.html:85
+msgid "Ej. María, Encarni..."
+msgstr "E.g. Maria, Encarni..."
+
+#: .\templates\ui\config\usuarios.html:90
+msgid "Introduce una contraseña"
+msgstr "Enter a password"
+
+#: .\templates\ui\config\usuarios.html:93
+#: .\templates\ui\config\usuarios.html:143
+#: .\templates\ui\config\usuarios.html:155
+#: .\templates\ui\config\usuarios.html:228
+#: .\templates\ui\config\usuarios.html:231 .\templates\ui\tpv\mesa.html:664
+msgid "Correo electrónico"
+msgstr "Email"
+
+#: .\templates\ui\config\usuarios.html:95
+msgid "Introduce un correo electrónico"
+msgstr "Enter an email address"
+
+#: .\templates\ui\config\usuarios.html:103
+#: .\templates\ui\config\usuarios.html:164
+#: .\templates\ui\config\usuarios.html:249
+msgid "Camarero"
+msgstr "Waiter"
+
+#: .\templates\ui\config\usuarios.html:130
+msgid "Crear usuario"
+msgstr "Create user"
+
+#: .\templates\ui\config\usuarios.html:144
+#: .\templates\ui\config\usuarios.html:156
+msgid "Rol"
+msgstr "Role"
+
+#: .\templates\ui\config\usuarios.html:158
+msgid "Sistema"
+msgstr "System"
+
+#: .\templates\ui\config\usuarios.html:166
+msgid "Sin rol"
+msgstr "No role"
+
+#: .\templates\ui\config\usuarios.html:173
+msgid "Inactivo"
+msgstr "Inactive"
+
+#: .\templates\ui\config\usuarios.html:215
+msgid "Usuario de sistema: solo puede modificar su contraseña."
+msgstr "System user: only password can be changed."
+
+#: .\templates\ui\config\usuarios.html:219
+#: .\templates\ui\config\usuarios.html:234
+msgid "Nueva contraseña"
+msgstr "New password"
+
+#: .\templates\ui\config\usuarios.html:222
+#: .\templates\ui\config\usuarios.html:237
+msgid "Dejar vacío para no cambiar"
+msgstr "Leave blank to keep unchanged"
+
+#: .\templates\ui\config\usuarios.html:283
+msgid "Guardar cambios"
+msgstr "Save changes"
+
+#: .\templates\ui\config\usuarios.html:293
+msgid "No hay usuarios registrados."
+msgstr "No users registered."
+
+#: .\templates\ui\config\usuarios.html:306
+msgid "Eliminar usuario"
+msgstr "Delete user"
+
+#: .\templates\ui\config\usuarios.html:319
+msgid "Sí, eliminar"
+msgstr "Yes, delete"
+
+#: .\templates\ui\ficheros\auditoria.html:4
+#: .\templates\ui\ficheros\auditoria.html:22
+#: .\templates\ui\ficheros\index.html:75
+msgid "Auditoría"
+msgstr "Audit"
+
+#: .\templates\ui\ficheros\backups.html:4
+#: .\templates\ui\ficheros\backups.html:22
+#: .\templates\ui\ficheros\index.html:47
+msgid "Backups"
+msgstr "Backups"
+
+#: .\templates\ui\ficheros\backups.html:33
+msgid "Crear backup"
+msgstr "Create backup"
+
+#: .\templates\ui\ficheros\backups.html:36
+msgid ""
+"Genera una copia de seguridad completa de la base de datos. Se almacena en "
+"el servidor y puedes descargarla."
+msgstr ""
+"Create a full database backup. It is stored on the server and you can "
+"download it."
+
+#: .\templates\ui\ficheros\backups.html:38
+msgid "Autoguardado"
+msgstr "Autosave"
+
+#: .\templates\ui\ficheros\backups.html:42
+#: .\templates\ui\ficheros\backups.html:46
+msgid "Deshabilitado"
+msgstr "Disabled"
+
+#: .\templates\ui\ficheros\backups.html:47
+msgid "Cada hora"
+msgstr "Every hour"
+
+#: .\templates\ui\ficheros\backups.html:48
+msgid "Cada 6 horas"
+msgstr "Every 6 hours"
+
+#: .\templates\ui\ficheros\backups.html:49
+msgid "Cada 12 horas"
+msgstr "Every 12 hours"
+
+#: .\templates\ui\ficheros\backups.html:50
+msgid "Cada 24 horas"
+msgstr "Every 24 hours"
+
+#: .\templates\ui\ficheros\backups.html:51
+msgid "Semanal"
+msgstr "Weekly"
+
+#: .\templates\ui\ficheros\backups.html:62
+msgid "Crear backup ahora"
+msgstr "Create backup now"
+
+#: .\templates\ui\ficheros\backups.html:71
+msgid "Historial de backups"
+msgstr "Backup history"
+
+#: .\templates\ui\ficheros\backups.html:80
+msgid "Archivo"
+msgstr "File"
+
+#: .\templates\ui\ficheros\backups.html:81
+msgid "Tamaño"
+msgstr "Size"
+
+#: .\templates\ui\ficheros\backups.html:95
+msgid "Descargar"
+msgstr "Download"
+
+#: .\templates\ui\ficheros\backups.html:98
+msgid "Restaurar"
+msgstr "Restore"
+
+#: .\templates\ui\ficheros\backups.html:109
+msgid "No hay backups aún. Crea el primero."
+msgstr "No backups yet. Create the first one."
+
+#: .\templates\ui\ficheros\exportar.html:4
+#: .\templates\ui\ficheros\exportar.html:25
+#: .\templates\ui\ficheros\index.html:33
+msgid "Exportar Datos"
+msgstr "Export Data"
+
+#: .\templates\ui\ficheros\exportar.html:13
+msgid "PDF visual"
+msgstr "Visual PDF"
+
+#: .\templates\ui\ficheros\exportar.html:14
+msgid "CSV completo"
+msgstr "Full CSV"
+
+#: .\templates\ui\ficheros\exportar.html:15
+msgid "Excel completo"
+msgstr "Full Excel"
+
+#: .\templates\ui\ficheros\exportar.html:35
+#: .\templates\ui\ficheros\importar.html:40
+#: .\templates\ui\ficheros\importar.html:52
+msgid "Productos (Catálogo)"
+msgstr "Products (Catalog)"
+
+#: .\templates\ui\ficheros\exportar.html:38
+msgid ""
+"Exporta los productos del catálogo con filtros claros de estado, eliminación "
+"y departamento."
+msgstr ""
+"Export catalog products with clear filters for status, deletion, and "
+"department."
+
+#: .\templates\ui\ficheros\exportar.html:43
+msgid "Estado de productos"
+msgstr "Product status"
+
+#: .\templates\ui\ficheros\exportar.html:46
+msgid "Activos"
+msgstr "Active"
+
+#: .\templates\ui\ficheros\exportar.html:50
+msgid "Inactivos"
+msgstr "Inactive"
+
+#: .\templates\ui\ficheros\exportar.html:60
+msgid "Eliminados"
+msgstr "Deleted"
+
+#: .\templates\ui\ficheros\exportar.html:61
+msgid "Productos eliminados"
+msgstr "Deleted products"
+
+#: .\templates\ui\ficheros\exportar.html:64
+msgid "Excluir"
+msgstr "Exclude"
+
+#: .\templates\ui\ficheros\exportar.html:68
+msgid "Incluir"
+msgstr "Include"
+
+#: .\templates\ui\ficheros\exportar.html:72
+msgid "Solo eliminados"
+msgstr "Deleted only"
+
+#: .\templates\ui\ficheros\exportar.html:81
+#: .\templates\ui\ficheros\exportar.html:85
+msgid "Todos los departamentos"
+msgstr "All departments"
+
+#: .\templates\ui\ficheros\exportar.html:101
+#: .\templates\ui\ficheros\importar.html:45
+msgid "Artículos de inventario"
+msgstr "Inventory items"
+
+#: .\templates\ui\ficheros\exportar.html:104
+msgid "Exporta los artículos de inventario en CSV, Excel o PDF visual."
+msgstr "Export inventory items as CSV, Excel, or visual PDF."
+
+#: .\templates\ui\ficheros\importar.html:4
+#: .\templates\ui\ficheros\importar.html:23
+#: .\templates\ui\ficheros\index.html:19
+msgid "Importar Productos"
+msgstr "Import Products"
+
+#: .\templates\ui\ficheros\importar.html:13
+msgid "Descargar plantilla"
+msgstr "Download template"
+
+#: .\templates\ui\ficheros\importar.html:33
+msgid "Seleccionar fichero"
+msgstr "Select file"
+
+#: .\templates\ui\ficheros\importar.html:51
+msgid ""
+"Arrastra un fichero <strong>.csv</strong> o <strong>.xlsx</strong> aquí o "
+"haz clic para seleccionar"
+msgstr ""
+"Drag a <strong>.csv</strong> or <strong>.xlsx</strong> file here or click to "
+"select"
+
+#: .\templates\ui\ficheros\importar.html:52
+msgid "Destino"
+msgstr "Destination"
+
+#: .\templates\ui\ficheros\importar.html:58
+msgid "Formato esperado"
+msgstr "Expected format"
+
+#: .\templates\ui\ficheros\importar.html:77
+msgid "Completar factura y comanda con el nombre"
+msgstr "Fill invoice and kitchen ticket names from the product name"
+
+#: .\templates\ui\ficheros\importar.html:78
+msgid ""
+"Si esos campos vienen vacíos, se importan con el nombre del producto. "
+"Desmárcalo para dejarlos en blanco."
+msgstr ""
+"If those fields are empty, they are imported with the product name. Untick "
+"this to leave them blank."
+
+#: .\templates\ui\ficheros\importar.html:83
+msgid "Avisos antes de importar"
+msgstr "Warnings before import"
+
+#: .\templates\ui\ficheros\importar.html:93
+msgid "Errores a corregir"
+msgstr "Errors to fix"
+
+#: .\templates\ui\ficheros\importar.html:100
+msgid "registros"
+msgstr "records"
+
+#: .\templates\ui\ficheros\importar.html:108
+msgid "Resultado"
+msgstr "Result"
+
+#: .\templates\ui\ficheros\importar.html:114
+msgid "Nueva importación"
+msgstr "New import"
+
+#: .\templates\ui\ficheros\importar.html:115
+msgid "Volver a Ficheros"
+msgstr "Back to Files"
+
+#: .\templates\ui\ficheros\importar.html:123
+msgid "Formato de importación"
+msgstr "Import format"
+
+#: .\templates\ui\ficheros\importar.html:128
+msgid ""
+"Usa la plantilla básica para altas y actualizaciones de productos. Si un "
+"producto ya existe por nombre, se actualiza. Si no existe, se crea."
+msgstr ""
+"Use the basic template to create and update products. If a product already "
+"exists by name, it is updated. If it does not exist, it is created."
+
+#: .\templates\ui\ficheros\importar.html:131
+#: .\templates\ui\ficheros\importar.html:152
+#: .\ui\ficheros_api\importacion.py:320
+msgid "Campo"
+msgstr "Field"
+
+#: .\templates\ui\ficheros\importar.html:131
+#: .\templates\ui\ficheros\importar.html:152
+msgid "Regla"
+msgstr "Rule"
+
+#: .\templates\ui\ficheros\importar.html:134
+#: .\ui\ficheros_api\importacion.py:293
+msgid "Obligatorio. Si ya existe, se actualiza el producto."
+msgstr "Required. If it already exists, the product is updated."
+
+#: .\templates\ui\ficheros\importar.html:135
+#: .\ui\ficheros_api\importacion.py:294
+msgid ""
+"Obligatorio. Todo producto debe pertenecer a un departamento. Si no existe, "
+"se crea automáticamente."
+msgstr ""
+"Required. Every product must belong to a department. If it does not exist, "
+"it is created automatically."
+
+#: .\templates\ui\ficheros\importar.html:136
+msgid "Opcional. Acepta punto o coma decimal. Si falta, se usa 0.00."
+msgstr "Optional. Accepts a decimal point or comma. If empty, 0.00 is used."
+
+#: .\templates\ui\ficheros\importar.html:137
+msgid ""
+"Opcional. Acepta 1/0, si/no, yes/no, true/false o activo/inactivo. Cualquier "
+"otro valor se rechaza. Si falta, se importa como activo."
+msgstr ""
+"Optional. Accepts 1/0, yes/no, true/false, or active/inactive. Any other "
+"value is rejected. If empty, it is imported as active."
+
+#: .\templates\ui\ficheros\importar.html:138
+#: .\templates\ui\ficheros\importar.html:139
+msgid ""
+"Opcional. Si falta, se usa el nombre del producto salvo que desactives esa "
+"opción en la vista previa."
+msgstr ""
+"Optional. If empty, the product name is used unless you turn that option off "
+"in the preview."
+
+#: .\templates\ui\ficheros\importar.html:140
+msgid ""
+"Opcional. Si vienen en una exportación completa, se importan y se normalizan "
+"a formato #rrggbb. Si vienen vacíos, se mantiene el color existente o se usa "
+"el color por defecto en productos nuevos."
+msgstr ""
+"Optional. If they come from a full export, they are imported and normalized "
+"to #rrggbb. If empty, the existing color is kept or the default color is "
+"used for new products."
+
+#: .\templates\ui\ficheros\importar.html:141
+msgid "No se importan desde esta plantilla. Se gestionan desde Catálogo."
+msgstr "They are not imported from this template. Manage them from Catalog."
+
+#: .\templates\ui\ficheros\importar.html:142
+msgid "No se importa. La eliminación se gestiona desde Catálogo."
+msgstr "Not imported. Deletion is managed from Catalog."
+
+#: .\templates\ui\ficheros\importar.html:149
+msgid ""
+"Usa la plantilla básica para altas y actualizaciones de artículos de "
+"inventario. Si un artículo ya existe por nombre, se actualiza. Si no existe, "
+"se crea."
+msgstr ""
+"Use the basic template to create and update inventory items. If an item "
+"already exists by name, it is updated. If it does not exist, it is created."
+
+#: .\templates\ui\ficheros\importar.html:155
+#: .\ui\ficheros_api\importacion.py:282
+msgid "Obligatorio. Si ya existe, se actualiza el artículo."
+msgstr "Required. If it already exists, the item is updated."
+
+#: .\templates\ui\ficheros\importar.html:156
+#: .\ui\ficheros_api\importacion.py:283
+msgid "Opcional. Si no existe, se crea automáticamente."
+msgstr "Optional. If it does not exist, it is created automatically."
+
+#: .\templates\ui\ficheros\importar.html:157
+msgid ""
+"Opcional. Valores admitidos: ud, pack, caja, kg, g, l, ml. Si falta o no se "
+"reconoce, se usa ud."
+msgstr ""
+"Optional. Accepted values: unit, pack, box, kg, g, l, ml. If empty or not "
+"recognized, unit is used."
+
+#: .\templates\ui\ficheros\importar.html:158
+#: .\templates\ui\ficheros\importar.html:159
+#: .\templates\ui\ficheros\importar.html:161
+#: .\ui\ficheros_api\importacion.py:285 .\ui\ficheros_api\importacion.py:286
+#: .\ui\ficheros_api\importacion.py:288
+msgid "Opcional. Si falta, se usa 0."
+msgstr "Optional. If empty, 0 is used."
+
+#: .\templates\ui\ficheros\importar.html:160
+msgid "Opcional."
+msgstr "Optional."
+
+#: .\templates\ui\ficheros\importar.html:166
+msgid ""
+"El Excel incluye una hoja de instrucciones. En CSV, conserva la primera fila "
+"con los nombres de columna."
+msgstr ""
+"The Excel file includes an instructions sheet. In CSV, keep the first row "
+"with the column names."
+
+#: .\templates\ui\ficheros\importar.html:169
+#: .\templates\ui\stock\inventario.html:337
+msgid "Entendido"
+msgstr "Got it"
+
+#: .\templates\ui\ficheros\index.html:21
+msgid "Carga masiva de productos o inventario desde un fichero CSV."
+msgstr "Bulk upload products or inventory from a CSV file."
+
+#: .\templates\ui\ficheros\index.html:35
+msgid "Descarga catálogo, inventario o informes en formato CSV."
+msgstr "Download catalog, inventory or reports in CSV format."
+
+#: .\templates\ui\ficheros\index.html:49
+msgid "Copias de seguridad manuales y automáticas. Descargar y restaurar."
+msgstr "Manual and automatic backups. Download and restore."
+
+#: .\templates\ui\ficheros\index.html:61
+#: .\templates\ui\ficheros\informes.html:4
+#: .\templates\ui\ficheros\informes.html:22
+msgid "Informes"
+msgstr "Reports"
+
+#: .\templates\ui\ficheros\index.html:63
+msgid "Ventas, fluctuaciones de stock, turnos, rankings y más."
+msgstr "Sales, stock fluctuations, shifts, rankings and more."
+
+#: .\templates\ui\ficheros\index.html:66
+msgid "Generar"
+msgstr "Generate"
+
+#: .\templates\ui\ficheros\index.html:77
+msgid "Historial de todas las acciones realizadas por los usuarios."
+msgstr "History of all actions performed by users."
+
+#: .\templates\ui\ficheros\index.html:89 .\templates\ui\ficheros\logs.html:4
+#: .\templates\ui\ficheros\logs.html:22
+msgid "Logs del Sistema"
+msgstr "System Logs"
+
+#: .\templates\ui\ficheros\index.html:91
+msgid "Registro técnico de errores, advertencias y eventos del servidor."
+msgstr "Technical log of server errors, warnings and events."
+
+#: .\templates\ui\ficheros\index.html:94
+#: .\templates\ui\stock\inventario.html:71
+msgid "Revisar"
+msgstr "Review"
+
+#: .\templates\ui\home\index.html:4
 msgid "TPV - Menú principal"
 msgstr "POS - Main Menu"
 
-#: .\templates\ui\index.html:9
+#: .\templates\ui\home\index.html:9
 msgid "Menú principal"
 msgstr "Main menu"
 
-#: .\templates\ui\index.html:18
+#: .\templates\ui\home\index.html:22
 msgid "Abrir aplicación de TPV."
 msgstr "Open POS application."
 
-#: .\templates\ui\index.html:27
+#: .\templates\ui\home\index.html:35
 msgid "Gestión interna, exportaciones, importaciones, informes."
 msgstr "Back office, exports, imports, reports."
 
-#: .\templates\ui\index.html:36
+#: .\templates\ui\home\index.html:48
 msgid "Artículos, departamentos, comentarios, suplementos."
 msgstr "Items, departments, notes, extras."
 
-#: .\templates\ui\index.html:45
+#: .\templates\ui\home\index.html:61
 msgid "Inventario, entradas/salidas, mínimos, alertas."
 msgstr "Stock, stock in/out, recorder point, alerts. "
 
-#: .\templates\ui\index.html:54
+#: .\templates\ui\home\index.html:74
 msgid "Apertura/cierre, arqueo, informes, recuentos."
 msgstr "Shift open/close, cash count, reports, counts."
 
-#: .\templates\ui\index.html:63
+#: .\templates\ui\home\index.html:87
 msgid "Gestión de documentos, series, listados y búsqueda."
 msgstr "Document management, series, lists, search"
 
-#: .\templates\ui\index.html:72
+#: .\templates\ui\home\index.html:100
 msgid "Impresoras, impuestos, usuarios, terminales, seguridad."
 msgstr "Printers, taxes, users, terminals, security"
 
-#: .\templates\ui\index.html:81
+#: .\templates\ui\home\index.html:113
 msgid "Atajos, soporte, guía rápida y resolución de problemas."
 msgstr "Shortcuts, support, fast guide, throubleshooting "
 
-#: .\templates\ui\login.html:24
-msgid "Accede con tu usuario para entrar al TPV."
-msgstr "Sign in with your username to enter the POS."
+#: .\templates\ui\stock\index.html:20
+msgid ""
+"Controla existencias, minimos, ajustes, historial y descuento automatico por "
+"venta."
+msgstr ""
+"Manage stock levels, minimums, adjustments, history and automatic sale "
+"discounts."
 
-#: .\templates\ui\login.html:32
-msgid "Contraseña"
-msgstr "Password"
+#: .\templates\ui\stock\index.html:33
+msgid ""
+"Registra proveedores y mantenlos disponibles para asignarlos a articulos de "
+"inventario."
+msgstr "Register suppliers and keep them available for inventory items."
 
-#: .\templates\ui\login.html:42
-msgid "Usuario o contraseña incorrectos."
-msgstr "Incorrect username or password."
+#: .\templates\ui\stock\inventario.html:21
+msgid "Panel de Inventario"
+msgstr "Inventory Panel"
 
-#: .\templates\ui\login.html:48
-msgid "Volver al inicio"
-msgstr "Back to Home"
+#: .\templates\ui\stock\inventario.html:26
+msgid "Plantillas"
+msgstr "Templates"
 
-#: .\templates\ui\mesa.html:4 .\templates\ui\mesa.html:17
+#: .\templates\ui\stock\inventario.html:28
+msgid "Recargar datos"
+msgstr "Refresh data"
+
+#: .\templates\ui\stock\inventario.html:33
+#: .\templates\ui\stock\inventario.html:387
+msgid "Nuevo Artículo"
+msgstr "New Item"
+
+#: .\templates\ui\stock\inventario.html:41
+msgid "¿Qué artículo buscas?"
+msgstr "What item are you looking for?"
+
+#: .\templates\ui\stock\inventario.html:58
+#: .\templates\ui\stock\inventario.html:181
+#: .\templates\ui\stock\inventario.html:399
+msgid "Categoría"
+msgstr "Category"
+
+#: .\templates\ui\stock\inventario.html:70
+msgid "Para pedir"
+msgstr "To order"
+
+#: .\templates\ui\stock\inventario.html:72
+msgid "En stock"
+msgstr "In stock"
+
+#: .\templates\ui\stock\inventario.html:73
+msgid "Stock bajo"
+msgstr "Low stock"
+
+#: .\templates\ui\stock\inventario.html:74
+msgid "Sin stock"
+msgstr "Out of stock"
+
+#: .\templates\ui\stock\inventario.html:84
+#: .\templates\ui\stock\inventario.html:86
+#: .\templates\ui\stock\inventario.html:126
+#: .\templates\ui\stock\inventario.html:131
+#: .\templates\ui\stock\inventario.html:133
+msgid "Nombre A-Z"
+msgstr "Name A-Z"
+
+#: .\templates\ui\stock\inventario.html:88
+#: .\templates\ui\stock\inventario.html:90
+#: .\templates\ui\stock\inventario.html:135
+#: .\templates\ui\stock\inventario.html:137
+msgid "Nombre Z-A"
+msgstr "Name Z-A"
+
+#: .\templates\ui\stock\inventario.html:92
+#: .\templates\ui\stock\inventario.html:94
+#: .\templates\ui\stock\inventario.html:139
+#: .\templates\ui\stock\inventario.html:141
+msgid "Stock mayor"
+msgstr "Highest stock"
+
+#: .\templates\ui\stock\inventario.html:96
+#: .\templates\ui\stock\inventario.html:98
+#: .\templates\ui\stock\inventario.html:143
+#: .\templates\ui\stock\inventario.html:145
+msgid "Stock menor"
+msgstr "Lowest stock"
+
+#: .\templates\ui\stock\inventario.html:100
+#: .\templates\ui\stock\inventario.html:102
+#: .\templates\ui\stock\inventario.html:147
+#: .\templates\ui\stock\inventario.html:149
+msgid "Mínimo mayor"
+msgstr "Highest minimum"
+
+#: .\templates\ui\stock\inventario.html:104
+#: .\templates\ui\stock\inventario.html:106
+#: .\templates\ui\stock\inventario.html:151
+#: .\templates\ui\stock\inventario.html:153
+msgid "Prioridad stock"
+msgstr "Stock priority"
+
+#: .\templates\ui\stock\inventario.html:112
+msgid "Limpiar filtros"
+msgstr "Clear filters"
+
+#: .\templates\ui\stock\inventario.html:162
+msgid "Vista tarjetas"
+msgstr "Card view"
+
+#: .\templates\ui\stock\inventario.html:165
+msgid "Vista tabla"
+msgstr "Table view"
+
+#: .\templates\ui\stock\inventario.html:180
+msgid "Artículo"
+msgstr "Item"
+
+#: .\templates\ui\stock\inventario.html:184
+#: .\templates\ui\stock\inventario.html:406
+msgid "Unidad"
+msgstr "Unit"
+
+#: .\templates\ui\stock\inventario.html:185
+msgid "Mínimo"
+msgstr "Minimum"
+
+#: .\templates\ui\stock\inventario.html:187
+msgid "Auto descuento"
+msgstr "Auto discount"
+
+#: .\templates\ui\stock\inventario.html:204
+msgid "0 activos"
+msgstr "0 active"
+
+#: .\templates\ui\stock\inventario.html:212
+msgid "Nombre comercial"
+msgstr "Business name"
+
+#: .\templates\ui\stock\inventario.html:216
+msgid "Contacto"
+msgstr "Contact"
+
+#: .\templates\ui\stock\inventario.html:217
+msgid "Persona"
+msgstr "Person"
+
+#: .\templates\ui\stock\inventario.html:220
+#: .\templates\ui\stock\proveedores.html:83
+msgid "NIF/CIF"
+msgstr "Tax ID"
+
+#: .\templates\ui\stock\inventario.html:221
+#: .\templates\ui\stock\inventario.html:228
+#: .\templates\ui\stock\inventario.html:232 .\templates\ui\tpv\mesa.html:659
+msgid "Opcional"
+msgstr "Optional"
+
+#: .\templates\ui\stock\inventario.html:227 .\templates\ui\tpv\mesa.html:658
+msgid "Teléfono"
+msgstr "Phone"
+
+#: .\templates\ui\stock\inventario.html:237
+msgid "Condiciones, horarios, observaciones..."
+msgstr "Terms, opening hours, notes..."
+
+#: .\templates\ui\stock\inventario.html:241
+#: .\templates\ui\stock\proveedores.html:106
+msgid "Proveedor activo"
+msgstr "Active supplier"
+
+#: .\templates\ui\stock\inventario.html:246
+#: .\templates\ui\stock\proveedores.html:113
+msgid "Guardar proveedor"
+msgstr "Save supplier"
+
+#: .\templates\ui\stock\inventario.html:263
+msgid "Movimiento de Inventario"
+msgstr "Inventory Movement"
+
+#: .\templates\ui\stock\inventario.html:276
+msgid "Operación"
+msgstr "Operation"
+
+#: .\templates\ui\stock\inventario.html:279
+#: .\templates\ui\stock\inventario.html:283
+msgid "Entrada"
+msgstr "Entry"
+
+#: .\templates\ui\stock\inventario.html:284
+msgid "Salida / Merma"
+msgstr "Exit / Waste"
+
+#: .\templates\ui\stock\inventario.html:285
+msgid "Recuento"
+msgstr "Count"
+
+#: .\templates\ui\stock\inventario.html:291
+msgid "Cantidad / stock contado"
+msgstr "Quantity / counted stock"
+
+#: .\templates\ui\stock\inventario.html:297
+msgid "Nota / Motivo (Opcional)"
+msgstr "Note / Reason (Optional)"
+
+#: .\templates\ui\stock\inventario.html:299
+msgid "Escriba aquí..."
+msgstr "Write here..."
+
+#: .\templates\ui\stock\inventario.html:321
+msgid "Bitácora de Stock"
+msgstr "Stock Log"
+
+#: .\templates\ui\stock\inventario.html:323
+msgid "Historial Cronológico"
+msgstr "Chronological History"
+
+#: .\templates\ui\stock\inventario.html:349
+msgid "Plantillas de Inventario"
+msgstr "Inventory Templates"
+
+#: .\templates\ui\stock\inventario.html:350
+msgid ""
+"Elige una subcategoría, selecciona solo lo que quieras controlar y ajusta la "
+"unidad antes de importarlo."
+msgstr ""
+"Choose a subcategory, select only what you want to track, and adjust the "
+"unit before importing."
+
+#: .\templates\ui\stock\inventario.html:361
+msgid "Selecciona una categoría"
+msgstr "Select a category"
+
+#: .\templates\ui\stock\inventario.html:362
+msgid "Puedes cambiar unidades, stock inicial y mínimos antes de importar."
+msgstr "You can change units, starting stock, and minimums before importing."
+
+#: .\templates\ui\stock\inventario.html:364
+msgid "Buscar en esta lista..."
+msgstr "Search this list..."
+
+#: .\templates\ui\stock\inventario.html:367
+msgid "Cargando plantillas..."
+msgstr "Loading templates..."
+
+#: .\templates\ui\stock\inventario.html:373
+msgid "0 seleccionados"
+msgstr "0 selected"
+
+#: .\templates\ui\stock\inventario.html:375
+msgid "Importar selección"
+msgstr "Import selection"
+
+#: .\templates\ui\stock\inventario.html:394
+msgid "Nombre del Artículo"
+msgstr "Item Name"
+
+#: .\templates\ui\stock\inventario.html:395
+msgid "Ej: Leche Entera, Café en grano..."
+msgstr "Example: whole milk, coffee beans..."
+
+#: .\templates\ui\stock\inventario.html:401
+msgid "Seleccionar..."
+msgstr "Select..."
+
+#: .\templates\ui\stock\inventario.html:410
+msgid "Cajas"
+msgstr "Boxes"
+
+#: .\templates\ui\stock\inventario.html:411
+msgid "Kilos (kg)"
+msgstr "Kilos (kg)"
+
+#: .\templates\ui\stock\inventario.html:412
+msgid "Gramos (g)"
+msgstr "Grams (g)"
+
+#: .\templates\ui\stock\inventario.html:413
+msgid "Litros (L)"
+msgstr "Liters (L)"
+
+#: .\templates\ui\stock\inventario.html:414
+msgid "Mililitros (ml)"
+msgstr "Milliliters (ml)"
+
+#: .\templates\ui\stock\inventario.html:421
+msgid "Gestionar proveedores"
+msgstr "Manage suppliers"
+
+#: .\templates\ui\stock\inventario.html:424
+msgid "Sin proveedor"
+msgstr "No supplier"
+
+#: .\templates\ui\stock\inventario.html:429
+msgid "Stock Actual (Inicial)"
+msgstr "Current Stock (Initial)"
+
+#: .\templates\ui\stock\inventario.html:434
+msgid "Stock Mínimo"
+msgstr "Minimum Stock"
+
+#: .\templates\ui\stock\inventario.html:439
+msgid "Vincular a Producto TPV (Opcional)"
+msgstr "Link to POS Product (Optional)"
+
+#: .\templates\ui\stock\inventario.html:443
+msgid "Descontar al vender un producto"
+msgstr "Deduct when selling a product"
+
+#: .\templates\ui\stock\inventario.html:448
+msgid "Producto asociado"
+msgstr "Associated product"
+
+#: .\templates\ui\stock\inventario.html:450
+msgid "Buscar producto..."
+msgstr "Search product..."
+
+#: .\templates\ui\stock\inventario.html:455
+msgid ""
+"Solo se descontará si marcas la casilla (1 unidad por venta). Las ventas "
+"nunca se bloquearán por falta de stock."
+msgstr ""
+"Stock is only deducted if you tick the box (1 unit per sale). Sales are "
+"never blocked because of missing stock."
+
+#: .\templates\ui\stock\proveedores.html:27
+#: .\templates\ui\stock\proveedores.html:61
+msgid "Nuevo proveedor"
+msgstr "New supplier"
+
+#: .\templates\ui\stock\proveedores.html:35
+msgid "Buscar por nombre, telefono o email"
+msgstr "Search by name, phone or email"
+
+#: .\templates\ui\stock\proveedores.html:44
+msgid "Listado"
+msgstr "List"
+
+#: .\templates\ui\stock\proveedores.html:45
+msgid "Gestiona proveedores activos e inactivos."
+msgstr "Manage active and inactive suppliers."
+
+#: .\templates\ui\stock\proveedores.html:62
+msgid "Completa los datos principales del proveedor."
+msgstr "Complete the supplier's main details."
+
+#: .\templates\ui\stock\proveedores.html:64
+msgid "Alta"
+msgstr "New"
+
+#: .\templates\ui\stock\proveedores.html:74
+msgid "Ej. Distribuciones Garcia"
+msgstr "E.g. Distribuciones Garcia"
+
+#: .\templates\ui\stock\proveedores.html:78
+msgid "Persona de contacto"
+msgstr "Contact person"
+
+#: .\templates\ui\stock\proveedores.html:79
+msgid "Ej. Ana Perez"
+msgstr "E.g. Ana Perez"
+
+#: .\templates\ui\stock\proveedores.html:84
+msgid "Ej. B12345678"
+msgstr "E.g. B12345678"
+
+#: .\templates\ui\stock\proveedores.html:88
+msgid "Telefono"
+msgstr "Phone"
+
+#: .\templates\ui\stock\proveedores.html:89
+msgid "Ej. 600 123 456"
+msgstr "E.g. 600 123 456"
+
+#: .\templates\ui\stock\proveedores.html:93
+msgid "Email"
+msgstr "Email"
+
+#: .\templates\ui\stock\proveedores.html:94
+msgid "Ej. pedidos@proveedor.com"
+msgstr "E.g. orders@supplier.com"
+
+#: .\templates\ui\stock\proveedores.html:99
+msgid "Ej. Horario de reparto, condiciones o referencias internas"
+msgstr "E.g. delivery schedule, conditions or internal references"
+
+#: .\templates\ui\stock\proveedores.html:107
+msgid "Se podra seleccionar en inventario."
+msgstr "It can be selected in inventory."
+
+#: .\templates\ui\tpv\mesa.html:4 .\templates\ui\tpv\mesa.html:24
 #, python-format
 msgid "Mesa %(numero)s"
 msgstr "Table %(numero)s"
 
-#: .\templates\ui\mesa.html:23
+#: .\templates\ui\tpv\mesa.html:37
+msgid "Mesas"
+msgstr "Tables"
+
+#: .\templates\ui\tpv\mesa.html:43
 msgid "Descripción"
 msgstr "Description"
 
-#: .\templates\ui\mesa.html:25 .\templates\ui\mesa.html:84
-msgid "Total"
-msgstr "Total"
-
-#: .\templates\ui\mesa.html:28
+#: .\templates\ui\tpv\mesa.html:50
 msgid "Sin líneas"
 msgstr "No lines"
 
-#: .\templates\ui\mesa.html:32 .\templates\ui\mesa.html:87
-msgid "Ticket"
-msgstr "Ticket"
-
-#: .\templates\ui\mesa.html:33
+#: .\templates\ui\tpv\mesa.html:55 .\templates\ui\tpv\mesa.html:486
 msgid "Artículos"
 msgstr "Items"
 
-#: .\templates\ui\mesa.html:36
+#: .\templates\ui\tpv\mesa.html:62
+msgid "CLIENTE"
+msgstr "CUSTOMER"
+
+#: .\templates\ui\tpv\mesa.html:65
+msgid "Quitar cliente"
+msgstr "Remove customer"
+
+#: .\templates\ui\tpv\mesa.html:68
 msgid "Subtotal"
 msgstr "Subtotal"
 
-#: .\templates\ui\mesa.html:47
+#: .\templates\ui\tpv\mesa.html:85
 msgid "Traspasar"
 msgstr "Transfer"
 
-#: .\templates\ui\mesa.html:49
-msgid "Ocultar/mostrar cabecera"
-msgstr "Hide/Show header"
+#: .\templates\ui\tpv\mesa.html:125 .\templates\ui\tpv\mesa.html:127
+msgid "Comprobante"
+msgstr "Receipt"
 
-#: .\templates\ui\mesa.html:49
-msgid "Cabecera"
-msgstr "Header"
+#: .\templates\ui\tpv\mesa.html:125
+msgid "Comp."
+msgstr "Rcpt."
 
-#: .\templates\ui\mesa.html:86
+#: .\templates\ui\tpv\mesa.html:131 .\templates\ui\tpv\mesa.html:133
 msgid "Reimpr."
 msgstr "Reprint"
 
-#: .\templates\ui\mesa.html:90
-msgid "Factura"
-msgstr "Invoice"
+#: .\templates\ui\tpv\mesa.html:131
+msgid "Reimp."
+msgstr "Repr."
 
-#: .\templates\ui\mesa.html:91
-msgid "Anular"
-msgstr "Void"
+#: .\templates\ui\tpv\mesa.html:135
+msgid "Fact."
+msgstr "Invce."
 
-#: .\templates\ui\mesa.html:95
+#: .\templates\ui\tpv\mesa.html:141 .\templates\ui\tpv\mesa.html:143
 msgid "Dto."
 msgstr "Disc."
 
-#: .\templates\ui\mesa.html:99
-msgid "Cliente"
-msgstr "Client"
+#: .\templates\ui\tpv\mesa.html:145 .\templates\ui\tpv\mesa.html:147
+msgid "Invitar"
+msgstr "Comp"
 
-#: .\templates\ui\mesa.html:100
-msgid "Nota"
+#: .\templates\ui\tpv\mesa.html:145
+msgid "Inv."
+msgstr "Comp."
+
+#: .\templates\ui\tpv\mesa.html:150 .\templates\ui\tpv\mesa.html:152
+msgid "Anular"
+msgstr "Void"
+
+#: .\templates\ui\tpv\mesa.html:150
+msgid "Anul."
+msgstr "Void"
+
+#: .\templates\ui\tpv\mesa.html:155 .\templates\ui\tpv\mesa.html:157
+msgid "Borrar comanda"
+msgstr "Delete order"
+
+#: .\templates\ui\tpv\mesa.html:160 .\templates\ui\tpv\mesa.html:162
+msgid "Separar"
+msgstr "Split"
+
+#: .\templates\ui\tpv\mesa.html:160
+msgid "Sep."
+msgstr "Split"
+
+#: .\templates\ui\tpv\mesa.html:164 .\templates\ui\tpv\mesa.html:166
+msgid "Juntar"
+msgstr "Merge"
+
+#: .\templates\ui\tpv\mesa.html:164
+msgid "Junt."
+msgstr "Merge"
+
+#: .\templates\ui\tpv\mesa.html:170 .\templates\ui\tpv\mesa.html:172
+msgid "Comentario"
 msgstr "Note"
 
-#: .\templates\ui\mesa.html:102
+#: .\templates\ui\tpv\mesa.html:170
+msgid "Coment."
+msgstr "Note"
+
+#: .\templates\ui\tpv\mesa.html:174 .\templates\ui\tpv\mesa.html:176
+msgid "Suplemento"
+msgstr "Extra"
+
+#: .\templates\ui\tpv\mesa.html:174
+msgid "Supl."
+msgstr "Extra"
+
+#: .\templates\ui\tpv\mesa.html:184 .\templates\ui\tpv\mesa.html:186
 msgid "Dividir cuenta"
-msgstr "Split Bill"
+msgstr "Split bill"
 
-#: .\templates\ui\mesa.html:104
+#: .\templates\ui\tpv\mesa.html:184
+msgid "Dividir"
+msgstr "Split"
+
+#: .\templates\ui\tpv\mesa.html:189 .\templates\ui\tpv\mesa.html:191
 msgid "Cajón"
-msgstr "Cash Drawer"
+msgstr "Drawer"
 
-#: .\templates\ui\mesa.html:105
+#: .\templates\ui\tpv\mesa.html:193 .\templates\ui\tpv\mesa.html:195
+#: .\templates\ui\tpv\mesa.html:425
 msgid "Opciones"
 msgstr "Options"
 
-#: .\templates\ui\mesa.html:108
+#: .\templates\ui\tpv\mesa.html:193
+msgid "Opc."
+msgstr "Opts."
+
+#: .\templates\ui\tpv\mesa.html:199 .\templates\ui\tpv\mesa.html:201
+#: .\templates\ui\tpv\mesa.html:406
 msgid "Salir"
 msgstr "Exit"
 
-#: .\templates\ui\mesa.html:114
-msgid "Bebidas"
-msgstr "Drinks"
+#: .\templates\ui\tpv\mesa.html:219
+msgid "Aplicar Descuento"
+msgstr "Apply Discount"
 
-#: .\templates\ui\mesa.html:115
-msgid "Comida"
-msgstr "Food"
+#: .\templates\ui\tpv\mesa.html:225
+msgid "Sin descuento"
+msgstr "No discount"
 
-#: .\templates\ui\mesa.html:116
-msgid "Postres"
-msgstr "Deserts"
+#: .\templates\ui\tpv\mesa.html:254
+msgid "Aplicar"
+msgstr "Apply"
 
-#: .\templates\ui\mesa.html:117
-msgid "Vinos"
-msgstr "Wines"
-
-#: .\templates\ui\mesa.html:118
-msgid "Cafetería"
-msgstr "Coffe"
-
-#: .\templates\ui\mesa.html:154
+#: .\templates\ui\tpv\mesa.html:298
 msgid "Seleccionar Mesa"
 msgstr "Select Table"
 
-#: .\venv\Lib\site-packages\django\contrib\messages\apps.py:16
-msgid "Messages"
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:334
+msgid "TOTAL DOCUMENTO"
+msgstr "DOCUMENT TOTAL"
 
-#: .\venv\Lib\site-packages\django\contrib\sitemaps\apps.py:8
-msgid "Site Maps"
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:349
+msgid "Efectivo"
+msgstr "Cash"
 
-#: .\venv\Lib\site-packages\django\contrib\staticfiles\apps.py:9
-msgid "Static Files"
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:354
+msgid "Tarjeta"
+msgstr "Card"
 
-#: .\venv\Lib\site-packages\django\contrib\syndication\apps.py:7
-msgid "Syndication"
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:361
+msgid "CAMBIO"
+msgstr "CHANGE"
 
-#. Translators: String used to replace omitted page numbers in elided page
-#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
-#: .\venv\Lib\site-packages\django\core\paginator.py:33
-msgid "…"
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:397
+msgid "Ningún cliente seleccionado"
+msgstr "No customer selected"
 
-#: .\venv\Lib\site-packages\django\core\paginator.py:35
-msgid "That page number is not an integer"
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:410
+msgid "Cerrar Sin Imprimir"
+msgstr "Close Without Printing"
 
-#: .\venv\Lib\site-packages\django\core\paginator.py:36
-msgid "That page number is less than 1"
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:413
+msgid "Cerrar Documento"
+msgstr "Close Document"
 
-#: .\venv\Lib\site-packages\django\core\paginator.py:37
-msgid "That page contains no results"
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:432
+msgid "Tema Visual"
+msgstr "Visual Theme"
 
-#: .\venv\Lib\site-packages\django\core\validators.py:22
-msgid "Enter a valid value."
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:441
+msgid "Idioma del Sistema"
+msgstr "System Language"
 
-#: .\venv\Lib\site-packages\django\core\validators.py:70
-msgid "Enter a valid domain name."
-msgstr ""
+#: .\templates\ui\tpv\mesa.html:453
+msgid "Comentarios / Suplementos acumulables"
+msgstr "Stackable comments / extras"
 
-#: .\venv\Lib\site-packages\django\core\validators.py:153
-#: .\venv\Lib\site-packages\django\forms\fields.py:774
-msgid "Enter a valid URL."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:200
-msgid "Enter a valid integer."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:211
-msgid "Enter a valid email address."
-msgstr ""
-
-#. Translators: "letters" means latin letters: a-z and A-Z.
-#: .\venv\Lib\site-packages\django\core\validators.py:289
+#: .\templates\ui\tpv\mesa.html:454
 msgid ""
-"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
-msgstr ""
+"Permite añadir varias veces el mismo comentario o suplemento (x2, x3...)"
+msgstr "Allows adding the same comment or extra multiple times (x2, x3...)"
 
-#: .\venv\Lib\site-packages\django\core\validators.py:297
+#: .\templates\ui\tpv\mesa.html:470
+msgid "Dividir Cuenta"
+msgstr "Split Bill"
+
+#: .\templates\ui\tpv\mesa.html:481
+msgid "TOTAL SELECCIONADO"
+msgstr "SELECTED TOTAL"
+
+#: .\templates\ui\tpv\mesa.html:485
+msgid "Líneas"
+msgstr "Lines"
+
+#: .\templates\ui\tpv\mesa.html:494
+msgid "Cobrar"
+msgstr "Charge"
+
+#: .\templates\ui\tpv\mesa.html:535
+msgid "Añadir a comanda"
+msgstr "Add to order"
+
+#: .\templates\ui\tpv\mesa.html:601
+msgid "Seleccionar Cliente"
+msgstr "Select Customer"
+
+#: .\templates\ui\tpv\mesa.html:609
+msgid "Cliente ocasional"
+msgstr "Walk-in customer"
+
+#: .\templates\ui\tpv\mesa.html:610
+msgid "Sin datos registrados"
+msgstr "No registered data"
+
+#: .\templates\ui\tpv\mesa.html:616
+msgid "Nuevo cliente"
+msgstr "New customer"
+
+#: .\templates\ui\tpv\mesa.html:617
+msgid "Registrar en el sistema"
+msgstr "Register in the system"
+
+#: .\templates\ui\tpv\mesa.html:623
+msgid "Buscar cliente"
+msgstr "Search customer"
+
+#: .\templates\ui\tpv\mesa.html:624
+msgid "Filtrar por nombre/DNI"
+msgstr "Filter by name/ID"
+
+#: .\templates\ui\tpv\mesa.html:641
+msgid "Datos de Facturación"
+msgstr "Billing Details"
+
+#: .\templates\ui\tpv\mesa.html:648
+msgid "Nombre / Razón Social"
+msgstr "Name / Company Name"
+
+#: .\templates\ui\tpv\mesa.html:649
+msgid "Ej: Juan Pérez o Empresa SL"
+msgstr "E.g. John Smith or Company Ltd."
+
+#: .\templates\ui\tpv\mesa.html:654
+msgid "NIF / CIF / NIE"
+msgstr "Tax ID"
+
+#: .\templates\ui\tpv\mesa.html:655
+msgid "12345678X"
+msgstr "12345678X"
+
+#: .\templates\ui\tpv\mesa.html:665
+msgid "email@ejemplo.com (Opcional)"
+msgstr "email@example.com (Optional)"
+
+#: .\templates\ui\tpv\mesa.html:670
+msgid "Domicilio Fiscal"
+msgstr "Billing Address"
+
+#: .\templates\ui\tpv\mesa.html:671
+msgid "Calle, número, piso..."
+msgstr "Street, number, floor..."
+
+#: .\templates\ui\tpv\mesa.html:676
+msgid "Código Postal"
+msgstr "Postcode"
+
+#: .\templates\ui\tpv\mesa.html:680
+msgid "Población / Ciudad"
+msgstr "Town / City"
+
+#: .\templates\ui\tpv\mesa.html:684
+msgid "Provincia"
+msgstr "Province"
+
+#: .\templates\ui\tpv\mesa.html:705
+msgid "Buscador de Clientes"
+msgstr "Customer Search"
+
+#: .\templates\ui\tpv\mesa.html:711
+msgid "Buscar por nombre, NIF o teléfono..."
+msgstr "Search by name, tax ID or phone..."
+
+#: .\templates\ui\tpv\mesa.html:723
+msgid "Buscando..."
+msgstr "Searching..."
+
+#: .\templates\ui\tpv\mesa.html:724
+msgid "Escribe para buscar clientes"
+msgstr "Type to search customers"
+
+#: .\templates\ui\tpv\modal_modificadores_rapido.html:6
+msgid "Añadir Modificadores"
+msgstr "Add Modifiers"
+
+#: .\templates\ui\tpv\ticket.html:26
+msgid "Tipo de documento"
+msgstr "Document type"
+
+#: .\templates\ui\tpv\ticket.html:29 .\templates\ui\tpv\ticket.html:33
+msgid "COMPROBANTE DE VENTA"
+msgstr "SALES RECEIPT"
+
+#: .\templates\ui\tpv\ticket.html:31
+msgid "FACTURA SIMPLIFICADA"
+msgstr "SIMPLIFIED INVOICE"
+
+#: .\templates\ui\tpv\ticket.html:37
+msgid "Fecha/Hora"
+msgstr "Date/Time"
+
+#: .\templates\ui\tpv\ticket.html:52
+msgid "Atendido por"
+msgstr "Served by"
+
+#: .\templates\ui\tpv\ticket.html:104 .\templates\ui\tpv\ticket.html:108
+msgid "Base Imponible"
+msgstr "Taxable Base"
+
+#: .\templates\ui\tpv\ticket.html:105 .\templates\ui\tpv\ticket.html:109
+#, python-format
+msgid "IVA (10%%)"
+msgstr "VAT (10%%)"
+
+#: .\templates\ui\tpv\ticket.html:114
+msgid "TOTAL"
+msgstr "TOTAL"
+
+#: .\templates\ui\tpv\ticket.html:126
+msgid "PENDIENTE DE COBRO"
+msgstr "PENDING PAYMENT"
+
+#: .\templates\ui\tpv\ticket.html:134
+msgid "MÉTODO DE PAGO"
+msgstr "PAYMENT METHOD"
+
+#: .\templates\ui\tpv\ticket.html:140
+msgid "Entrega"
+msgstr "Paid"
+
+#: .\templates\ui\tpv\ticket.html:144
+msgid "Cambio"
+msgstr "Change"
+
+#: .\templates\ui\tpv\ticket.html:150
+msgid "¡Gracias por su visita!"
+msgstr "Thank you for your visit!"
+
+#: .\templates\ui\tpv\tpv.html:25
+msgid "Apertura de Día"
+msgstr "Open Day"
+
+#: .\templates\ui\tpv\tpv.html:27
+msgid "Apertura de Turno"
+msgstr "Open Shift"
+
+#: .\templates\ui\tpv\tpv.html:33
+msgid "Nº de Terminal"
+msgstr "Terminal No."
+
+#: .\templates\ui\tpv\tpv.html:49
+msgid "ABRIR DÍA"
+msgstr "OPEN DAY"
+
+#: .\templates\ui\tpv\tpv.html:58
+msgid "Fondo de caja predeterminado"
+msgstr "Default cash float"
+
+#: .\templates\ui\tpv\tpv.html:62
+msgid "Modificar"
+msgstr "Edit"
+
+#: .\templates\ui\tpv\tpv.html:70
+msgid "Fondo de caja (€)"
+msgstr "Cash float (€)"
+
+#: .\templates\ui\tpv\tpv.html:84
+msgid "ABRIR TURNO"
+msgstr "OPEN SHIFT"
+
+#: .\templates\ui\tpv\tpv.html:91
+msgid "VOLVER"
+msgstr "BACK"
+
+#: .\ui\context_processors.py:16 .\ui\context_processors.py:20
+msgid "ABIERTA"
+msgstr "OPEN"
+
+#: .\ui\context_processors.py:22 .\ui\context_processors.py:24
+#: .\ui\context_processors.py:25
+msgid "CERRADA"
+msgstr "CLOSED"
+
+#: .\ui\ficheros_api\importacion.py:281 .\ui\ficheros_api\importacion.py:292
+msgid "Uso"
+msgstr "Use"
+
+#: .\ui\ficheros_api\importacion.py:281 .\ui\ficheros_api\importacion.py:292
+msgid "Rellena la hoja Datos y conserva los nombres de columna."
+msgstr "Fill in the Data sheet and keep the column names."
+
+#: .\ui\ficheros_api\importacion.py:284
 msgid ""
-"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
-"hyphens."
+"Opcional. Valores admitidos: ud, pack, caja, kg, g, l, ml. Si falta, se usa "
+"ud."
 msgstr ""
+"Optional. Accepted values: unit, pack, box, kg, g, l, ml. If empty, unit is "
+"used."
 
-#: .\venv\Lib\site-packages\django\core\validators.py:309
-#: .\venv\Lib\site-packages\django\core\validators.py:318
-#: .\venv\Lib\site-packages\django\core\validators.py:332
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2220
-#, python-format
-msgid "Enter a valid %(protocol)s address."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:311
-msgid "IPv4"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:320
-#: .\venv\Lib\site-packages\django\utils\ipv6.py:43
-msgid "IPv6"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:334
-msgid "IPv4 or IPv6"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:375
-msgid "Enter only digits separated by commas."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:381
-#, python-format
-msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:416
-#, python-format
-msgid "Ensure this value is less than or equal to %(limit_value)s."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:425
-#, python-format
-msgid "Ensure this value is greater than or equal to %(limit_value)s."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:434
-#, python-format
-msgid "Ensure this value is a multiple of step size %(limit_value)s."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:441
-#, python-format
+#: .\ui\ficheros_api\importacion.py:287
 msgid ""
-"Ensure this value is a multiple of step size %(limit_value)s, starting from "
-"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+"Opcional. Si no existe, se crea automáticamente y queda disponible en Stock."
 msgstr ""
+"Optional. If it does not exist, it is created automatically and becomes "
+"available in Stock."
 
-#: .\venv\Lib\site-packages\django\core\validators.py:473
-#, python-format
+#: .\ui\ficheros_api\importacion.py:289 .\ui\ficheros_api\importacion.py:302
+msgid "Formatos"
+msgstr "Formats"
+
+#: .\ui\ficheros_api\importacion.py:289 .\ui\ficheros_api\importacion.py:302
+msgid "Puedes importar CSV separado por punto y coma o Excel .xlsx."
+msgstr "You can import semicolon-separated CSV or Excel .xlsx files."
+
+#: .\ui\ficheros_api\importacion.py:295
+msgid "Opcional. Si falta, se usa 0.00. Puedes usar punto o coma decimal."
+msgstr ""
+"Optional. If empty, 0.00 is used. You can use a decimal point or comma."
+
+#: .\ui\ficheros_api\importacion.py:296
 msgid ""
-"Ensure this value has at least %(limit_value)d character (it has "
-"%(show_value)d)."
-msgid_plural ""
-"Ensure this value has at least %(limit_value)d characters (it has "
-"%(show_value)d)."
-msgstr[0] ""
-msgstr[1] ""
+"Opcional. Usa 1/0, sí/no o true/false. Si falta, se importa como activo."
+msgstr ""
+"Optional. Use 1/0, yes/no, or true/false. If empty, it is imported as active."
 
-#: .\venv\Lib\site-packages\django\core\validators.py:491
-#, python-format
+#: .\ui\ficheros_api\importacion.py:297 .\ui\ficheros_api\importacion.py:298
+msgid "Opcional. Si falta, se usa el nombre del producto."
+msgstr "Optional. If empty, the product name is used."
+
+#: .\ui\ficheros_api\importacion.py:299
+msgid "Colores"
+msgstr "Colors"
+
+#: .\ui\ficheros_api\importacion.py:299
 msgid ""
-"Ensure this value has at most %(limit_value)d character (it has "
-"%(show_value)d)."
-msgid_plural ""
-"Ensure this value has at most %(limit_value)d characters (it has "
-"%(show_value)d)."
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:514
-#: .\venv\Lib\site-packages\django\forms\fields.py:365
-#: .\venv\Lib\site-packages\django\forms\fields.py:404
-msgid "Enter a number."
+"La plantilla básica no pide colores. Los productos nuevos usan el color por "
+"defecto del catálogo."
 msgstr ""
+"The basic template does not ask for colors. New products use the catalog "
+"default color."
 
-#: .\venv\Lib\site-packages\django\core\validators.py:516
-#, python-format
-msgid "Ensure that there are no more than %(max)s digit in total."
-msgid_plural "Ensure that there are no more than %(max)s digits in total."
-msgstr[0] ""
-msgstr[1] ""
+#: .\ui\ficheros_api\importacion.py:300
+msgid "Eliminado"
+msgstr "Deleted"
 
-#: .\venv\Lib\site-packages\django\core\validators.py:521
-#, python-format
-msgid "Ensure that there are no more than %(max)s decimal place."
-msgid_plural "Ensure that there are no more than %(max)s decimal places."
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\core\validators.py:526
-#, python-format
+#: .\ui\ficheros_api\importacion.py:300
 msgid ""
-"Ensure that there are no more than %(max)s digit before the decimal point."
-msgid_plural ""
-"Ensure that there are no more than %(max)s digits before the decimal point."
-msgstr[0] ""
-msgstr[1] ""
+"No se importa en modo básico. La eliminación se gestiona desde el catálogo."
+msgstr "Not imported in basic mode. Deletion is managed from the catalog."
 
-#: .\venv\Lib\site-packages\django\core\validators.py:597
-#, python-format
+#: .\ui\ficheros_api\importacion.py:301
+msgid "Imágenes"
+msgstr "Images"
+
+#: .\ui\ficheros_api\importacion.py:301
 msgid ""
-"File extension “%(extension)s” is not allowed. Allowed extensions are: "
-"%(allowed_extensions)s."
+"No se importan desde esta plantilla. Se mantienen las imágenes existentes si "
+"actualizas productos."
 msgstr ""
+"They are not imported from this template. Existing images are kept when you "
+"update products."
 
-#: .\venv\Lib\site-packages\django\core\validators.py:659
-msgid "Null characters are not allowed."
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:319
+msgid "Datos"
+msgstr "Data"
 
-#: .\venv\Lib\site-packages\django\db\models\base.py:1633
-#: .\venv\Lib\site-packages\django\forms\models.py:932
-msgid "and"
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:320
+msgid "Instrucciones"
+msgstr "Instructions"
 
-#: .\venv\Lib\site-packages\django\db\models\base.py:1635
-#, python-format
-msgid "%(model_name)s with this %(field_labels)s already exists."
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:320
+msgid "Detalle"
+msgstr "Detail"
 
-#: .\venv\Lib\site-packages\django\db\models\constraints.py:20
-#, python-format
-msgid "Constraint “%(name)s” is violated."
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:331
+msgid "No se ha recibido ningún fichero."
+msgstr "No file was received."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:134
-#, python-format
-msgid "Value %(value)r is not a valid choice."
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:340
+msgid "Formato no soportado. Usa CSV o Excel .xlsx."
+msgstr "Unsupported format. Use CSV or Excel .xlsx."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:135
-msgid "This field cannot be null."
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:347
+msgid "No se pudo leer el fichero."
+msgstr "The file could not be read."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:136
-msgid "This field cannot be blank."
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:360
+msgid "Datos de verificación inválidos."
+msgstr "Invalid verification data."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:137
-#, python-format
-msgid "%(model_name)s with this %(field_label)s already exists."
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:365
+msgid "Formato de filas inválido."
+msgstr "Invalid row format."
 
-#. Translators: The 'lookup_type' is one of 'date', 'year' or
-#. 'month'. Eg: "Title must be unique for pub_date year"
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:141
-#, python-format
+#: .\ui\ficheros_api\importacion.py:372
+msgid "categoría"
+msgstr "category"
+
+#: .\ui\ficheros_api\importacion.py:373
+msgid "categorías"
+msgstr "categories"
+
+#: .\ui\ficheros_api\importacion.py:374
+msgid "Categoría existente"
+msgstr "Existing category"
+
+#: .\ui\ficheros_api\importacion.py:375
+msgid "Categoría nueva"
+msgstr "New category"
+
+#: .\ui\ficheros_api\importacion.py:376
+msgid "Sin categoría"
+msgstr "No category"
+
+#: .\ui\ficheros_api\importacion.py:377
+msgid "artículo"
+msgstr "item"
+
+#: .\ui\ficheros_api\importacion.py:378
+msgid "artículos"
+msgstr "items"
+
+#: .\ui\ficheros_api\importacion.py:385
+msgid "departamento"
+msgstr "department"
+
+#: .\ui\ficheros_api\importacion.py:386
+msgid "departamentos"
+msgstr "departments"
+
+#: .\ui\ficheros_api\importacion.py:387
+msgid "Departamento existente"
+msgstr "Existing department"
+
+#: .\ui\ficheros_api\importacion.py:388
+msgid "Departamento nuevo"
+msgstr "New department"
+
+#: .\ui\ficheros_api\importacion.py:389
+msgid "Sin departamento"
+msgstr "No department"
+
+#: .\ui\ficheros_api\importacion.py:390
+msgid "producto"
+msgstr "product"
+
+#: .\ui\ficheros_api\importacion.py:391
+msgid "productos"
+msgstr "products"
+
+#: .\ui\ficheros_api\importacion.py:441
+msgid "Falta el nombre obligatorio."
+msgstr "Required name is missing."
+
+#: .\ui\ficheros_api\importacion.py:445
+msgid "Duplicado"
+msgstr "Duplicate"
+
+#: .\ui\ficheros_api\importacion.py:447
 msgid ""
-"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+"Ese nombre aparece más de una vez en el fichero. Revisa cuál debe importarse."
 msgstr ""
+"That name appears more than once in the file. Check which one should be "
+"imported."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:180
+#: .\ui\ficheros_api\importacion.py:453
+msgid "Actualizar"
+msgstr "Update"
+
+#: .\ui\ficheros_api\importacion.py:455
 #, python-format
-msgid "Field of type: %(field_type)s"
-msgstr ""
+msgid "Ya existe como %(name)s. Se actualizará."
+msgstr "It already exists as %(name)s. It will be updated."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1161
-#, python-format
-msgid "“%(value)s” value must be either True or False."
-msgstr ""
+#: .\ui\ficheros_api\importacion.py:459
+msgid "Actualizar eliminado"
+msgstr "Update deleted item"
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1162
-#, python-format
-msgid "“%(value)s” value must be either True, False, or None."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1164
-msgid "Boolean (Either True or False)"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1214
-#, python-format
-msgid "String (up to %(max_length)s)"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1216
-msgid "String (unlimited)"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1325
-msgid "Comma-separated integers"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1426
-#, python-format
+#: .\ui\ficheros_api\importacion.py:461
 msgid ""
-"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
-"format."
+"Esta coincidencia está eliminada en Catálogo. Se actualizará, pero seguirá "
+"eliminada."
 msgstr ""
+"This match is deleted in Catalog. It will be updated, but it will remain "
+"deleted."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1430
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1565
+#: .\ui\ficheros_api\importacion.py:465
 #, python-format
+msgid "No existe. Se creará un %(entity)s nuevo."
+msgstr "It does not exist. A new %(entity)s will be created."
+
+#: .\ui\ficheros_api\importacion.py:484
 msgid ""
-"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
-"date."
+"Falta el departamento obligatorio. Todo producto debe pertenecer a un "
+"departamento."
 msgstr ""
+"The required department is missing. Every product must belong to a "
+"department."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1434
-msgid "Date (without time)"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1561
+#: .\ui\ficheros_api\importacion.py:487
 #, python-format
+msgid "%(group)s. Se guardará sin asignar."
+msgstr "%(group)s. It will be saved unassigned."
+
+#: .\ui\ficheros_api\importacion.py:492
+msgid "Unidad no reconocida. Al importar se usará ud."
+msgstr "Unit not recognized. Unit will be used when importing."
+
+#: .\ui\ficheros_api\importacion.py:498
+#, python-format
+msgid "Proveedor existente: %(name)s."
+msgstr "Existing supplier: %(name)s."
+
+#: .\ui\ficheros_api\importacion.py:500
+#, python-format
+msgid "Proveedor nuevo: %(name)s."
+msgstr "New supplier: %(name)s."
+
+#: .\ui\ficheros_api\importacion.py:503
+msgid "Se aplicarán los colores indicados en el fichero."
+msgstr "The colors provided in the file will be applied."
+
+#: .\ui\views\_helpers.py:49 .\ui\views\_helpers.py:61
+msgid "No tienes permisos para realizar esta accion."
+msgstr "You do not have permission to perform this action."
+
+#: .\ui\views\auth.py:79
 msgid ""
-"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD "
-"HH:MM[:ss[.uuuuuu]][TZ] format."
+"Acceso bloqueado para este usuario hasta desbloqueo manual de administrador."
 msgstr ""
+"Access is blocked for this user until manually unlocked by an administrator."
 
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1569
-#, python-format
-msgid ""
-"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
-"[TZ]) but it is an invalid date/time."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1574
-msgid "Date (with time)"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1701
-#, python-format
-msgid "“%(value)s” value must be a decimal number."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1703
-msgid "Decimal number"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1864
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in [DD] "
-"[[HH:]MM:]ss[.uuuuuu] format."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1868
-msgid "Duration"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1920
-msgid "Email address"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1945
-msgid "File path"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2023
-#, python-format
-msgid "“%(value)s” value must be a float."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2025
-msgid "Floating point number"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2065
-#, python-format
-msgid "“%(value)s” value must be an integer."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2067
-msgid "Integer"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2163
-msgid "Big (8 byte) integer"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2180
-msgid "Small integer"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2188
-msgid "IPv4 address"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2219
-msgid "IP address"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2310
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2311
-#, python-format
-msgid "“%(value)s” value must be either None, True or False."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2313
-msgid "Boolean (Either True, False or None)"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2364
-msgid "Positive big integer"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2379
-msgid "Positive integer"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2394
-msgid "Positive small integer"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2410
-#, python-format
-msgid "Slug (up to %(max_length)s)"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2446
-msgid "Text"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2526
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
-"format."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2530
-#, python-format
-msgid ""
-"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
-"invalid time."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2534
-msgid "Time"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2642
-msgid "URL"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2666
-msgid "Raw binary data"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2731
-#, python-format
-msgid "“%(value)s” is not a valid UUID."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2733
-msgid "Universally unique identifier"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\files.py:244
-msgid "File"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\files.py:420
-msgid "Image"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\json.py:24
-msgid "A JSON object"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\json.py:26
-msgid "Value must be valid JSON."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\related.py:978
-#, python-format
-msgid "%(model)s instance with %(field)s %(value)r is not a valid choice."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\related.py:981
-msgid "Foreign Key (type determined by related field)"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1275
-msgid "One-to-one relationship"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1332
-#, python-format
-msgid "%(from)s-%(to)s relationship"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1334
-#, python-format
-msgid "%(from)s-%(to)s relationships"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1382
-msgid "Many-to-many relationship"
-msgstr ""
-
-#. Translators: If found as last label character, these punctuation
-#. characters will prevent the default label_suffix to be appended to
-#. the label
-#: .\venv\Lib\site-packages\django\forms\boundfield.py:188
-msgid ":?.!"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:92
-msgid "This field is required."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:314
-msgid "Enter a whole number."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:485
-#: .\venv\Lib\site-packages\django\forms\fields.py:1251
-msgid "Enter a valid date."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:508
-#: .\venv\Lib\site-packages\django\forms\fields.py:1252
-msgid "Enter a valid time."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:535
-msgid "Enter a valid date/time."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:569
-msgid "Enter a valid duration."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:570
-#, python-brace-format
-msgid "The number of days must be between {min_days} and {max_days}."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:639
-msgid "No file was submitted. Check the encoding type on the form."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:640
-msgid "No file was submitted."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:641
-msgid "The submitted file is empty."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:643
-#, python-format
-msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
-msgid_plural ""
-"Ensure this filename has at most %(max)d characters (it has %(length)d)."
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:648
-msgid "Please either submit a file or check the clear checkbox, not both."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:716
-msgid ""
-"Upload a valid image. The file you uploaded was either not an image or a "
-"corrupted image."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:872
-#: .\venv\Lib\site-packages\django\forms\fields.py:959
-#: .\venv\Lib\site-packages\django\forms\models.py:1621
-#, python-format
-msgid "Select a valid choice. %(value)s is not one of the available choices."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:961
-#: .\venv\Lib\site-packages\django\forms\fields.py:1080
-#: .\venv\Lib\site-packages\django\forms\models.py:1619
-msgid "Enter a list of values."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:1081
-msgid "Enter a complete value."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:1323
-msgid "Enter a valid UUID."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\fields.py:1353
-msgid "Enter a valid JSON."
-msgstr ""
-
-#. Translators: This is the default suffix added to form field labels
-#: .\venv\Lib\site-packages\django\forms\forms.py:97
-msgid ":"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\forms.py:239
-#, python-format
-msgid "(Hidden field %(name)s) %(error)s"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\formsets.py:61
+#: .\ui\views\auth.py:85
 #, python-format
 msgid ""
-"ManagementForm data is missing or has been tampered with. Missing fields: "
-"%(field_names)s. You may need to file a bug report if the issue persists."
+"Acceso temporalmente bloqueado para este usuario. Intenta de nuevo en "
+"%(mins)s minuto(s)."
 msgstr ""
+"Access is temporarily blocked for this user. Try again in %(mins)s minute(s)."
 
-#: .\venv\Lib\site-packages\django\forms\formsets.py:65
-#, python-format
-msgid "Please submit at most %(num)d form."
-msgid_plural "Please submit at most %(num)d forms."
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\forms\formsets.py:70
-#, python-format
-msgid "Please submit at least %(num)d form."
-msgid_plural "Please submit at least %(num)d forms."
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\forms\formsets.py:484
-#: .\venv\Lib\site-packages\django\forms\formsets.py:491
-msgid "Order"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\formsets.py:499
-msgid "Delete"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\models.py:925
-#, python-format
-msgid "Please correct the duplicate data for %(field)s."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\models.py:930
-#, python-format
-msgid "Please correct the duplicate data for %(field)s, which must be unique."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\models.py:937
+#: .\ui\views\auth.py:92
 #, python-format
 msgid ""
-"Please correct the duplicate data for %(field_name)s which must be unique "
-"for the %(lookup)s in %(date_field)s."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\models.py:946
-msgid "Please correct the duplicate values below."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\models.py:1383
-msgid "The inline value did not match the parent instance."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\models.py:1474
-msgid "Select a valid choice. That choice is not one of the available choices."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\models.py:1623
-#, python-format
-msgid "“%(pk)s” is not a valid value."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\utils.py:229
-#, python-format
-msgid ""
-"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
-"may be ambiguous or it may not exist."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\widgets.py:528
-msgid "Clear"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\widgets.py:529
-msgid "Currently"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\widgets.py:530
-msgid "Change"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\widgets.py:869
-msgid "Unknown"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\widgets.py:870
-msgid "Yes"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\forms\widgets.py:871
-msgid "No"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\tasks\base.py:34
-msgctxt "Task"
-msgid "Ready"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\tasks\base.py:36
-msgctxt "Task"
-msgid "Running"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\tasks\base.py:38
-msgctxt "Task"
-msgid "Failed"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\tasks\base.py:40
-msgctxt "Task"
-msgid "Successful"
-msgstr ""
-
-#. Translators: Please do not add spaces around commas.
-#: .\venv\Lib\site-packages\django\template\defaultfilters.py:878
-msgid "yes,no,maybe"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\template\defaultfilters.py:908
-#: .\venv\Lib\site-packages\django\template\defaultfilters.py:925
-#, python-format
-msgid "%(size)d byte"
-msgid_plural "%(size)d bytes"
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\template\defaultfilters.py:927
-#, python-format
-msgid "%s KB"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\template\defaultfilters.py:929
-#, python-format
-msgid "%s MB"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\template\defaultfilters.py:931
-#, python-format
-msgid "%s GB"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\template\defaultfilters.py:933
-#, python-format
-msgid "%s TB"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\template\defaultfilters.py:935
-#, python-format
-msgid "%s PB"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dateformat.py:74
-msgid "p.m."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dateformat.py:75
-msgid "a.m."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dateformat.py:80
-msgid "PM"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dateformat.py:81
-msgid "AM"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dateformat.py:153
-msgid "midnight"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dateformat.py:155
-msgid "noon"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:7
-msgid "Monday"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:8
-msgid "Tuesday"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:9
-msgid "Wednesday"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:10
-msgid "Thursday"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:11
-msgid "Friday"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:12
-msgid "Saturday"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:13
-msgid "Sunday"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:16
-msgid "Mon"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:17
-msgid "Tue"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:18
-msgid "Wed"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:19
-msgid "Thu"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:20
-msgid "Fri"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:21
-msgid "Sat"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:22
-msgid "Sun"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:25
-msgid "January"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:26
-msgid "February"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:27
-msgid "March"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:28
-msgid "April"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:29
-msgid "May"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:30
-msgid "June"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:31
-msgid "July"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:32
-msgid "August"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:33
-msgid "September"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:34
-msgid "October"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:35
-msgid "November"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:36
-msgid "December"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:39
-msgid "jan"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:40
-msgid "feb"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:41
-msgid "mar"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:42
-msgid "apr"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:43
-msgid "may"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:44
-msgid "jun"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:45
-msgid "jul"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:46
-msgid "aug"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:47
-msgid "sep"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:48
-msgid "oct"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:49
-msgid "nov"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:50
-msgid "dec"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:53
-msgctxt "abbrev. month"
-msgid "Jan."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:54
-msgctxt "abbrev. month"
-msgid "Feb."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:55
-msgctxt "abbrev. month"
-msgid "March"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:56
-msgctxt "abbrev. month"
-msgid "April"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:57
-msgctxt "abbrev. month"
-msgid "May"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:58
-msgctxt "abbrev. month"
-msgid "June"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:59
-msgctxt "abbrev. month"
-msgid "July"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:60
-msgctxt "abbrev. month"
-msgid "Aug."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:61
-msgctxt "abbrev. month"
-msgid "Sept."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:62
-msgctxt "abbrev. month"
-msgid "Oct."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:63
-msgctxt "abbrev. month"
-msgid "Nov."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:64
-msgctxt "abbrev. month"
-msgid "Dec."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:67
-msgctxt "alt. month"
-msgid "January"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:68
-msgctxt "alt. month"
-msgid "February"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:69
-msgctxt "alt. month"
-msgid "March"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:70
-msgctxt "alt. month"
-msgid "April"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:71
-msgctxt "alt. month"
-msgid "May"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:72
-msgctxt "alt. month"
-msgid "June"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:73
-msgctxt "alt. month"
-msgid "July"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:74
-msgctxt "alt. month"
-msgid "August"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:75
-msgctxt "alt. month"
-msgid "September"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:76
-msgctxt "alt. month"
-msgid "October"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:77
-msgctxt "alt. month"
-msgid "November"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\dates.py:78
-msgctxt "alt. month"
-msgid "December"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\ipv6.py:20
-msgid "This is not a valid IPv6 address."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\text.py:76
-#, python-format
-msgctxt "String to return when truncating text"
-msgid "%(truncated_text)s…"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\text.py:288
-msgid "or"
-msgstr ""
-
-#. Translators: This string is used as a separator between list elements
-#: .\venv\Lib\site-packages\django\utils\text.py:307
-#: .\venv\Lib\site-packages\django\utils\timesince.py:135
-msgid ", "
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\utils\timesince.py:8
-#, python-format
-msgid "%(num)d year"
-msgid_plural "%(num)d years"
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\utils\timesince.py:9
-#, python-format
-msgid "%(num)d month"
-msgid_plural "%(num)d months"
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\utils\timesince.py:10
-#, python-format
-msgid "%(num)d week"
-msgid_plural "%(num)d weeks"
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\utils\timesince.py:11
-#, python-format
-msgid "%(num)d day"
-msgid_plural "%(num)d days"
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\utils\timesince.py:12
-#, python-format
-msgid "%(num)d hour"
-msgid_plural "%(num)d hours"
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\utils\timesince.py:13
-#, python-format
-msgid "%(num)d minute"
-msgid_plural "%(num)d minutes"
-msgstr[0] ""
-msgstr[1] ""
-
-#: .\venv\Lib\site-packages\django\views\csrf.py:29
-msgid "Forbidden"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\csrf.py:30
-msgid "CSRF verification failed. Request aborted."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\csrf.py:34
-msgid ""
-"You are seeing this message because this HTTPS site requires a “Referer "
-"header” to be sent by your web browser, but none was sent. This header is "
-"required for security reasons, to ensure that your browser is not being "
-"hijacked by third parties."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\csrf.py:40
-msgid ""
-"If you have configured your browser to disable “Referer” headers, please re-"
-"enable them, at least for this site, or for HTTPS connections, or for “same-"
-"origin” requests."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\csrf.py:45
-msgid ""
-"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
-"including the “Referrer-Policy: no-referrer” header, please remove them. The "
-"CSRF protection requires the “Referer” header to do strict referer checking. "
-"If you’re concerned about privacy, use alternatives like <a "
-"rel=\"noreferrer\" …> for links to third-party sites."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\csrf.py:54
-msgid ""
-"You are seeing this message because this site requires a CSRF cookie when "
-"submitting forms. This cookie is required for security reasons, to ensure "
-"that your browser is not being hijacked by third parties."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\csrf.py:60
-msgid ""
-"If you have configured your browser to disable cookies, please re-enable "
-"them, at least for this site, or for “same-origin” requests."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\csrf.py:66
-msgid "More information is available with DEBUG=True."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:44
-msgid "No year specified"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:64
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:115
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:214
-msgid "Date out of range"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:94
-msgid "No month specified"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:147
-msgid "No day specified"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:194
-msgid "No week specified"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:353
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:384
-#, python-format
-msgid "No %(verbose_name_plural)s available"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:680
-#, python-format
-msgid ""
-"Future %(verbose_name_plural)s not available because "
-"%(class_name)s.allow_future is False."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\dates.py:720
-#, python-format
-msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\detail.py:56
-#, python-format
-msgid "No %(verbose_name)s found matching the query"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\list.py:70
-msgid "Page is not “last”, nor can it be converted to an int."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\list.py:77
-#, python-format
-msgid "Invalid page (%(page_number)s): %(message)s"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\generic\list.py:173
-#, python-format
-msgid "Empty list and “%(class_name)s.allow_empty” is False."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\static.py:49
-msgid "Directory indexes are not allowed here."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\static.py:51
-#, python-format
-msgid "“%(path)s” does not exist"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\static.py:68
-#: .\venv\Lib\site-packages\django\views\templates\directory_index.html:8
-#: .\venv\Lib\site-packages\django\views\templates\directory_index.html:11
-#, python-format
-msgid "Index of %(directory)s"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:7
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:204
-msgid "The install worked successfully! Congratulations!"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:206
-#, python-format
-msgid ""
-"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
-"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:208
-#, python-format
-msgid ""
-"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
-"%(version)s/ref/settings/#debug\" target=\"_blank\" "
-"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
-"configured any URLs."
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:217
-msgid "Django Documentation"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:218
-msgid "Topics, references, &amp; how-to’s"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:226
-msgid "Tutorial: A Polling App"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:227
-msgid "Get started with Django"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:235
-msgid "Django Community"
-msgstr ""
-
-#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:236
-msgid "Connect, get help, or contribute"
-msgstr ""
-
-#~ msgid "Autentifícate"
-#~ msgstr "Log in"
-
-#~ msgid "Oscuro"
-#~ msgstr "Dark"
-
-#~ msgid "Claro"
-#~ msgstr "Light"
-
-#~ msgid "ES"
-#~ msgstr "ES"
-
-#~ msgid "EN"
-#~ msgstr "EN"
-
-#~ msgid "Tema: Oscuro · Idioma: ES"
-#~ msgstr "Theme: Dark · Language: EN"
+"Demasiados intentos fallidos. Espera %(seconds)s segundos para volver a "
+"intentarlo."
+msgstr ""
+"Too many failed attempts. Wait %(seconds)s seconds before trying again."
+
+#, fuzzy
+#~| msgid "Grande"
+#~ msgid "and"
+#~ msgstr "Large"
+
+#, fuzzy
+#~| msgid "Texto"
+#~ msgid "Text"
+#~ msgstr "Text"
+
+#, fuzzy
+#~| msgid "Ordenar"
+#~ msgid "Order"
+#~ msgstr "Sort"
+
+#, fuzzy
+#~| msgid "Limpiar"
+#~ msgid "mar"
+#~ msgstr "Clear"
+
+#, fuzzy
+#~| msgid "Hora"
+#~ msgid "or"
+#~ msgstr "Time"
+
+#, fuzzy
+#~| msgid "Cerrar Documento"
+#~ msgid "Django Documentation"
+#~ msgstr "Close Document"

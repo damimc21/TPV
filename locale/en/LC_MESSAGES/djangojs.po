@@ -1,0 +1,1463 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-15 18:10+0200\n"
+"PO-Revision-Date: 2026-05-15 10:45+0200\n"
+"Last-Translator: TPV Hosteleria\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:210
+#| msgid "Coinciden por nombre"
+msgid "Sin nombre"
+msgstr "No name"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:215
+#: .\static\ui\js\config\tpv_diseno.js:216
+#: .\static\ui\js\config\tpv_diseno.js:218
+msgid "Sin guardar"
+msgstr "Unsaved"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:219
+#: .\static\ui\js\config\tpv_diseno.js:610
+#: .\static\ui\js\ficheros\backups.js:157
+msgid "Guardado"
+msgstr "Saved"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:455
+msgid "1-999"
+msgstr "1-999"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:466
+msgid "Ese número ya está usado en esta selección. Elige otro."
+msgstr "That number is already used in this selection. Choose another."
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:725
+msgid "Eliminar elementos"
+msgstr "Delete items"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:726
+#: .\static\ui\js\config\maps\editor\map_editor.js:1100
+#: .\static\ui\js\config\maps\editor\map_editor.js:1318
+#: .\static\ui\js\config\maps\maps_list.js:120
+#: .\static\ui\js\config\maps\maps_list.js:175
+msgid "Eliminar"
+msgstr "Delete"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:727
+#: .\static\ui\js\config\maps\editor\map_editor.js:1101
+#: .\static\ui\js\config\maps\editor\map_editor.js:1134
+#: .\static\ui\js\config\maps\maps_list.js:176
+#: .\static\ui\js\ficheros\backups.js:73 .\static\ui\js\tpv\mesa_acciones.js:27
+#: .\static\ui\js\tpv\mesa_clientes.js:116
+#: .\static\ui\js\tpv\mesa_clientes.js:125
+msgid "Cancelar"
+msgstr "Cancel"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:948
+msgid "Gestionar mapas"
+msgstr "Manage maps"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:954
+msgid "No hay mapas guardados"
+msgstr "No saved maps"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:969
+#| msgid "Tienes cambios sin guardar. ¿Quieres salir sin guardar?"
+msgid ""
+"Tienes cambios sin guardar. ¿Quieres guardarlos antes de abrir otro mapa?"
+msgstr "You have unsaved changes. Do you want to save them before opening another map?"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:971
+#: .\static\ui\js\config\maps\editor\map_editor.js:1132
+#: .\static\ui\js\config\maps\editor\map_editor.js:1575
+#: .\static\ui\js\config\tpv_diseno.js:228
+msgid "Cambios sin guardar"
+msgstr "Unsaved changes"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:972
+#: .\static\ui\js\config\maps\editor\map_editor.js:1576
+#| msgid "Guardado"
+msgid "Guardar"
+msgstr "Save"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:973
+#: .\static\ui\js\config\maps\editor\map_editor.js:1577
+#| msgid "Sin guardar"
+msgid "No guardar"
+msgstr "Do not save"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1042
+#| msgid "No se pudo generar el PDF."
+msgid "No se pudo cargar el mapa."
+msgstr "The map could not be loaded."
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1056
+msgid "Escribe un nombre para el mapa."
+msgstr "Enter a name for the map."
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1089
+#| msgid "Error guardando el artículo."
+msgid "Error al guardar el mapa."
+msgstr "Error saving the map."
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1097
+#| msgid ""
+#| "¿Está seguro de que quiere borrar toda la comanda? Esta acción no se "
+#| "puede deshacer."
+msgid ""
+"¿Seguro que quieres eliminar este mapa? Esta acción no se puede deshacer."
+msgstr "Are you sure you want to delete this map? This action cannot be undone."
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1099
+#: .\static\ui\js\config\maps\maps_list.js:174
+msgid "Eliminar mapa"
+msgstr "Delete map"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1123
+#| msgid "Error al cargar plantillas"
+msgid "Error al borrar el mapa."
+msgstr "Error deleting the map."
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1130
+#: .\static\ui\js\config\tpv_diseno.js:227
+#: .\static\ui\js\config\tpv_diseno.js:231
+msgid "Tienes cambios sin guardar. ¿Quieres salir sin guardar?"
+msgstr "You have unsaved changes. Do you want to leave without saving?"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1133
+#| msgid "Sin guardar"
+msgid "Salir sin guardar"
+msgstr "Leave without saving"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1299
+msgid "Copiar"
+msgstr "Copy"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1300
+#| msgid "Duplicado"
+msgid "Duplicar"
+msgstr "Duplicate"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1303
+#| msgid "Editar artículo"
+msgid "Editar número"
+msgstr "Edit number"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1315
+msgid "Rotar izquierda"
+msgstr "Rotate left"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1316
+msgid "Rotar derecha"
+msgstr "Rotate right"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1323
+msgid "Pegar"
+msgstr "Paste"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1325
+#| msgid "Seleccionar..."
+msgid "Seleccionar todo"
+msgstr "Select all"
+
+#: .\static\ui\js\config\maps\editor\map_editor.js:1573
+#| msgid "Tienes cambios sin guardar. ¿Quieres salir sin guardar?"
+msgid ""
+"Tienes cambios sin guardar. ¿Quieres guardarlos antes de crear un mapa nuevo?"
+msgstr "You have unsaved changes. Do you want to save them before creating a new map?"
+
+#: .\static\ui\js\config\maps\maps_list.js:74
+#| msgid "Error al cargar plantillas"
+msgid "Error cargando mapas"
+msgstr "Error loading maps"
+
+#: .\static\ui\js\config\maps\maps_list.js:75
+msgid "Revisa la consola y el endpoint /api/maps/"
+msgstr "Check the console and the /api/maps/ endpoint."
+
+#: .\static\ui\js\config\maps\maps_list.js:86
+msgid "Aún no hay mapas"
+msgstr "No maps yet"
+
+#: .\static\ui\js\config\maps\maps_list.js:87
+msgid "Crea tu primer mapa para empezar a usar el TPV por mesas."
+msgstr "Create your first map to start using table service."
+
+#: .\static\ui\js\config\maps\maps_list.js:90
+#: .\static\ui\js\ficheros\importar\preview.js:10
+#: .\static\ui\js\ficheros\importar\preview.js:75
+msgid "Crear"
+msgstr "Create"
+
+#: .\static\ui\js\config\maps\maps_list.js:101
+#| msgid "Suplemento"
+msgid "1 elemento"
+msgstr "1 item"
+
+#: .\static\ui\js\config\maps\maps_list.js:108
+msgid "Mapa sin nombre"
+msgstr "Untitled map"
+
+#: .\static\ui\js\config\maps\maps_list.js:110
+#| msgid "activos"
+msgid "Mapa activo"
+msgstr "Active map"
+
+#: .\static\ui\js\config\maps\maps_list.js:110
+#| msgid "inactivo"
+msgid "Mapa no activo"
+msgstr "Inactive map"
+
+#: .\static\ui\js\config\maps\maps_list.js:116
+#| msgid "activos"
+msgid "Activo"
+msgstr "Active"
+
+#: .\static\ui\js\config\maps\maps_list.js:116
+msgid "Activar"
+msgstr "Activate"
+
+#: .\static\ui\js\config\maps\maps_list.js:118
+#: .\static\ui\js\stock\stock.js:423 .\static\ui\js\stock\stock.js:518
+msgid "Editar"
+msgstr "Edit"
+
+#: .\static\ui\js\config\maps\maps_list.js:119
+msgid "No puedes borrar el mapa activo"
+msgstr "You cannot delete the active map"
+
+#: .\static\ui\js\config\maps\maps_list.js:170
+msgid "este mapa"
+msgstr "this map"
+
+#: .\static\ui\js\config\maps\maps_list.js:193
+#| msgid "No se pudo importar la selección."
+msgid "No se pudo completar la acción"
+msgstr "The action could not be completed."
+
+#: .\static\ui\js\config\tpv_diseno.js:60
+#: .\static\ui\js\tpv\mesa_acciones.js:541
+msgid "Total"
+msgstr "Total"
+
+#: .\static\ui\js\config\tpv_diseno.js:61
+#: .\static\ui\js\tpv\mesa_acciones.js:542
+msgid "Comprobante"
+msgstr "Receipt"
+
+#: .\static\ui\js\config\tpv_diseno.js:61
+#: .\static\ui\js\tpv\mesa_acciones.js:542
+msgid "Comp."
+msgstr "Rcpt."
+
+#: .\static\ui\js\config\tpv_diseno.js:62
+#: .\static\ui\js\tpv\mesa_acciones.js:543
+msgid "Reimprimir"
+msgstr "Reprint"
+
+#: .\static\ui\js\config\tpv_diseno.js:62
+#: .\static\ui\js\tpv\mesa_acciones.js:543
+msgid "Reimp."
+msgstr "Repr."
+
+#: .\static\ui\js\config\tpv_diseno.js:63
+#: .\static\ui\js\tpv\mesa_acciones.js:544
+msgid "Factura"
+msgstr "Invoice"
+
+#: .\static\ui\js\config\tpv_diseno.js:63
+#: .\static\ui\js\tpv\mesa_acciones.js:544
+msgid "Fact."
+msgstr "Invce."
+
+#: .\static\ui\js\config\tpv_diseno.js:64
+#: .\static\ui\js\tpv\mesa_acciones.js:545
+msgid "Descuento"
+msgstr "Discount"
+
+#: .\static\ui\js\config\tpv_diseno.js:64
+#: .\static\ui\js\tpv\mesa_acciones.js:545
+msgid "Dto."
+msgstr "Disc."
+
+#: .\static\ui\js\config\tpv_diseno.js:65
+#: .\static\ui\js\tpv\mesa_acciones.js:546
+msgid "Invitar"
+msgstr "Comp"
+
+#: .\static\ui\js\config\tpv_diseno.js:65
+#: .\static\ui\js\tpv\mesa_acciones.js:546
+msgid "Inv."
+msgstr "Comp."
+
+#: .\static\ui\js\config\tpv_diseno.js:66
+#: .\static\ui\js\tpv\mesa_acciones.js:547
+msgid "Anular"
+msgstr "Void"
+
+#: .\static\ui\js\config\tpv_diseno.js:66
+#: .\static\ui\js\tpv\mesa_acciones.js:547
+msgid "Anul."
+msgstr "Void"
+
+#: .\static\ui\js\config\tpv_diseno.js:67
+#: .\static\ui\js\tpv\mesa_acciones.js:548
+msgid "Borrar comanda"
+msgstr "Delete order"
+
+#: .\static\ui\js\config\tpv_diseno.js:67
+#: .\static\ui\js\tpv\mesa_acciones.js:548
+msgid "Borrar"
+msgstr "Delete"
+
+#: .\static\ui\js\config\tpv_diseno.js:68
+#: .\static\ui\js\tpv\mesa_acciones.js:549
+msgid "Separar"
+msgstr "Split"
+
+#: .\static\ui\js\config\tpv_diseno.js:68
+#: .\static\ui\js\tpv\mesa_acciones.js:549
+msgid "Sep."
+msgstr "Split"
+
+#: .\static\ui\js\config\tpv_diseno.js:69
+#: .\static\ui\js\tpv\mesa_acciones.js:550
+msgid "Juntar"
+msgstr "Merge"
+
+#: .\static\ui\js\config\tpv_diseno.js:69
+#: .\static\ui\js\tpv\mesa_acciones.js:550
+msgid "Junt."
+msgstr "Merge"
+
+#: .\static\ui\js\config\tpv_diseno.js:70
+#: .\static\ui\js\tpv\mesa_acciones.js:551
+msgid "Comentario"
+msgstr "Note"
+
+#: .\static\ui\js\config\tpv_diseno.js:70
+#: .\static\ui\js\tpv\mesa_acciones.js:551
+msgid "Coment."
+msgstr "Note"
+
+#: .\static\ui\js\config\tpv_diseno.js:71
+#: .\static\ui\js\tpv\mesa_acciones.js:552
+#: .\static\ui\js\tpv\mesa_modificadores.js:232
+msgid "Suplemento"
+msgstr "Extra"
+
+#: .\static\ui\js\config\tpv_diseno.js:71
+#: .\static\ui\js\tpv\mesa_acciones.js:552
+msgid "Supl."
+msgstr "Extra"
+
+#: .\static\ui\js\config\tpv_diseno.js:72
+#: .\static\ui\js\tpv\mesa_acciones.js:553
+msgid "Cliente"
+msgstr "Customer"
+
+#: .\static\ui\js\config\tpv_diseno.js:73
+#: .\static\ui\js\tpv\mesa_acciones.js:554
+msgid "Dividir cuenta"
+msgstr "Split bill"
+
+#: .\static\ui\js\config\tpv_diseno.js:73
+#: .\static\ui\js\tpv\mesa_acciones.js:554
+msgid "Dividir"
+msgstr "Split"
+
+#: .\static\ui\js\config\tpv_diseno.js:74
+#: .\static\ui\js\tpv\mesa_acciones.js:555
+msgid "Cajón"
+msgstr "Drawer"
+
+#: .\static\ui\js\config\tpv_diseno.js:75
+#: .\static\ui\js\tpv\mesa_acciones.js:556
+msgid "Opciones"
+msgstr "Options"
+
+#: .\static\ui\js\config\tpv_diseno.js:75
+#: .\static\ui\js\tpv\mesa_acciones.js:556
+msgid "Opc."
+msgstr "Opts."
+
+#: .\static\ui\js\config\tpv_diseno.js:76
+#: .\static\ui\js\tpv\mesa_acciones.js:26
+#: .\static\ui\js\tpv\mesa_acciones.js:557
+msgid "Salir"
+msgstr "Exit"
+
+#: .\static\ui\js\config\tpv_diseno.js:251
+msgid "Cambiar icono"
+msgstr "Change icon"
+
+#: .\static\ui\js\config\tpv_diseno.js:257
+msgid "Ancho"
+msgstr "Width"
+
+#: .\static\ui\js\config\tpv_diseno.js:260
+msgid "Fondo"
+msgstr "Background"
+
+#: .\static\ui\js\config\tpv_diseno.js:261
+msgid "Texto"
+msgstr "Text"
+
+#: .\static\ui\js\config\tpv_diseno.js:262
+msgid "Borde"
+msgstr "Border"
+
+#: .\static\ui\js\config\tpv_diseno.js:263
+msgid "Mover botón"
+msgstr "Move button"
+
+#: .\static\ui\js\config\tpv_diseno.js:264
+msgid "Subir"
+msgstr "Move up"
+
+#: .\static\ui\js\config\tpv_diseno.js:267
+msgid "Bajar"
+msgstr "Move down"
+
+#: .\static\ui\js\config\tpv_diseno.js:271
+msgid "Restablecer"
+msgstr "Reset"
+
+#: .\static\ui\js\config\tpv_diseno.js:284
+msgid "Entero"
+msgstr "Full"
+
+#: .\static\ui\js\config\tpv_diseno.js:285
+msgid "Mitad"
+msgstr "Half"
+
+#: .\static\ui\js\config\tpv_diseno.js:433
+msgid "No se pudieron cargar los iconos TPV"
+msgstr "Could not load POS icons"
+
+#: .\static\ui\js\config\tpv_diseno.js:442
+msgid "Icono"
+msgstr "Icon"
+
+#: .\static\ui\js\config\tpv_diseno.js:464
+msgid "No se encontraron iconos."
+msgstr "No icons found."
+
+#: .\static\ui\js\config\tpv_diseno.js:589
+msgid "Restablecido"
+msgstr "Reset"
+
+#: .\static\ui\js\config\tpv_diseno.js:608
+msgid "No se pudo guardar."
+msgstr "Could not save."
+
+#: .\static\ui\js\config\tpv_diseno.js:612
+#: .\static\ui\js\ficheros\backups.js:92 .\static\ui\js\ficheros\backups.js:137
+#: .\static\ui\js\ficheros\backups.js:163
+#: .\static\ui\js\ficheros\importar\preview.js:14
+#: .\static\ui\js\ficheros\importar\preview.js:199
+#: .\static\ui\js\ficheros\importar\preview.js:202
+#: .\static\ui\js\stock\stock.js:782
+msgid "Error"
+msgstr "Error"
+
+#: .\static\ui\js\ficheros\backups.js:29 .\static\ui\js\ficheros\backups.js:47
+#: .\static\ui\js\ficheros\backups.js:157
+msgid "Deshabilitado"
+msgstr "Disabled"
+
+#: .\static\ui\js\ficheros\backups.js:69
+msgid ""
+"Se creará una copia completa de la base de datos y se guardará en el "
+"servidor. Puedes descargarla desde el historial cuando termine."
+msgstr ""
+"A full database backup will be created and saved on the server. You can "
+"download it from the history when it finishes."
+
+#: .\static\ui\js\ficheros\backups.js:71 .\static\ui\js\ficheros\backups.js:72
+msgid "Crear backup"
+msgstr "Create backup"
+
+#: .\static\ui\js\ficheros\backups.js:80
+msgid "Creando backup..."
+msgstr "Creating backup..."
+
+#: .\static\ui\js\ficheros\backups.js:89
+msgid "Backup creado"
+msgstr "Backup created"
+
+#: .\static\ui\js\ficheros\backups.js:89 .\static\ui\js\ficheros\backups.js:134
+msgid "Backup"
+msgstr "Backup"
+
+#: .\static\ui\js\ficheros\backups.js:95 .\static\ui\js\ficheros\backups.js:140
+#: .\static\ui\js\ficheros\importar\result.js:32
+#: .\static\ui\js\tpv\mesa_clientes.js:191
+#: .\static\ui\js\tpv\mesa_clientes.js:295
+msgid "Error de conexión"
+msgstr "Connection error"
+
+#: .\static\ui\js\ficheros\backups.js:98
+msgid "Crear backup ahora"
+msgstr "Create backup now"
+
+#: .\static\ui\js\ficheros\backups.js:108
+#: .\static\ui\js\tpv\mesa_acciones.js:456
+#: .\static\ui\js\tpv\mesa_acciones.js:467
+#: .\static\ui\js\tpv\mesa_acciones.js:482
+#: .\static\ui\js\tpv\mesa_acciones.js:493
+msgid "Atención"
+msgstr "Attention"
+
+#: .\static\ui\js\ficheros\backups.js:108
+msgid "Esto restaurará la base de datos al estado del backup"
+msgstr "This will restore the database to the state of the backup"
+
+#: .\static\ui\js\ficheros\backups.js:108
+msgid "Se creará un backup de seguridad del estado actual antes de restaurar."
+msgstr "A safety backup of the current state will be created before restoring."
+
+#: .\static\ui\js\ficheros\backups.js:108
+msgid "¿Estás seguro?"
+msgstr "Are you sure?"
+
+#: .\static\ui\js\ficheros\backups.js:109
+msgid "Restaurar backup"
+msgstr "Restore backup"
+
+#: .\static\ui\js\ficheros\backups.js:114
+#: .\static\ui\js\ficheros\backups.js:115
+msgid "Confirmación final"
+msgstr "Final confirmation"
+
+#: .\static\ui\js\ficheros\backups.js:114
+msgid "Esta operación es irreversible."
+msgstr "This operation cannot be undone."
+
+#: .\static\ui\js\ficheros\backups.js:114
+msgid "¿Continuar con la restauración?"
+msgstr "Continue with the restore?"
+
+#: .\static\ui\js\ficheros\backups.js:134
+msgid "Backup restaurado correctamente. La página se recargará."
+msgstr "Backup restored successfully. The page will reload."
+
+#: .\static\ui\js\ficheros\exportar.js:15
+msgid "Todos los departamentos"
+msgstr "All departments"
+
+#: .\static\ui\js\ficheros\exportar.js:196
+msgid "activos"
+msgstr "active"
+
+#: .\static\ui\js\ficheros\exportar.js:197
+msgid "inactivos"
+msgstr "inactive"
+
+#: .\static\ui\js\ficheros\exportar.js:198
+msgid "activos e inactivos"
+msgstr "active and inactive"
+
+#: .\static\ui\js\ficheros\exportar.js:201
+msgid "sin eliminados"
+msgstr "without deleted products"
+
+#: .\static\ui\js\ficheros\exportar.js:202
+msgid "incluyendo eliminados"
+msgstr "including deleted products"
+
+#: .\static\ui\js\ficheros\exportar.js:203
+msgid "solo eliminados"
+msgstr "deleted only"
+
+#: .\static\ui\js\ficheros\exportar.js:206
+msgid "Se exportarán productos"
+msgstr "Products will be exported"
+
+#: .\static\ui\js\ficheros\exportar.js:218
+msgid "Productos del catálogo"
+msgstr "Catalog products"
+
+#: .\static\ui\js\ficheros\exportar.js:232
+#: .\static\ui\js\ficheros\importar\app.js:53
+msgid "Artículos de inventario"
+msgstr "Inventory items"
+
+#: .\static\ui\js\ficheros\exportar.js:244
+msgid "El navegador ha bloqueado la ventana de PDF."
+msgstr "The browser blocked the PDF window."
+
+#: .\static\ui\js\ficheros\exportar.js:259
+msgid "Preparando PDF..."
+msgstr "Preparing PDF..."
+
+#: .\static\ui\js\ficheros\exportar.js:272
+msgid "No hay datos para exportar con el filtro seleccionado."
+msgstr "There is no data to export with the selected filter."
+
+#: .\static\ui\js\ficheros\exportar.js:304
+msgid "TPV Hostelería"
+msgstr "POS Hospitality"
+
+#: .\static\ui\js\ficheros\exportar.js:304
+msgid "Generado"
+msgstr "Generated"
+
+#: .\static\ui\js\ficheros\exportar.js:314
+msgid "No se pudo generar el PDF."
+msgstr "The PDF could not be generated."
+
+#: .\static\ui\js\ficheros\importar\api.js:16
+msgid "No se pudo previsualizar el fichero."
+msgstr "The file could not be previewed."
+
+#: .\static\ui\js\ficheros\importar\api.js:27
+msgid "No se pudo verificar el fichero."
+msgstr "The file could not be checked."
+
+#: .\static\ui\js\ficheros\importar\app.js:53
+#: .\static\ui\js\ficheros\importar\app.js:57
+msgid "Destino"
+msgstr "Destination"
+
+#: .\static\ui\js\ficheros\importar\app.js:57
+msgid "Productos (Catálogo)"
+msgstr "Products (Catalog)"
+
+#: .\static\ui\js\ficheros\importar\app.js:109
+msgid "No se pudo leer el fichero seleccionado."
+msgstr "The selected file could not be read."
+
+#: .\static\ui\js\ficheros\importar\app.js:182
+msgid ""
+"No se pudo verificar contra la base de datos. Revisa manualmente antes de "
+"importar."
+msgstr ""
+"The file could not be checked against the database. Review it manually "
+"before importing."
+
+#: .\static\ui\js\ficheros\importar\app.js:244
+msgid "Importando..."
+msgstr "Importing..."
+
+#: .\static\ui\js\ficheros\importar\help_modal.js:13
+msgid "Formato de importación - Inventario"
+msgstr "Import format - Inventory"
+
+#: .\static\ui\js\ficheros\importar\help_modal.js:17
+msgid "Formato de importación - Productos"
+msgstr "Import format - Products"
+
+#: .\static\ui\js\ficheros\importar\parsing.js:45
+msgid "El fichero está vacío o solo contiene cabeceras."
+msgstr "The file is empty or only contains headers."
+
+#: .\static\ui\js\ficheros\importar\preview.js:11
+#: .\static\ui\js\ficheros\importar\preview.js:80
+msgid "Actualizar"
+msgstr "Update"
+
+#: .\static\ui\js\ficheros\importar\preview.js:12
+#: .\static\ui\js\ficheros\importar\preview.js:85
+#: .\static\ui\js\stock\stock.js:113 .\static\ui\js\stock\utils.js:29
+msgid "Revisar"
+msgstr "Review"
+
+#: .\static\ui\js\ficheros\importar\preview.js:13
+msgid "Duplicado"
+msgstr "Duplicate"
+
+#: .\static\ui\js\ficheros\importar\preview.js:15
+msgid "Actualizar eliminado"
+msgstr "Update deleted item"
+
+#: .\static\ui\js\ficheros\importar\preview.js:16
+msgid "departamentos"
+msgstr "departments"
+
+#: .\static\ui\js\ficheros\importar\preview.js:17
+msgid "categorías"
+msgstr "categories"
+
+#: .\static\ui\js\ficheros\importar\preview.js:18
+msgid "productos"
+msgstr "products"
+
+#: .\static\ui\js\ficheros\importar\preview.js:19
+msgid "artículos"
+msgstr "items"
+
+#: .\static\ui\js\ficheros\importar\preview.js:51
+msgid "válidos"
+msgstr "valid"
+
+#: .\static\ui\js\ficheros\importar\preview.js:52
+msgid "total"
+msgstr "total"
+
+#: .\static\ui\js\ficheros\importar\preview.js:53
+msgid "avisos"
+msgstr "warnings"
+
+#: .\static\ui\js\ficheros\importar\preview.js:54
+msgid "con errores"
+msgstr "with errors"
+
+#: .\static\ui\js\ficheros\importar\preview.js:77
+msgid "Nuevos"
+msgstr "New"
+
+#: .\static\ui\js\ficheros\importar\preview.js:82
+msgid "Coinciden por nombre"
+msgstr "Matched by name"
+
+#: .\static\ui\js\ficheros\importar\preview.js:87
+msgid "Duplicados o casos sensibles"
+msgstr "Duplicates or sensitive cases"
+
+#: .\static\ui\js\ficheros\importar\preview.js:92
+msgid "Sin nuevos"
+msgstr "No new items"
+
+#: .\static\ui\js\ficheros\importar\preview.js:123
+msgid "Acción"
+msgstr "Action"
+
+#: .\static\ui\js\ficheros\importar\preview.js:134
+#: .\static\ui\js\ficheros\importar\preview.js:149
+msgid "y"
+msgstr "and"
+
+#: .\static\ui\js\ficheros\importar\preview.js:134
+msgid "filas más"
+msgstr "more rows"
+
+#: .\static\ui\js\ficheros\importar\preview.js:146
+msgid "Fila"
+msgstr "Row"
+
+#: .\static\ui\js\ficheros\importar\preview.js:146
+#: .\static\ui\js\ficheros\importar\result.js:23
+msgid "Error desconocido"
+msgstr "Unknown error"
+
+#: .\static\ui\js\ficheros\importar\preview.js:149
+msgid "filas más con errores o revisiones."
+msgstr "more rows with errors or reviews."
+
+#: .\static\ui\js\ficheros\importar\preview.js:159
+msgid "Importar"
+msgstr "Import"
+
+#: .\static\ui\js\ficheros\importar\preview.js:159
+msgid "registros"
+msgstr "records"
+
+#: .\static\ui\js\ficheros\importar\preview.js:177
+msgid "valor automático"
+msgstr "automatic value"
+
+#: .\static\ui\js\ficheros\importar\preview.js:180
+msgid "valor normalizado"
+msgstr "normalized value"
+
+#: .\static\ui\js\ficheros\importar\result.js:14
+msgid "Importación completada"
+msgstr "Import completed"
+
+#: .\static\ui\js\ficheros\importar\result.js:16
+msgid "creados"
+msgstr "created"
+
+#: .\static\ui\js\ficheros\importar\result.js:16
+msgid "actualizados"
+msgstr "updated"
+
+#: .\static\ui\js\ficheros\importar\result.js:16
+msgid "errores"
+msgstr "errors"
+
+#: .\static\ui\js\ficheros\importar\result.js:22
+msgid "Error en la importación"
+msgstr "Import error"
+
+#: .\static\ui\js\ficheros\importar\result.js:33
+msgid "No se pudo contactar con el servidor."
+msgstr "The server could not be reached."
+
+#: .\static\ui\js\ficheros\importar\validation.js:30
+msgid "Falta la columna obligatoria \"nombre\"."
+msgstr "Missing required \"nombre\" column."
+
+#: .\static\ui\js\ficheros\importar\validation.js:34
+msgid ""
+"Parece que has subido una plantilla de productos en la sección de "
+"inventario. Verifica el fichero."
+msgstr ""
+"It looks like you uploaded a products template in the inventory section. "
+"Check the file."
+
+#: .\static\ui\js\ficheros\importar\validation.js:38
+msgid ""
+"Parece que has subido una plantilla de inventario en la sección de "
+"productos. Verifica el fichero."
+msgstr ""
+"It looks like you uploaded an inventory template in the products section. "
+"Check the file."
+
+#: .\static\ui\js\ficheros\importar\validation.js:42
+msgid ""
+"Falta la columna obligatoria \"departamento\". Todo producto debe pertenecer "
+"a un departamento."
+msgstr ""
+"Missing required \"departamento\" column. Every product must belong to a "
+"department."
+
+#: .\static\ui\js\ficheros\importar\validation.js:45
+msgid ""
+"Falta la columna obligatoria \"categoria\". La plantilla no encaja con "
+"inventario."
+msgstr ""
+"Missing required \"categoria\" column. The template does not match inventory."
+
+#: .\static\ui\js\ficheros\importar\validation.js:48
+msgid "El fichero no contiene filas de datos."
+msgstr "The file contains no data rows."
+
+#: .\static\ui\js\ficheros\importar\validation.js:56
+msgid "Columna opcional no encontrada"
+msgstr "Optional column not found"
+
+#: .\static\ui\js\ficheros\importar\validation.js:56
+msgid "Se aplicará el valor por defecto."
+msgstr "The default value will be applied."
+
+#: .\static\ui\js\ficheros\importar\validation.js:62
+msgid ""
+"No hay columna activo. Los productos válidos se importarán como activos (1/"
+"true)."
+msgstr ""
+"There is no active column. Valid products will be imported as active (1/"
+"true)."
+
+#: .\static\ui\js\ficheros\importar\validation.js:65
+msgid "No hay nombre_factura. Se usará el nombre del producto en factura."
+msgstr ""
+"There is no invoice name. The product name will be used on the invoice."
+
+#: .\static\ui\js\ficheros\importar\validation.js:68
+msgid "No hay nombre_comanda. Se usará el nombre del producto en comandas."
+msgstr ""
+"There is no kitchen ticket name. The product name will be used on kitchen "
+"tickets."
+
+#: .\static\ui\js\ficheros\importar\validation.js:71
+msgid ""
+"La plantilla básica no incluye colores. Los productos nuevos usarán colores "
+"por defecto."
+msgstr ""
+"The basic template does not include colors. New products will use default "
+"colors."
+
+#: .\static\ui\js\ficheros\importar\validation.js:74
+msgid ""
+"La columna eliminado no se importa en modo básico. Se gestiona desde "
+"Catálogo."
+msgstr ""
+"The deleted column is not imported in basic mode. It is managed from Catalog."
+
+#: .\static\ui\js\ficheros\importar\validation.js:77
+msgid ""
+"Las imágenes no se importan desde esta plantilla. Se mantienen las "
+"existentes al actualizar."
+msgstr ""
+"Images are not imported from this template. Existing images are kept when "
+"updating."
+
+#: .\static\ui\js\ficheros\importar\validation.js:90
+msgid "Falta el nombre obligatorio."
+msgstr "Required name is missing."
+
+#: .\static\ui\js\ficheros\importar\validation.js:102
+msgid "La plantilla no encaja con productos."
+msgstr "The template does not match products."
+
+#: .\static\ui\js\ficheros\importar\validation.js:103
+msgid "La plantilla no encaja con inventario."
+msgstr "The template does not match inventory."
+
+#: .\static\ui\js\ficheros\importar\validation.js:170
+msgid "Falta el departamento obligatorio."
+msgstr "The required department is missing."
+
+#: .\static\ui\js\ficheros\importar\validation.js:173
+msgid "Precio inválido."
+msgstr "Invalid price."
+
+#: .\static\ui\js\ficheros\importar\validation.js:179
+msgid "Valor de activo inválido. Usa 1/0, true/false, sí/no o activo/inactivo."
+msgstr "Invalid active value. Use 1/0, true/false, yes/no, or active/inactive."
+
+#: .\static\ui\js\ficheros\importar\validation.js:184
+msgid "no es válido. Usa un color hexadecimal, por ejemplo #2ecc71."
+msgstr "is not valid. Use a hexadecimal color, for example #2ecc71."
+
+#: .\static\ui\js\ficheros\importar\validation.js:192
+msgid "no es válido."
+msgstr "is not valid."
+
+#: .\static\ui\js\ficheros\importar\validation.js:272
+msgid ""
+"filas sin nombre_factura usarán el nombre del producto. Puedes desactivar "
+"esta opción si necesitas dejarlas en blanco."
+msgstr ""
+"rows without nombre_factura will use the product name. You can turn this "
+"option off if you need to leave them blank."
+
+#: .\static\ui\js\ficheros\importar\validation.js:275
+msgid ""
+"filas sin nombre_comanda usarán el nombre del producto. Puedes desactivar "
+"esta opción si necesitas dejarlas en blanco."
+msgstr ""
+"rows without nombre_comanda will use the product name. You can turn this "
+"option off if you need to leave them blank."
+
+#: .\static\ui\js\ficheros\importar\validation.js:278
+msgid ""
+"filas importarán nombre_factura en blanco porque la opción de autocompletar "
+"está desactivada."
+msgstr ""
+"rows will import blank nombre_factura because autocomplete is turned off."
+
+#: .\static\ui\js\ficheros\importar\validation.js:281
+msgid ""
+"filas importarán nombre_comanda en blanco porque la opción de autocompletar "
+"está desactivada."
+msgstr ""
+"rows will import blank nombre_comanda because autocomplete is turned off."
+
+#: .\static\ui\js\ficheros\importar\validation.js:284
+msgid "filas sin precio se importarán con 0.00."
+msgstr "rows without a price will be imported with 0.00."
+
+#: .\static\ui\js\ficheros\importar\validation.js:287
+msgid "precios se normalizarán a formato de dos decimales antes de importar."
+msgstr "prices will be normalized to two decimal places before importing."
+
+#: .\static\ui\js\ficheros\importar\validation.js:290
+msgid "filas sin activo se importarán como activas (1/true)."
+msgstr "rows without an active value will be imported as active (1/true)."
+
+#: .\static\ui\js\ficheros\importar\validation.js:293
+msgid ""
+"valores de color se importarán desde el fichero. Si un color viene vacío, se "
+"mantiene el existente o se usa el color por defecto en productos nuevos."
+msgstr ""
+"color values will be imported from the file. If a color is empty, the "
+"existing color is kept or the default color is used for new products."
+
+#: .\static\ui\js\ficheros\importar\validation.js:296
+msgid "colores se normalizarán a formato #rrggbb antes de importar."
+msgstr "colors will be normalized to #rrggbb before importing."
+
+#: .\static\ui\js\ficheros\importar\verification.js:39
+#: .\static\ui\js\ficheros\importar\verification.js:41
+msgid "Revisar antes de importar."
+msgstr "Review before importing."
+
+#: .\static\ui\js\ficheros\importar\verification.js:50
+msgid ""
+"filas tienen nombres duplicados dentro del fichero y no se importarán hasta "
+"corregirlas."
+msgstr ""
+"rows have duplicate names inside the file and will not be imported until "
+"fixed."
+
+#: .\static\ui\js\ficheros\importar\verification.js:53
+msgid ""
+"productos coinciden con productos eliminados. Se actualizarán, pero seguirán "
+"eliminados en Catálogo."
+msgstr ""
+"products match deleted products. They will be updated, but they will remain "
+"deleted in Catalog."
+
+#: .\static\ui\js\ficheros\importar\verification.js:59
+msgid "grupo"
+msgstr "group"
+
+#: .\static\ui\js\ficheros\importar\verification.js:60
+msgid "grupos"
+msgstr "groups"
+
+#: .\static\ui\js\ficheros\importar\verification.js:61
+#: .\static\ui\js\ficheros\importar\verification.js:72
+msgid "no existe todavía"
+msgstr "does not exist yet"
+
+#: .\static\ui\js\ficheros\importar\verification.js:61
+#: .\static\ui\js\ficheros\importar\verification.js:72
+msgid "no existen todavía"
+msgstr "do not exist yet"
+
+#: .\static\ui\js\ficheros\importar\verification.js:63
+#: .\static\ui\js\ficheros\importar\verification.js:74
+msgid "Se creará automáticamente al importar una fila válida que lo use."
+msgstr ""
+"It will be created automatically when importing a valid row that uses it."
+
+#: .\static\ui\js\ficheros\importar\verification.js:64
+#: .\static\ui\js\ficheros\importar\verification.js:75
+msgid "Se crearán automáticamente al importar filas válidas que los usen."
+msgstr ""
+"They will be created automatically when importing valid rows that use them."
+
+#: .\static\ui\js\ficheros\importar\verification.js:68
+msgid "unidades de inventario no se reconocen y se importarán como ud."
+msgstr "inventory units are not recognized and will be imported as unit."
+
+#: .\static\ui\js\ficheros\importar\verification.js:76
+msgid "proveedores"
+msgstr "suppliers"
+
+#: .\static\ui\js\stock\plantillas.js:36
+msgid "Sin departamento"
+msgstr "No department"
+
+#: .\static\ui\js\stock\plantillas.js:45 .\static\ui\js\stock\plantillas.js:51
+msgid "Productos TPV"
+msgstr "POS Products"
+
+#: .\static\ui\js\stock\plantillas.js:75
+msgid "1 seleccionado"
+msgstr "1 selected"
+
+#: .\static\ui\js\stock\plantillas.js:76
+#, javascript-format
+msgid "%s seleccionados"
+msgstr "%s selected"
+
+#: .\static\ui\js\stock\plantillas.js:125
+msgid "Selecciona una subcategoría del lateral."
+msgstr "Select a subcategory from the side panel."
+
+#: .\static\ui\js\stock\plantillas.js:135
+msgid ""
+"Productos existentes del TPV. Por defecto se importan en unidades. Cámbialo "
+"si lo prefieres."
+msgstr ""
+"Existing POS products. They are imported as units by default. Change it if "
+"you prefer."
+
+#: .\static\ui\js\stock\plantillas.js:136
+#, javascript-format
+msgid "%s. Por defecto se importa en unidades. Cámbiala antes de importar."
+msgstr "%s. It is imported as units by default. Change it before importing."
+
+#: .\static\ui\js\stock\plantillas.js:140
+msgid "No hay elementos con esa búsqueda."
+msgstr "No items match that search."
+
+#: .\static\ui\js\stock\plantillas.js:159
+#: .\static\ui\js\stock\plantillas.js:185
+msgid "Unidad"
+msgstr "Unit"
+
+#: .\static\ui\js\stock\plantillas.js:165
+msgid "Stock inicial"
+msgstr "Starting stock"
+
+#: .\static\ui\js\stock\plantillas.js:169
+msgid "Stock mínimo"
+msgstr "Minimum stock"
+
+#: .\static\ui\js\stock\plantillas.js:173
+msgid "Descontar al vender el producto TPV vinculado"
+msgstr "Deduct when the linked POS product is sold"
+
+#: .\static\ui\js\stock\plantillas.js:175
+#: .\static\ui\js\stock\plantillas.js:188 .\static\ui\js\stock\stock.js:374
+msgid "Auto TPV"
+msgstr "Auto POS"
+
+#: .\static\ui\js\stock\plantillas.js:184
+msgid "Artículo"
+msgstr "Item"
+
+#: .\static\ui\js\stock\plantillas.js:186
+msgid "Inicial"
+msgstr "Initial"
+
+#: .\static\ui\js\stock\plantillas.js:187
+msgid "Mínimo"
+msgstr "Minimum"
+
+#: .\static\ui\js\stock\plantillas.js:248
+msgid "Cargando plantillas..."
+msgstr "Loading templates..."
+
+#: .\static\ui\js\stock\plantillas.js:249
+msgid "Cargando..."
+msgstr "Loading..."
+
+#: .\static\ui\js\stock\plantillas.js:265
+msgid "Error al cargar plantillas"
+msgstr "Error loading templates"
+
+#: .\static\ui\js\stock\plantillas.js:283
+msgid "Selecciona al menos un artículo para importar."
+msgstr "Select at least one item to import."
+
+#: .\static\ui\js\stock\plantillas.js:298
+msgid "No se pudo importar la selección."
+msgstr "Could not import the selection."
+
+#: .\static\ui\js\stock\stock.js:81
+msgid "Sin proveedor"
+msgstr "No supplier"
+
+#: .\static\ui\js\stock\stock.js:87 .\static\ui\js\stock\stock.js:129
+#: .\static\ui\js\stock\stock.js:219
+msgid "Nombre A-Z"
+msgstr "Name A-Z"
+
+#: .\static\ui\js\stock\stock.js:88
+msgid "Nombre Z-A"
+msgstr "Name Z-A"
+
+#: .\static\ui\js\stock\stock.js:89
+msgid "Stock mayor"
+msgstr "Highest stock"
+
+#: .\static\ui\js\stock\stock.js:90
+msgid "Stock menor"
+msgstr "Lowest stock"
+
+#: .\static\ui\js\stock\stock.js:91
+msgid "Mínimo mayor"
+msgstr "Highest minimum"
+
+#: .\static\ui\js\stock\stock.js:92
+msgid "Prioridad stock"
+msgstr "Stock priority"
+
+#: .\static\ui\js\stock\stock.js:108 .\static\ui\js\stock\stock.js:137
+#: .\static\ui\js\stock\stock.js:217
+msgid "Todas las Categorías"
+msgstr "All Categories"
+
+#: .\static\ui\js\stock\stock.js:111 .\static\ui\js\stock\stock.js:218
+msgid "Todos"
+msgstr "All"
+
+#: .\static\ui\js\stock\stock.js:112
+msgid "Para pedir"
+msgstr "To order"
+
+#: .\static\ui\js\stock\stock.js:114 .\static\ui\js\stock\utils.js:26
+msgid "En stock"
+msgstr "In stock"
+
+#: .\static\ui\js\stock\stock.js:115 .\static\ui\js\stock\utils.js:27
+msgid "Stock bajo"
+msgstr "Low stock"
+
+#: .\static\ui\js\stock\stock.js:116
+msgid "Sin stock"
+msgstr "Out of stock"
+
+#: .\static\ui\js\stock\stock.js:146
+msgid "Seleccionar..."
+msgstr "Select..."
+
+#: .\static\ui\js\stock\stock.js:316 .\static\ui\js\stock\stock.js:446
+msgid "Cargando inventario..."
+msgstr "Loading inventory..."
+
+#: .\static\ui\js\stock\stock.js:330 .\static\ui\js\stock\stock.js:465
+msgid "Tu inventario está vacío"
+msgstr "Your inventory is empty"
+
+#: .\static\ui\js\stock\stock.js:331 .\static\ui\js\stock\stock.js:468
+msgid ""
+"Empieza añadiendo materias primas, bebidas o usa una plantilla para crear "
+"solo lo que quieras controlar."
+msgstr ""
+"Start by adding raw materials or drinks, or use a template to create only "
+"what you want to track."
+
+#: .\static\ui\js\stock\stock.js:333 .\static\ui\js\stock\stock.js:473
+msgid "Usar plantilla"
+msgstr "Use template"
+
+#: .\static\ui\js\stock\stock.js:334 .\static\ui\js\stock\stock.js:474
+msgid "Nuevo artículo"
+msgstr "New item"
+
+#: .\static\ui\js\stock\stock.js:349 .\static\ui\js\stock\stock.js:465
+msgid "No hay coincidencias"
+msgstr "No matches"
+
+#: .\static\ui\js\stock\stock.js:350 .\static\ui\js\stock\stock.js:469
+msgid "Prueba a cambiar la búsqueda, la categoría o el estado seleccionado."
+msgstr "Try changing the search, category, or selected status."
+
+#: .\static\ui\js\stock\stock.js:362 .\static\ui\js\stock\stock.js:488
+msgid "General"
+msgstr "General"
+
+#: .\static\ui\js\stock\stock.js:373
+msgid "Descuento automático activado"
+msgstr "Automatic deduction enabled"
+
+#: .\static\ui\js\stock\stock.js:373
+msgid "Auto"
+msgstr "Auto"
+
+#: .\static\ui\js\stock\stock.js:376
+msgid "Proveedor"
+msgstr "Supplier"
+
+#: .\static\ui\js\stock\stock.js:391
+msgid "Ajustar stock"
+msgstr "Adjust stock"
+
+#: .\static\ui\js\stock\stock.js:392
+msgid "Stock actual"
+msgstr "Current stock"
+
+#: .\static\ui\js\stock\stock.js:402
+msgid "Min."
+msgstr "Min."
+
+#: .\static\ui\js\stock\stock.js:408 .\static\ui\js\stock\stock.js:688
+msgid "Salida rápida"
+msgstr "Quick exit"
+
+#: .\static\ui\js\stock\stock.js:412 .\static\ui\js\stock\stock.js:688
+msgid "Entrada rápida"
+msgstr "Quick entry"
+
+#: .\static\ui\js\stock\stock.js:417
+msgid "Historial"
+msgstr "History"
+
+#: .\static\ui\js\stock\stock.js:419
+msgid "Hist."
+msgstr "Hist."
+
+#: .\static\ui\js\stock\stock.js:421
+msgid "Editar artículo"
+msgstr "Edit item"
+
+#: .\static\ui\js\stock\stock.js:517
+msgid "Log"
+msgstr "Log"
+
+#: .\static\ui\js\stock\stock.js:537
+msgid "Nuevo Artículo"
+msgstr "New Item"
+
+#: .\static\ui\js\stock\stock.js:586
+msgid "Producto TPV opcional..."
+msgstr "Optional POS product..."
+
+#: .\static\ui\js\stock\stock.js:588
+msgid "inactivo"
+msgstr "inactive"
+
+#: .\static\ui\js\stock\stock.js:614
+msgid "El nombre es obligatorio"
+msgstr "Name is required"
+
+#: .\static\ui\js\stock\stock.js:619
+msgid "Elige un producto TPV para activar el descuento automático."
+msgstr "Choose a POS product to activate automatic deduction."
+
+#: .\static\ui\js\stock\stock.js:644
+msgid "Error guardando el artículo."
+msgstr "Error saving the item."
+
+#: .\static\ui\js\stock\stock.js:666
+msgid "Editar Artículo"
+msgstr "Edit Item"
+
+#: .\static\ui\js\stock\stock.js:701
+msgid "Entrada"
+msgstr "Entry"
+
+#: .\static\ui\js\stock\stock.js:734
+msgid "No se pudo guardar el movimiento."
+msgstr "Could not save the movement."
+
+#: .\static\ui\js\stock\stock.js:741
+msgid "Cargando bitácora..."
+msgstr "Loading log..."
+
+#: .\static\ui\js\stock\stock.js:749
+msgid "No hay registros históricos."
+msgstr "There are no history records."
+
+#: .\static\ui\js\stock\stock.js:773
+msgid "De"
+msgstr "From"
+
+#: .\static\ui\js\stock\stock.js:773
+msgid "a"
+msgstr "to"
+
+#: .\static\ui\js\stock\utils.js:6
+msgid "Unidades"
+msgstr "Units"
+
+#: .\static\ui\js\stock\utils.js:7
+msgid "Packs"
+msgstr "Packs"
+
+#: .\static\ui\js\stock\utils.js:8
+msgid "Cajas"
+msgstr "Boxes"
+
+#: .\static\ui\js\stock\utils.js:9
+msgid "Kilos"
+msgstr "Kilos"
+
+#: .\static\ui\js\stock\utils.js:10
+msgid "Gramos"
+msgstr "Grams"
+
+#: .\static\ui\js\stock\utils.js:11
+msgid "Litros"
+msgstr "Liters"
+
+#: .\static\ui\js\stock\utils.js:12
+msgid "Mililitros"
+msgstr "Milliliters"
+
+#: .\static\ui\js\stock\utils.js:28
+msgid "Agotado"
+msgstr "Out of stock"
+
+#: .\static\ui\js\tpv\mesa_acciones.js:23
+msgid "Volverás al menú principal de la aplicación."
+msgstr "You will return to the main menu."
+
+#: .\static\ui\js\tpv\mesa_acciones.js:25
+msgid "¿Quieres salir del TPV?"
+msgstr "Do you want to leave the POS?"
+
+#: .\static\ui\js\tpv\mesa_acciones.js:241
+msgid "No hay comanda activa para esta mesa."
+msgstr "There is no active order for this table."
+
+#: .\static\ui\js\tpv\mesa_acciones.js:255
+msgid "No se encontró ningún ticket anterior para reimprimir."
+msgstr "No previous ticket was found to reprint."
+
+#: .\static\ui\js\tpv\mesa_acciones.js:267
+msgid "Error al intentar reimprimir el último ticket."
+msgstr "Error while trying to reprint the last ticket."
+
+#: .\static\ui\js\tpv\mesa_acciones.js:279
+msgid ""
+"¿Está seguro de que quiere borrar toda la comanda? Esta acción no se puede "
+"deshacer."
+msgstr ""
+"Are you sure you want to delete the whole order? This action cannot be "
+"undone."
+
+#: .\static\ui\js\tpv\mesa_acciones.js:300
+msgid "¿Desea separar todos los productos de la mesa?"
+msgstr "Do you want to split all products from this table?"
+
+#: .\static\ui\js\tpv\mesa_acciones.js:347
+msgid "¿Desea juntar todos los productos de la mesa?"
+msgstr "Do you want to merge all products on this table?"
+
+#: .\static\ui\js\tpv\mesa_acciones.js:456
+#: .\static\ui\js\tpv\mesa_acciones.js:458
+#: .\static\ui\js\tpv\mesa_acciones.js:482
+#: .\static\ui\js\tpv\mesa_acciones.js:484
+msgid "Seleccione primero un producto del ticket."
+msgstr "Select a product from the ticket first."
+
+#: .\static\ui\js\tpv\mesa_acciones.js:467
+msgid ""
+"Para añadir comentarios a varios artículos, estos deben ser del mismo tipo."
+msgstr "To add comments to several items, they must be the same type."
+
+#: .\static\ui\js\tpv\mesa_acciones.js:493
+msgid ""
+"Para añadir suplementos a varios artículos, estos deben ser del mismo tipo."
+msgstr "To add extras to several items, they must be the same type."
+
+#: .\static\ui\js\tpv\mesa_clientes.js:119
+msgid "Aceptar"
+msgstr "Accept"
+
+#: .\static\ui\js\tpv\mesa_clientes.js:128
+msgid "Registrar"
+msgstr "Register"
+
+#: .\static\ui\js\tpv\mesa_clientes.js:131
+msgid "Registrar y usar"
+msgstr "Register and use"
+
+#: .\static\ui\js\tpv\mesa_clientes.js:181
+msgid "Cliente registrado correctamente"
+msgstr "Customer registered successfully"
+
+#: .\static\ui\js\tpv\mesa_clientes.js:186
+msgid "Error al registrar cliente"
+msgstr "Error registering customer"
+
+#: .\static\ui\js\tpv\mesa_clientes.js:213
+msgid "Datos de Facturación"
+msgstr "Billing details"
+
+#: .\static\ui\js\tpv\mesa_clientes.js:235
+msgid "Alta Cliente"
+msgstr "New customer"
+
+#: .\static\ui\js\tpv\mesa_clientes.js:301
+msgid "Sin resultados"
+msgstr "No results"
+
+#: .\static\ui\js\tpv\mesa_cobro.js:98
+msgid "Ningún cliente seleccionado"
+msgstr "No customer selected"
+
+#: .\static\ui\js\tpv\mesa_dividir.js:135
+msgid "Cobrar"
+msgstr "Charge"
+
+#: .\static\ui\js\tpv\mesa_modificadores.js:93
+msgid "Comentarios rápidos"
+msgstr "Quick comments"
+
+#: .\static\ui\js\tpv\mesa_modificadores.js:138
+msgid "Suplementos"
+msgstr "Extras"
+
+#: .\static\ui\js\tpv\mesa_modificadores.js:224
+#: .\static\ui\js\tpv\mesa_utils.js:50
+msgid "Comentario libre"
+msgstr "Free comment"
+
+#: .\static\ui\js\tpv\mesa_modificadores.js:230
+msgid "Añadir suplemento"
+msgstr "Add extra"
+
+#: .\static\ui\js\tpv\mesa_utils.js:51
+msgid "Comodín"
+msgstr "Custom extra"
