@@ -25,6 +25,7 @@ from .mesa import (
     ComandaViewSet,
     MesaViewSet,
     LineaComandaViewSet,
+    operadores_tpv,
 )
 
 from .facturacion import (
@@ -64,6 +65,7 @@ __all__ = [
     "ComandaViewSet",
     "MesaViewSet",
     "LineaComandaViewSet",
+    "operadores_tpv",
     "FacturaViewSet",
     "EventoAuditoriaViewSet",
     "MovimientoStockViewSet",

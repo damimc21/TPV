@@ -6,7 +6,8 @@ from .views import (
     PerfilComentariosViewSet, ComentarioViewSet, PerfilSuplementosViewSet, SuplementoViewSet,
     listar_iconos, ClienteViewSet, plantilla_configurable, MovimientoStockViewSet,
     CategoriaInventarioViewSet, ProveedorViewSet, ArticuloInventarioViewSet,
-    plantillas_inventario, importar_plantilla_inventario, configuracion_update
+    plantillas_inventario, importar_plantilla_inventario, configuracion_update,
+    operadores_tpv
 )
 
 router = DefaultRouter()
@@ -33,5 +34,6 @@ urlpatterns = [
     path("plantillas-inventario/", plantillas_inventario, name="plantillas_inventario"),
     path("plantillas-inventario/importar/", importar_plantilla_inventario, name="importar_plantilla_inventario"),
     path("configuracion/update/", configuracion_update, name="configuracion_update"),
+    path("tpv/operadores/", operadores_tpv, name="operadores_tpv"),
     path("", include(router.urls)),
 ]

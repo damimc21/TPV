@@ -405,4 +405,3 @@ body:has(.modal-overlay-generic:not(.hidden)) {
     transform: translateX(22px);
     background: #2ecc71;
 }
-

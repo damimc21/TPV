@@ -255,7 +255,8 @@ async function agregarLineaComandaNormal(prod) {
 }
 
 // Sincroniza el ticket con el servidor (cola de promesas para evitar conflictos)
-async function sincronizarComanda() {
+async function sincronizarComanda(options = {}) {
+    const operador = options.operador || window.TPVOperador?.current?.() || null;
     const currentSync = syncPromise.then(async () => {
         if (!tpvState.mesaId) {
             if (!tpvState.mesaNumero) return;
@@ -293,6 +294,9 @@ async function sincronizarComanda() {
                     configuracion_json: l.configuracion_json || null
                 }))
             };
+            if (operador?.id) {
+                payload.operador_id = operador.id;
+            }
 
             const res = await fetch(`/api/mesas/${tpvState.mesaId}/enviar/`, {
                 method: 'POST',

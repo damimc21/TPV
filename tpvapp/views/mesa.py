@@ -2,8 +2,9 @@
 from django.utils import timezone
 from decimal import Decimal
 from django.db import transaction
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Q
 from django.shortcuts import render
+from django.contrib.auth import get_user_model
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -34,6 +35,68 @@ from ._helpers import (
     _forbidden_response,
     _commit_borrador_a_comanda,
 )
+
+
+def _operadores_tpv_queryset():
+    User = get_user_model()
+    return (
+        User.objects
+        .filter(is_active=True, activo=True)
+        .filter(
+            Q(is_superuser=True)
+            | Q(user_permissions__codename="visible_in_tpv", user_permissions__content_type__app_label="tpvapp")
+            | Q(groups__permissions__codename="visible_in_tpv", groups__permissions__content_type__app_label="tpvapp")
+        )
+        .distinct()
+        .order_by("first_name", "last_name", "username")
+    )
+
+
+def _serialize_operador(user):
+    nombre = user.get_full_name().strip() or user.username
+    iniciales = "".join(part[:1] for part in nombre.split()[:2]).upper() or user.username[:2].upper()
+    return {
+        "id": user.id,
+        "username": user.username,
+        "nombre": nombre,
+        "iniciales": iniciales,
+    }
+
+
+def _resolve_tpv_operator(request, *, required=False):
+    raw_id = request.data.get("operador_id") or request.data.get("operator_id")
+    if raw_id in (None, ""):
+        if required:
+            return None, Response(
+                {"detail": "Selecciona un usuario del TPV antes de continuar."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return request.user, None
+
+    try:
+        operador_id = int(raw_id)
+    except (TypeError, ValueError):
+        return None, Response(
+            {"detail": "Usuario TPV no valido."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    operador = _operadores_tpv_queryset().filter(id=operador_id).first()
+    if not operador:
+        return None, Response(
+            {"detail": "Usuario TPV no disponible para operar."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return operador, None
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def operadores_tpv(request):
+    if not has_app_permission(request.user, "access_tpv"):
+        return _forbidden_response(request, "access_tpv")
+    return Response([_serialize_operador(user) for user in _operadores_tpv_queryset()])
 
 class ComandaViewSet(viewsets.ModelViewSet):
     queryset = Comanda.objects.all()
@@ -90,6 +153,9 @@ class MesaViewSet(viewsets.ModelViewSet):
     def enviar(self, request, pk=None):
         if not has_app_permission(request.user, "manage_orders"):
             return _forbidden_response(request, "manage_orders")
+        operador, error_response = _resolve_tpv_operator(request, required=False)
+        if error_response:
+            return error_response
         """
         Commit del borrador al salir al mapa.
         - Si lineas vacío: vacía y elimina la comanda abierta (si existe)
@@ -117,7 +183,7 @@ class MesaViewSet(viewsets.ModelViewSet):
 
         try:
             with transaction.atomic():
-                comanda = _commit_borrador_a_comanda(mesa, request.user, lineas)
+                comanda = _commit_borrador_a_comanda(mesa, operador, lineas)
                 actualizar_estado_mesa(mesa)
         except Producto.DoesNotExist:
             return Response({"detail": "Producto no existe."}, status=status.HTTP_400_BAD_REQUEST)
@@ -250,6 +316,9 @@ class MesaViewSet(viewsets.ModelViewSet):
     def cobrar(self, request, pk=None):
         if not has_app_permission(request.user, "process_payments"):
             return _forbidden_response(request, "process_payments")
+        operador, error_response = _resolve_tpv_operator(request, required=True)
+        if error_response:
+            return error_response
         """
         Cierra la mesa cobrando:
         1. Sincroniza el borrador (lineas) con la comanda abierta
@@ -280,7 +349,7 @@ class MesaViewSet(viewsets.ModelViewSet):
                         .first()
                     )
                     if not comanda_origen:
-                        registrar_evento(request.user, "ERROR_COBRO_SPLIT", f"Mesa {mesa.numero}: No hay comanda abierta.")
+                        registrar_evento(operador, "ERROR_COBRO_SPLIT", f"Mesa {mesa.numero}: No hay comanda abierta.")
                         return Response({"detail": "No hay comanda abierta para dividir."}, status=status.HTTP_400_BAD_REQUEST)
 
                     # 1) Creamos una comanda temporal para el cobro
@@ -288,7 +357,7 @@ class MesaViewSet(viewsets.ModelViewSet):
                     # de 'unique_comanda_abierta_por_mesa' en models.py
                     comanda = Comanda.objects.create(
                         mesa=mesa,
-                        usuario=request.user,
+                        usuario=operador,
                         abierta_a=timezone.now(),
                         cerrada_a=timezone.now(),
                         estado=Comanda.ESTADO_PAGADA,
@@ -312,14 +381,14 @@ class MesaViewSet(viewsets.ModelViewSet):
                             linea_origen = comanda_origen.lineas.filter(producto_id=producto_id, anulado=False).first()
 
                         if not linea_origen:
-                            registrar_evento(request.user, "ERROR_COBRO_SPLIT", f"Mesa {mesa.numero}: Producto {producto_id} no encontrado.")
+                            registrar_evento(operador, "ERROR_COBRO_SPLIT", f"Mesa {mesa.numero}: Producto {producto_id} no encontrado.")
                             return Response({"detail": f"Producto {producto_id} no encontrado en la comanda."}, status=status.HTTP_400_BAD_REQUEST)
 
                         if linea_origen.cantidad < cantidad_a_pagar:
                             # Si una sola línea no llega, intentamos ver si hay más líneas del mismo producto para sumar
                             disponible_total = comanda_origen.lineas.filter(producto_id=linea_origen.producto_id, anulado=False).aggregate(total=Sum('cantidad'))['total'] or 0
                             if disponible_total < cantidad_a_pagar:
-                                registrar_evento(request.user, "ERROR_COBRO_SPLIT", f"Mesa {mesa.numero}: Stock insuficiente para producto {producto_id}.")
+                                registrar_evento(operador, "ERROR_COBRO_SPLIT", f"Mesa {mesa.numero}: Stock insuficiente para producto {producto_id}.")
                                 return Response({"detail": f"No hay suficiente cantidad del producto {linea_origen.producto_nombre}."}, status=status.HTTP_400_BAD_REQUEST)
 
                             # Si llegamos aquí es que hay varias líneas que juntas suman lo necesario
@@ -357,7 +426,7 @@ class MesaViewSet(viewsets.ModelViewSet):
                 else:
                     # 1) Sincronizar borrador completo
                     if len(lineas) > 0:
-                        comanda = _commit_borrador_a_comanda(mesa, request.user, lineas)
+                        comanda = _commit_borrador_a_comanda(mesa, operador, lineas)
                     else:
                         comanda = (
                             Comanda.objects.select_for_update()
@@ -379,7 +448,7 @@ class MesaViewSet(viewsets.ModelViewSet):
                     return Response({"detail": "No hay líneas activas para cobrar."}, status=status.HTTP_400_BAD_REQUEST)
 
                 # 2) Emitir factura
-                factura = emitir_factura(comanda, request.user, tipo_pago=metodo_pago, allow_pagada=is_split)
+                factura = emitir_factura(comanda, operador, tipo_pago=metodo_pago, allow_pagada=is_split)
 
                 # Aseguramos que la factura también tenga el cliente
                 if cliente_id:
@@ -387,7 +456,7 @@ class MesaViewSet(viewsets.ModelViewSet):
                     factura.save(update_fields=["cliente"])
 
                 # 3) Registrar pago por el total de la factura
-                registrar_pago(factura, request.user, cantidad=factura.total, metodo_pago=metodo_pago)
+                registrar_pago(factura, operador, cantidad=factura.total, metodo_pago=metodo_pago)
 
                 # 4) Calcular cambio
                 total = factura.total
@@ -523,4 +592,3 @@ class LineaComandaViewSet(viewsets.ModelViewSet):
         instance.save(update_fields=["anulado", "anulado_por", "anulado_a"])
         if instance.comanda and instance.comanda.mesa:
             actualizar_estado_mesa(instance.comanda.mesa)
-

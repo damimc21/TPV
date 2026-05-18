@@ -68,6 +68,9 @@ def _commit_borrador_a_comanda(mesa: Mesa, user, lineas_payload: list) -> Comand
                 abierta_a=timezone.now(),
                 estado=Comanda.ESTADO_ABIERTA,
             )
+        elif user and comanda.usuario_id != getattr(user, "id", None):
+            comanda.usuario = user
+            comanda.save(update_fields=["usuario"])
 
         # 2) Cargar líneas actuales y mapear por id
         actuales_qs = comanda.lineas.all()
@@ -180,4 +183,3 @@ def _commit_borrador_a_comanda(mesa: Mesa, user, lineas_payload: list) -> Comand
                 LineaComanda.objects.bulk_create(crear)
 
         return comanda
-

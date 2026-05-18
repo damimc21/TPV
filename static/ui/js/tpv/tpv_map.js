@@ -14,6 +14,32 @@
     return m ? `/${m[1]}` : "";
   }
   const BASE = basePath();
+  let operadorConfirmadoEnMapa = false;
+  let operadorPromise = null;
+
+  function cajaListaParaOperar() {
+    return window.TPV_DIA_ABIERTO === true && window.TPV_SESION_ABIERTA === true;
+  }
+
+  async function pedirOperadorMapa() {
+    if (!window.TPVOperador || !cajaListaParaOperar()) return null;
+    if (operadorConfirmadoEnMapa && window.TPVOperador.current()) {
+      return window.TPVOperador.current();
+    }
+    if (!operadorPromise) {
+      operadorPromise = window.TPVOperador.require({
+        title: "Usuario TPV",
+        hint: "Selecciona el usuario antes de entrar en una mesa.",
+        allowCancel: false
+      }).then((operador) => {
+        if (operador) operadorConfirmadoEnMapa = true;
+        return operador;
+      }).finally(() => {
+        operadorPromise = null;
+      });
+    }
+    return operadorPromise;
+  }
 
   /**
    * Define los tamaños por defecto según el tipo de elemento.
@@ -100,7 +126,9 @@
         // Acción al hacer clic: Abre la comanda de la mesa si es navegable
         if ((it.type === "mesa_normal" || it.type === "mesa_grande") && numero) {
             el.style.cursor = "pointer";
-            el.addEventListener("click", () => {
+            el.addEventListener("click", async () => {
+                const operador = await pedirOperadorMapa();
+                if (!operador && cajaListaParaOperar()) return;
                 window.location.href = `${BASE}/tpv/mesa/${encodeURIComponent(numero)}/`;
             });
         }
@@ -111,6 +139,13 @@
 
     render();
     window.addEventListener("resize", render);
+    if (cajaListaParaOperar()) {
+      setTimeout(() => { pedirOperadorMapa(); }, 0);
+    } else {
+      document.addEventListener("tpv:caja-ready", () => {
+        setTimeout(() => { pedirOperadorMapa(); }, 0);
+      }, { once: true });
+    }
 
   } catch (err) {
     mount.innerHTML = `

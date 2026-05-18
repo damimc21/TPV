@@ -138,6 +138,8 @@
       const data = await res.json();
       if (data.ok) {
         modal.classList.add('hidden');
+        window.TPV_SESION_ABIERTA = true;
+        document.dispatchEvent(new CustomEvent("tpv:caja-ready"));
       } else {
             Notify.error(data.error);
       }

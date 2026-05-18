@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_calculadora.css' %}">
 <link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_productos.css' %}">
 <link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_modales.css' %}">
+<link rel="stylesheet" href="{% static 'ui/css/tpv/tpv_operador.css' %}">
 <link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_cobro.css' %}">
 <link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_dividir.css' %}">
 <link rel="stylesheet" href="{% static 'ui/css/tpv/mesa_clientes.css' %}">
@@ -325,6 +326,33 @@
 </div>
 
 <!-- ═══ MODAL COBRO (Estilo BDP Amplio) ═══ -->
+<!-- Modal Operador TPV -->
+<div id="modalOperadorTPV" class="modal-overlay-generic modal-overlay-generic--high hidden" aria-hidden="true">
+  <div class="modal-container-generic modal-container-generic--operador">
+    <div class="modal-header-generic">
+      <h2 id="operadorModalTitle">{% trans "Seleccionar usuario" %}</h2>
+      <button type="button" class="cobro-bdp__close-btn" id="btnCerrarOperadorTPV" title="{% trans 'Cancelar' %}">&times;</button>
+    </div>
+    <div class="modal-body-generic operador-modal__body">
+      <p class="operador-modal__hint" id="operadorModalHint">
+        {% trans "Elige el usuario que realizara esta accion." %}
+      </p>
+      <div class="operador-modal__grid" id="operadorGrid"></div>
+      <div class="operador-modal__empty hidden" id="operadorEmpty">
+        {% trans "No hay usuarios visibles para operar en TPV." %}
+      </div>
+    </div>
+    <div class="modal-footer-generic">
+      <a href="{% url 'ui:index' %}" class="operador-modal__exit">
+        {% trans "Salir del TPV" %}
+      </a>
+      <button type="button" class="accion modal-btn-generic modal-btn-generic--cancel" id="btnCancelarOperadorTPV">
+        {% trans "Cancelar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="modalCobro" class="modal hidden">
   <div class="cobro-bdp">
 
@@ -753,6 +781,7 @@
 </script>
 <script src="{% static 'ui/js/tpv/mesa_utils.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_estado.js' %}"></script>
+<script src="{% static 'ui/js/tpv/mesa_operador.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_configurable.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_catalogo.js' %}"></script>
 <script src="{% static 'ui/js/tpv/mesa_ticket.js' %}"></script>

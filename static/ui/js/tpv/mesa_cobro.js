@@ -228,19 +228,27 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
             return;
         }
 
-        isProcessing = true;
-        btnConTicket.disabled = true;
-        btnSinTicket.disabled = true;
-
         if (metodoActual === "efectivo" && entregadoStr) {
             const entregadoNum = parseFloat(entregadoStr);
             if (entregadoNum < totalMesa - 0.001) {
                 await Notify.info("El importe entregado es inferior al total del documento.");
-                isProcessing = false;
-                btnConTicket.disabled = false;
-                btnSinTicket.disabled = false;
                 return;
             }
+        }
+
+        isProcessing = true;
+        btnConTicket.disabled = true;
+        btnSinTicket.disabled = true;
+
+        const operador = await window.TPVOperador?.require({
+            title: gettext("Usuario para el cobro"),
+            hint: gettext("Selecciona quien realiza este cobro.")
+        });
+        if (!operador) {
+            isProcessing = false;
+            btnConTicket.disabled = false;
+            btnSinTicket.disabled = false;
+            return;
         }
 
         const importeFinal = (metodoActual === "efectivo" && entregadoStr) ? parseFloat(entregadoStr) : totalMesa;
@@ -258,11 +266,12 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
             importe_entregado: importeFinal,
             imprimir_ticket: imprimirTicket,
             is_split: !!splittingLineas,
-            cliente_id: clienteLocal?.id
+            cliente_id: clienteLocal?.id,
+            operador_id: operador.id
         };
 
         try {
-            await sincronizarComanda();
+            await sincronizarComanda({ operador });
 
             const response = await fetch(`/api/mesas/${tpvState.mesaId}/cobrar/`, {
                 method: "POST",

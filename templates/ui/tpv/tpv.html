@@ -11,10 +11,34 @@
   <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
   <link rel="stylesheet" href="{% static 'ui/css/tpv/tpv.css' %}">
   <link rel="stylesheet" href="{% static 'ui/css/tpv/tpv_modal.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/css/tpv/tpv_operador.css' %}">
 </head>
 
 <body class="tpvScreen">
   <div id="tpvMapMount" class="tpvMount"></div>
+
+  <!-- Modal Operador TPV -->
+  <div id="modalOperadorTPV" class="modal-overlay-generic modal-overlay-generic--high hidden" aria-hidden="true">
+    <div class="modal-container-generic modal-container-generic--operador">
+      <div class="modal-header-generic">
+        <h2 id="operadorModalTitle">{% trans "Seleccionar usuario" %}</h2>
+      </div>
+      <div class="modal-body-generic operador-modal__body">
+        <p class="operador-modal__hint" id="operadorModalHint">
+          {% trans "Elige el usuario que va a operar en el TPV." %}
+        </p>
+        <div class="operador-modal__grid" id="operadorGrid"></div>
+        <div class="operador-modal__empty hidden" id="operadorEmpty">
+          {% trans "No hay usuarios visibles para operar en TPV." %}
+        </div>
+        <div class="operador-modal__actions">
+          <a href="{% url 'ui:index' %}" class="operador-modal__exit">
+            {% trans "Salir del TPV" %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal obligatorio de apertura -->
   <div id="modalCajaObligatorio" class="modal-overlay hidden">
@@ -106,6 +130,7 @@
   </script>
   <script src="{% static 'ui/js/tpv/tpv_bootstrap.js' %}"></script>
   <script src="{% static 'ui/js/tpv/tpv_modal.js' %}"></script>
+  <script src="{% static 'ui/js/tpv/mesa_operador.js' %}"></script>
   <script src="{% static 'ui/js/tpv/tpv_map.js' %}"></script>
 </body>
 </html>

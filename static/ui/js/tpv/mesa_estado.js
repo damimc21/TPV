@@ -16,7 +16,9 @@ const tpvState = {
     historyStack: [],
     historyIndex: -1,
     clienteId: null,
-    clienteNombre: null
+    clienteNombre: null,
+    operadorId: null,
+    operadorNombre: null
 };
 
 function asegurarLineaUid(linea) {

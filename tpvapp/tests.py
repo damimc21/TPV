@@ -1,4 +1,5 @@
 from decimal import Decimal
+import json
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
@@ -11,6 +12,7 @@ from .models import (
     Comanda,
     Departamento,
     EventoAuditoria,
+    Factura,
     LineaComanda,
     Mesa,
     MovimientoStock,
@@ -327,3 +329,84 @@ class ImportarPlantillaInventarioTests(InventarioTestMixin, TestCase):
         self.assertEqual(articulo.stock_minimo, Decimal("1.00"))
         self.assertEqual(articulo.producto_vinculado, self.producto)
         self.assertTrue(articulo.auto_descontar)
+
+
+class TpvOperadorSelectionTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.actor = User.objects.create_user(username="admin_tpv", password="pass1234")
+        self.operador = User.objects.create_user(
+            username="camarero_visible",
+            password="pass1234",
+            first_name="Camarero",
+            last_name="Visible",
+        )
+        self.oculto = User.objects.create_user(username="usuario_oculto", password="pass1234")
+
+        self._grant(self.actor, "access_tpv", "process_payments")
+        self._grant(self.operador, "access_tpv", "visible_in_tpv")
+
+        self.departamento = Departamento.objects.create(nombre="Barra")
+        self.producto = Producto.objects.create(
+            nombre="Cafe",
+            precio=Decimal("1.50"),
+            departamento=self.departamento,
+        )
+        self.mesa = Mesa.objects.create(numero=7, nombre="MESA 7")
+        self.client.login(username="admin_tpv", password="pass1234")
+
+    def _grant(self, user, *codes):
+        perms = Permission.objects.filter(
+            content_type__app_label="tpvapp",
+            codename__in=list(codes),
+        )
+        user.user_permissions.add(*list(perms))
+
+    def _payload_cobro(self, **extra):
+        payload = {
+            "lineas": [
+                {
+                    "producto": self.producto.id,
+                    "producto_nombre": self.producto.nombre,
+                    "cantidad": 1,
+                    "precio_unitario": str(self.producto.precio),
+                    "descuento": 0,
+                }
+            ],
+            "metodo_pago": "efectivo",
+            "importe_entregado": "1.50",
+        }
+        payload.update(extra)
+        return payload
+
+    def test_operadores_tpv_lista_solo_usuarios_visibles(self):
+        resp = self.client.get("/api/tpv/operadores/")
+
+        self.assertEqual(resp.status_code, 200)
+        ids = {item["id"] for item in resp.json()}
+        self.assertIn(self.operador.id, ids)
+        self.assertNotIn(self.oculto.id, ids)
+
+    def test_cobrar_exige_operador_tpv(self):
+        resp = self.client.post(
+            f"/api/mesas/{self.mesa.id}/cobrar/",
+            data=json.dumps(self._payload_cobro()),
+            content_type="application/json",
+        )
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn("Selecciona un usuario", resp.json()["detail"])
+        self.assertFalse(Factura.objects.exists())
+
+    def test_cobrar_atribuye_factura_al_operador_seleccionado(self):
+        resp = self.client.post(
+            f"/api/mesas/{self.mesa.id}/cobrar/",
+            data=json.dumps(self._payload_cobro(operador_id=self.operador.id)),
+            content_type="application/json",
+        )
+
+        self.assertEqual(resp.status_code, 200)
+        factura = Factura.objects.get()
+        comanda = Comanda.objects.get()
+        self.assertEqual(factura.emitida_por, self.operador)
+        self.assertEqual(comanda.usuario, self.operador)
