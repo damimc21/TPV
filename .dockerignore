@@ -1,0 +1,29 @@
+# Entorno virtual
+venv/
+.venv/
+
+# Base de datos local
+db.sqlite3
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Variables de entorno locales
+.env
+.env.*
+
+# Archivos de desarrollo
+*.log
+.DS_Store
+
+# Terraform
+infra/
+
+# Estáticos generados
+staticfiles/
+
+# Backups
+backups/

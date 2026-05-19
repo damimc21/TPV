@@ -1,0 +1,87 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tpv-migrate
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+spec:
+  ttlSecondsAfterFinished: 120
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: 705775032253.dkr.ecr.us-east-1.amazonaws.com/tpv:latest
+          command: ["python", "manage.py", "migrate", "--noinput"]
+          env:
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tpv-secrets
+                  key: django-secret-key
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tpv-secrets
+                  key: database-url
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "*"
+            - name: DJANGO_DEBUG
+              value: "false"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tpv-app
+  labels:
+    app: tpv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tpv
+  template:
+    metadata:
+      labels:
+        app: tpv
+    spec:
+      containers:
+        - name: tpv
+          image: 705775032253.dkr.ecr.us-east-1.amazonaws.com/tpv:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tpv-secrets
+                  key: django-secret-key
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tpv-secrets
+                  key: database-url
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "*"
+            - name: DJANGO_DEBUG
+              value: "false"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tpv-service
+spec:
+  selector:
+    app: tpv
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer

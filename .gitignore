@@ -92,3 +92,13 @@ tmp*/
 test_claude_write.txt
 preview_icons.html
 reset_venv.ps1
+
+# --- Terraform ---
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/terraform.tfvars
+*.tfstate
+*.tfstate.backup
+
+# --- Kubernetes ---
+k8s/secrets.yaml
