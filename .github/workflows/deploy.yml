@@ -1,0 +1,52 @@
+name: Deploy a AWS
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar credenciales AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Autenticar en ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Construir y subir imagen Docker
+        env:
+          ECR_REGISTRY: 705775032253.dkr.ecr.us-east-1.amazonaws.com
+          ECR_REPOSITORY: tpv
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Conectar kubectl al cluster EKS
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name tpv-cluster
+
+      - name: Ejecutar migraciones
+        run: |
+          kubectl delete job tpv-migrate --ignore-not-found
+          kubectl apply -f k8s/deployment.yaml
+          kubectl wait --for=condition=complete job/tpv-migrate --timeout=120s
+
+      - name: Reiniciar deployment
+        run: |
+          kubectl rollout restart deployment/tpv-app
+          kubectl rollout status deployment/tpv-app
