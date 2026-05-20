@@ -3,10 +3,13 @@
 # Uso: .\scripts\destroy.ps1
 # ============================================================
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 
 Write-Host "== [1/4] Eliminando recursos de Kubernetes..." -ForegroundColor Yellow
-kubectl delete -f k8s/deployment.yaml --ignore-not-found
+kubectl delete -f k8s/deployment.yaml --ignore-not-found 2>$null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "   Cluster no disponible o recursos ya eliminados, continuando..." -ForegroundColor Gray
+}
 
 Write-Host "== [2/4] Esperando a que el Load Balancer se elimine completamente..." -ForegroundColor Yellow
 $maxWait = 300
@@ -38,14 +41,12 @@ if ($vpcId -and $vpcId -ne "None") {
     }
 }
 
-Write-Host "== [4/6] Vaciando repositorio ECR..." -ForegroundColor Yellow
-$images = aws ecr list-images --repository-name tpv --query "imageIds[*]" --output json 2>$null | ConvertFrom-Json
-if ($images -and $images.Count -gt 0) {
-    $imagesJson = $images | ConvertTo-Json -Compress
-    aws ecr batch-delete-image --repository-name tpv --image-ids $imagesJson | Out-Null
-    Write-Host "   $($images.Count) imagen(es) eliminada(s) de ECR" -ForegroundColor Gray
+Write-Host "== [4/6] Eliminando repositorio ECR..." -ForegroundColor Yellow
+aws ecr delete-repository --repository-name tpv --force 2>$null | Out-Null
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "   ECR eliminado" -ForegroundColor Gray
 } else {
-    Write-Host "   ECR ya estaba vacio" -ForegroundColor Gray
+    Write-Host "   ECR ya estaba eliminado o no existe, continuando..." -ForegroundColor Gray
 }
 
 Write-Host "== [5/6] Bucket S3 de datos (backups/logs/informes) se conserva entre sesiones." -ForegroundColor Gray
