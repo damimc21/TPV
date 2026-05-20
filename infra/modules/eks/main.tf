@@ -38,6 +38,23 @@ resource "aws_eks_cluster" "main" {
   }
 }
 
+resource "aws_launch_template" "nodes" {
+  name_prefix = "${var.project_name}-node-"
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "optional"
+    http_put_response_hop_limit = 2
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "${var.project_name}-node"
+    }
+  }
+}
+
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = "${var.project_name}-nodes"
@@ -45,6 +62,11 @@ resource "aws_eks_node_group" "main" {
   subnet_ids      = var.public_subnet_ids
   capacity_type   = "SPOT"
   instance_types  = ["t3.medium"]
+
+  launch_template {
+    id      = aws_launch_template.nodes.id
+    version = aws_launch_template.nodes.latest_version
+  }
 
   scaling_config {
     desired_size = 1

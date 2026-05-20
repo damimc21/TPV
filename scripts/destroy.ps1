@@ -38,9 +38,25 @@ if ($vpcId -and $vpcId -ne "None") {
     }
 }
 
-Write-Host "== [4/4] Destruyendo infraestructura Terraform..." -ForegroundColor Yellow
+Write-Host "== [4/6] Vaciando repositorio ECR..." -ForegroundColor Yellow
+$images = aws ecr list-images --repository-name tpv --query "imageIds[*]" --output json 2>$null | ConvertFrom-Json
+if ($images -and $images.Count -gt 0) {
+    $imagesJson = $images | ConvertTo-Json -Compress
+    aws ecr batch-delete-image --repository-name tpv --image-ids $imagesJson | Out-Null
+    Write-Host "   $($images.Count) imagen(es) eliminada(s) de ECR" -ForegroundColor Gray
+} else {
+    Write-Host "   ECR ya estaba vacio" -ForegroundColor Gray
+}
+
+Write-Host "== [5/6] Bucket S3 de datos (backups/logs/informes) se conserva entre sesiones." -ForegroundColor Gray
+
+Write-Host "== [6/6] Destruyendo infraestructura Terraform (excepto S3)..." -ForegroundColor Yellow
 Set-Location infra
-terraform destroy -auto-approve
+terraform destroy -auto-approve `
+    -target "module.eks" `
+    -target "module.rds" `
+    -target "module.ecr" `
+    -target "module.vpc"
 Set-Location ..
 
 Write-Host ""
