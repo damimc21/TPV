@@ -5,6 +5,8 @@ import os
 import shutil
 import json
 import re
+import subprocess
+import sys
 import zipfile
 import xml.etree.ElementTree as ET
 from functools import wraps
@@ -28,6 +30,7 @@ from tpvapp.models import (
 )
 from tpvapp.auditoria import log_info, log_warn, log_error, registrar
 from tpvapp.permissions import has_app_permission
+from tpvapp import s3_utils
 from ._helpers import (
     User,
     BACKUP_DIR,
@@ -38,37 +41,94 @@ from ._helpers import (
     _require_manage_files,
 )
 
+
+def _es_sqlite():
+    """Devuelve True si la base de datos activa es SQLite."""
+    engine = settings.DATABASES["default"].get("ENGINE", "")
+    return "sqlite3" in engine
+
+
+def _crear_backup_sqlite(dest: Path):
+    """Copia el archivo SQLite al destino."""
+    db_path = settings.DATABASES["default"]["NAME"]
+    shutil.copy2(str(db_path), str(dest))
+    return dest.stat().st_size
+
+
+def _crear_backup_dumpdata(dest: Path):
+    """
+    Usa manage.py dumpdata para crear un JSON con todos los datos.
+    Funciona con cualquier motor de base de datos (MySQL, PostgreSQL, etc.).
+    El archivo resultante se puede restaurar con loaddata.
+    """
+    result = subprocess.run(
+        [sys.executable, "manage.py", "dumpdata", "--natural-foreign",
+         "--natural-primary", "--indent", "2"],
+        capture_output=True,
+        text=True,
+        cwd=str(settings.BASE_DIR),
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"dumpdata fallo: {result.stderr[:500]}")
+    dest.write_text(result.stdout, encoding="utf-8")
+    return dest.stat().st_size
+
+
 @login_required
 @_require_manage_files
 @require_POST
 def backup_crear(request):
-    """Crea una copia de seguridad de la base de datos SQLite."""
+    """
+    Crea una copia de seguridad de la base de datos.
+
+    - En local (SQLite): copia el archivo .sqlite3.
+    - En produccion (MySQL/RDS): usa dumpdata para crear un JSON restaurable.
+
+    En ambos casos, si hay bucket S3 configurado, sube el archivo al bucket
+    bajo el prefijo backups/ ademas de guardarlo en local.
+    """
     try:
         BACKUP_DIR.mkdir(parents=True, exist_ok=True)
         timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"backup_{timestamp}.sqlite3"
-        dest = BACKUP_DIR / filename
 
-        # Copiar el archivo de base de datos
-        db_path = settings.DATABASES['default']['NAME']
-        shutil.copy2(str(db_path), str(dest))
+        if _es_sqlite():
+            filename = f"backup_{timestamp}.sqlite3"
+            dest = BACKUP_DIR / filename
+            tamano = _crear_backup_sqlite(dest)
+            notas = "Backup SQLite local"
+        else:
+            filename = f"backup_{timestamp}.json"
+            dest = BACKUP_DIR / filename
+            tamano = _crear_backup_dumpdata(dest)
+            notas = "Backup dumpdata (MySQL/RDS)"
 
-        tamano = dest.stat().st_size
+        # Subir a S3 si esta configurado
+        s3_key = f"{s3_utils.S3_PREFIX_BACKUPS}{filename}"
+        subido_s3 = s3_utils.upload_file(dest, s3_key)
+        if subido_s3:
+            notas += f" | S3: {s3_key}"
 
         # Registrar en BD
         BackupRegistro.objects.create(
             nombre_archivo=filename,
             ruta=str(dest),
             tamano_bytes=tamano,
-            tipo='manual',
+            tipo="manual",
             creado_por=request.user,
+            notas=notas,
         )
         log_info(
             "ficheros.backups",
-            f"usuario={_actor_username(request)} accion=crear_backup archivo={filename} tamano_bytes={tamano}",
+            f"usuario={_actor_username(request)} accion=crear_backup archivo={filename} "
+            f"tamano_bytes={tamano} s3={subido_s3}",
         )
 
-        return JsonResponse({"ok": True, "nombre": filename, "tamano": tamano})
+        return JsonResponse({
+            "ok": True,
+            "nombre": filename,
+            "tamano": tamano,
+            "s3": subido_s3,
+        })
     except Exception as e:
         log_error(
             "ficheros.backups",

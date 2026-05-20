@@ -254,3 +254,10 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
 ]
+
+# Amazon S3
+# En produccion se rellena con la variable de entorno AWS_STORAGE_BUCKET_NAME.
+# En local no se define y todas las funciones de s3_utils devuelven False/[]
+# sin lanzar errores, por lo que el flujo de desarrollo no se ve afectado.
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "tpv-media-705775032253" if not DEBUG else "")
+AWS_S3_REGION_NAME = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")

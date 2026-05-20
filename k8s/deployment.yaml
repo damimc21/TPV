@@ -87,3 +87,42 @@ spec:
       port: 80
       targetPort: 8000
   type: LoadBalancer
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tpv-exportar-s3
+spec:
+  # Todos los dias a las 02:00 UTC (04:00 hora Madrid en verano)
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: exportar-s3
+              image: 705775032253.dkr.ecr.us-east-1.amazonaws.com/tpv:latest
+              command: ["python", "manage.py", "exportar_s3"]
+              env:
+                - name: DJANGO_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: tpv-secrets
+                      key: django-secret-key
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: tpv-secrets
+                      key: database-url
+                - name: DJANGO_ALLOWED_HOSTS
+                  value: "*"
+                - name: DJANGO_DEBUG
+                  value: "false"
+                - name: AWS_STORAGE_BUCKET_NAME
+                  value: "tpv-media-705775032253"
+                - name: AWS_DEFAULT_REGION
+                  value: "us-east-1"

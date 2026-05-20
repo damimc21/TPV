@@ -28,6 +28,7 @@ from tpvapp.models import (
 )
 from tpvapp.auditoria import log_info, log_warn, log_error, registrar
 from tpvapp.permissions import has_app_permission
+from tpvapp import s3_utils
 from ._helpers import (
     User,
     BACKUP_DIR,
@@ -98,7 +99,12 @@ def informes_rango(request):
 @_require_manage_files
 @require_GET
 def exportar_informe(request, tipo):
-    """Genera y descarga o previsualiza un informe según el tipo solicitado."""
+    """
+    Genera y descarga o previsualiza un informe segun el tipo solicitado.
+
+    Ademas de devolver el archivo al navegador, guarda una copia en S3
+    de forma asincrona (sin bloquear la descarga) bajo el prefijo informes/.
+    """
     desde_str = request.GET.get("desde")
     hasta_str = request.GET.get("hasta")
     formato = request.GET.get("format", "csv")
@@ -124,10 +130,46 @@ def exportar_informe(request, tipo):
 
     if formato == "json":
         return JsonResponse({"headers": headers, "rows": rows})
+
+    timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
+
     if formato == "xlsx":
-        return _xlsx_response(f"informe_{tipo}.xlsx", headers, rows)
+        filename = f"informe_{tipo}_{timestamp}.xlsx"
+        response = _xlsx_response(filename, headers, rows)
+        # Guardar copia en S3 de forma asincrona
+        s3_key = f"{s3_utils.S3_PREFIX_INFORMES}{filename}"
+        # Generamos el contenido xlsx en memoria para subirlo
+        import openpyxl
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = tipo.capitalize()
+        ws.append(headers)
+        for row in rows:
+            ws.append(row)
+        buf = io.BytesIO()
+        wb.save(buf)
+        s3_utils.upload_bytes_async(
+            buf.getvalue(),
+            s3_key,
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        return response
     else:
-        return _csv_response(f"informe_{tipo}.csv", headers, rows)
+        filename = f"informe_{tipo}_{timestamp}.csv"
+        response = _csv_response(filename, headers, rows)
+        # Guardar copia en S3 de forma asincrona
+        s3_key = f"{s3_utils.S3_PREFIX_INFORMES}{filename}"
+        buf = io.StringIO()
+        import csv as csv_mod
+        writer = csv_mod.writer(buf)
+        writer.writerow(headers)
+        writer.writerows(rows)
+        s3_utils.upload_bytes_async(
+            buf.getvalue().encode("utf-8"),
+            s3_key,
+            content_type="text/csv; charset=utf-8",
+        )
+        return response
 
 
 def _informe_ventas(desde, hasta):
