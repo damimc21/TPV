@@ -39,6 +39,9 @@ secrets.json
 secrets.yaml
 secrets.yml
 
+scripts/update-credentials.ps1
+scripts/deploy.ps1
+
 # --- Logs ---
 *.log
 logs/

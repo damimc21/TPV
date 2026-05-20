@@ -62,7 +62,9 @@ spec:
                   name: tpv-secrets
                   key: database-url
             - name: DJANGO_ALLOWED_HOSTS
-              value: "*"
+              value: "damiantpv.online,*"
+            - name: DJANGO_CSRF_TRUSTED_ORIGINS
+              value: "https://damiantpv.online"
             - name: DJANGO_DEBUG
               value: "false"
           resources:
