@@ -216,3 +216,67 @@ def enviar_factura_email(factura) -> bool:
     except Exception as e:
         logger.error("email_utils: error enviando email factura %s via Resend: %s", factura.id, e)
         return False
+
+
+def enviar_factura_email_a_direccion(factura, email_destino: str) -> bool:
+    """
+    Envía la factura a una dirección de email explícita (cliente ocasional sin FK en BD).
+
+    Si EMAIL_DEMO_RECIPIENT está configurado, redirige igual que el flujo normal.
+    Devuelve True si se envió correctamente, False en caso contrario.
+    """
+    import os
+    try:
+        import resend
+    except ImportError:
+        logger.warning("email_utils: resend no está instalado, no se envía email")
+        return False
+
+    if not email_destino:
+        logger.warning("email_utils: enviar_factura_email_a_direccion llamado sin email_destino")
+        return False
+
+    api_key = os.environ.get("RESEND_API_KEY", "")
+    if not api_key:
+        logger.warning("email_utils: RESEND_API_KEY no configurada, no se envía email")
+        return False
+
+    resend.api_key = api_key
+
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "onboarding@resend.dev")
+    sandbox_recipient = getattr(settings, "EMAIL_DEMO_RECIPIENT", "")
+    to_email = sandbox_recipient if sandbox_recipient else email_destino
+
+    # Generar PDF
+    try:
+        pdf_bytes = generar_pdf_factura(factura)
+    except Exception as e:
+        logger.error("email_utils: error generando PDF para factura %s: %s", factura.id, e)
+        return False
+
+    cuerpo_html = f"""
+    <p>Hola,</p>
+    <p>Adjuntamos la factura correspondiente a tu visita del
+    <strong>{factura.emitida_a.strftime('%d/%m/%Y a las %H:%M')}</strong>.</p>
+    <p><strong>Total: {factura.total:.2f} €</strong></p>
+    <p>Muchas gracias por tu visita.</p>
+    """
+    if sandbox_recipient and sandbox_recipient != email_destino:
+        cuerpo_html += f"<p><small>[MODO DEMO: email dirigido originalmente a {email_destino}]</small></p>"
+
+    try:
+        resend.Emails.send({
+            "from": from_email,
+            "to": [to_email],
+            "subject": f"Tu factura #{factura.id:06d}",
+            "html": cuerpo_html,
+            "attachments": [{
+                "filename": f"factura_{factura.id:06d}.pdf",
+                "content": list(pdf_bytes),
+            }],
+        })
+        logger.info("email_utils: factura %s (ocasional) enviada a %s via Resend", factura.id, to_email)
+        return True
+    except Exception as e:
+        logger.error("email_utils: error enviando email factura %s (ocasional) via Resend: %s", factura.id, e)
+        return False

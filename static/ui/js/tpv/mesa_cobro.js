@@ -118,9 +118,9 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
 
     // Escuchar selección de cliente
     window.addEventListener("clienteSeleccionado", (e) => {
-        const { id, nombre, flow } = e.detail;
+        const { id, nombre, flow, data: clienteData } = e.detail;
         if (flow === "cobro") {
-            clienteLocal = { id, nombre };
+            clienteLocal = { id, nombre, email: clienteData?.email || null };
             if (labelClienteCobro) labelClienteCobro.textContent = nombre;
         } else {
             tpvState.clienteId = id;
@@ -267,6 +267,7 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
             imprimir_ticket: imprimirTicket,
             is_split: !!splittingLineas,
             cliente_id: clienteLocal?.id,
+            cliente_email: clienteLocal?.email || null,
             operador_id: operador.id
         };
 

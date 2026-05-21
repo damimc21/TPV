@@ -337,6 +337,8 @@ class MesaViewSet(viewsets.ModelViewSet):
             cliente_id = int(cliente_id) if cliente_id else None
         except (ValueError, TypeError):
             cliente_id = None
+        # Email del cliente ocasional (no registrado en BD)
+        cliente_email_ocasional = request.data.get("cliente_email", None) or None
 
         if metodo_pago not in ("efectivo", "tarjeta"):
             return Response({"detail": "metodo_pago debe ser 'efectivo' o 'tarjeta'."}, status=status.HTTP_400_BAD_REQUEST)
@@ -462,6 +464,22 @@ class MesaViewSet(viewsets.ModelViewSet):
 
                 # 3) Registrar pago por el total de la factura
                 registrar_pago(factura, operador, cantidad=factura.total, metodo_pago=metodo_pago)
+
+                # Si es cliente ocasional (sin FK) pero nos dio su email, enviar factura en bg
+                if not cliente_id and cliente_email_ocasional:
+                    import threading
+                    factura_id = factura.id
+                    email_dst = cliente_email_ocasional
+                    def _enviar_ocasional():
+                        try:
+                            from tpvapp.models import Factura as _Factura
+                            from tpvapp.email_utils import generar_pdf_factura, enviar_factura_email_a_direccion
+                            f = _Factura.objects.get(id=factura_id)
+                            enviar_factura_email_a_direccion(f, email_dst)
+                        except Exception as exc:
+                            import logging
+                            logging.getLogger(__name__).error("Error enviando email ocasional factura %s: %s", factura_id, exc)
+                    threading.Thread(target=_enviar_ocasional, daemon=True).start()
 
                 # 4) Calcular cambio
                 total = factura.total
