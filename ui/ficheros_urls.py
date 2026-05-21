@@ -9,7 +9,9 @@ urlpatterns = [
     # === BACKUPS ===
     path("backup/crear/", ficheros_api.backup_crear, name="ficheros_backup_crear"),
     path("backup/descargar/<str:filename>/", ficheros_api.backup_descargar, name="ficheros_backup_descargar"),
+    path("backup/descargar-s3/", ficheros_api.backup_descargar_s3, name="ficheros_backup_descargar_s3"),
     path("backup/restaurar/", ficheros_api.backup_restaurar, name="ficheros_backup_restaurar"),
+    path("backup/restaurar-s3/", ficheros_api.backup_restaurar_s3, name="ficheros_backup_restaurar_s3"),
 
     # === IMPORTAR ===
     path("importar-plantilla/", ficheros_api.importar_plantilla, name="ficheros_importar_plantilla"),

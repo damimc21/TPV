@@ -122,6 +122,26 @@ def list_files(prefix: str) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# Descarga
+# ---------------------------------------------------------------------------
+
+def download_bytes(s3_key: str) -> bytes | None:
+    """
+    Descarga el contenido de un objeto S3 como bytes.
+    Devuelve None si no hay bucket configurado o si ocurre un error.
+    """
+    bucket = _bucket()
+    if not bucket:
+        return None
+    try:
+        response = _client().get_object(Bucket=bucket, Key=s3_key)
+        return response["Body"].read()
+    except (BotoCoreError, ClientError) as e:
+        logger.error("s3_utils: error descargando %s: %s", s3_key, e)
+        return None
+
+
+# ---------------------------------------------------------------------------
 # URLs prefirmadas (para descarga sin hacer publico el bucket)
 # ---------------------------------------------------------------------------
 

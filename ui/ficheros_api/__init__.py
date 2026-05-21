@@ -19,7 +19,9 @@ from ._helpers import (
 from .backups import (
     backup_crear,
     backup_descargar,
+    backup_descargar_s3,
     backup_restaurar,
+    backup_restaurar_s3,
 )
 
 from .importacion import (

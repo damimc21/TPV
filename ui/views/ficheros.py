@@ -63,18 +63,72 @@ def ficheros_exportar(request):
     return render(request, "ui/ficheros/exportar.html")
 
 
+def _tamano_legible(bytes_size):
+    """Formatea un tamaño en bytes a texto legible (KB, MB...)."""
+    if bytes_size is None:
+        return "—"
+    for unit in ("B", "KB", "MB", "GB"):
+        if bytes_size < 1024:
+            return f"{bytes_size:.1f} {unit}"
+        bytes_size /= 1024
+    return f"{bytes_size:.1f} TB"
+
+
 @login_required
 def ficheros_backups(request):
     _require_permission_or_403(request, "manage_files")
     from tpvapp.models import BackupRegistro, ConfiguracionTPV
-    backups = BackupRegistro.objects.all()[:50]
-    
-    # Obtener configuración de autobackup
+    from tpvapp import s3_utils
+    from datetime import timezone as dt_timezone
+
+    # Backups registrados en BD
+    db_backups = BackupRegistro.objects.order_by("-fecha")[:50]
+    db_nombres = {b.nombre_archivo for b in db_backups}
+
+    # Convertir a dicts uniformes
+    backups_lista = []
+    for b in db_backups:
+        backups_lista.append({
+            "fecha": b.fecha,
+            "nombre_archivo": b.nombre_archivo,
+            "tamano_legible": b.tamano_legible,
+            "tipo": b.tipo,
+            "tipo_display": b.get_tipo_display(),
+            "solo_s3": False,
+            "s3_key": None,
+        })
+
+    # Backups en S3 que no están en BD (p.ej. tras un deploy fresco)
+    s3_files = s3_utils.list_files(s3_utils.S3_PREFIX_BACKUPS)
+    for f in s3_files:
+        nombre = f["key"].split("/")[-1]
+        if not nombre or nombre in db_nombres:
+            continue
+        try:
+            fecha = datetime.fromisoformat(f["last_modified"])
+            if fecha.tzinfo is not None:
+                fecha = fecha.astimezone(dt_timezone.utc).replace(tzinfo=None)
+        except (ValueError, KeyError):
+            fecha = datetime.min
+        backups_lista.append({
+            "fecha": fecha,
+            "nombre_archivo": nombre,
+            "tamano_legible": _tamano_legible(f.get("size")),
+            "tipo": "s3",
+            "tipo_display": "S3",
+            "solo_s3": True,
+            "s3_key": f["key"],
+        })
+
+    # Ordenar por fecha descendente
+    backups_lista.sort(key=lambda x: x["fecha"], reverse=True)
+
+    # Configuración de autobackup
     auto_cfg = ConfiguracionTPV.objects.filter(clave="backup_auto_intervalo").first()
-    auto_intervalo = auto_cfg.valor if auto_cfg else "0"  # 0 = deshabilitado
-    
+    auto_intervalo = auto_cfg.valor if auto_cfg else "0"
+
     return render(request, "ui/ficheros/backups.html", {
-        "backups": backups,
+        "backups": backups_lista,
         "auto_intervalo": auto_intervalo,
     })
 

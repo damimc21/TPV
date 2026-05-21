@@ -103,6 +103,61 @@
         window.location.href = `/api/ficheros/backup/descargar/${encodeURIComponent(filename)}/`;
     };
 
+    window.descargarBackupS3 = async (s3Key) => {
+        try {
+            const resp = await fetch("/api/ficheros/backup/descargar-s3/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+                body: JSON.stringify({ s3_key: s3Key }),
+            });
+            const data = await resp.json();
+            if (data.ok && data.url) {
+                window.location.href = data.url;
+            } else {
+                await Notify.error(`${gettext("Error")}: ${data.error}`);
+            }
+        } catch (e) {
+            await Notify.error(gettext("Error de conexión"));
+        }
+    };
+
+    window.restaurarBackupS3 = async (s3Key) => {
+        const firstConfirm = await Notify.confirmDanger(
+            `${gettext("Esto restaurará la base de datos desde el backup de S3")}.\n\n${gettext("¿Estás seguro?")}`,
+            { title: gettext("Restaurar desde S3") }
+        );
+        if (!firstConfirm) return;
+
+        const secondConfirm = await Notify.confirmDanger(
+            `${gettext("Confirmación final")}: ${gettext("Esta operación es irreversible.")}\n\n${gettext("¿Continuar?")}`,
+            { title: gettext("Confirmación final") }
+        );
+        if (!secondConfirm) return;
+
+        try {
+            const resp = await fetch("/api/ficheros/backup/restaurar-s3/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+                body: JSON.stringify({ s3_key: s3Key }),
+            });
+            const data = await resp.json();
+            if (data.ok) {
+                await Notify.success(gettext("Backup restaurado correctamente. La página se recargará."), { title: gettext("Backup") });
+                location.reload();
+            } else {
+                await Notify.error(`${gettext("Error")}: ${data.error}`);
+            }
+        } catch (e) {
+            await Notify.error(gettext("Error de conexión"));
+        }
+    };
+
     window.restaurarBackup = async (filename) => {
         const firstConfirm = await Notify.confirmDanger(
             `${gettext("Atención")}: ${gettext("Esto restaurará la base de datos al estado del backup")} "${filename}".\n\n${gettext("Se creará un backup de seguridad del estado actual antes de restaurar.")}\n\n${gettext("¿Estás seguro?")}`,

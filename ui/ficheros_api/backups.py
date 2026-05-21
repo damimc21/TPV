@@ -140,6 +140,80 @@ def backup_crear(request):
 
 @login_required
 @_require_manage_files
+@require_POST
+def backup_descargar_s3(request):
+    """Devuelve una URL prefirmada de S3 para descargar un backup directamente."""
+    try:
+        data = json.loads(request.body)
+        s3_key = data.get("s3_key", "").strip()
+        if not s3_key or not s3_key.startswith(s3_utils.S3_PREFIX_BACKUPS):
+            return JsonResponse({"ok": False, "error": "s3_key inválida"}, status=400)
+
+        url = s3_utils.presigned_url(s3_key, expiration=300)
+        if not url:
+            return JsonResponse({"ok": False, "error": "No se pudo generar la URL de descarga"}, status=500)
+
+        return JsonResponse({"ok": True, "url": url})
+    except Exception as e:
+        return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+
+@login_required
+@_require_manage_files
+@require_POST
+def backup_restaurar_s3(request):
+    """
+    Descarga un backup de S3 y lo restaura con loaddata.
+    Solo funciona con backups JSON (dumpdata). Pensado para restaurar
+    tras un deploy fresco en producción.
+    """
+    import tempfile
+    try:
+        data = json.loads(request.body)
+        s3_key = data.get("s3_key", "").strip()
+        if not s3_key or not s3_key.startswith(s3_utils.S3_PREFIX_BACKUPS):
+            return JsonResponse({"ok": False, "error": "s3_key inválida"}, status=400)
+        if not s3_key.endswith(".json"):
+            return JsonResponse({"ok": False, "error": "Solo se pueden restaurar backups JSON"}, status=400)
+
+        contenido = s3_utils.download_bytes(s3_key)
+        if contenido is None:
+            return JsonResponse({"ok": False, "error": "No se pudo descargar el backup de S3"}, status=500)
+
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode="wb") as f:
+            f.write(contenido)
+            tmp_path = f.name
+
+        result = subprocess.run(
+            [sys.executable, "manage.py", "loaddata", tmp_path],
+            capture_output=True, text=True, cwd=str(settings.BASE_DIR),
+        )
+
+        import os
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+        if result.returncode != 0:
+            raise RuntimeError(f"loaddata falló: {result.stderr[:500]}")
+
+        log_info(
+            "ficheros.backups",
+            f"usuario={_actor_username(request)} accion=restaurar_desde_s3 s3_key={s3_key}",
+        )
+        return JsonResponse({"ok": True})
+    except Exception as e:
+        log_error(
+            "ficheros.backups",
+            f"usuario={_actor_username(request)} accion=restaurar_s3_error",
+            exc=e,
+        )
+        return JsonResponse({"ok": False, "error": str(e)}, status=500)
+
+
+@login_required
+@_require_manage_files
 @require_GET
 def backup_descargar(request, filename):
     """Descarga un archivo de backup."""

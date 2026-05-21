@@ -12,7 +12,12 @@ spec:
       containers:
         - name: migrate
           image: 705775032253.dkr.ecr.us-east-1.amazonaws.com/tpv:latest
-          command: ["python", "manage.py", "migrate", "--noinput"]
+          command:
+            - sh
+            - -c
+            - |
+              python manage.py migrate --noinput &&
+              python manage.py autorestaurar_s3
           env:
             - name: DJANGO_SECRET_KEY
               valueFrom:
@@ -28,6 +33,10 @@ spec:
               value: "*"
             - name: DJANGO_DEBUG
               value: "false"
+            - name: AWS_STORAGE_BUCKET_NAME
+              value: "tpv-media-705775032253"
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
 ---
 apiVersion: apps/v1
 kind: Deployment

@@ -20,3 +20,9 @@ Pillow==11.0.0
 
 # --- Hash Passwords ---
 argon2-cffi==23.1.0
+
+# --- Archivos estaticos en produccion ---
+whitenoise==6.9.0
+
+# --- AWS S3 ---
+boto3==1.38.0

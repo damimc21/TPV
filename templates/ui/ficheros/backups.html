@@ -89,15 +89,24 @@
             <td>{{ b.fecha|date:"d/m/Y H:i" }}</td>
             <td class="fich-cell-filename">{{ b.nombre_archivo }}</td>
             <td>{{ b.tamano_legible }}</td>
-            <td><span class="fich-type-pill fich-type-pill--{{ b.tipo }}">{{ b.get_tipo_display }}</span></td>
+            <td><span class="fich-type-pill fich-type-pill--{{ b.tipo }}">{{ b.tipo_display }}</span></td>
             <td>
               <div class="fich-cell-actions">
+                {% if b.solo_s3 %}
+                <button class="btn btn--mini btn--ghost" onclick="descargarBackupS3('{{ b.s3_key }}')" title="{% trans 'Descargar desde S3' %}">
+                  <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="14" class="svg-icon" alt="">
+                </button>
+                <button class="btn btn--mini btn--danger" onclick="restaurarBackupS3('{{ b.s3_key }}')" title="{% trans 'Restaurar desde S3' %}">
+                  <img src="{% static 'ui/img/iconos/refresh-ccw.svg' %}" width="14" class="svg-icon" alt="">
+                </button>
+                {% else %}
                 <button class="btn btn--mini btn--ghost" onclick="descargarBackup('{{ b.nombre_archivo }}')" title="{% trans 'Descargar' %}">
                   <img src="{% static 'ui/img/iconos/log-out.svg' %}" width="14" class="svg-icon" alt="">
                 </button>
                 <button class="btn btn--mini btn--danger" onclick="restaurarBackup('{{ b.nombre_archivo }}')" title="{% trans 'Restaurar' %}">
                   <img src="{% static 'ui/img/iconos/refresh-ccw.svg' %}" width="14" class="svg-icon" alt="">
                 </button>
+                {% endif %}
               </div>
             </td>
           </tr>
