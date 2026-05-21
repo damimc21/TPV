@@ -1,6 +1,9 @@
 """ViewSets y endpoints relacionados con «mesa»."""
+import logging
 from django.utils import timezone
 from decimal import Decimal
+
+logger = logging.getLogger(__name__)
 from django.db import transaction
 from django.db.models import Sum, F, Q
 from django.shortcuts import render
@@ -339,6 +342,8 @@ class MesaViewSet(viewsets.ModelViewSet):
             cliente_id = None
         # Email del cliente ocasional (no registrado en BD)
         cliente_email_ocasional = request.data.get("cliente_email", None) or None
+        logger.info("[cobrar] cliente_id_raw=%s cliente_id=%s cliente_email_ocasional=%s",
+                    request.data.get("cliente_id"), cliente_id, cliente_email_ocasional)
 
         if metodo_pago not in ("efectivo", "tarjeta"):
             return Response({"detail": "metodo_pago debe ser 'efectivo' o 'tarjeta'."}, status=status.HTTP_400_BAD_REQUEST)
@@ -470,15 +475,16 @@ class MesaViewSet(viewsets.ModelViewSet):
                     import threading
                     factura_id = factura.id
                     email_dst = cliente_email_ocasional
+                    logger.info("[cobrar] Lanzando email ocasional factura_id=%s a %s", factura_id, email_dst)
                     def _enviar_ocasional():
                         try:
                             from tpvapp.models import Factura as _Factura
-                            from tpvapp.email_utils import generar_pdf_factura, enviar_factura_email_a_direccion
+                            from tpvapp.email_utils import enviar_factura_email_a_direccion
                             f = _Factura.objects.get(id=factura_id)
-                            enviar_factura_email_a_direccion(f, email_dst)
+                            ok = enviar_factura_email_a_direccion(f, email_dst)
+                            logger.info("[cobrar] Email ocasional factura_id=%s resultado=%s", factura_id, ok)
                         except Exception as exc:
-                            import logging
-                            logging.getLogger(__name__).error("Error enviando email ocasional factura %s: %s", factura_id, exc)
+                            logger.error("[cobrar] Error email ocasional factura %s: %s", factura_id, exc)
                     threading.Thread(target=_enviar_ocasional, daemon=True).start()
 
                 # 4) Calcular cambio

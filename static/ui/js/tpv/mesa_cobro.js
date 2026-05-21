@@ -271,6 +271,9 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
             operador_id: operador.id
         };
 
+        console.log("[cobro] clienteLocal:", clienteLocal);
+        console.log("[cobro] payload cliente_id:", payload.cliente_id, "| cliente_email:", payload.cliente_email);
+
         try {
             await sincronizarComanda({ operador });
 
