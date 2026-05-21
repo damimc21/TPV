@@ -18,5 +18,11 @@ boto3==1.43.12
 # --- Almacenamiento de ficheros en S3 ---
 django-storages[s3]==1.14.4
 
+# --- Generacion de PDFs (facturas por email) ---
+reportlab>=4.0
+
+# --- Email transaccional ---
+resend>=2.0
+
 # --- Monitorizacion de errores (opcional, recomendado en prod) ---
 # sentry-sdk==2.19.2

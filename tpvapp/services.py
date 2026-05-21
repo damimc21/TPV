@@ -2,7 +2,6 @@ from django.db.models import Q
 from django.utils import timezone
 from decimal import Decimal
 from .models import Mesa, Comanda, LineaComanda, Factura, Pago, SesionCaja, Cliente, MovimientoStock, ArticuloInventario
-from django.core.mail import send_mail
 from django.conf import settings
 import threading
 from tpvapp.auditoria import registrar_evento_usuario
@@ -198,31 +197,12 @@ def registrar_pago(factura: Factura, usuario, cantidad, metodo_pago: str = "efec
 
 def enviar_factura_email(factura: Factura):
     """
-    Simulación de envío de factura por email.
-    En una implementación real, aquí generaríamos un PDF.
+    Genera el PDF de la factura y lo envía al cliente via AWS SES.
+    Delega en tpvapp.email_utils.
     """
-    if not factura.cliente or not factura.cliente.email:
-        return
-
-    cliente = factura.cliente
-    subject = f"Factura {factura.id} - TPV"
-
-    # Construir cuerpo del mensaje
-    mensaje = f"Hola {cliente.nombre},\n\n"
-    mensaje += f"Adjuntamos el detalle de su factura emitida el {factura.emitida_a.strftime('%d/%m/%Y %H:%M')}.\n\n"
-    mensaje += f"Total: {factura.total}€\n\n"
-    mensaje += "Gracias por su visita.\n"
-
-    try:
-        send_mail(
-            subject,
-            mensaje,
-            settings.DEFAULT_FROM_EMAIL,
-            [cliente.email],
-            fail_silently=False,
-        )
+    from tpvapp.email_utils import enviar_factura_email as _enviar
+    ok = _enviar(factura)
+    if ok:
         factura.email_enviado = True
         factura.save(update_fields=["email_enviado"])
-        registrar_evento(None, "EMAIL_ENVIADO", f"factura_id={factura.id}, email={cliente.email}")
-    except Exception as e:
-        raise e
+        registrar_evento(None, "EMAIL_ENVIADO", f"factura_id={factura.id}, email={factura.cliente.email if factura.cliente else '?'}")

@@ -76,6 +76,19 @@ spec:
               value: "https://damiantpv.online"
             - name: DJANGO_DEBUG
               value: "false"
+            - name: AWS_STORAGE_BUCKET_NAME
+              value: "tpv-media-705775032253"
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: DEFAULT_FROM_EMAIL
+              value: "noreply@damiantpv.online"
+            - name: EMAIL_DEMO_RECIPIENT
+              value: "damianmartincarrasco@gmail.com"
+            - name: RESEND_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tpv-email-secret
+                  key: resend-api-key
           resources:
             requests:
               memory: "256Mi"

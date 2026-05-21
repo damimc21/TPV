@@ -261,3 +261,10 @@ PASSWORD_HASHERS = [
 # sin lanzar errores, por lo que el flujo de desarrollo no se ve afectado.
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "tpv-media-705775032253" if not DEBUG else "")
 AWS_S3_REGION_NAME = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
+
+# Email / AWS SES
+# DEFAULT_FROM_EMAIL debe estar verificado en la consola de AWS SES.
+# EMAIL_DEMO_RECIPIENT: si se define, todos los emails se redirigen a esta dirección
+# en lugar del email real del cliente (útil para demos o pruebas).
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@damiantpv.online")
+EMAIL_DEMO_RECIPIENT = os.environ.get("EMAIL_DEMO_RECIPIENT", "")
