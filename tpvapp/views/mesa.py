@@ -332,6 +332,11 @@ class MesaViewSet(viewsets.ModelViewSet):
         importe_entregado = request.data.get("importe_entregado", None)
         is_split = request.data.get("is_split", False)
         cliente_id = request.data.get("cliente_id", None)
+        # Sanitizar cliente_id: "ocasional_form" u otro no-numérico → None
+        try:
+            cliente_id = int(cliente_id) if cliente_id else None
+        except (ValueError, TypeError):
+            cliente_id = None
 
         if metodo_pago not in ("efectivo", "tarjeta"):
             return Response({"detail": "metodo_pago debe ser 'efectivo' o 'tarjeta'."}, status=status.HTTP_400_BAD_REQUEST)
