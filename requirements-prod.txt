@@ -7,13 +7,13 @@
 gunicorn==23.0.0
 
 # --- Servir estaticos sin nginx ---
-whitenoise==6.8.2
+whitenoise==6.12.0
 
 # --- Base de datos MySQL (Amazon RDS) ---
 mysqlclient==2.2.6
 
 # --- AWS ---
-boto3==1.35.92
+boto3==1.43.12
 
 # --- Almacenamiento de ficheros en S3 ---
 django-storages[s3]==1.14.4
