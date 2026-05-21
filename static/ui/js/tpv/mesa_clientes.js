@@ -38,10 +38,11 @@ function initModalClienteOpciones() {
 
     // Selección de cliente → persistir en comanda
     window.addEventListener("clienteSeleccionado", async (e) => {
-        const { id, nombre, flow } = e.detail;
+        const { id, nombre, flow, data: clienteData } = e.detail;
 
         tpvState.clienteId = id;
         tpvState.clienteNombre = nombre;
+        tpvState.clienteEmail = clienteData?.email || null;
 
         if (flow === "mesa") {
             await persistirClienteEnComanda(id);
@@ -101,6 +102,7 @@ function initModalClienteOpciones() {
             e.stopPropagation();
             tpvState.clienteId = null;
             tpvState.clienteNombre = null;
+            tpvState.clienteEmail = null;
             await persistirClienteEnComanda(null);
             actualizarUICliente();
         };

@@ -93,7 +93,7 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
         entregadoStr = "";
         isProcessing = false;
 
-        clienteLocal = tpvState.clienteId ? { id: tpvState.clienteId, nombre: tpvState.clienteNombre } : null;
+        clienteLocal = tpvState.clienteId ? { id: tpvState.clienteId, nombre: tpvState.clienteNombre, email: tpvState.clienteEmail || null } : null;
         if (labelClienteCobro) {
             labelClienteCobro.textContent = clienteLocal ? clienteLocal.nombre : gettext("Ningún cliente seleccionado");
         }
