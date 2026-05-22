@@ -82,8 +82,7 @@ spec:
               value: "us-east-1"
             - name: DEFAULT_FROM_EMAIL
               value: "noreply@damiantpv.online"
-            - name: EMAIL_DEMO_RECIPIENT
-              value: "damianmartincarrasco@gmail.com"
+
             - name: RESEND_API_KEY
               valueFrom:
                 secretKeyRef:
