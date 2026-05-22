@@ -98,7 +98,7 @@ reset_venv.ps1
 
 # --- Terraform ---
 infra/.terraform/
-infra/.terraform.lock.hcl
+# infra/.terraform.lock.hcl  ← versionado para reproducibilidad en otro equipo
 infra/terraform.tfvars
 *.tfstate
 *.tfstate.backup
