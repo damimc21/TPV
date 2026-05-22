@@ -342,6 +342,8 @@ class MesaViewSet(viewsets.ModelViewSet):
             cliente_id = None
         # Email del cliente ocasional (no registrado en BD)
         cliente_email_ocasional = request.data.get("cliente_email", None) or None
+        cliente_nombre_ocasional = request.data.get("cliente_nombre", None) or None
+        datos_facturacion_ocasional = request.data.get("datos_facturacion", None) or None
         logger.info("[cobrar] cliente_id_raw=%s cliente_id=%s cliente_email_ocasional=%s",
                     request.data.get("cliente_id"), cliente_id, cliente_email_ocasional)
 
@@ -467,6 +469,11 @@ class MesaViewSet(viewsets.ModelViewSet):
                     factura.cliente_id = cliente_id
                     factura.save(update_fields=["cliente"])
 
+                # Para cliente ocasional, guardar datos de facturación en la factura
+                if not cliente_id and datos_facturacion_ocasional:
+                    factura.datos_facturacion = datos_facturacion_ocasional
+                    factura.save(update_fields=["datos_facturacion"])
+
                 # 3) Registrar pago por el total de la factura
                 registrar_pago(factura, operador, cantidad=factura.total, metodo_pago=metodo_pago)
 
@@ -475,13 +482,14 @@ class MesaViewSet(viewsets.ModelViewSet):
                     import threading
                     factura_id = factura.id
                     email_dst = cliente_email_ocasional
+                    nombre_dst = cliente_nombre_ocasional
                     logger.info("[cobrar] Lanzando email ocasional factura_id=%s a %s", factura_id, email_dst)
                     def _enviar_ocasional():
                         try:
                             from tpvapp.models import Factura as _Factura
                             from tpvapp.email_utils import enviar_factura_email_a_direccion
                             f = _Factura.objects.get(id=factura_id)
-                            ok = enviar_factura_email_a_direccion(f, email_dst)
+                            ok = enviar_factura_email_a_direccion(f, email_dst, nombre=nombre_dst)
                             logger.info("[cobrar] Email ocasional factura_id=%s resultado=%s", factura_id, ok)
                         except Exception as exc:
                             logger.error("[cobrar] Error email ocasional factura %s: %s", factura_id, exc)

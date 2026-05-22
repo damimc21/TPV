@@ -68,13 +68,40 @@ def generar_pdf_factura(factura) -> bytes:
 
     # --- Datos del cliente ---
     cliente = factura.cliente
-    if cliente:
+    datos_ocas = factura.datos_facturacion if not cliente else None
+    if cliente or datos_ocas:
         elements.append(Paragraph("FACTURADO A", header_style))
-        elements.append(Paragraph(cliente.nombre, normal_style))
-        if cliente.nif:
-            elements.append(Paragraph(f"NIF/CIF: {cliente.nif}", normal_style))
-        if cliente.email:
-            elements.append(Paragraph(f"Email: {cliente.email}", normal_style))
+
+        if cliente:
+            nombre_fact = cliente.nombre or ""
+            nif_fact    = cliente.nif or ""
+            email_fact  = cliente.email or ""
+            dir_fact    = cliente.direccion or ""
+            cp_fact     = cliente.codigo_postal or ""
+            pobl_fact   = cliente.poblacion or ""
+            prov_fact   = cliente.provincia or ""
+        else:
+            nombre_fact = datos_ocas.get("nombre", "") or ""
+            nif_fact    = datos_ocas.get("nif", "") or ""
+            email_fact  = datos_ocas.get("email", "") or ""
+            dir_fact    = datos_ocas.get("direccion", "") or ""
+            cp_fact     = datos_ocas.get("cp", "") or ""
+            pobl_fact   = datos_ocas.get("poblacion", "") or ""
+            prov_fact   = datos_ocas.get("provincia", "") or ""
+
+        if nombre_fact:
+            elements.append(Paragraph(nombre_fact, normal_style))
+        if nif_fact:
+            elements.append(Paragraph(f"NIF/CIF: {nif_fact}", normal_style))
+        if dir_fact:
+            linea_dir = dir_fact
+            if cp_fact or pobl_fact:
+                linea_dir += f", {cp_fact} {pobl_fact}".strip(", ")
+            if prov_fact:
+                linea_dir += f" ({prov_fact})"
+            elements.append(Paragraph(linea_dir, normal_style))
+        if email_fact:
+            elements.append(Paragraph(f"Email: {email_fact}", normal_style))
     elements.append(Spacer(1, 0.7 * cm))
 
     # --- Tabla de líneas ---
@@ -218,7 +245,7 @@ def enviar_factura_email(factura) -> bool:
         return False
 
 
-def enviar_factura_email_a_direccion(factura, email_destino: str) -> bool:
+def enviar_factura_email_a_direccion(factura, email_destino: str, nombre: str = None) -> bool:
     """
     Envía la factura a una dirección de email explícita (cliente ocasional sin FK en BD).
 
@@ -247,6 +274,10 @@ def enviar_factura_email_a_direccion(factura, email_destino: str) -> bool:
     sandbox_recipient = getattr(settings, "EMAIL_DEMO_RECIPIENT", "")
     to_email = sandbox_recipient if sandbox_recipient else email_destino
 
+    # Nombre para el saludo: del parámetro explícito o de datos_facturacion
+    if not nombre and factura.datos_facturacion:
+        nombre = factura.datos_facturacion.get("nombre", None)
+
     # Generar PDF
     try:
         pdf_bytes = generar_pdf_factura(factura)
@@ -254,8 +285,9 @@ def enviar_factura_email_a_direccion(factura, email_destino: str) -> bool:
         logger.error("email_utils: error generando PDF para factura %s: %s", factura.id, e)
         return False
 
+    saludo = f"Hola, <strong>{nombre}</strong>" if nombre else "Hola"
     cuerpo_html = f"""
-    <p>Hola,</p>
+    <p>{saludo},</p>
     <p>Adjuntamos la factura correspondiente a tu visita del
     <strong>{factura.emitida_a.strftime('%d/%m/%Y a las %H:%M')}</strong>.</p>
     <p><strong>Total: {factura.total:.2f} €</strong></p>

@@ -56,6 +56,10 @@ class Factura(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADOS, default=ESTADO_EMITIDA)
     email_enviado = models.BooleanField(default=False)
 
+    # Datos de facturación para clientes ocasionales (sin FK en BD)
+    # Formato: {"nombre": "...", "nif": "...", "direccion": "...", "cp": "...", "poblacion": "...", "provincia": "...", "email": "...", "telefono": "..."}
+    datos_facturacion = models.JSONField(null=True, blank=True)
+
     class Meta:
         db_table = "facturas"
 
