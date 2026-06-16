@@ -46,6 +46,62 @@
    */
   let _svgUid = 0;
 
+  // Tipos redimensionables libremente (igual que RESIZABLE_TYPES del editor).
+  // Sus iconos SVG necesitan poder deformarse para llenar la caja, igual que
+  // en el editor (ver getStretchableSkinUrl más abajo).
+  const STRETCHABLE_TYPES = new Set([
+    "barra", "planta", "columna", "cristal_fino", "cristal_gordo",
+    "esquina_muro", "lavamanos", "maceton", "muro", "papelera", "puerta", "wc",
+  ]);
+  const ICON_FILE_BY_TYPE = {
+    barra: "Barra TPV.svg",
+    columna: "Columna TPV.svg",
+    cristal_fino: "Cristal fino_TPV.svg",
+    cristal_gordo: "Cristal gordo_TPV.svg",
+    esquina_muro: "Esquna muro TPV.svg",
+    lavamanos: "Lavamanos TPV.svg",
+    maceton: "MAcetón_TPV.svg",
+    muro: "Muro TPV.svg",
+    papelera: "PapeleraoJabón_TPV.svg",
+    puerta: "Puerta_TPV.svg",
+    wc: "WC TPV.svg",
+    planta: "Maceta_TPV.svg",
+  };
+
+  // Cache de URLs "blob:" con preserveAspectRatio forzado a "none", por fichero.
+  // Las imágenes SVG, al usarse como <img>, respetan su propio preserveAspectRatio
+  // interno (por defecto "xMidYMid meet") INCLUSO con object-fit:fill en el <img>,
+  // así que un item redimensionado de forma no proporcional (muro, cristal, barra,
+  // puerta, planta, etc.) deja la silueta del dibujo intacta y solo agranda el
+  // hueco alrededor, en vez de deformarse junto con la caja como en el editor.
+  // Para que se vea igual que en el editor, se reescribe el SVG en memoria
+  // forzando preserveAspectRatio="none" antes de usarlo como src.
+  const _stretchableSkinCache = new Map();
+  function getStretchableSkinUrl(fileName) {
+    if (_stretchableSkinCache.has(fileName)) return _stretchableSkinCache.get(fileName);
+
+    const fallbackUrl = `/static/ui/img/map_icons/${encodeURIComponent(fileName)}`;
+    const promise = fetch(fallbackUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error("fetch failed");
+        return res.text();
+      })
+      .then((svgText) => {
+        let fixed;
+        if (/preserveAspectRatio\s*=/.test(svgText)) {
+          fixed = svgText.replace(/preserveAspectRatio\s*=\s*"[^"]*"/, 'preserveAspectRatio="none"');
+        } else {
+          fixed = svgText.replace(/<svg\b/, '<svg preserveAspectRatio="none"');
+        }
+        const blob = new Blob([fixed], { type: "image/svg+xml" });
+        return URL.createObjectURL(blob);
+      })
+      .catch(() => fallbackUrl);
+
+    _stretchableSkinCache.set(fileName, promise);
+    return promise;
+  }
+
   function getItemSVG(type) {
     const uid   = ++_svgUid;
     const oak   = "/static/ui/img/texturas_mapa/oak_veneer_01_diff_1k.jpg";
@@ -265,6 +321,18 @@
         // SVG inline del elemento
         const svg = getItemSVG(it.type);
         if (svg) el.innerHTML = svg;
+
+        // Para los tipos redimensionables, sustituir el <img> por la versión
+        // con preserveAspectRatio="none" (ver getStretchableSkinUrl) para que
+        // el dibujo se estire igual que en el editor en vez de mantener su
+        // proporción original dentro de la caja.
+        if (STRETCHABLE_TYPES.has(it.type)) {
+          const fileName = ICON_FILE_BY_TYPE[it.type];
+          const img = el.querySelector("img");
+          if (fileName && img) {
+            getStretchableSkinUrl(fileName).then((url) => { img.src = url; });
+          }
+        }
 
         // Etiqueta con el número de mesa (encima del SVG)
         // Contrarrotamos la etiqueta para que el número siempre se vea
