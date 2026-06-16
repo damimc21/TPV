@@ -90,10 +90,20 @@ body.tpvScreen {
 /* ==========================================
    2. TAMAÑOS POR TIPO
    ========================================== */
-.tpvItem.mesa_normal  { width: 70px;  height: 70px;  }
-.tpvItem.mesa_grande  { width: 140px; height: 70px;  }
-.tpvItem.taburete     { width: 54px;  height: 54px;  }
-.tpvItem.llevar       { width: 58px;  height: 58px;  }
-.tpvItem.planta       { width: 35px;  height: 35px;  }
-.tpvItem.barra        { width: 40px;  height: 200px; }
+.tpvItem.mesa_normal   { width: 70px;  height: 70px;  }
+.tpvItem.mesa_grande   { width: 140px; height: 70px;  }
+.tpvItem.taburete      { width: 54px;  height: 54px;  }
+.tpvItem.llevar        { width: 58px;  height: 58px;  }
+.tpvItem.planta        { width: 35px;  height: 35px;  }
+.tpvItem.barra         { width: 40px;  height: 200px; }
+.tpvItem.columna       { width: 42px;  height: 41px;  }
+.tpvItem.cristal_fino  { width: 13px;  height: 210px; }
+.tpvItem.cristal_gordo { width: 42px;  height: 210px; }
+.tpvItem.esquina_muro  { width: 56px;  height: 50px;  }
+.tpvItem.lavamanos     { width: 45px;  height: 130px; }
+.tpvItem.maceton       { width: 45px;  height: 160px; }
+.tpvItem.muro          { width: 220px; height: 40px;  }
+.tpvItem.papelera      { width: 40px;  height: 35px;  }
+.tpvItem.puerta        { width: 70px;  height: 67px;  }
+.tpvItem.wc            { width: 50px;  height: 85px;  }
 

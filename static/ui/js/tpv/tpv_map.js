@@ -49,7 +49,6 @@
   function getItemSVG(type) {
     const uid   = ++_svgUid;
     const oak   = "/static/ui/img/texturas_mapa/oak_veneer_01_diff_1k.jpg";
-    const chairFill  = "rgba(200,165,110,0.55)";
     const tableShine = "rgba(255,255,255,0.10)";
     const tableEdge  = "rgba(255,255,255,0.08)";
 
@@ -58,38 +57,26 @@
         return `<svg viewBox="0 0 70 70" width="70" height="70" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <clipPath id="cp-${uid}">
-              <rect x="14" y="14" width="42" height="42" rx="9"/>
+              <rect x="2" y="2" width="66" height="66" rx="13"/>
             </clipPath>
           </defs>
-          <rect x="17" y="3"  width="36" height="11" rx="4" fill="${chairFill}"/>
-          <rect x="17" y="56" width="36" height="11" rx="4" fill="${chairFill}"/>
-          <rect x="3"  y="17" width="11" height="36" rx="4" fill="${chairFill}"/>
-          <rect x="56" y="17" width="11" height="36" rx="4" fill="${chairFill}"/>
-          <image class="mesa-surface" href="${oak}" x="14" y="14" width="42" height="42"
+          <image class="mesa-surface" href="${oak}" x="2" y="2" width="66" height="66"
                  preserveAspectRatio="xMidYMid slice" clip-path="url(#cp-${uid})"/>
-          <rect x="18" y="18" width="18" height="8" rx="3" fill="${tableShine}"/>
-          <rect x="16" y="16" width="38" height="38" rx="8" fill="none" stroke="${tableEdge}" stroke-width="1.5"/>
+          <rect x="6" y="6" width="26" height="10" rx="4" fill="${tableShine}"/>
+          <rect x="2" y="2" width="66" height="66" rx="13" fill="none" stroke="${tableEdge}" stroke-width="1.5"/>
         </svg>`;
 
       case "mesa_grande":
         return `<svg viewBox="0 0 140 70" width="140" height="70" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <clipPath id="cp-${uid}">
-              <rect x="14" y="14" width="112" height="42" rx="9"/>
+              <rect x="2" y="2" width="136" height="66" rx="13"/>
             </clipPath>
           </defs>
-          <rect x="17"  y="3"  width="30" height="11" rx="4" fill="${chairFill}"/>
-          <rect x="55"  y="3"  width="30" height="11" rx="4" fill="${chairFill}"/>
-          <rect x="93"  y="3"  width="30" height="11" rx="4" fill="${chairFill}"/>
-          <rect x="17"  y="56" width="30" height="11" rx="4" fill="${chairFill}"/>
-          <rect x="55"  y="56" width="30" height="11" rx="4" fill="${chairFill}"/>
-          <rect x="93"  y="56" width="30" height="11" rx="4" fill="${chairFill}"/>
-          <rect x="3"   y="17" width="11" height="36" rx="4" fill="${chairFill}"/>
-          <rect x="126" y="17" width="11" height="36" rx="4" fill="${chairFill}"/>
-          <image class="mesa-surface" href="${oak}" x="14" y="14" width="112" height="42"
+          <image class="mesa-surface" href="${oak}" x="2" y="2" width="136" height="66"
                  preserveAspectRatio="xMidYMid slice" clip-path="url(#cp-${uid})"/>
-          <rect x="18" y="18" width="32" height="8" rx="3" fill="${tableShine}"/>
-          <rect x="16" y="16" width="108" height="38" rx="8" fill="none" stroke="${tableEdge}" stroke-width="1.5"/>
+          <rect x="8" y="8" width="40" height="10" rx="4" fill="${tableShine}"/>
+          <rect x="2" y="2" width="136" height="66" rx="13" fill="none" stroke="${tableEdge}" stroke-width="1.5"/>
         </svg>`;
 
       case "taburete":
@@ -104,6 +91,56 @@
 
       case "barra":
         return `<img src="/static/ui/img/map_icons/Barra TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "columna":
+        return `<img src="/static/ui/img/map_icons/Columna TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "cristal_fino":
+        return `<img src="/static/ui/img/map_icons/Cristal fino_TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "cristal_gordo":
+        return `<img src="/static/ui/img/map_icons/Cristal gordo_TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "esquina_muro":
+        return `<img src="/static/ui/img/map_icons/Esquna muro TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "lavamanos":
+        return `<img src="/static/ui/img/map_icons/Lavamanos TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "maceton":
+        return `<img src="/static/ui/img/map_icons/MAcetón_TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "muro":
+        return `<img src="/static/ui/img/map_icons/Muro TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "papelera":
+        return `<img src="/static/ui/img/map_icons/PapeleraoJabón_TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "puerta":
+        return `<img src="/static/ui/img/map_icons/Puerta_TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     draggable="false" alt="">`;
+
+      case "wc":
+        return `<img src="/static/ui/img/map_icons/WC TPV.svg"
                      style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
                      draggable="false" alt="">`;
 
@@ -183,10 +220,16 @@
       world.style.height = mapH + "px";
       world.style.transform = `scale(${scale})`;
 
-      const RESIZABLE = new Set(["barra", "planta"]);
+      const RESIZABLE = new Set([
+        "barra", "planta", "columna", "cristal_fino", "cristal_gordo",
+        "esquina_muro", "lavamanos", "maceton", "muro", "papelera", "puerta", "wc",
+      ]);
       const BASE_SIZES = {
         mesa_normal: [70,70], mesa_grande: [140,70], taburete: [54,54],
         llevar: [58,58], planta: [35,35], barra: [40,200],
+        columna: [42,41], cristal_fino: [13,210], cristal_gordo: [42,210],
+        esquina_muro: [56,50], lavamanos: [45,130], maceton: [45,160],
+        muro: [220,40], papelera: [40,35], puerta: [70,67], wc: [50,85],
       };
 
       for (const it of (map.items || [])) {
@@ -204,18 +247,22 @@
         }
 
         const rot = Number(it.rotation);
-        el.style.transform = `rotate(${Number.isFinite(rot) ? rot : 0}deg)`;
+        const rotDeg = Number.isFinite(rot) ? rot : 0;
+        el.style.transform = `rotate(${rotDeg}deg)`;
 
         // SVG inline del elemento
         const svg = getItemSVG(it.type);
         if (svg) el.innerHTML = svg;
 
         // Etiqueta con el número de mesa (encima del SVG)
+        // Contrarrotamos la etiqueta para que el número siempre se vea
+        // recto, igual que en el editor (.item__label usa --rot al revés).
         const numero = String(it.data?.numero ?? "").trim();
         if (numero) {
           const lab = document.createElement("div");
           lab.className = "tpvLabel";
           lab.textContent = numero;
+          lab.style.transform = `rotate(${-rotDeg}deg)`;
           el.appendChild(lab);
         }
 
