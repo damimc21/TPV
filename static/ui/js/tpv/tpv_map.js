@@ -163,6 +163,18 @@
     return Math.min(vw / mapW, vh / mapH);
   }
 
+  // Misma fórmula que getMapItemScale() del editor (geometry.js): escala el
+  // tamaño de los items en función de la resolución configurada del mapa,
+  // para que un item se vea del mismo tamaño relativo en TPV y en editor.
+  function getMapItemScale(mapW, mapH) {
+    const Wref = 1920;
+    const Href = 1080;
+    const sx = (Number(mapW) || Wref) / Wref;
+    const sy = (Number(mapH) || Href) / Href;
+    const s = Math.min(sx, sy);
+    return Math.max(0.5, Math.min(2.5, s));
+  }
+
   function clearMount() {
     mount.innerHTML = "";
   }
@@ -209,6 +221,11 @@
       world.style.height = mapH + "px";
       world.style.transform = `scale(${scale})`;
 
+      // Misma escala por-item que aplica el editor (--itemScale), para que
+      // mesas, taburetes, muros, cristales, barra, etc. midan igual que allí.
+      const itemScale = getMapItemScale(mapW, mapH);
+      world.style.setProperty("--itemScale", String(itemScale));
+
       const RESIZABLE = new Set([
         "barra", "planta", "columna", "cristal_fino", "cristal_gordo",
         "esquina_muro", "lavamanos", "maceton", "muro", "papelera", "puerta", "wc",
@@ -228,11 +245,17 @@
         el.style.left = (it.x || 0) + "px";
         el.style.top  = (it.y || 0) + "px";
 
-        // Tamaño personalizado para elementos decorativos
-        if (RESIZABLE.has(it.type) && (it.data?.w || it.data?.h)) {
+        // Tamaño efectivo (base o personalizado) × escala de mapa.
+        // Igual que el editor: SIEMPRE se fija el tamaño inline para los
+        // tipos redimensionables (con o sin data.w/h propio), multiplicado
+        // por itemScale; el resto de tipos usa el tamaño fijo de tpv.css
+        // (también escalado vía var(--itemScale)).
+        if (RESIZABLE.has(it.type)) {
           const base = BASE_SIZES[it.type] || [70, 70];
-          el.style.width  = (it.data.w ?? base[0]) + "px";
-          el.style.height = (it.data.h ?? base[1]) + "px";
+          const effW = it.data?.w ?? base[0];
+          const effH = it.data?.h ?? base[1];
+          el.style.width  = (effW * itemScale) + "px";
+          el.style.height = (effH * itemScale) + "px";
         }
 
         const rot = Number(it.rotation);

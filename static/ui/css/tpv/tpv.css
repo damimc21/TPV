@@ -47,6 +47,7 @@ body.tpvScreen {
   position: absolute;
   inset: 0;
   transform-origin: 0 0;
+  --itemScale: 1;
 }
 
 /* ==========================================
@@ -74,7 +75,7 @@ body.tpvScreen {
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 16px;
+  font-size: calc(16px * var(--itemScale));
   line-height: 1;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0,0,0,0.7);
@@ -90,20 +91,20 @@ body.tpvScreen {
 /* ==========================================
    2. TAMAÑOS POR TIPO
    ========================================== */
-.tpvItem.mesa_normal   { width: 70px;  height: 70px;  }
-.tpvItem.mesa_grande   { width: 140px; height: 70px;  }
-.tpvItem.taburete      { width: 54px;  height: 54px;  }
-.tpvItem.llevar        { width: 58px;  height: 58px;  }
-.tpvItem.planta        { width: 35px;  height: 35px;  }
-.tpvItem.barra         { width: 40px;  height: 200px; }
-.tpvItem.columna       { width: 42px;  height: 41px;  }
-.tpvItem.cristal_fino  { width: 13px;  height: 210px; }
-.tpvItem.cristal_gordo { width: 42px;  height: 210px; }
-.tpvItem.esquina_muro  { width: 56px;  height: 50px;  }
-.tpvItem.lavamanos     { width: 45px;  height: 130px; }
-.tpvItem.maceton       { width: 45px;  height: 160px; }
-.tpvItem.muro          { width: 220px; height: 40px;  }
-.tpvItem.papelera      { width: 40px;  height: 35px;  }
-.tpvItem.puerta        { width: 70px;  height: 67px;  }
-.tpvItem.wc            { width: 50px;  height: 85px;  }
+.tpvItem.mesa_normal   { width: calc(70px  * var(--itemScale)); height: calc(70px  * var(--itemScale)); }
+.tpvItem.mesa_grande   { width: calc(140px * var(--itemScale)); height: calc(70px  * var(--itemScale)); }
+.tpvItem.taburete      { width: calc(54px  * var(--itemScale)); height: calc(54px  * var(--itemScale)); }
+.tpvItem.llevar        { width: calc(58px  * var(--itemScale)); height: calc(58px  * var(--itemScale)); }
+.tpvItem.planta        { width: calc(35px  * var(--itemScale)); height: calc(35px  * var(--itemScale)); }
+.tpvItem.barra         { width: calc(40px  * var(--itemScale)); height: calc(200px * var(--itemScale)); }
+.tpvItem.columna       { width: calc(42px  * var(--itemScale)); height: calc(41px  * var(--itemScale)); }
+.tpvItem.cristal_fino  { width: calc(13px  * var(--itemScale)); height: calc(210px * var(--itemScale)); }
+.tpvItem.cristal_gordo { width: calc(42px  * var(--itemScale)); height: calc(210px * var(--itemScale)); }
+.tpvItem.esquina_muro  { width: calc(56px  * var(--itemScale)); height: calc(50px  * var(--itemScale)); }
+.tpvItem.lavamanos     { width: calc(45px  * var(--itemScale)); height: calc(130px * var(--itemScale)); }
+.tpvItem.maceton       { width: calc(45px  * var(--itemScale)); height: calc(160px * var(--itemScale)); }
+.tpvItem.muro          { width: calc(220px * var(--itemScale)); height: calc(40px  * var(--itemScale)); }
+.tpvItem.papelera      { width: calc(40px  * var(--itemScale)); height: calc(35px  * var(--itemScale)); }
+.tpvItem.puerta        { width: calc(70px  * var(--itemScale)); height: calc(67px  * var(--itemScale)); }
+.tpvItem.wc            { width: calc(50px  * var(--itemScale)); height: calc(85px  * var(--itemScale)); }
 
