@@ -1880,6 +1880,27 @@ function setupEvents() {
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Subsecciones del panel (DecoraciÃ³n): al desplegar, que el panel
+// scrollee en vez de agrandar la fila (y por tanto el lienzo).
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function setupSubsectionScrollLock() {
+    const body = document.querySelector(".editor__body");
+    const subsections = document.querySelectorAll(".panel__subsection");
+    if (!body || !subsections.length) return;
+
+    // Se capturan cerradas por defecto, asÃ­ que esto es la altura
+    // natural real del lienzo en esta pantalla (nada de valores fijos).
+    const naturalRowHeight = body.getBoundingClientRect().height;
+
+    function applyLock() {
+        const anyOpen = Array.from(subsections).some((s) => s.open);
+        body.style.gridTemplateRows = anyOpen ? naturalRowHeight + "px" : "";
+    }
+
+    subsections.forEach((s) => s.addEventListener("toggle", applyLock));
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Init
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function init() {
@@ -1893,6 +1914,7 @@ async function init() {
     fitToScreen();
     clearSelection();
     afterAnyChange();
+    setupSubsectionScrollLock();
 
     window.addEventListener("resize", fitToScreen);
 

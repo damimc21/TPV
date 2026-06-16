@@ -64,13 +64,17 @@
 
   .editor__body {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
 
   .editor__panel {
     width: auto;
+    height: auto;
+    max-height: none;
     flex-direction: row;
     align-items: stretch;
     overflow-x: auto;
+    overflow-y: visible;
   }
 
   .panel__section {
