@@ -13,7 +13,8 @@ import {
 } from './utils.js';
 import { apiSaveMap, apiLoadMap, apiListMaps, apiDeleteMap } from './api.js';
 import {
-    getMapItemScale, getItemBaseSize, getItemSize, normRot, getAABB,
+    getMapItemScale, getItemBaseSize, getItemSize, getEffectiveItemSize,
+    getEffectiveSize, RESIZABLE_TYPES, normRot, getAABB,
     xFromAABBLeft, yFromAABBTop, worldPointFromEvent, normRect, rectsIntersect
 } from './geometry.js';
 import { computeSnap } from './snapping.js';
@@ -79,6 +80,37 @@ if (!canvas || !world || !mapName) {
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let map = null;
 let selectedIds = new Set();
+let currentFloor = "dark";
+
+// ── Suelo (scope de módulo para que loadMap pueda llamarla) ──────────────────
+function applyFloor(floor) {
+    currentFloor = floor ?? "";
+
+    // Sincronizar picker: label + preview
+    const pickerLabel   = document.getElementById("floorPickerLabel");
+    const pickerPreview = document.getElementById("floorPickerPreview");
+    const activeItem    = document.querySelector(`.floorDrop__item[data-floor="${currentFloor}"]`);
+
+    if (pickerLabel && activeItem) {
+        pickerLabel.textContent = activeItem.querySelector("span:last-child")?.textContent ?? "";
+    }
+    if (pickerPreview && activeItem) {
+        const itemPreview = activeItem.querySelector(".floorBtn__preview");
+        pickerPreview.style.cssText = itemPreview ? itemPreview.style.cssText : "";
+    }
+
+    // Marcar item activo en el drop
+    document.querySelectorAll(".floorDrop__item").forEach((item) => {
+        item.classList.toggle("is-current", item.dataset.floor === currentFloor);
+    });
+
+    // Aplicar clase al world
+    const world = document.getElementById("world");
+    if (world) {
+        world.className = world.className.replace(/\bfloor--\S+/g, "").trim();
+        if (currentFloor) world.classList.add(`floor--${currentFloor}`);
+    }
+}
 
 // Undo/Redo
 let historyStack = [];
@@ -92,6 +124,7 @@ let placementTool = null;
 
 // Interacciones
 let dragging = null;
+let resizing = null;
 let marquee = null;
 let marqueeBaseSelection = null;
 let marqueeEl = null;
@@ -555,6 +588,40 @@ function renderItemLabel(el, item) {
     lab.textContent = String(item.data?.numero ?? "").trim();
 }
 
+// Cache de URLs "blob:" con preserveAspectRatio forzado a "none", por nombre de fichero.
+// Las imÃ¡genes SVG, al usarse como <img>, respetan su propio preserveAspectRatio
+// interno (por defecto "xMidYMid meet") INCLUSO con object-fit:fill en el <img>,
+// asÃ­ que un resize no proporcional (manejadores laterales) deja la silueta intacta
+// y solo agranda el "hueco" alrededor. Para permitir que la imagen se deforme/estire
+// igual que el contenedor, se reescribe el SVG en memoria forzando
+// preserveAspectRatio="none" antes de usarlo como src (sin tocar el fichero original).
+const _stretchableSkinCache = new Map();
+
+function getStretchableSkinUrl(fileName) {
+    if (_stretchableSkinCache.has(fileName)) return _stretchableSkinCache.get(fileName);
+
+    const fallbackUrl = mapSkinUrl(fileName);
+    const promise = fetch(fallbackUrl)
+        .then((res) => {
+            if (!res.ok) throw new Error("fetch failed");
+            return res.text();
+        })
+        .then((svgText) => {
+            let fixed;
+            if (/preserveAspectRatio\s*=/.test(svgText)) {
+                fixed = svgText.replace(/preserveAspectRatio\s*=\s*"[^"]*"/, 'preserveAspectRatio="none"');
+            } else {
+                fixed = svgText.replace(/<svg\b/, '<svg preserveAspectRatio="none"');
+            }
+            const blob = new Blob([fixed], { type: "image/svg+xml" });
+            return URL.createObjectURL(blob);
+        })
+        .catch(() => fallbackUrl);
+
+    _stretchableSkinCache.set(fileName, promise);
+    return promise;
+}
+
 function renderItemSkin(el, item) {
     const current = el.querySelector(".item__skin");
     if (current) current.remove();
@@ -577,8 +644,149 @@ function renderItemSkin(el, item) {
         el.classList.remove("has-skin");
         el.classList.add("has-skin-error");
     }, { once: true });
-    img.src = mapSkinUrl(fileName);
+
+    const isSvg = /\.svg$/i.test(fileName);
+    if (isSvg && RESIZABLE_TYPES.has(item.type)) {
+        // Solo los tipos redimensionables libremente necesitan poder deformarse;
+        // para el resto el aspecto del contenedor coincide con el de la imagen.
+        getStretchableSkinUrl(fileName).then((url) => {
+            img.src = url;
+        });
+    } else {
+        img.src = mapSkinUrl(fileName);
+    }
     el.prepend(img);
+}
+
+const RESIZE_HANDLES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"];
+const RESIZE_CURSOR = {
+    n: "ns-resize", s: "ns-resize",
+    e: "ew-resize", w: "ew-resize",
+    ne: "nesw-resize", sw: "nesw-resize",
+    nw: "nwse-resize", se: "nwse-resize",
+};
+
+function addResizeHandles(el, item) {
+    RESIZE_HANDLES.forEach((handle) => {
+        const h = document.createElement("div");
+        h.className = `resize-handle resize-handle--${handle}`;
+        h.style.cursor = RESIZE_CURSOR[handle];
+        h.addEventListener("pointerdown", (e) => {
+            if (e.button !== 0) return;
+            e.stopPropagation();
+            e.preventDefault();
+
+            const s = getMapItemScale(map);
+            const eff = getEffectiveSize(item);
+            const startW = eff.w * s;
+            const startH = eff.h * s;
+            const rot = ((Number(item.rotation) % 360) + 360) % 360;
+            const rad = (rot * Math.PI) / 180;
+
+            pushHistory();
+            h.setPointerCapture(e.pointerId);
+
+            const p0 = worldPointFromEvent(e, canvas, camera);
+            resizing = {
+                id: item.id,
+                handle,
+                startW, startH,
+                startX: item.x, startY: item.y,
+                startCX: item.x + startW / 2,
+                startCY: item.y + startH / 2,
+                startMX: p0.x, startMY: p0.y,
+                cos: Math.cos(rad), sin: Math.sin(rad),
+                scale: s,
+            };
+
+            const onMove = (ev) => {
+                if (!resizing) return;
+                const p = worldPointFromEvent(ev, canvas, camera);
+                const dx = p.x - resizing.startMX;
+                const dy = p.y - resizing.startMY;
+
+                const { cos, sin, startW: sw, startH: sh,
+                        startCX, startCY, handle: hnd } = resizing;
+
+                // Proyectar delta al espacio local del item
+                const ldx = dx * cos + dy * sin;
+                const ldy = -dx * sin + dy * cos;
+
+                const MIN = 10;
+                const isCorner = hnd.length === 2;
+                let newW = sw, newH = sh;
+                let anchorLX = 0, anchorLY = 0;
+                let newAnchorLX = 0, newAnchorLY = 0;
+
+                if (isCorner) {
+                    // Resize proporcional de esquina
+                    const sX = hnd.includes("e") ? 1 : -1;
+                    const sY = hnd.includes("s") ? 1 : -1;
+                    const diag = Math.sqrt(sw * sw + sh * sh);
+                    const proj = (sX * ldx * sw + sY * ldy * sh) / diag;
+                    const scale = Math.max(MIN / Math.min(sw, sh), 1 + 2 * proj / diag);
+                    newW = sw * scale;
+                    newH = sh * scale;
+                    anchorLX = -sX * sw / 2;   anchorLY = -sY * sh / 2;
+                    newAnchorLX = -sX * newW / 2; newAnchorLY = -sY * newH / 2;
+                } else {
+                    if (hnd === "e") {
+                        newW = Math.max(MIN, sw + ldx);
+                        anchorLX = -sw / 2;    newAnchorLX = -newW / 2;
+                    } else if (hnd === "w") {
+                        newW = Math.max(MIN, sw - ldx);
+                        anchorLX = sw / 2;     newAnchorLX = newW / 2;
+                    } else if (hnd === "s") {
+                        newH = Math.max(MIN, sh + ldy);
+                        anchorLY = -sh / 2;    newAnchorLY = -newH / 2;
+                    } else { // n
+                        newH = Math.max(MIN, sh - ldy);
+                        anchorLY = sh / 2;     newAnchorLY = newH / 2;
+                    }
+                }
+
+                // Punto ancla en espacio mundo (fijo durante el resize)
+                const aWX = startCX + anchorLX * cos - anchorLY * sin;
+                const aWY = startCY + anchorLX * sin + anchorLY * cos;
+
+                // Nuevo centro a partir del ancla
+                const newCX = aWX - newAnchorLX * cos + newAnchorLY * sin;
+                const newCY = aWY - newAnchorLX * sin - newAnchorLY * cos;
+
+                const finalX = Math.round(newCX - newW / 2);
+                const finalY = Math.round(newCY - newH / 2);
+                const finalW = Math.round(newW);
+                const finalH = Math.round(newH);
+
+                // Guardar en base units (sin escala de mapa)
+                const sc = resizing.scale;
+                item.data = item.data || {};
+                item.data.w = Math.round(finalW / sc);
+                item.data.h = Math.round(finalH / sc);
+                item.x = finalX;
+                item.y = finalY;
+
+                // Actualizar DOM directamente
+                el.style.left   = finalX + "px";
+                el.style.top    = finalY + "px";
+                el.style.width  = finalW + "px";
+                el.style.height = finalH + "px";
+            };
+
+            const onUp = () => {
+                resizing = null;
+                h.removeEventListener("pointermove", onMove);
+                h.removeEventListener("pointerup", onUp);
+                h.removeEventListener("pointercancel", onUp);
+                afterAnyChange();
+            };
+
+            h.addEventListener("pointermove", onMove);
+            h.addEventListener("pointerup", onUp);
+            h.addEventListener("pointercancel", onUp);
+        });
+        el.appendChild(h);
+    });
 }
 
 function createItemElement(item) {
@@ -587,6 +795,14 @@ function createItemElement(item) {
     el.dataset.id = item.id;
     el.style.left = item.x + "px";
     el.style.top = item.y + "px";
+
+    // Tamaño efectivo (puede haber sido redimensionado)
+    if (RESIZABLE_TYPES.has(item.type)) {
+        const s = getMapItemScale(map);
+        const eff = getEffectiveSize(item);
+        el.style.width  = (eff.w * s) + "px";
+        el.style.height = (eff.h * s) + "px";
+    }
 
     const rot = Number(item.rotation);
     const safeRot = Number.isFinite(rot) ? rot : 0;
@@ -598,6 +814,9 @@ function createItemElement(item) {
     el.appendChild(label);
     renderItemSkin(el, item);
     renderItemLabel(el, item);
+
+    // Handles de resize (solo tipos decorativos)
+    if (RESIZABLE_TYPES.has(item.type)) addResizeHandles(el, item);
 
     // Click: selecciÃ³n (con modificadores para multi)
     el.addEventListener("click", (e) => {
@@ -1023,6 +1242,7 @@ async function loadOrCreate() {
                 name: data.name || "",
                 width: data.width || 1920,
                 height: data.height || 1080,
+                floor: data.floor ?? "",
                 items: (data.items || []).map((it) => ({
                     id: it.id || uid(),
                     type: it.type,
@@ -1036,6 +1256,7 @@ async function loadOrCreate() {
             savedName = map.name;
             hasSaved = true;
             savedSnapshot = computeSnapshot();
+            applyFloor(map.floor ?? "");
             return;
         } catch (err) {
             console.error("Error al cargar mapa:", err);
@@ -1059,6 +1280,7 @@ async function saveCurrentMap() {
         name,
         width: map.width,
         height: map.height,
+        floor: currentFloor,
         items: (map.items || []).map((it) => ({
             id: it.id, type: it.type,
             x: Math.round(it.x), y: Math.round(it.y),
@@ -1351,6 +1573,7 @@ function setupEvents() {
             const p = worldPointFromEvent(e, canvas, camera);
             lastWorldMouse = p;
             void addItemCentered(placementTool, p);
+            clearPlacementTool();
             suppressNextCanvasClick = true;
             setTimeout(() => { suppressNextCanvasClick = false; }, 0);
             return;
@@ -1554,6 +1777,33 @@ function setupEvents() {
         clampCamera();
         applyCamera();
     }, { passive: false });
+
+    // ── Suelo (picker dropdown) ───────────────────────────────────────────────
+    const floorPicker    = document.getElementById("floorPicker");
+    const floorPickerBtn = document.getElementById("floorPickerBtn");
+    const floorPickerDrop= document.getElementById("floorPickerDrop");
+
+    floorPickerBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = floorPickerDrop.classList.toggle("is-open");
+        floorPicker.classList.toggle("is-drop-open", isOpen);
+    });
+
+    document.querySelectorAll(".floorDrop__item").forEach((item) => {
+        item.addEventListener("click", () => {
+            applyFloor(item.dataset.floor);
+            floorPickerDrop.classList.remove("is-open");
+            floorPicker.classList.remove("is-drop-open");
+            markDirty?.();
+        });
+    });
+
+    document.addEventListener("click", (e) => {
+        if (floorPicker && !floorPicker.contains(e.target)) {
+            floorPickerDrop?.classList.remove("is-open");
+            floorPicker.classList.remove("is-drop-open");
+        }
+    });
 
     // Acciones UI
     btnRotateL?.addEventListener("click", () => rotateSelected(-1));

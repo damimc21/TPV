@@ -12,10 +12,10 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "tpv-tfstate-705775032253"
-    key    = "prod/terraform.tfstate"
-    region = "us-east-1"
+  # Backend local - el bucket S3 de tfstate queda bloqueado por voc-cancel-cred
+  # cuando la sesion del lab expira. El estado local es mas fiable en AWS Academy.
+  backend "local" {
+    path = "terraform.tfstate"
   }
 }
 

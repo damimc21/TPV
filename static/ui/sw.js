@@ -1,7 +1,7 @@
 // Service Worker – TPV Hostelería
 // Caché básica para funcionamiento offline
 
-const CACHE_NAME = 'tpv-v2';
+const CACHE_NAME = 'tpv-v3';
 const ASSETS = [
     '/',
     '/es/tpv/',
@@ -36,7 +36,7 @@ self.addEventListener('fetch', (e) => {
     if (e.request.method !== 'GET') return;
 
     e.respondWith(
-        fetch(e.request)
+        fetch(e.request, { cache: 'no-store' })
             .then((res) => {
                 // Guardar copia en caché
                 const clone = res.clone();

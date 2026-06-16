@@ -1,5 +1,12 @@
 /* geometry.js — AABB, tamaños de items y transformaciones de coordenadas */
 
+// ─── Tipos redimensionables (decoración libre) ────────────────
+export const RESIZABLE_TYPES = new Set([
+    "barra", "planta",
+    "columna", "cristal_fino", "cristal_gordo", "esquina_muro",
+    "lavamanos", "maceton", "muro", "papelera", "puerta", "wc",
+]);
+
 // ─── Tamaños base de cada tipo de item ───────────────────────
 export function getItemBaseSize(type) {
     switch (type) {
@@ -8,8 +15,29 @@ export function getItemBaseSize(type) {
         case "taburete": return { w: 54, h: 54 };
         case "llevar": return { w: 58, h: 58 };
         case "planta": return { w: 35, h: 35 };
+        case "barra": return { w: 40, h: 200 };
+        case "columna": return { w: 42, h: 41 };
+        case "cristal_fino": return { w: 13, h: 210 };
+        case "cristal_gordo": return { w: 42, h: 210 };
+        case "esquina_muro": return { w: 56, h: 50 };
+        case "lavamanos": return { w: 45, h: 130 };
+        case "maceton": return { w: 45, h: 160 };
+        case "muro": return { w: 220, h: 40 };
+        case "papelera": return { w: 40, h: 35 };
+        case "puerta": return { w: 70, h: 67 };
+        case "wc": return { w: 50, h: 85 };
         default: return { w: 70, h: 70 };
     }
+}
+
+// ─── Tamaño efectivo (base o personalizado) ──────────────────
+// Devuelve unidades base (sin escala de mapa)
+export function getEffectiveSize(item) {
+    const base = getItemBaseSize(item.type);
+    return {
+        w: item.data?.w ?? base.w,
+        h: item.data?.h ?? base.h,
+    };
 }
 
 // ─── Escala de items según resolución del mapa ───────────────
@@ -34,6 +62,13 @@ export function getItemSize(type, map) {
     return { w: b.w * s, h: b.h * s };
 }
 
+// Igual que getItemSize pero respetando tamaño personalizado del item
+export function getEffectiveItemSize(item, map) {
+    const b = getEffectiveSize(item);
+    const s = getMapItemScale(map);
+    return { w: b.w * s, h: b.h * s };
+}
+
 // ─── Rotación normalizada ────────────────────────────────────
 export function normRot(it) {
     const rot = Number(it.rotation);
@@ -43,7 +78,7 @@ export function normRot(it) {
 
 // ─── AABB real (teniendo en cuenta rotación 90/180/270) ──────
 export function getAABB(it, map, x = it.x, y = it.y) {
-    const base = getItemSize(it.type, map);
+    const base = getEffectiveItemSize(it, map);
     const r = normRot(it);
 
     const W0 = base.w;
@@ -76,7 +111,7 @@ export function getAABB(it, map, x = it.x, y = it.y) {
 
 // ─── Convertir left/top visual (AABB) → x/y lógico ──────────
 export function xFromAABBLeft(it, aabbLeft, map) {
-    const base = getItemSize(it.type, map);
+    const base = getEffectiveItemSize(it, map);
     const r = normRot(it);
     const swap = r === 90 || r === 270;
     const W = swap ? base.h : base.w;
@@ -85,7 +120,7 @@ export function xFromAABBLeft(it, aabbLeft, map) {
 }
 
 export function yFromAABBTop(it, aabbTop, map) {
-    const base = getItemSize(it.type, map);
+    const base = getEffectiveItemSize(it, map);
     const r = normRot(it);
     const swap = r === 90 || r === 270;
     const H = swap ? base.w : base.h;

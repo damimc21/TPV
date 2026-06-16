@@ -19,7 +19,27 @@ body.tpvScreen {
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, .25);
+  background: #0d1117;
+  transition: background 0.4s ease;
+}
+
+/* ── SUELOS ────────────────────────────────────────────────── */
+.tpvMount.floor--wood {
+  background-image: url('/static/ui/img/fondos_mapa/wood_table_diff_1k.jpg');
+  background-repeat: repeat;
+  background-size: 150px 150px;
+}
+
+.tpvMount.floor--marble {
+  background-image: url('/static/ui/img/fondos_mapa/marble_01_diff_1k.jpg');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+.tpvMount.floor--granite {
+  background-image: url('/static/ui/img/fondos_mapa/granite_tile_diff_1k.jpg');
+  background-repeat: repeat;
+  background-size: 150px 150px;
 }
 
 /* “Escenario” del mapa: permite escalado dinámico */
@@ -37,57 +57,43 @@ body.tpvScreen {
   user-select: none;
 }
 
-/* Etiqueta con el número de la mesa */
+/* SVG inline que rellena el item */
+.tpvItem svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Etiqueta con el número de mesa — encima del SVG */
 .tpvLabel {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 18px;
+  font-weight: 800;
+  font-size: 16px;
   line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Hover en mesas clicables */
+.tpvItem[style*="cursor: pointer"]:hover svg .mesa-surface {
+  filter: brightness(1.25);
 }
 
 /* ==========================================
-   2. TIPOS DE ELEMENTOS Y ESTÉTICA
+   2. TAMAÑOS POR TIPO
    ========================================== */
-.tpvItem.mesa_normal {
-  width: 70px;
-  height: 70px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, .10);
-  border: 1px solid rgba(255, 255, 255, .18);
-}
+.tpvItem.mesa_normal  { width: 70px;  height: 70px;  }
+.tpvItem.mesa_grande  { width: 140px; height: 70px;  }
+.tpvItem.taburete     { width: 54px;  height: 54px;  }
+.tpvItem.llevar       { width: 58px;  height: 58px;  }
+.tpvItem.planta       { width: 35px;  height: 35px;  }
+.tpvItem.barra        { width: 40px;  height: 200px; }
 
-.tpvItem.mesa_grande {
-  width: 140px;
-  height: 70px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, .10);
-  border: 1px solid rgba(255, 255, 255, .18);
-}
-
-.tpvItem.taburete {
-  width: 54px;
-  height: 54px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .10);
-  border: 1px solid rgba(255, 255, 255, .18);
-}
-
-.tpvItem.llevar {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .08);
-  border: 1px dashed rgba(255, 255, 255, .22);
-}
-
-.tpvItem.planta {
-  width: 35px;
-  height: 35px;
-  background-image: url("/static/ui/img/map_icons/planta.png");
-  background-size: 100%;
-  background-repeat: no-repeat;
-}

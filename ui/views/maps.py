@@ -86,6 +86,7 @@ def _map_to_dict(m: TPVMap):
         "id": m.id,
         "name": m.name,
         "size": {"w": m.width, "h": m.height},
+        "floor": m.floor_style or "dark",
         "items": [
             {
                 "id": str(it.id),
@@ -142,6 +143,7 @@ def api_map_save(request, map_id: int):
     size = payload.get("size") or {}
     w = int(size.get("w") or 1920)
     h = int(size.get("h") or 1080)
+    floor_style = str(payload.get("floor") or "dark")[:32]
     items = payload.get("items") or []
 
     if not name:
@@ -149,7 +151,7 @@ def api_map_save(request, map_id: int):
 
     accion = "crear" if map_id == 0 else "editar"
     if map_id == 0:
-        m = TPVMap.objects.create(owner=request.user, name=name, width=w, height=h)
+        m = TPVMap.objects.create(owner=request.user, name=name, width=w, height=h, floor_style=floor_style)
         if not TPVMap.objects.filter(owner=request.user, is_active=True).exists():
             TPVMap.objects.filter(id=m.id).update(is_active=True)
     else:
@@ -159,7 +161,8 @@ def api_map_save(request, map_id: int):
         m.name = name
         m.width = w
         m.height = h
-        m.save(update_fields=["name", "width", "height", "updated_at"])
+        m.floor_style = floor_style
+        m.save(update_fields=["name", "width", "height", "floor_style", "updated_at"])
         m.items.all().delete()
 
     bulk = []

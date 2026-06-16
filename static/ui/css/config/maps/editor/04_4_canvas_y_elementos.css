@@ -96,12 +96,36 @@
   border-radius: 12px;
 }
 
+/* ── Handles de resize ─────────────────────────────────────── */
+.resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 1.5px solid rgba(60, 120, 255, .9);
+  border-radius: 2px;
+  z-index: 10;
+  display: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,.4);
+  touch-action: none;
+}
+.mapItem.is-selected .resize-handle { display: block; }
+
+.resize-handle--n  { top: -5px;  left: 50%;  transform: translateX(-50%); }
+.resize-handle--ne { top: -5px;  right: -5px; }
+.resize-handle--e  { top: 50%;  right: -5px; transform: translateY(-50%); }
+.resize-handle--se { bottom: -5px; right: -5px; }
+.resize-handle--s  { bottom: -5px; left: 50%; transform: translateX(-50%); }
+.resize-handle--sw { bottom: -5px; left: -5px; }
+.resize-handle--w  { top: 50%;  left: -5px; transform: translateY(-50%); }
+.resize-handle--nw { top: -5px; left: -5px; }
+
 .item__skin {
   position: absolute;
   inset: -4px;
   width: calc(100% + 8px);
   height: calc(100% + 8px);
-  object-fit: contain;
+  object-fit: fill;
   pointer-events: none;
   user-select: none;
 }
@@ -141,7 +165,9 @@
   width: calc(70px * var(--itemScale));
   height: calc(70px * var(--itemScale));
   border-radius: calc(14px * var(--itemScale));
-  background: rgba(255, 255, 255, .10);
+  background-image: url('/static/ui/img/texturas_mapa/oak_veneer_01_diff_1k.jpg');
+  background-size: cover;
+  background-position: center;
   border: 1px solid rgba(255, 255, 255, .18);
 }
 
@@ -149,16 +175,19 @@
   width: calc(140px * var(--itemScale));
   height: calc(70px * var(--itemScale));
   border-radius: calc(14px * var(--itemScale));
-  background: rgba(255, 255, 255, .10);
+  background-image: url('/static/ui/img/texturas_mapa/oak_veneer_01_diff_1k.jpg');
+  background-size: cover;
+  background-position: center;
   border: 1px solid rgba(255, 255, 255, .18);
 }
-
 
 .item--taburete {
   width: calc(54px * var(--itemScale));
   height: calc(54px * var(--itemScale));
   border-radius: 999px;
-  background: rgba(255, 255, 255, .10);
+  background-image: url('/static/ui/img/texturas_mapa/oak_veneer_01_diff_1k.jpg');
+  background-size: cover;
+  background-position: center;
   border: 1px solid rgba(255, 255, 255, .18);
 }
 
@@ -177,6 +206,11 @@
   background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.item--barra {
+  width: calc(40px * var(--itemScale));
+  height: calc(200px * var(--itemScale));
 }
 
 .mapItem.has-skin {
@@ -205,3 +239,20 @@
   border-radius: 12px;
 }
 
+
+/* ── Suelos en el editor (previsualización) — se aplican al world, no al canvas ── */
+.editor__world.floor--wood {
+  background-image: url('/static/ui/img/fondos_mapa/wood_table_diff_1k.jpg');
+  background-repeat: repeat;
+  background-size: 150px 150px;
+}
+.editor__world.floor--marble {
+  background-image: url('/static/ui/img/fondos_mapa/marble_01_diff_1k.jpg');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+.editor__world.floor--granite {
+  background-image: url('/static/ui/img/fondos_mapa/granite_tile_diff_1k.jpg');
+  background-repeat: repeat;
+  background-size: 150px 150px;
+}

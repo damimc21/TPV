@@ -150,18 +150,149 @@
 
             <div class="panel__sep"></div>
 
+            <!-- ═══ Suelo ═══ -->
+            <div class="panel__section">
+                <div class="panel__heading">{% trans "Suelo" %}</div>
+                <div class="picker" id="floorPicker">
+                    <button class="picker__btn editor__input" type="button" id="floorPickerBtn"
+                            style="display:flex;align-items:center;gap:10px;cursor:pointer;min-height:38px;padding:6px 10px">
+                        <span class="floorBtn__preview" id="floorPickerPreview"
+                              style="background:transparent;border:1px dashed rgba(255,255,255,.3)"></span>
+                        <span id="floorPickerLabel">{% trans "Ninguno" %}</span>
+                        <span class="picker__chevron" style="margin-left:auto;flex-shrink:0"></span>
+                    </button>
+                    <div class="picker__drop" id="floorPickerDrop" style="left:0;right:auto;width:100%;min-width:160px">
+                        <button class="picker__item floorDrop__item" data-floor="" type="button"
+                                style="display:flex;align-items:center;gap:10px">
+                            <span class="floorBtn__preview" style="background:transparent;border:1px dashed rgba(255,255,255,.3)"></span>
+                            <span>{% trans "Ninguno" %}</span>
+                        </button>
+                        <button class="picker__item floorDrop__item" data-floor="wood" type="button"
+                                style="display:flex;align-items:center;gap:10px">
+                            <span class="floorBtn__preview" style="background:linear-gradient(92deg,#3d2409,#5a3512,#4a2c0d)"></span>
+                            <span>{% trans "Madera" %}</span>
+                        </button>
+                        <button class="picker__item floorDrop__item" data-floor="marble" type="button"
+                                style="display:flex;align-items:center;gap:10px">
+                            <span class="floorBtn__preview" style="background:linear-gradient(115deg,#c8bfa8 0%,#e8dfd0 50%,#c8bfa8 100%)"></span>
+                            <span>{% trans "Mármol" %}</span>
+                        </button>
+                        <button class="picker__item floorDrop__item" data-floor="granite" type="button"
+                                style="display:flex;align-items:center;gap:10px">
+                            <span class="floorBtn__preview" style="background:linear-gradient(135deg,#4a4a4a,#6a6a6a,#3a3a3a)"></span>
+                            <span>{% trans "Granito" %}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel__sep"></div>
+
             <!-- ═══ Decoración ═══ -->
             <div class="panel__section">
                 <div class="panel__heading">{% trans "Decoración" %}</div>
-                <div class="panel__grid panel__grid--2">
-                    <button class="tool" type="button" data-tool="planta" draggable="true" data-tip="{% trans 'Planta' %}"
-                        aria-label="{% trans 'Planta' %}">
-                        <span class="tool__icon">
-                            <img src="{% static 'ui/img/map_editor_icons/plant-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
-                        </span>
-                        <span class="tool__label">{% trans "Planta" %}</span>
-                    </button>
-                </div>
+
+                <details class="panel__subsection" open>
+                    <summary class="panel__subheading">{% trans "General" %}</summary>
+                    <div class="panel__grid panel__grid--2">
+                        <button class="tool" type="button" data-tool="planta" draggable="true" data-tip="{% trans 'Planta' %}"
+                            aria-label="{% trans 'Planta' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/plant-small-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Planta" %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="barra" draggable="true" data-tip="{% trans 'Barra' %}"
+                            aria-label="{% trans 'Barra' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/bar.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Barra" %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="maceton" draggable="true" data-tip="{% trans 'Macetón' %}"
+                            aria-label="{% trans 'Macetón' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/plant-large-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Macet." %}</span>
+                        </button>
+                    </div>
+                </details>
+
+                <details class="panel__subsection" open>
+                    <summary class="panel__subheading">{% trans "Estructura" %}</summary>
+                    <div class="panel__grid panel__grid--2">
+                        <button class="tool" type="button" data-tool="muro" draggable="true" data-tip="{% trans 'Muro' %}"
+                            aria-label="{% trans 'Muro' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/wall-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Muro" %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="esquina_muro" draggable="true" data-tip="{% trans 'Esquina de muro' %}"
+                            aria-label="{% trans 'Esquina de muro' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/corner-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Esq." %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="cristal_fino" draggable="true" data-tip="{% trans 'Cristal fino' %}"
+                            aria-label="{% trans 'Cristal fino' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/glass-small-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Fino" %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="cristal_gordo" draggable="true" data-tip="{% trans 'Cristal gordo' %}"
+                            aria-label="{% trans 'Cristal gordo' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/glass-big-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Gordo" %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="columna" draggable="true" data-tip="{% trans 'Columna' %}"
+                            aria-label="{% trans 'Columna' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/column-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Colum." %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="puerta" draggable="true" data-tip="{% trans 'Puerta' %}"
+                            aria-label="{% trans 'Puerta' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/door-open-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Puerta" %}</span>
+                        </button>
+                    </div>
+                </details>
+
+                <details class="panel__subsection" open>
+                    <summary class="panel__subheading">{% trans "Baño" %}</summary>
+                    <div class="panel__grid panel__grid--2">
+                        <button class="tool" type="button" data-tool="lavamanos" draggable="true" data-tip="{% trans 'Lavamanos' %}"
+                            aria-label="{% trans 'Lavamanos' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/washbasin-sink-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Lavabo" %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="wc" draggable="true" data-tip="{% trans 'WC' %}"
+                            aria-label="{% trans 'WC' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/wc-washroom-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "WC" %}</span>
+                        </button>
+                        <button class="tool" type="button" data-tool="papelera" draggable="true" data-tip="{% trans 'Papelera / jabón' %}"
+                            aria-label="{% trans 'Papelera / jabón' %}">
+                            <span class="tool__icon">
+                                <img src="{% static 'ui/img/map_editor_icons/bin-svgrepo-com.svg' %}" class="svg-icon" width="22" alt="">
+                            </span>
+                            <span class="tool__label">{% trans "Papel." %}</span>
+                        </button>
+                    </div>
+                </details>
             </div>
 
             <div class="panel__sep"></div>
