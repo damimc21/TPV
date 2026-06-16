@@ -81,85 +81,74 @@
 
       case "taburete":
         return `<img src="/static/ui/img/map_icons/Taburete TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "llevar":
         return `<img src="/static/ui/img/map_icons/take-away-svgrepo-com.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "barra":
         return `<img src="/static/ui/img/map_icons/Barra TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "columna":
         return `<img src="/static/ui/img/map_icons/Columna TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "cristal_fino":
         return `<img src="/static/ui/img/map_icons/Cristal fino_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "cristal_gordo":
         return `<img src="/static/ui/img/map_icons/Cristal gordo_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "esquina_muro":
         return `<img src="/static/ui/img/map_icons/Esquna muro TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "lavamanos":
         return `<img src="/static/ui/img/map_icons/Lavamanos TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "maceton":
         return `<img src="/static/ui/img/map_icons/MAcetón_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "muro":
         return `<img src="/static/ui/img/map_icons/Muro TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "papelera":
         return `<img src="/static/ui/img/map_icons/PapeleraoJabón_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "puerta":
         return `<img src="/static/ui/img/map_icons/Puerta_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "wc":
         return `<img src="/static/ui/img/map_icons/WC TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
                      draggable="false" alt="">`;
 
       case "planta":
-        // Maceta simple (el SVG original tiene fondo, este es más limpio)
-        return `<svg viewBox="0 0 35 35" xmlns="http://www.w3.org/2000/svg">
-          <!-- Maceta -->
-          <path d="M10 22 L12 30 L23 30 L25 22 Z" fill="rgba(160,100,50,0.7)"/>
-          <!-- Tierra -->
-          <ellipse cx="17.5" cy="22" rx="7.5" ry="2.5" fill="rgba(100,60,20,0.8)"/>
-          <!-- Hoja izquierda -->
-          <ellipse cx="11" cy="15" rx="6" ry="4" fill="rgba(60,160,60,0.8)"
-                   transform="rotate(-30 11 15)"/>
-          <!-- Hoja derecha -->
-          <ellipse cx="24" cy="15" rx="6" ry="4" fill="rgba(50,140,50,0.8)"
-                   transform="rotate(30 24 15)"/>
-          <!-- Hoja central -->
-          <ellipse cx="17.5" cy="11" rx="5" ry="7" fill="rgba(70,180,70,0.85)"/>
-        </svg>`;
+        // Mismo icono que usa el editor (MAP_SKINS.planta), para que se vea igual.
+        return `<img src="/static/ui/img/map_icons/Maceta_TPV.svg"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     draggable="false" alt="">`;
 
       default:
         return null;
