@@ -245,7 +245,9 @@ function initModalCobro(forcedTotal = null, forcedLineas = null) {
         btnConTicket.disabled = true;
         btnSinTicket.disabled = true;
 
-        const operador = await window.TPVOperador?.require({
+        // El usuario ya se identificó como operador al entrar en la mesa;
+        // reutilizamos ese operador en el cobro en vez de volver a preguntar.
+        const operador = window.TPVOperador?.current() || await window.TPVOperador?.require({
             title: gettext("Usuario para el cobro"),
             hint: gettext("Selecciona quien realiza este cobro.")
         });
