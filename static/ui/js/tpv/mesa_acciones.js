@@ -469,6 +469,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
+            // Si el producto usa plantilla configurable (formatos/grupos), abrimos
+            // directamente su modal de edición para ver y modificar lo ya seleccionado
+            // (incluye Comodín / Comentario libre), en vez del panel de perfiles rápidos.
+            const prodSel = (tpvState.productos || []).find(p => Number(p.id) === Number(seleccionadas[0].producto_id));
+            if (prodSel && prodSel.es_configurable && typeof abrirConfigDesdeTicket === 'function') {
+                if (seleccionadas.length > 1) {
+                    showAlerta(gettext("Atención"), gettext("Seleccione una sola línea para editar este producto."));
+                    return;
+                }
+                abrirConfigDesdeTicket(seleccionadas[0]._uid);
+                return;
+            }
+
             // Ahora abrimos el modal de selección de perfiles rápidos
             abrirModificadoresRapido('comentario');
         });
@@ -493,6 +506,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     showAlerta(gettext("Atención"), gettext("Para añadir suplementos a varios artículos, estos deben ser del mismo tipo."));
                     return;
                 }
+            }
+
+            // Si el producto usa plantilla configurable (formatos/grupos), abrimos
+            // directamente su modal de edición para ver y modificar lo ya seleccionado
+            // (incluye Comodín / Comentario libre), en vez del panel de perfiles rápidos.
+            const prodSel = (tpvState.productos || []).find(p => Number(p.id) === Number(seleccionadas[0].producto_id));
+            if (prodSel && prodSel.es_configurable && typeof abrirConfigDesdeTicket === 'function') {
+                if (seleccionadas.length > 1) {
+                    showAlerta(gettext("Atención"), gettext("Seleccione una sola línea para editar este producto."));
+                    return;
+                }
+                abrirConfigDesdeTicket(seleccionadas[0]._uid);
+                return;
             }
 
             // Ahora abrimos el modal de selección de perfiles rápidos
