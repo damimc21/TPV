@@ -3,13 +3,19 @@ from .models import (
     Departamento, Producto, Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria,
     PerfilComentarios, Comentario, PerfilSuplementos, Suplemento, Cliente,
     PlantillaConfigurable, FormatoProducto, GrupoOpciones, OpcionGrupo, PrecioOpcionFormato, MovimientoStock,
-    CategoriaInventario, Proveedor, ArticuloInventario
+    CategoriaInventario, Proveedor, ArticuloInventario, Impresora
 )
 
 
 class DepartamentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Departamento
+        fields = "__all__"
+
+
+class ImpresoraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Impresora
         fields = "__all__"
 
 

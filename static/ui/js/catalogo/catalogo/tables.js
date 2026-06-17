@@ -95,3 +95,30 @@ export function updateDepartmentSelects({ departamentos, t }) {
         deptoOptions.appendChild(div);
     });
 }
+
+export function updateImpresoraSelect({ impresoras, t, currentValue }) {
+    const select = document.getElementById('prod_impresora');
+    if (!select) return;
+
+    const valorActual = currentValue !== undefined ? currentValue : select.value;
+    const activas = (impresoras || []).filter(i => i.activa !== false);
+
+    const options = activas.map(i => (
+        `<option value="${escapeHtml(i.nombre)}">${escapeHtml(i.nombre)}</option>`
+    )).join('');
+
+    select.innerHTML = `<option value="">${t('catalogo.product.noPrinter', '-- Ninguna --')}</option>${options}`;
+
+    if (valorActual) {
+        const coincide = activas.some(i => i.nombre === valorActual);
+        if (!coincide) {
+            // Conservar un valor ya guardado aunque ya no exista como impresora activa
+            // (impresora desactivada/eliminada o valor antiguo de antes de conectar este selector).
+            select.insertAdjacentHTML(
+                'beforeend',
+                `<option value="${escapeHtml(valorActual)}">${escapeHtml(valorActual)} ${t('catalogo.product.printerLegacySuffix', '(no encontrada)')}</option>`
+            );
+        }
+        select.value = valorActual;
+    }
+}

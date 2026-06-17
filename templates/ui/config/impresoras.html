@@ -5,6 +5,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'ui/css/section-layout.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/catalogo/modales.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'ui/css/catalogo/extras.css' %}?v=1">
 {% endblock %}
 
 {% block content %}
@@ -21,10 +23,14 @@
         <h1>{% trans "Gestión de Impresoras" %}</h1>
     </div>
     <div class="header-actions">
-        <a href="/admin/tpvapp/impresora/add/" target="_blank" class="sync-btn sync-btn--primary">
+        <button type="button" class="sync-btn sync-btn--ghost" onclick="seedImpresorasPorDefecto()">
+            <img src="{% static 'ui/img/iconos/printer.svg' %}" class="svg-icon" width="18" alt="">
+            <span>{% trans "Crear Cocina / Barra / Caja" %}</span>
+        </button>
+        <button type="button" class="sync-btn sync-btn--primary" onclick="openModalImpresora()">
             <img src="{% static 'ui/img/iconos/plus.svg' %}" class="svg-icon" width="18" alt="">
-            <span>{% trans "Añadir Impresora (Admin)" %}</span>
-        </a>
+            <span>{% trans "Añadir Impresora" %}</span>
+        </button>
     </div>
 </header>
 
@@ -71,9 +77,14 @@
             </div>
             
             <div class="card__cta" style="margin-top: 20px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
-                <a href="/admin/tpvapp/impresora/{{ impresora.id }}/change/" target="_blank" class="btn btn--subtle" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 8px;">
-                    {% trans "Editar (Admin)" %}
-                </a>
+                <button type="button" class="btn btn--subtle" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 8px;"
+                    onclick="openModalImpresora({{ impresora.id }}, '{{ impresora.nombre|escapejs }}', '{{ impresora.tipo }}', '{{ impresora.ip_o_puerto|default:''|escapejs }}', {{ impresora.papel_mm }}, {{ impresora.activa|yesno:'true,false' }})">
+                    {% trans "Editar" %}
+                </button>
+                <button type="button" class="btn btn--subtle" style="flex: 1; justify-content: center; font-size: 0.85rem; padding: 8px; color: #ff6b6b;"
+                    onclick="deleteImpresora({{ impresora.id }}, '{{ impresora.nombre|escapejs }}')">
+                    {% trans "Eliminar" %}
+                </button>
             </div>
         </div>
         {% empty %}
@@ -87,4 +98,70 @@
 
 </section>
 </div><!-- /.section-dashboard -->
+
+<!-- MODAL IMPRESORA -->
+<div id="modalImpresora" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal__header">
+      <h3 id="modalImpresoraTitle">{% trans "Nueva Impresora" %}</h3>
+      <button class="modal__close" type="button" onclick="closeModal('modalImpresora')">×</button>
+    </div>
+
+    <div class="modal__body">
+      <form id="formImpresora">
+        <input type="hidden" id="imp_id">
+
+        <div class="form-group">
+          <label class="form-label" for="imp_nombre">{% trans "Nombre" %}</label>
+          <input type="text" id="imp_nombre" class="form-control" required autocomplete="off" placeholder="{% trans 'Ej: Impresora Cocina' %}">
+        </div>
+
+        <div class="form-row mb-1">
+          <div class="form-group col-6">
+            <label class="form-label" for="imp_tipo">{% trans "Tipo" %}</label>
+            <select id="imp_tipo" class="form-control">
+              <option value="barra">{% trans "Barra" %}</option>
+              <option value="cocina">{% trans "Cocina" %}</option>
+              <option value="caja" selected>{% trans "Caja / Tickets" %}</option>
+              <option value="otra">{% trans "Otra" %}</option>
+            </select>
+          </div>
+          <div class="form-group col-6">
+            <label class="form-label" for="imp_papel_mm">{% trans "Ancho de papel (mm)" %}</label>
+            <input type="number" id="imp_papel_mm" class="form-control" value="80" min="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="imp_ip_o_puerto">{% trans "IP o puerto" %}</label>
+          <input type="text" id="imp_ip_o_puerto" class="form-control" autocomplete="off" placeholder="{% trans 'Ej: 192.168.1.50 o COM1' %}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-switch">
+            <div class="switch">
+              <input type="checkbox" id="imp_activa" checked>
+              <span class="slider"></span>
+            </div>
+            <span>{% trans "Activa" %}</span>
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal__footer">
+      <button type="button" class="btn btn--ghost" onclick="closeModal('modalImpresora')">
+        {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn btn--primary" id="btnGuardarImpresora">
+        {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'ui/js/config/impresoras.js' %}?v=1"></script>
 {% endblock %}

@@ -19,6 +19,12 @@ export function deleteDepartamentoApi(id) {
     });
 }
 
+export async function fetchImpresoras() {
+    const resp = await fetch('/api/impresoras/');
+    if (!resp.ok) throw new Error('Error en API impresoras');
+    return resp.json();
+}
+
 export async function fetchProductos() {
     const resp = await fetch('/api/productos/');
     if (!resp.ok) throw new Error('Error en API productos');

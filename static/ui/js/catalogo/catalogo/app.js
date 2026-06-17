@@ -3,6 +3,7 @@ import {
     deleteDepartamentoApi,
     deleteProductoApi,
     fetchDepartamentos,
+    fetchImpresoras,
     fetchProductos,
     saveDepartamentoApi,
     saveProductoApi,
@@ -12,6 +13,7 @@ import {
     renderDepartamentosTable,
     renderProductosTable,
     updateDepartmentSelects,
+    updateImpresoraSelect,
 } from './tables.js';
 import {
     applySorting,
@@ -47,6 +49,7 @@ function initCatalogoApp() {
     // Caché local de datos
     let departamentosData = [];
     let productosData = [];
+    let impresorasData = [];
     let isInitialLoadDepto = true;
     let isInitialLoadProd = true;
     const t = window.t || ((key, fallback) => fallback || key);
@@ -64,6 +67,7 @@ function initCatalogoApp() {
         // Carga inicial de datos desde las APIs
         loadDepartamentos();
         loadProductos();
+        loadImpresoras();
     }
 
     // ==========================================
@@ -568,6 +572,15 @@ function initCatalogoApp() {
         updateDepartmentSelects({ departamentos: departamentosData, t });
     }
 
+    async function loadImpresoras() {
+        try {
+            impresorasData = await fetchImpresoras();
+            updateImpresoraSelect({ impresoras: impresorasData, t });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     window.openModalProducto = function () {
         document.getElementById('formProducto')?.reset();
         document.getElementById('prod_id').value = '';
@@ -575,6 +588,7 @@ function initCatalogoApp() {
         document.getElementById('prod_color_texto').value = '#ffffff'; // Default text color
         document.getElementById('prod_icono_boton').value = ''; // Default icon
         document.getElementById('iconPreview').innerHTML = ''; // Reset UI preview
+        updateImpresoraSelect({ impresoras: impresorasData, t, currentValue: '' }); // Limpiar opción heredada de una edición previa
         document.getElementById('modalProdTitle').innerText = t('catalogo.newProduct', 'Nuevo Producto');
 
         // Si no hay departamentos, avisar
@@ -612,7 +626,7 @@ function initCatalogoApp() {
         // Extended Fields
         document.getElementById('prod_nombre_factura').value = p.nombre_factura || '';
         document.getElementById('prod_nombre_comanda').value = p.nombre_comanda || '';
-        document.getElementById('prod_impresora').value = p.impresora || '';
+        updateImpresoraSelect({ impresoras: impresorasData, t, currentValue: p.impresora || '' });
 
         document.getElementById('prod_color_boton').value = p.color_boton || '#2c3e50';
         document.getElementById('prod_color_texto').value = p.color_texto || '#ffffff';

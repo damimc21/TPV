@@ -16,14 +16,15 @@ from ..models import (
     Departamento, Producto, Mesa, Comanda, LineaComanda, Factura, Pago, EventoAuditoria,
     PerfilComentarios, Comentario, PerfilSuplementos, Suplemento, Cliente,
     PlantillaConfigurable, FormatoProducto, GrupoOpciones, OpcionGrupo, PrecioOpcionFormato, MovimientoStock,
-    CategoriaInventario, Proveedor, ArticuloInventario
+    CategoriaInventario, Proveedor, ArticuloInventario, Impresora
 )
 from ..serializers import (
     DepartamentoSerializer, ProductoSerializer, MesaSerializer, ComandaSerializer,
     LineaComandaSerializer, FacturaSerializer, PagoSerializer, EventoAuditoriaSerializer,
     PerfilComentariosSerializer, ComentarioSerializer, PerfilSuplementosSerializer, SuplementoSerializer,
     ClienteSerializer, PlantillaConfigurableSerializer, MovimientoStockSerializer,
-    CategoriaInventarioSerializer, ProveedorSerializer, ArticuloInventarioSerializer
+    CategoriaInventarioSerializer, ProveedorSerializer, ArticuloInventarioSerializer,
+    ImpresoraSerializer,
 )
 from ..services import actualizar_estado_mesa, imprimir_comprobante, emitir_factura, registrar_pago, registrar_evento
 from ..permissions import IsManagerOrReadOnly, has_app_permission
@@ -34,6 +35,37 @@ from ._helpers import (
     _forbidden_response,
     _commit_borrador_a_comanda,
 )
+
+class ImpresoraViewSet(viewsets.ModelViewSet):
+    queryset = Impresora.objects.all().order_by("nombre")
+    serializer_class = ImpresoraSerializer
+    permission_classes = [IsManagerOrReadOnly]
+
+    def perform_create(self, serializer):
+        impresora = serializer.save()
+        actor = _actor_username(self.request.user)
+        log_info(
+            "configuracion.impresoras",
+            f"usuario={actor} accion=crear impresora_id={impresora.id} nombre={impresora.nombre} tipo={impresora.tipo}",
+        )
+
+    def perform_update(self, serializer):
+        before = serializer.instance.nombre
+        impresora = serializer.save()
+        actor = _actor_username(self.request.user)
+        log_info(
+            "configuracion.impresoras",
+            f"usuario={actor} accion=editar impresora_id={impresora.id} nombre_antes={before} nombre_despues={impresora.nombre}",
+        )
+
+    def perform_destroy(self, instance):
+        actor = _actor_username(self.request.user)
+        log_info(
+            "configuracion.impresoras",
+            f"usuario={actor} accion=eliminar impresora_id={instance.id} nombre={instance.nombre}",
+        )
+        instance.delete()
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

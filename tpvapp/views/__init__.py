@@ -47,6 +47,7 @@ from .inventario import (
 
 from .configuracion import (
     configuracion_update,
+    ImpresoraViewSet,
 )
 
 __all__ = [
@@ -75,4 +76,5 @@ __all__ = [
     "plantillas_inventario",
     "importar_plantilla_inventario",
     "configuracion_update",
+    "ImpresoraViewSet",
 ]

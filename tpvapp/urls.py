@@ -7,7 +7,7 @@ from .views import (
     listar_iconos, ClienteViewSet, plantilla_configurable, MovimientoStockViewSet,
     CategoriaInventarioViewSet, ProveedorViewSet, ArticuloInventarioViewSet,
     plantillas_inventario, importar_plantilla_inventario, configuracion_update,
-    operadores_tpv
+    operadores_tpv, ImpresoraViewSet
 )
 
 router = DefaultRouter()
@@ -27,6 +27,7 @@ router.register(r"movimientos-stock", MovimientoStockViewSet)
 router.register(r"categorias-inventario", CategoriaInventarioViewSet)
 router.register(r"proveedores", ProveedorViewSet)
 router.register(r"articulos-inventario", ArticuloInventarioViewSet)
+router.register(r"impresoras", ImpresoraViewSet)
 
 urlpatterns = [
     path("catalogo/iconos/", listar_iconos, name="listar_iconos"),
