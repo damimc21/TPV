@@ -346,8 +346,9 @@
           el.appendChild(lab);
         }
 
-        // Clic en mesas numeradas → abre comanda
-        if ((it.type === "mesa_normal" || it.type === "mesa_grande") && numero) {
+        // Clic en mesas/taburetes/llevar numerados → abre comanda
+        const CLICKABLE_TYPES = new Set(["mesa_normal", "mesa_grande", "taburete", "llevar"]);
+        if (CLICKABLE_TYPES.has(it.type) && numero) {
           el.style.cursor = "pointer";
           el.addEventListener("click", async () => {
             const operador = await pedirOperadorMapa();
