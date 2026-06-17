@@ -93,7 +93,10 @@
         try {
             const data = await postReopen(url);
             if (data.ok) {
-                await Notify.success(cfg.reopenShiftSuccess || "Turno reabierto correctamente.", {
+                const mensaje = data.jornada_reabierta
+                    ? (cfg.reopenShiftAndDaySuccess || "Turno y jornada reabiertos correctamente.")
+                    : (cfg.reopenShiftSuccess || "Turno reabierto correctamente.");
+                await Notify.success(mensaje, {
                     title: cfg.successTitle || "Exito",
                 });
                 location.reload();

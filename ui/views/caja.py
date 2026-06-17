@@ -149,12 +149,13 @@ def api_caja_reabrir(request, sesion_id):
         )
         return JsonResponse({"ok": False, "error": "El turno ya esta abierto."}, status=400)
 
-    if sesion.dia.fecha_cierre:
+    dia_abierto = DiaContable.objects.filter(fecha_cierre__isnull=True).first()
+    if sesion.dia and sesion.dia.fecha_cierre and dia_abierto and dia_abierto.id != sesion.dia.id:
         log_warn(
             "caja.turno",
-            f"usuario={_actor_username(request.user)} accion=reabrir_turno_bloqueado sesion_id={sesion.id} motivo=jornada_cerrada",
+            f"usuario={_actor_username(request.user)} accion=reabrir_turno_bloqueado sesion_id={sesion.id} motivo=otra_jornada_abierta",
         )
-        return JsonResponse({"ok": False, "error": "No puedes reabrir un turno de una jornada cerrada. Reabre primero la jornada."}, status=400)
+        return JsonResponse({"ok": False, "error": "Ya hay otra jornada abierta. Cierra la actual antes de reabrir este turno."}, status=400)
 
     sesion_abierta = SesionCaja.objects.filter(fecha_cierre__isnull=True).first()
     if sesion_abierta and sesion_abierta.id != sesion.id:
@@ -164,6 +165,20 @@ def api_caja_reabrir(request, sesion_id):
         )
         return JsonResponse({"ok": False, "error": "Ya hay otro turno abierto."}, status=400)
 
+    # Un turno no puede quedar "abierto" dentro de una jornada cerrada: si la jornada
+    # de este turno ya estaba cerrada (caso habitual, ya que cerrar la jornada cierra
+    # automaticamente el ultimo turno abierto), la reabrimos tambien aqui en cascada.
+    jornada_reabierta = False
+    if sesion.dia and sesion.dia.fecha_cierre:
+        sesion.dia.fecha_cierre = None
+        sesion.dia.cerrado_por = None
+        sesion.dia.save(update_fields=["fecha_cierre", "cerrado_por"])
+        jornada_reabierta = True
+        log_info(
+            "caja.jornada",
+            f"usuario={_actor_username(request.user)} accion=reabrir_jornada_automatico dia_id={sesion.dia.id} motivo=reabrir_turno sesion_id={sesion.id}",
+        )
+
     sesion.fecha_cierre = None
     sesion.cerrada_por = None
     sesion.efectivo_final_real = None
@@ -171,9 +186,9 @@ def api_caja_reabrir(request, sesion_id):
     sesion.save()
     log_info(
         "caja.turno",
-        f"usuario={_actor_username(request.user)} accion=reabrir_turno sesion_id={sesion.id}",
+        f"usuario={_actor_username(request.user)} accion=reabrir_turno sesion_id={sesion.id} jornada_reabierta={jornada_reabierta}",
     )
-    return JsonResponse({"ok": True})
+    return JsonResponse({"ok": True, "jornada_reabierta": jornada_reabierta})
 
 
 @login_required

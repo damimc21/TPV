@@ -41,7 +41,8 @@
                         <td>{{ dia.cerrado_por.username }}</td>
                         <td style="text-align: center;">
                             <button class="btn-reabrir" onclick="reabrirDia({{ dia.id }})">
-                                🔓 {% trans "Reabrir Jornada" %}
+                                <img src="{% static 'ui/img/iconos/lock-keyhole-open.svg' %}" class="svg-icon" width="15" alt="">
+                                {% trans "Reabrir Jornada" %}
                             </button>
                         </td>
                     </tr>
@@ -78,7 +79,8 @@
                         <td>{{ sesion.cerrada_por.username }}</td>
                         <td style="text-align: center;">
                             <button class="btn-reabrir" onclick="reabrirTurno({{ sesion.id }})">
-                                🔓 {% trans "Reabrir Turno" %}
+                                <img src="{% static 'ui/img/iconos/lock-keyhole-open.svg' %}" class="svg-icon" width="15" alt="">
+                                {% trans "Reabrir Turno" %}
                             </button>
                         </td>
                     </tr>
@@ -104,6 +106,7 @@
   "confirmReopenShift": "{% trans '¿Estás seguro de que quieres reabrir este turno? Se borrarán los datos del arqueo previo para permitir una nueva entrada.'|escapejs %}",
   "reopenDaySuccess": "{% trans 'Jornada reabierta correctamente.'|escapejs %}",
   "reopenShiftSuccess": "{% trans 'Turno reabierto correctamente.'|escapejs %}",
+  "reopenShiftAndDaySuccess": "{% trans 'Turno y jornada reabiertos correctamente.'|escapejs %}",
   "reopenDayError": "{% trans 'Error al reabrir la jornada.'|escapejs %}",
   "reopenShiftError": "{% trans 'Error al reabrir el turno.'|escapejs %}",
   "reopenDayConnectionError": "{% trans 'Error de conexión al reabrir la jornada.'|escapejs %}",
