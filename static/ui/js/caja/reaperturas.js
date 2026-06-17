@@ -13,7 +13,6 @@
     }
 
     const cfg = readConfig("reaperturas-config");
-    const Notify = window.Notify;
 
     function getHeaders() {
         return {
@@ -55,7 +54,7 @@
     }
 
     window.reabrirDia = async function reabrirDia(id) {
-        const confirmed = await Notify.confirm(
+        const confirmed = await window.Notify.confirm(
             cfg.confirmReopenDay || "¿Estas seguro de que quieres reabrir esta jornada?",
             { title: "Confirmar" }
         );
@@ -65,25 +64,25 @@
         try {
             const data = await postReopen(url);
             if (data.ok) {
-                await Notify.success(cfg.reopenDaySuccess || "Jornada reabierta correctamente.", {
+                await window.Notify.success(cfg.reopenDaySuccess || "Jornada reabierta correctamente.", {
                     title: cfg.successTitle || "Exito",
                 });
                 location.reload();
             } else {
-                await Notify.error(data.error || cfg.reopenDayError || "Error al reabrir la jornada.", {
+                await window.Notify.error(data.error || cfg.reopenDayError || "Error al reabrir la jornada.", {
                     title: cfg.warningTitle || "Atencion",
                 });
             }
         } catch (error) {
             console.error("Error:", error);
-            await Notify.error(cfg.reopenDayConnectionError || "Error de conexion al reabrir la jornada.", {
+            await window.Notify.error(cfg.reopenDayConnectionError || "Error de conexion al reabrir la jornada.", {
                 title: cfg.errorTitle || "Error",
             });
         }
     };
 
     window.reabrirTurno = async function reabrirTurno(id) {
-        const confirmed = await Notify.confirm(
+        const confirmed = await window.Notify.confirm(
             cfg.confirmReopenShift || "¿Estas seguro de que quieres reabrir este turno?",
             { title: "Confirmar" }
         );
@@ -96,18 +95,18 @@
                 const mensaje = data.jornada_reabierta
                     ? (cfg.reopenShiftAndDaySuccess || "Turno y jornada reabiertos correctamente.")
                     : (cfg.reopenShiftSuccess || "Turno reabierto correctamente.");
-                await Notify.success(mensaje, {
+                await window.Notify.success(mensaje, {
                     title: cfg.successTitle || "Exito",
                 });
                 location.reload();
             } else {
-                await Notify.error(data.error || cfg.reopenShiftError || "Error al reabrir el turno.", {
+                await window.Notify.error(data.error || cfg.reopenShiftError || "Error al reabrir el turno.", {
                     title: cfg.warningTitle || "Atencion",
                 });
             }
         } catch (error) {
             console.error("Error:", error);
-            await Notify.error(cfg.reopenShiftConnectionError || "Error de conexion al reabrir el turno.", {
+            await window.Notify.error(cfg.reopenShiftConnectionError || "Error de conexion al reabrir el turno.", {
                 title: cfg.errorTitle || "Error",
             });
         }
