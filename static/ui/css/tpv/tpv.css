@@ -88,6 +88,31 @@ body.tpvScreen {
   filter: brightness(1.25);
 }
 
+/* ── ESTADO DE LA MESA (colorcillo) ──────────────────────────
+   ocupada → rojillo (hay productos dentro, sin comprobante)
+   pagando → amarillento (se ha sacado comprobante para esa comanda)
+   libre   → normal, sin overlay                                 */
+.tpvItem--ocupada::after,
+.tpvItem--pagando::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: calc(13px * var(--itemScale));
+  pointer-events: none;
+}
+
+.tpvItem--ocupada::after {
+  background: rgba(239, 68, 68, 0.32);
+  border: calc(2px * var(--itemScale)) solid rgba(239, 68, 68, 0.9);
+  box-shadow: 0 0 calc(8px * var(--itemScale)) rgba(239, 68, 68, 0.5);
+}
+
+.tpvItem--pagando::after {
+  background: rgba(250, 204, 21, 0.32);
+  border: calc(2px * var(--itemScale)) solid rgba(250, 204, 21, 0.9);
+  box-shadow: 0 0 calc(8px * var(--itemScale)) rgba(250, 204, 21, 0.5);
+}
+
 /* ==========================================
    2. TAMAÑOS POR TIPO
    ========================================== */

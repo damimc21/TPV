@@ -18,6 +18,24 @@
     return window.TPV_DIA_ABIERTO === true && window.TPV_SESION_ABIERTA === true;
   }
 
+  // ── Estado de las mesas (colorcillo según ocupación/comprobante) ──────────
+  // libre   → normal (sin colorcillo)
+  // ocupada → rojillo (hay líneas activas, sin comprobante impreso)
+  // pagando → amarillento (se ha sacado comprobante para esa comanda)
+  let mesaEstados = new Map();
+
+  async function loadMesaEstados() {
+    try {
+      const res = await fetch(`/api/mesas/`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const lista = Array.isArray(data) ? data : (data.results || []);
+      mesaEstados = new Map(lista.map((m) => [String(m.numero), m.estado]));
+    } catch (e) {
+      console.error("No se pudo cargar el estado de las mesas:", e);
+    }
+  }
+
   async function pedirOperadorMapa() {
     if (!window.TPVOperador || !cajaListaParaOperar()) return null;
     if (operadorConfirmadoEnMapa && window.TPVOperador.current()) {
@@ -275,11 +293,26 @@
     const mapW = Number(map.size?.w || 1920);
     const mapH = Number(map.size?.h || 1080);
 
+    // Referencias a los elementos clicables numerados, para poder refrescar
+    // su colorcillo de estado sin tener que re-renderizar todo el mapa.
+    const itemElsByNumero = new Map();
+
+    /** Aplica la clase de color según el estado actual de cada mesa. */
+    function applyEstados() {
+      for (const [numero, el] of itemElsByNumero) {
+        el.classList.remove("tpvItem--ocupada", "tpvItem--pagando");
+        const estado = mesaEstados.get(numero);
+        if (estado === "ocupada") el.classList.add("tpvItem--ocupada");
+        else if (estado === "pagando") el.classList.add("tpvItem--pagando");
+      }
+    }
+
     /**
      * Dibuja los elementos del mapa con SVGs inline.
      */
     function render() {
       world.innerHTML = "";
+      itemElsByNumero.clear();
 
       const scale = fitScale(mapW, mapH);
       world.style.width  = mapW + "px";
@@ -364,14 +397,22 @@
             if (!operador && cajaListaParaOperar()) return;
             window.location.href = `${BASE}/tpv/mesa/${encodeURIComponent(numero)}/`;
           });
+          itemElsByNumero.set(numero, el);
         }
 
         world.appendChild(el);
       }
+
+      applyEstados();
     }
 
     render();
     window.addEventListener("resize", render);
+
+    // Cargamos el estado de las mesas (libre/ocupada/pagando) y lo refrescamos
+    // periódicamente para que el colorcillo del mapa se mantenga al día.
+    loadMesaEstados().then(applyEstados);
+    setInterval(() => { loadMesaEstados().then(applyEstados); }, 6000);
 
     if (cajaListaParaOperar()) {
       setTimeout(() => { pedirOperadorMapa(); }, 0);
