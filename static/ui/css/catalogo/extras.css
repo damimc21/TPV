@@ -31,11 +31,20 @@
 }
 
 .catalogo-section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 10px;
+    padding: 14px 15px 0;
+    margin: 0 0 10px;
+}
+
+.catalogo-section-title img {
+    width: 16px;
+    height: 16px;
 }
 
 .form-row--gap {

@@ -83,8 +83,8 @@ body.tpvScreen {
   z-index: 1;
 }
 
-/* Hover en mesas clicables */
-.tpvItem[style*="cursor: pointer"]:hover svg .mesa-surface {
+/* Hover en elementos clicables (mesas, taburetes, llevar...) */
+.tpvItem[style*="cursor: pointer"]:hover {
   filter: brightness(1.25);
 }
 

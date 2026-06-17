@@ -102,6 +102,13 @@
     return promise;
   }
 
+  // Mismo "sangrado" que aplica el editor a sus iconos (.item__skin), para que
+  // el dibujo se vea del mismo tamaño relativo en TPV que en el editor: por
+  // defecto el icono se dibuja 4px más grande por lado que su caja, y la
+  // maceta (cuyo SVG tiene más margen interno) usa el doble (8px por lado).
+  const IMG_STYLE_DEFAULT = "position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);object-fit:fill";
+  const IMG_STYLE_PLANTA  = "position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);object-fit:fill";
+
   function getItemSVG(type) {
     const uid   = ++_svgUid;
     const oak   = "/static/ui/img/texturas_mapa/oak_veneer_01_diff_1k.jpg";
@@ -137,73 +144,75 @@
 
       case "taburete":
         return `<img src="/static/ui/img/map_icons/Taburete TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "llevar":
         return `<img src="/static/ui/img/map_icons/take-away-svgrepo-com.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "barra":
         return `<img src="/static/ui/img/map_icons/Barra TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "columna":
         return `<img src="/static/ui/img/map_icons/Columna TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "cristal_fino":
         return `<img src="/static/ui/img/map_icons/Cristal fino_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "cristal_gordo":
         return `<img src="/static/ui/img/map_icons/Cristal gordo_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "esquina_muro":
         return `<img src="/static/ui/img/map_icons/Esquna muro TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "lavamanos":
         return `<img src="/static/ui/img/map_icons/Lavamanos TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "maceton":
         return `<img src="/static/ui/img/map_icons/MAcetón_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "muro":
         return `<img src="/static/ui/img/map_icons/Muro TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "papelera":
         return `<img src="/static/ui/img/map_icons/PapeleraoJabón_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "puerta":
         return `<img src="/static/ui/img/map_icons/Puerta_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "wc":
         return `<img src="/static/ui/img/map_icons/WC TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_DEFAULT}"
                      draggable="false" alt="">`;
 
       case "planta":
-        // Mismo icono que usa el editor (MAP_SKINS.planta), para que se vea igual.
+        // Mismo icono que usa el editor (MAP_SKINS.planta) y mismo sangrado
+        // extra (8px) que aplica el editor a este tipo en concreto, para que
+        // se vea igual de grande que allí.
         return `<img src="/static/ui/img/map_icons/Maceta_TPV.svg"
-                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill"
+                     style="${IMG_STYLE_PLANTA}"
                      draggable="false" alt="">`;
 
       default:
