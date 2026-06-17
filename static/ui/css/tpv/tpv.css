@@ -113,18 +113,46 @@ body.tpvScreen {
   box-shadow: 0 0 calc(8px * var(--itemScale)) rgba(250, 204, 21, 0.5);
 }
 
-/* Taburetes y "para llevar": son iconos pequeños y redondos, así que el
-   relleno sólido tapaba el dibujo y quedaba como un bloque de color feo.
-   En estos dos tipos dejamos solo un aro de color (sin relleno), redondo,
-   para que se siga viendo el icono debajo. */
+/* Taburetes y "para llevar": en vez de un bloque/aro alrededor del icono,
+   usamos el propio SVG del icono como máscara, así el colorcillo se pinta
+   únicamente sobre el propio dibujo (igual que el tinte de las mesas, pero
+   ajustado a su silueta) — el icono no pierde su forma, solo coge el tono. */
 .tpvItem.taburete.tpvItem--ocupada::after,
+.tpvItem.taburete.tpvItem--pagando::after,
 .tpvItem.llevar.tpvItem--ocupada::after,
+.tpvItem.llevar.tpvItem--pagando::after {
+  inset: -4px;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.tpvItem.taburete.tpvItem--ocupada::after,
+.tpvItem.taburete.tpvItem--pagando::after {
+  -webkit-mask-image: url("/static/ui/img/map_icons/Taburete TPV.svg");
+  mask-image: url("/static/ui/img/map_icons/Taburete TPV.svg");
+}
+
+.tpvItem.llevar.tpvItem--ocupada::after,
+.tpvItem.llevar.tpvItem--pagando::after {
+  -webkit-mask-image: url("/static/ui/img/map_icons/take-away-svgrepo-com.svg");
+  mask-image: url("/static/ui/img/map_icons/take-away-svgrepo-com.svg");
+}
+
+.tpvItem.taburete.tpvItem--ocupada::after,
+.tpvItem.llevar.tpvItem--ocupada::after {
+  background: rgba(239, 68, 68, 0.85);
+}
+
 .tpvItem.taburete.tpvItem--pagando::after,
 .tpvItem.llevar.tpvItem--pagando::after {
-  inset: calc(-3px * var(--itemScale));
-  border-radius: 50%;
-  background: transparent;
-  border-width: calc(3px * var(--itemScale));
+  background: rgba(250, 204, 21, 0.85);
 }
 
 /* ==========================================
