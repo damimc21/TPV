@@ -194,8 +194,18 @@
 }
 
 .cfg-custom-select__search {
+    position: relative;
     padding: 10px 10px 6px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cfg-custom-select__search .fich-search-icon {
+    position: absolute;
+    left: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.45;
+    pointer-events: none;
 }
 
 .cfg-custom-select__search input {
@@ -203,7 +213,7 @@
     background: rgba(8, 14, 28, 0.5);
     border: 1px solid rgba(170, 190, 225, 0.18);
     border-radius: 8px;
-    padding: 8px 11px;
+    padding: 8px 11px 8px 36px;
     color: #e2eaf7;
     font-size: 0.9rem;
     outline: none;

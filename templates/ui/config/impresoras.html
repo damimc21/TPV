@@ -35,15 +35,6 @@
 </header>
 
 <section class="mt-2">
-    <div class="card" style="margin-bottom: 24px; padding: 20px; background: rgba(0,0,0,0.2) !important; cursor: default;">
-        <h3 style="margin-top: 0;">{% trans "Simulación y Arquitectura de Impresión" %}</h3>
-        <p class="muted" style="line-height: 1.5; font-size: 0.95rem;">
-            Actualmente todas las comandas de cocina y los tickets de caja usan impresión simulada interactiva (modal del navegador o PDF).<br>
-            A través de las impresoras definidas aquí, la aplicación redirigirá en el backend cada artículo a su red local basada en IP (ej. 192.168.1.50) o a su puerto nativo USB. 
-            Recuerda que en el <strong>catálogo de productos</strong> puedes elegir qué impresora dispara cada producto, cruzándola con este listado.
-        </p>
-    </div>
-
     <div class="grid">
         {% for impresora in impresoras %}
         <div class="card" style="cursor: default;">

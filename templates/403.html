@@ -1,0 +1,30 @@
+{% load i18n static %}
+{% get_current_language as CURRENT_LANGUAGE %}
+<!doctype html>
+<html lang="{{ CURRENT_LANGUAGE }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="{% static 'ui/js/theme_bootstrap.js' %}"></script>
+    <title>{% trans "Acceso denegado" %}</title>
+    <link rel="stylesheet" href="{% static 'ui/css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'ui/css/auth/login.css' %}">
+</head>
+<body class="loginPage">
+    <div class="loginWrap">
+        <h1 class="loginTitle">{% trans "Acceso denegado" %}</h1>
+        <p class="loginSubtitle">
+            {% if exception %}{{ exception }}{% else %}{% trans "No tienes permisos para acceder a esta página." %}{% endif %}
+        </p>
+        <div class="loginCard" style="text-align: center; align-items: center;">
+            <img src="{% static 'ui/img/iconos/lock-keyhole.svg' %}" alt="" style="width: 44px; opacity: .55; margin: 0 auto 4px;">
+            <p style="color: var(--muted); font-weight: 700; margin: 0;">
+                {% trans "Si crees que es un error, pide a un administrador que te asigne el permiso necesario." %}
+            </p>
+            <a class="loginBtn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;" href="{% url 'ui:index' %}">
+                {% trans "Volver al inicio" %}
+            </a>
+        </div>
+    </div>
+</body>
+</html>
