@@ -225,7 +225,14 @@ function bindChipEvents(modal, prod, plantilla) {
                 chip.dataset.qty = 1; // Solo se permite 1
             } else {
                 let qty = parseInt(chip.dataset.qty) || 0;
-                chip.dataset.qty = qty + 1;
+                const acumulable = (typeof esModifAcumulable === 'function') ? esModifAcumulable() : true;
+                if (acumulable) {
+                    // Modo acumulable: cada click suma una unidad más (x2, x3...)
+                    chip.dataset.qty = qty + 1;
+                } else {
+                    // Modo no acumulable: el click actúa como toggle on/off
+                    chip.dataset.qty = qty > 0 ? 0 : 1;
+                }
             }
             
             updateVisuals();
