@@ -209,21 +209,29 @@ class AuditActionMiddleware:
 class SystemErrorLoggingMiddleware:
     """
     Registra excepciones no controladas en logs_sistema sin alterar
-    el comportamiento normal de Django (la excepción se vuelve a lanzar).
+    el comportamiento normal de Django.
+
+    Nota: en Django >= 3.1, cada capa de middleware envuelve a la siguiente
+    con `convert_exception_to_response`, así que para cuando una excepción
+    lanzada por la vista llegaría a un simple try/except alrededor de
+    `self.get_response(request)` en `__call__`, Django ya la habría
+    convertido en una respuesta 500 una capa más adentro — ese try/except
+    nunca se dispara. El gancho correcto es `process_exception`, que Django
+    invoca con la excepción real *antes* de convertirla en respuesta.
     """
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        try:
-            return self.get_response(request)
-        except Exception as exc:
-            user = getattr(request, "user", None)
-            username = user.username if getattr(user, "is_authenticated", False) else "anon"
-            message = (
-                f"Unhandled exception {exc.__class__.__name__} "
-                f"en {request.method} {request.path} usuario={username}: {exc}"
-            )
-            log_critical("http.unhandled", message, exc=exc)
-            raise
+        return self.get_response(request)
+
+    def process_exception(self, request, exception):
+        user = getattr(request, "user", None)
+        username = user.username if getattr(user, "is_authenticated", False) else "anon"
+        message = (
+            f"Unhandled exception {exception.__class__.__name__} "
+            f"en {request.method} {request.path} usuario={username}: {exception}"
+        )
+        log_critical("http.unhandled", message, exc=exception)
+        return None
