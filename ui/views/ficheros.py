@@ -106,10 +106,12 @@ def ficheros_backups(request):
             continue
         try:
             fecha = datetime.fromisoformat(f["last_modified"])
-            if fecha.tzinfo is not None:
-                fecha = fecha.astimezone(dt_timezone.utc).replace(tzinfo=None)
+            if fecha.tzinfo is None:
+                fecha = fecha.replace(tzinfo=dt_timezone.utc)
+            else:
+                fecha = fecha.astimezone(dt_timezone.utc)
         except (ValueError, KeyError):
-            fecha = datetime.min
+            fecha = datetime.min.replace(tzinfo=dt_timezone.utc)
         backups_lista.append({
             "fecha": fecha,
             "nombre_archivo": nombre,
